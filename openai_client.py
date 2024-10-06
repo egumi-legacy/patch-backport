@@ -27,15 +27,19 @@ class OpenAI_Client:
     def __get_model_limit(self, model):
         return self.__MODEL_LIMITS.get(model, 128_000)
 
-    def check_prompt_length(self, messages, model):
+    def check_prompt_length(self, prompts, model):
         model_limit = self.__get_model_limit(model)
         encoding = tiktoken.encoding_for_model(model)
         token_count = 0
-        for message in messages:
-            token_count += len(encoding.encode(message["content"]))
+        for prompt in prompts:
+            content = prompt["content"]
+            token_count += len(encoding.encode(content))
             if token_count > model_limit:
                 return -1
         return model_limit - token_count
 
     # TO: truncate_messages
     # def truncate_messages(self, messages, model):
+
+    def call_openai(self, model, messages):
+        return self.client.chat.completions.create(model=model, messages=messages)
