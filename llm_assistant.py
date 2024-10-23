@@ -24,13 +24,17 @@ class LLMAssistant:
 
         self.client = OpenAI_Client(_api_key, _base_url)
         self.model = inputs.get("model", "gpt-4o")
-        self.save_response_to_file = inputs.get("save_response_to_file", None)
+        self.response_file = inputs.get("response_file", None)
 
         self.prompt_template_file = inputs.get("prompt_template_file")
         self.prompt_id = inputs.get("prompt_id")
         self.prompt_values = [{"uri": '', "affectedCode": 'hello, world'}]
         self.prompt_value_file = inputs.get("prompt_value_file")
         self.prompts = self.preprocess_prompts().get("prompts")
+        self.partitions = inputs.get("partitions", [])
+        # self.partitions = {
+        #     "patch": ["```", "\n", "```"],
+        # }
         # self.prompt_values = inputs.get("prompt_values")
         
 
@@ -99,7 +103,7 @@ class LLMAssistant:
 
     
     def save_response_to_file(self, responses):
-        file_path = os.path.abspath(self.save_response_to_file)
+        file_path = os.path.abspath(self.response_file)
         mode = "a" if os.path.exists(file_path) else "w"
         with open(file_path, mode) as f:
             for prompt, response in zip(self.prompts, responses):
@@ -185,6 +189,43 @@ class LLMAssistant:
             })
         return responses
 
+    def extract_mode_response(self, openai_responses):
+        if len(openai_responses) == 0:
+            logger.error(f"openai_responses is empty")
+            return dict(extracted_responses=[])
+
+        outputs = []
+
+        if len(self.partitions) == 0:
+            logger.warning(f"partitions is empty. return openai_responses by defaultdict.")
+            for openai_response in openai_responses:
+                outputs.append(defaultdict(lambda: openai_response))
+            return dict(extracted_responses=outputs)
+        
+        for openai_response in openai_responses:
+            output = {}
+            for key, partition in self.partitions.items():
+                if len(partition) < 1:
+                    output[key] = openai_response
+                    continue
+                
+                extracted_response = openai_response
+                for part in partition[:-1]:
+                    _, _, extracted_response = extracted_response.partition(part)
+
+                if partition[-1] == "":
+                    extracted_response, _, _ = extracted_response.partition(partition[-1])
+
+                if extracted_response == "":
+                    continue
+                
+                output[key] = extracted_response
+            outputs.append(output)
+        
+        return dict(extracted_responses=outputs)
+                
+
+
     def suggest_adaptation(self, patch_content, target_version):
         # 使用LLM提供适配建议
         pass
@@ -212,9 +253,11 @@ class LLMAssistant:
             response_tokens.append(response["response_token"])
 
         print(f"openai_responses: {openai_responses}")
-        
-        # if self.save_response_to_file:
-        #     self.save_response_to_file(openai_responses)
+        print(f"request_tokens: {request_tokens}")
+        print(f"response_tokens: {response_tokens}")
+
+        if self.response_file:
+            self.save_response_to_file(openai_responses)
         
         return dict(
             openai_responses=openai_responses,
