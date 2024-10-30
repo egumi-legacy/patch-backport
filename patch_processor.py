@@ -77,33 +77,128 @@ class PatchProcessor:
         return file_list
 
     def get_file_contents_from_ref(self, file_path_list, ref):
+        """
+        获取指定引用（tag/commit/branch）下的文件内容
+        使用多个API端点尝试获取文件内容
+        """
         owner = ref['owner']
         repo = ref['repo']
         ref_field = self.allowed_ref_fields
+        
+        # 从ref中获取commit_sha, tag, branch其中一个
         for field in ref_field:
             if field in ref:
-                ref = ref[field]
+                ref_value = ref[field]
                 break
+        
         file_contents = []
         for file_path in file_path_list:
-            url = f"https://api.github.com/repos/{owner}/{repo}/contents/{file_path}?ref={ref}"
-            print("url:", url)
-            response = requests.get(url, headers=self.headers)
-            if response.status_code != 200:
-                logger.error(f"File {file_path} not found in {ref}")
-                print("url:", url)
-                raise FileNotFoundError(f"File {file_path} not found in {ref}")
-
-            file_data = response.json()
-            content = base64.b64decode(file_data['content']).decode('utf-8')
-            file_content = {
-                'filename': file_path,
-                'content': content,
-                'sha': file_data['sha']
-            }
-            file_contents.append(file_content)
+            logger.info(f"正在获取文件 {file_path} 在 {ref_value} 的内容")
+            
+            # 方法1: 使用 contents API
+            content = self._get_file_using_contents_api(owner, repo, file_path, ref_value)
+            
+            # 如果方法1失败，尝试方法2
+            if content is None:
+                logger.info(f"使用 contents API 失败，尝试使用 Git Data API")
+                content = self._get_file_using_git_data_api(owner, repo, file_path, ref_value)
+            
+            if content:
+                file_contents.append(content)
+            else:
+                logger.error(f"无法获取文件 {file_path} 在 {ref_value} 的内容")
+        
         return file_contents
 
+    def _get_file_using_contents_api(self, owner, repo, file_path, ref):
+        """使用 contents API 获取文件内容"""
+        url = f"https://api.github.com/repos/{owner}/{repo}/contents/{file_path}"
+        params = {"ref": ref}
+        
+        try:
+            response = requests.get(url, headers=self.headers, params=params)
+            if response.status_code == 200:
+                file_data = response.json()
+                content = base64.b64decode(file_data['content']).decode('utf-8')
+                return {
+                    'filename': file_path,
+                    'content': content,
+                    'sha': file_data['sha']
+                }
+        except Exception as e:
+            logger.error(f"Contents API 错误: {str(e)}")
+        return None
+
+    def _get_file_using_git_data_api(self, owner, repo, file_path, ref):
+        """使用 Git Data API 获取文件内容"""
+        try:
+            # 1. 首先获取引用的commit SHA
+            commit_sha = self._get_ref_commit_sha(owner, repo, ref)
+            if not commit_sha:
+                return None
+                
+            # 2. 获取commit的树
+            tree_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/{commit_sha}?recursive=1"
+            tree_response = requests.get(tree_url, headers=self.headers)
+            if tree_response.status_code != 200:
+                return None
+                
+            # 3. 在树中查找文件
+            tree_data = tree_response.json()
+            file_info = next((item for item in tree_data["tree"] 
+                             if item["path"] == file_path), None)
+            
+            if not file_info:
+                return None
+                
+            # 4. 获取文件内容
+            blob_url = f"https://api.github.com/repos/{owner}/{repo}/git/blobs/{file_info['sha']}"
+            blob_response = requests.get(blob_url, headers=self.headers)
+            if blob_response.status_code != 200:
+                return None
+                
+            blob_data = blob_response.json()
+            content = base64.b64decode(blob_data['content']).decode('utf-8')
+            
+            return {
+                'filename': file_path,
+                'content': content,
+                'sha': file_info['sha']
+            }
+        except Exception as e:
+            logger.error(f"Git Data API 错误: {str(e)}")
+            return None
+
+    def _get_ref_commit_sha(self, owner, repo, ref):
+        """获取引用（tag/branch）对应的commit SHA"""
+        try:
+            # 首先尝试作为tag获取
+            tag_url = f"https://api.github.com/repos/{owner}/{repo}/git/refs/tags/{ref}"
+            response = requests.get(tag_url, headers=self.headers)
+            logger.debug(f"Tag API response status: {response.status_code}")
+            
+            if response.status_code == 200:
+                tag_data = response.json()
+                logger.debug(f"Tag data: {tag_data}") 
+                
+                # 如果返回的是列表
+                if isinstance(tag_data, list):
+                    # 查找匹配的tag
+                    for tag in tag_data:
+                        if tag['ref'] == f'refs/tags/{ref}':
+                            # 直接返回commit SHA
+                            return tag['object']['sha']
+                # 如果返回的是单个对象
+                else:
+                    return tag_data['object']['sha']
+                
+            # 如果tag获取失败，记录错误
+            else:
+                logger.error(f"Failed to get tag: {response.status_code} - {response.text}")
+                
+        except Exception as e:
+            logger.error(f"获取引用SHA错误: {str(e)}")
+        return None
 
     def get_file_before_commit(self, commit_info):
         owner = commit_info['owner']
@@ -204,14 +299,7 @@ class PatchProcessor:
     #         diffs.append({'filename': original_file_content['filename'], 'diff': ''.join(diff)})
     #     return diffs
     def generate_folder_diff(self, folder1, folder2, output_file, context_lines=3):
-        """
-        生成两个文件夹之间的差异，类似git diff的输出。
-        
-        :param folder1: 第一个文件夹的路径
-        :param folder2: 第二个文件夹的路径
-        :param output_file: 输出差异的文件路径
-        :param context_lines: 显示的上下文行数，默认为3
-        """
+        # 生成两个文件夹之间的差异，类似git diff的输出。
         with open(output_file, 'w', encoding='utf-8') as out_file:
             files1 = set(f.relative_to(folder1) for f in folder1.rglob('*') if f.is_file())
             files2 = set(f.relative_to(folder2) for f in folder2.rglob('*') if f.is_file())
@@ -235,7 +323,7 @@ class PatchProcessor:
                             lines1, lines2,
                             fromfile=str(path1),
                             tofile=str(path2),
-                            n=context_lines,
+                            # n=context_lines,
                             lineterm=''
                         ))
                         if diff:
@@ -259,14 +347,15 @@ class PatchProcessor:
 
     def write_file_contents(self, file_contents, folder_name):
         # 在patchfile目录下创建一个文件夹，命名为owner_repo，如果存在则跳过
-        base_dir = Path('patchfile') / f"{self.owner}_{self.repo}"
+        base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
         if not base_dir.exists():
             base_dir.mkdir(parents=True)
 
         for file_content in file_contents:
             file_path = base_dir / folder_name / file_content['filename']
             if not file_path.exists():
-                file_path.parent.mkdir(parents=True)
+                if not file_path.parent.exists():
+                    file_path.parent.mkdir(parents=True)
             file_path.write_text(file_content['content'])
 
 
@@ -276,10 +365,12 @@ class PatchProcessor:
         commit_content = self.get_commit_content(commit_info)
         file_list = self.get_commit_file_list(commit_content)
 
-        base_dir = Path('patchfile') / f"{self.owner}_{self.repo}"
+        # patch_commit_sha只截取前面6位
+        base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
         
         # 2. 解析commit信息
         if not (base_dir / 'newer').exists():
+            # bug: 如果commit之前的commit没有file_list中的文件，则无法获取到文件内容
             newer_file_contents = self.get_file_before_commit(commit_info)
             self.write_file_contents(newer_file_contents, 'newer')
 

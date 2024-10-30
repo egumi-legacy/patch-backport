@@ -71,7 +71,8 @@ class LLMAssistant:
                 raise ValueError(f'Unable to read Prompt template file: "{prompt_template_file}": {e}')
         else:
             return None
-
+            
+        # 从文件中找到prompt_id对应的prompt
         found_prompt = None
         for prompt in prompt_template:
             if prompt["id"] == prompt_id:
@@ -85,6 +86,7 @@ class LLMAssistant:
 
 
     def check_prompt_values(self):
+        # 优先使用prompt_values，如果为空则使用prompt_value_file
         prompt_value_file = self.prompt_value_file
         prompt_values = self.prompt_values
         if prompt_value_file is None and prompt_values is None:
@@ -120,7 +122,8 @@ class LLMAssistant:
         if len(self.prompt_values) == 0:
             logger.error(f"prompt_values is empty")
             return dict(prompts=[])
-        
+
+        # 从文件中找到prompt_id对应的prompt，即prompt_template中prompts字段下的字典列表
         self.prompt_template = self.get_prompt_template_from_file(self.prompt_template_file, self.prompt_id)
         if self.prompt_template is None:
             raise ValueError(f"{self.prompt_template_file} with id '{self.prompt_id}' is None")
