@@ -14,6 +14,7 @@ import difflib
 class PatchProcessor:
     def __init__(self, input):
         dotenv.load_dotenv()
+        self.input = input
         self.github_token = os.getenv('GITHUB_TOKEN')
         self.headers = {
             'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
@@ -298,7 +299,7 @@ class PatchProcessor:
     #         )
     #         diffs.append({'filename': original_file_content['filename'], 'diff': ''.join(diff)})
     #     return diffs
-    def generate_folder_diff(self, folder1, folder2, output_file, context_lines=3):
+    def generate_folder_diff(self, folder1, folder2, output_file, context_lines=1):
         # 生成两个文件夹之间的差异，类似git diff的输出。
         with open(output_file, 'w', encoding='utf-8') as out_file:
             files1 = set(f.relative_to(folder1) for f in folder1.rglob('*') if f.is_file())
@@ -323,7 +324,7 @@ class PatchProcessor:
                             lines1, lines2,
                             fromfile=str(path1),
                             tofile=str(path2),
-                            # n=context_lines,
+                            n=context_lines,
                             lineterm=''
                         ))
                         if diff:
@@ -342,7 +343,7 @@ class PatchProcessor:
                                         out_file.write(line + '\n')
                                     else:
                                         out_file.write(' ' + line)
-                out_file.write('\n' + '=' * 80 + '\n')  # 添加分隔线
+                out_file.write('\n' + '"' * 6 + '\n')  # 添加分隔线
         print(f"差异已保存到 {output_file}")
 
     def write_file_contents(self, file_contents, folder_name):
@@ -357,6 +358,15 @@ class PatchProcessor:
                 if not file_path.parent.exists():
                     file_path.parent.mkdir(parents=True)
             file_path.write_text(file_content['content'])
+
+    def save_response_to_project(self, response):
+        # 将response写入到project文件夹中
+        base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
+        if not base_dir.exists():
+            base_dir.mkdir(parents=True)
+        output_file_name = f"output_{self.input['target_version']}_{self.input['model']}"
+        output_path = base_dir / output_file_name
+        output_path.write_text(response)
 
 
     def run(self):
@@ -380,6 +390,23 @@ class PatchProcessor:
 
         # 3. 获取两个版本文件的diff并保存
         self.generate_folder_diff(base_dir / 'newer', base_dir / self.target_version, base_dir / 'diff')
+
+        # 4. 获取patch文件
+        # 使用curl模块将self.url中的github commit url后加上.patch获取patch文件并写入patch文件夹
+        if not (base_dir / 'patch').exists():
+            (base_dir / 'patch').mkdir(parents=True)
+        
+        if not (base_dir / 'patch' / 'patch.txt').exists():
+            patch_url = self.url + '.patch'
+            print(f"patch_url: {patch_url}")
+            output_file = str(base_dir / 'patch' / 'patch.txt')
+            print(f"output_file: {output_file}")
+            subprocess.run(['curl', '-L', patch_url, '-o', output_file])
+        
+        patch_values = [{"patchCode": (base_dir / 'patch' / 'patch.txt').read_text(), "diffCode": (base_dir / 'diff').read_text()}]
+
+
+        return dict(prompt_values=patch_values)
         
         # diff_between_two_versions = self.get_diff_between_two_files(original_file_contents, target_file_contents)
         

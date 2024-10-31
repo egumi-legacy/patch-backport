@@ -14,16 +14,26 @@ class Main:
         pprint.pprint(inputs)
         self.inputs = inputs
         
+        
+        
 
     def run(self):
-        # self.inputs["prompt_values"] = ['hello', 'world']
-        # llm_output = LLMAssistant(self.inputs).run()
-        
-        # for response in llm_output["openai_responses"]:
-        #     print(f"response: {response}")
-
         patch_processor = PatchProcessor(self.inputs)
-        patch_processor.run()
+        patch_processor_outputs = patch_processor.run()
+        self.inputs.update(patch_processor_outputs)
+        
+        # self.inputs["prompt_values"] = ['hello', 'world']
+        llm_output = LLMAssistant(self.inputs).run()
+
+        
+        for response in llm_output["openai_responses"]:
+            patch_processor.save_response_to_project(response)
+            print(f"response: {response}")
+
+        
+        
+
+        
 
 if __name__ == "__main__":
     main = Main()

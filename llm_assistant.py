@@ -28,7 +28,7 @@ class LLMAssistant:
 
         self.prompt_template_file = inputs.get("prompt_template_file")
         self.prompt_id = inputs.get("prompt_id")
-        self.prompt_values = [{"uri": '', "affectedCode": 'hello, world'}]
+        self.prompt_values = inputs.get("prompt_values")
         self.prompt_value_file = inputs.get("prompt_value_file")
         self.prompts = self.preprocess_prompts().get("prompts")
         self.partitions = inputs.get("partitions", [])

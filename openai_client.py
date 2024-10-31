@@ -1,7 +1,7 @@
 import tiktoken
 from openai import OpenAI
 from loguru import logger
-
+from pathlib import Path
 class OpenAI_Client:
     __MODEL_LIMITS = {
         "gpt-3.5-turbo": 16_385,

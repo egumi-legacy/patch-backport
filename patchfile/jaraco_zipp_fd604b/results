@@ -1,0 +1,62 @@
+A. Commit message:
+Backport fixes for handling paths and sanitized names.
+
+B. Change summary:
+1. Replaced the usage of `zipfile` with `zipp` in the test_path.py file.
+2. Updated the test cases to use `zipp.Path` instead of `zipfile.Path`.
+3. Removed import statements for `stat` and `sys` from the zipp/__init__.py file.
+4. Replaced references to `zipfile` with `zipp` in the zipp/__init__.py file.
+5. Refactored the `_extract_text_encoding` function in the zipp/__init__.py file.
+6. Revised the implementation of the `is_symlink` method in the zipp/__init__.py file.
+7. Modified the `translate` function call in the zipp/__init__.py file.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```python
+diff --git a/tests/test_path.py b/tests/test_path.py
+index bbf39b2..53f8848 100644
+--- a/tests/test_path.py
++++ b/tests/test_path.py
+@@ -4,9 +4,8 @@
+  import pathlib
+ +import tempfile
+ +import shutil
+  import pickle
+  import sys
+  import unittest
+ -from .compat.overlay import zipfile
+ -
+ -from .compat.py39.os_helper import temp_dir, FakePath
+ +import zipfile
+ +
+  import zipp
+  from ._test_params import parameterize, Invoked
+
+@@ -95,5 +96,5 @@
+      def test_iterdir_and_types(self, alpharep):
+ -        root = zipfile.Path(alpharep)
+ +        root = zipp.Path(alpharep)
+          assert root.is_dir()
+ -        a, k, b, g, j = root.iterdir()
+ +        a, b, g, j = root.iterdir()
+          assert a.is_file()
+
+@@ -111,3 +112,3 @@
+      def test_is_file_missing(self, alpharep):
+ -        root = zipfile.Path(alpharep)
+ +        root = zipp.Path(alpharep)
+          assert not root.joinpath('missing.txt').is_file()
+
+@@ -116,4 +117,4 @@
+      def test_iterdir_on_file(self, alpharep):
+ -        root = zipfile.Path(alpharep)
+ -        a, k, b, g, j = root.iterdir()
+ +        root = zipp.Path(alpharep)
+ +        a, b, g, j = root.iterdir()
+          with self.assertRaises(ValueError):
+
+...
+...
+```
