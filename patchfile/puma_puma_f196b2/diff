@@ -1,0 +1,1123 @@
+修改文件: ext/puma_http11/org/jruby/puma/Http11.java
+--- patchfile/puma_puma_f196b2/newer/ext/puma_http11/org/jruby/puma/Http11.java
++++ patchfile/puma_puma_f196b2/v3.12.6/ext/puma_http11/org/jruby/puma/Http11.java
+@@ -11,6 +11,7 @@
+  import org.jruby.anno.JRubyMethod;
+  
+  import org.jruby.runtime.ObjectAllocator;
+ +import org.jruby.runtime.ThreadContext;
+  import org.jruby.runtime.builtin.IRubyObject;
+  
+  import org.jruby.exceptions.RaiseException;
+@@ -19,7 +20,6 @@
+  
+  public class Http11 extends RubyObject {
+      public final static int MAX_FIELD_NAME_LENGTH = 256;
+@@ -30,23 +30,13 @@
+      public final static String MAX_REQUEST_URI_LENGTH_ERR = "HTTP element REQUEST_URI is longer than the 12288 allowed length.";
+      public final static int MAX_FRAGMENT_LENGTH = 1024;
+      public final static String MAX_FRAGMENT_LENGTH_ERR = "HTTP element REQUEST_PATH is longer than the 1024 allowed length.";
+ -    public final static int MAX_REQUEST_PATH_LENGTH = 8192;
+ -    public final static String MAX_REQUEST_PATH_LENGTH_ERR = "HTTP element REQUEST_PATH is longer than the 8192 allowed length.";
+ +    public final static int MAX_REQUEST_PATH_LENGTH = 2048;
+ +    public final static String MAX_REQUEST_PATH_LENGTH_ERR = "HTTP element REQUEST_PATH is longer than the 2048 allowed length.";
+      public final static int MAX_QUERY_STRING_LENGTH = 1024 * 10;
+      public final static String MAX_QUERY_STRING_LENGTH_ERR = "HTTP element QUERY_STRING is longer than the 10240 allowed length.";
+      public final static int MAX_HEADER_LENGTH = 1024 * (80 + 32);
+      public final static String MAX_HEADER_LENGTH_ERR = "HTTP element HEADER is longer than the 114688 allowed length.";
+  
+ -    public static final ByteList CONTENT_TYPE_BYTELIST = new ByteList(ByteList.plain("CONTENT_TYPE"));
+ -    public static final ByteList CONTENT_LENGTH_BYTELIST = new ByteList(ByteList.plain("CONTENT_LENGTH"));
+ -    public static final ByteList HTTP_PREFIX_BYTELIST = new ByteList(ByteList.plain("HTTP_"));
+ -    public static final ByteList COMMA_SPACE_BYTELIST = new ByteList(ByteList.plain(", "));
+ -    public static final ByteList REQUEST_METHOD_BYTELIST = new ByteList(ByteList.plain("REQUEST_METHOD"));
+ -    public static final ByteList REQUEST_URI_BYTELIST = new ByteList(ByteList.plain("REQUEST_URI"));
+ -    public static final ByteList FRAGMENT_BYTELIST = new ByteList(ByteList.plain("FRAGMENT"));
+ -    public static final ByteList REQUEST_PATH_BYTELIST = new ByteList(ByteList.plain("REQUEST_PATH"));
+ -    public static final ByteList QUERY_STRING_BYTELIST = new ByteList(ByteList.plain("QUERY_STRING"));
+ -    public static final ByteList HTTP_VERSION_BYTELIST = new ByteList(ByteList.plain("HTTP_VERSION"));
+  
+      private static ObjectAllocator ALLOCATOR = new ObjectAllocator() {
+          public IRubyObject allocate(Ruby runtime, RubyClass klass) {
+@@ -63,104 +53,127 @@
+      }
+  
+      private Ruby runtime;
+ +    private RubyClass eHttpParserError;
+      private Http11Parser hp;
+      private RubyString body;
+  
+      public Http11(Ruby runtime, RubyClass clazz) {
+          super(runtime,clazz);
+          this.runtime = runtime;
+ +        this.eHttpParserError = (RubyClass)runtime.getModule("Puma").getConstant("HttpParserError");
+          this.hp = new Http11Parser();
+ +        this.hp.parser.http_field = http_field;
+ +        this.hp.parser.request_method = request_method;
+ +        this.hp.parser.request_uri = request_uri;
+ +        this.hp.parser.fragment = fragment;
+ +        this.hp.parser.request_path = request_path;
+ +        this.hp.parser.query_string = query_string;
+ +        this.hp.parser.http_version = http_version;
+ +        this.hp.parser.header_done = header_done;
+          this.hp.parser.init();
+      }
+  
+ -    public static void validateMaxLength(Ruby runtime, int len, int max, String msg) {
+ +    public void validateMaxLength(int len, int max, String msg) {
+          if(len>max) {
+ -            throw newHTTPParserError(runtime, msg);
+ +            throw new RaiseException(runtime, eHttpParserError, msg, true);
+          }
+      }
+  
+ -    private static RaiseException newHTTPParserError(Ruby runtime, String msg) {
+ -        return runtime.newRaiseException(getHTTPParserError(runtime), msg);
+ -    }
+ -
+ -    private static RubyClass getHTTPParserError(Ruby runtime) {
+ -        // Cheaper to look this up lazily than cache eagerly and consume a field, since it's rarely encountered
+ -        return (RubyClass)runtime.getModule("Puma").getConstant("HttpParserError");
+ -    }
+ -
+ -    public static void http_field(Ruby runtime, RubyHash req, ByteList buffer, int field, int flen, int value, int vlen) {
+ -        RubyString f;
+ -        IRubyObject v;
+ -        validateMaxLength(runtime, flen, MAX_FIELD_NAME_LENGTH, MAX_FIELD_NAME_LENGTH_ERR);
+ -        validateMaxLength(runtime, vlen, MAX_FIELD_VALUE_LENGTH, MAX_FIELD_VALUE_LENGTH_ERR);
+ -
+ -        ByteList b = new ByteList(buffer,field,flen);
+ -        for(int i = 0,j = b.length();i<j;i++) {
+ -            int bite = b.get(i) & 0xFF;
+ -            if(bite == '-') {
+ -                b.set(i, (byte)'_');
+ -            } else {
+ -                b.set(i, (byte)Character.toUpperCase(bite));
+ -            }
+ -        }
+ -
+ -        while (vlen > 0 && Character.isWhitespace(buffer.get(value + vlen - 1))) vlen--;
+ -
+ -        if (b.equals(CONTENT_LENGTH_BYTELIST) || b.equals(CONTENT_TYPE_BYTELIST)) {
+ -          f = RubyString.newString(runtime, b);
+ -        } else {
+ -          f = RubyString.newStringShared(runtime, HTTP_PREFIX_BYTELIST);
+ -          f.cat(b);
+ -        }
+ -
+ -        b = new ByteList(buffer, value, vlen);
+ -        v = req.fastARef(f);
+ -        if (v == null || v.isNil()) {
+ -            req.fastASet(f, RubyString.newString(runtime, b));
+ -        } else {
+ -            RubyString vs = v.convertToString();
+ -            vs.cat(COMMA_SPACE_BYTELIST);
+ -            vs.cat(b);
+ -        }
+ -    }
+ -
+ -    public static void request_method(Ruby runtime, RubyHash req, ByteList buffer, int at, int length) {
+ -        RubyString val = RubyString.newString(runtime,new ByteList(buffer,at,length));
+ -        req.fastASet(RubyString.newStringShared(runtime, REQUEST_METHOD_BYTELIST),val);
+ -    }
+ -
+ -    public static void request_uri(Ruby runtime, RubyHash req, ByteList buffer, int at, int length) {
+ -        validateMaxLength(runtime, length, MAX_REQUEST_URI_LENGTH, MAX_REQUEST_URI_LENGTH_ERR);
+ -        RubyString val = RubyString.newString(runtime,new ByteList(buffer,at,length));
+ -        req.fastASet(RubyString.newStringShared(runtime, REQUEST_URI_BYTELIST),val);
+ -    }
+ -
+ -    public static void fragment(Ruby runtime, RubyHash req, ByteList buffer, int at, int length) {
+ -        validateMaxLength(runtime, length, MAX_FRAGMENT_LENGTH, MAX_FRAGMENT_LENGTH_ERR);
+ -        RubyString val = RubyString.newString(runtime,new ByteList(buffer,at,length));
+ -        req.fastASet(RubyString.newStringShared(runtime, FRAGMENT_BYTELIST),val);
+ -    }
+ -
+ -    public static void request_path(Ruby runtime, RubyHash req, ByteList buffer, int at, int length) {
+ -        validateMaxLength(runtime, length, MAX_REQUEST_PATH_LENGTH, MAX_REQUEST_PATH_LENGTH_ERR);
+ -        RubyString val = RubyString.newString(runtime,new ByteList(buffer,at,length));
+ -        req.fastASet(RubyString.newStringShared(runtime, REQUEST_PATH_BYTELIST),val);
+ -    }
+ -
+ -    public static void query_string(Ruby runtime, RubyHash req, ByteList buffer, int at, int length) {
+ -        validateMaxLength(runtime, length, MAX_QUERY_STRING_LENGTH, MAX_QUERY_STRING_LENGTH_ERR);
+ -        RubyString val = RubyString.newString(runtime,new ByteList(buffer,at,length));
+ -        req.fastASet(RubyString.newStringShared(runtime, QUERY_STRING_BYTELIST),val);
+ -    }
+ -
+ -    public static void http_version(Ruby runtime, RubyHash req, ByteList buffer, int at, int length) {
+ -        RubyString val = RubyString.newString(runtime,new ByteList(buffer,at,length));
+ -        req.fastASet(RubyString.newStringShared(runtime, HTTP_VERSION_BYTELIST),val);
+ -    }
+ -
+ -    public void header_done(Ruby runtime, RubyHash req, ByteList buffer, int at, int length) {
+ -        body = RubyString.newStringShared(runtime, new ByteList(buffer, at, length));
+ -    }
+ +    private Http11Parser.FieldCB http_field = new Http11Parser.FieldCB() {
+ +            public void call(Object data, int field, int flen, int value, int vlen) {
+ +                RubyHash req = (RubyHash)data;
+ +                RubyString f;
+ +                IRubyObject v;
+ +                validateMaxLength(flen, MAX_FIELD_NAME_LENGTH, MAX_FIELD_NAME_LENGTH_ERR);
+ +                validateMaxLength(vlen, MAX_FIELD_VALUE_LENGTH, MAX_FIELD_VALUE_LENGTH_ERR);
+ +
+ +                ByteList b = new ByteList(Http11.this.hp.parser.buffer,field,flen);
+ +                for(int i = 0,j = b.length();i<j;i++) {
+ +                    if((b.get(i) & 0xFF) == '-') {
+ +                        b.set(i, (byte)'_');
+ +                    } else {
+ +                        b.set(i, (byte)Character.toUpperCase((char)b.get(i)));
+ +                    }
+ +                }
+ +
+ +                String as = b.toString();
+ +
+ +                if(as.equals("CONTENT_LENGTH") || as.equals("CONTENT_TYPE")) {
+ +                  f = RubyString.newString(runtime, b);
+ +                } else {
+ +                  f = RubyString.newString(runtime, "HTTP_");
+ +                  f.cat(b);
+ +                }
+ +
+ +                b = new ByteList(Http11.this.hp.parser.buffer, value, vlen);
+ +                v = req.op_aref(req.getRuntime().getCurrentContext(), f);
+ +                if (v.isNil()) {
+ +                    req.op_aset(req.getRuntime().getCurrentContext(), f, RubyString.newString(runtime, b));
+ +                } else {
+ +                    RubyString vs = v.convertToString();
+ +                    vs.cat(RubyString.newString(runtime, ", "));
+ +                    vs.cat(b);
+ +                }
+ +            }
+ +        };
+ +
+ +    private Http11Parser.ElementCB request_method = new Http11Parser.ElementCB() {
+ +            public void call(Object data, int at, int length) {
+ +                RubyHash req = (RubyHash)data;
+ +                RubyString val = RubyString.newString(runtime,new ByteList(hp.parser.buffer,at,length));
+ +                req.op_aset(req.getRuntime().getCurrentContext(), runtime.newString("REQUEST_METHOD"),val);
+ +            }
+ +        };
+ +
+ +    private Http11Parser.ElementCB request_uri = new Http11Parser.ElementCB() {
+ +            public void call(Object data, int at, int length) {
+ +                RubyHash req = (RubyHash)data;
+ +                validateMaxLength(length, MAX_REQUEST_URI_LENGTH, MAX_REQUEST_URI_LENGTH_ERR);
+ +                RubyString val = RubyString.newString(runtime,new ByteList(hp.parser.buffer,at,length));
+ +                req.op_aset(req.getRuntime().getCurrentContext(), runtime.newString("REQUEST_URI"),val);
+ +            }
+ +        };
+ +
+ +    private Http11Parser.ElementCB fragment = new Http11Parser.ElementCB() {
+ +            public void call(Object data, int at, int length) {
+ +                RubyHash req = (RubyHash)data;
+ +                validateMaxLength(length, MAX_FRAGMENT_LENGTH, MAX_FRAGMENT_LENGTH_ERR);
+ +                RubyString val = RubyString.newString(runtime,new ByteList(hp.parser.buffer,at,length));
+ +                req.op_aset(req.getRuntime().getCurrentContext(), runtime.newString("FRAGMENT"),val);
+ +            }
+ +        };
+ +
+ +    private Http11Parser.ElementCB request_path = new Http11Parser.ElementCB() {
+ +            public void call(Object data, int at, int length) {
+ +                RubyHash req = (RubyHash)data;
+ +                validateMaxLength(length, MAX_REQUEST_PATH_LENGTH, MAX_REQUEST_PATH_LENGTH_ERR);
+ +                RubyString val = RubyString.newString(runtime,new ByteList(hp.parser.buffer,at,length));
+ +                req.op_aset(req.getRuntime().getCurrentContext(), runtime.newString("REQUEST_PATH"),val);
+ +            }
+ +        };
+ +
+ +    private Http11Parser.ElementCB query_string = new Http11Parser.ElementCB() {
+ +            public void call(Object data, int at, int length) {
+ +                RubyHash req = (RubyHash)data;
+ +                validateMaxLength(length, MAX_QUERY_STRING_LENGTH, MAX_QUERY_STRING_LENGTH_ERR);
+ +                RubyString val = RubyString.newString(runtime,new ByteList(hp.parser.buffer,at,length));
+ +                req.op_aset(req.getRuntime().getCurrentContext(), runtime.newString("QUERY_STRING"),val);
+ +            }
+ +        };
+ +
+ +    private Http11Parser.ElementCB http_version = new Http11Parser.ElementCB() {
+ +            public void call(Object data, int at, int length) {
+ +                RubyHash req = (RubyHash)data;
+ +                RubyString val = RubyString.newString(runtime,new ByteList(hp.parser.buffer,at,length));
+ +                req.op_aset(req.getRuntime().getCurrentContext(), runtime.newString("HTTP_VERSION"),val);
+ +            }
+ +        };
+ +
+ +    private Http11Parser.ElementCB header_done = new Http11Parser.ElementCB() {
+ +            public void call(Object data, int at, int length) {
+ +                body = RubyString.newString(runtime, new ByteList(hp.parser.buffer, at, length));
+ +            }
+ +        };
+  
+      @JRubyMethod
+      public IRubyObject initialize() {
+@@ -182,24 +195,19 @@
+  
+      @JRubyMethod
+      public IRubyObject execute(IRubyObject req_hash, IRubyObject data, IRubyObject start) {
+ -        int from = RubyNumeric.fix2int(start);
+ +        int from = 0;
+ +        from = RubyNumeric.fix2int(start);
+          ByteList d = ((RubyString)data).getByteList();
+          if(from >= d.length()) {
+ -            throw newHTTPParserError(runtime, "Requested start is after data buffer end.");
+ +            throw new RaiseException(runtime, eHttpParserError, "Requested start is after data buffer end.", true);
+          } else {
+ -            Http11Parser hp = this.hp;
+ -            Http11Parser.HttpParser parser = hp.parser;
+ -
+ -            parser.data = (RubyHash) req_hash;
+ -
+ -            hp.execute(runtime, this, d,from);
+ -
+ -            validateMaxLength(runtime, parser.nread,MAX_HEADER_LENGTH, MAX_HEADER_LENGTH_ERR);
+ -
+ -            if(hp.has_error()) {
+ -                throw newHTTPParserError(runtime, "Invalid HTTP format, parsing fails. Are you trying to open an SSL connection to a non-SSL Puma?");
+ +            this.hp.parser.data = req_hash;
+ +            this.hp.execute(d,from);
+ +            validateMaxLength(this.hp.parser.nread,MAX_HEADER_LENGTH, MAX_HEADER_LENGTH_ERR);
+ +            if(this.hp.has_error()) {
+ +                throw new RaiseException(runtime, eHttpParserError, "Invalid HTTP format, parsing fails.", true);
+              } else {
+ -                return runtime.newFixnum(parser.nread);
+ +                return runtime.newFixnum(this.hp.parser.nread);
+              }
+          }
+      }
+@@ -218,7 +226,7 @@
+      public IRubyObject nread() {
+          return runtime.newFixnum(this.hp.parser.nread);
+      }
+ -
+ +    
+      @JRubyMethod
+      public IRubyObject body() {
+          return body;
+
+""""""
+修改文件: lib/puma/const.rb
+--- patchfile/puma_puma_f196b2/newer/lib/puma/const.rb
++++ patchfile/puma_puma_f196b2/v3.12.6/lib/puma/const.rb
+@@ -76,7 +76,7 @@
+      508 => 'Loop Detected',
+      510 => 'Not Extended',
+      511 => 'Network Authentication Required'
+ -  }.freeze
+ +  }
+  
+    # For some HTTP status codes the client only expects headers.
+    #
+@@ -85,7 +85,7 @@
+      204 => true,
+      205 => true,
+      304 => true
+ -  }.freeze
+ +  }
+  
+    # Frequently used constants when constructing requests or responses.  Many times
+    # the constant just refers to a string with the same contents.  Using these constants
+@@ -100,9 +100,8 @@
+    # too taxing on performance.
+    module Const
+  
+ -    PUMA_VERSION = VERSION = "5.6.9".freeze
+ -    CODE_NAME = "Birdie's Version".freeze
+ -
+ +    PUMA_VERSION = VERSION = "3.12.6".freeze
+ +    CODE_NAME = "Llamas in Pajamas".freeze
+      PUMA_SERVER_STRING = ['puma', PUMA_VERSION, CODE_NAME].join(' ').freeze
+  
+      FAST_TRACK_KA_TIMEOUT = 0.2
+@@ -130,26 +129,27 @@
+      REQUEST_URI= 'REQUEST_URI'.freeze
+      REQUEST_PATH = 'REQUEST_PATH'.freeze
+      QUERY_STRING = 'QUERY_STRING'.freeze
+ +
+ +    PATH_INFO = 'PATH_INFO'.freeze
+ +
+ +    PUMA_TMP_BASE = "puma".freeze
+ +
+ +    # Indicate that we couldn't parse the request
+ +    ERROR_400_RESPONSE = "HTTP/1.1 400 Bad Request\r\n\r\n".freeze
+ +
+ +    # The standard empty 404 response for bad requests.  Use Error4040Handler for custom stuff.
+ +    ERROR_404_RESPONSE = "HTTP/1.1 404 Not Found\r\nConnection: close\r\nServer: Puma #{PUMA_VERSION}\r\n\r\nNOT FOUND".freeze
+ +
+ +    # The standard empty 408 response for requests that timed out.
+ +    ERROR_408_RESPONSE = "HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nServer: Puma #{PUMA_VERSION}\r\n\r\n".freeze
+ +
+      CONTENT_LENGTH = "CONTENT_LENGTH".freeze
+  
+ -    PATH_INFO = 'PATH_INFO'.freeze
+ -
+ -    PUMA_TMP_BASE = "puma".freeze
+ -
+ -    ERROR_RESPONSE = {
+ -      # Indicate that we couldn't parse the request
+ -      400 => "HTTP/1.1 400 Bad Request\r\n\r\n".freeze,
+ -      # The standard empty 404 response for bad requests.  Use Error4040Handler for custom stuff.
+ -      404 => "HTTP/1.1 404 Not Found\r\nConnection: close\r\nServer: Puma #{PUMA_VERSION}\r\n\r\nNOT FOUND".freeze,
+ -      # The standard empty 408 response for requests that timed out.
+ -      408 => "HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nServer: Puma #{PUMA_VERSION}\r\n\r\n".freeze,
+ -      # Indicate that there was an internal error, obviously.
+ -      500 => "HTTP/1.1 500 Internal Server Error\r\n\r\n".freeze,
+ -      # Incorrect or invalid header value
+ -      501 => "HTTP/1.1 501 Not Implemented\r\n\r\n".freeze,
+ -      # A common header for indicating the server is too busy.  Not used yet.
+ -      503 => "HTTP/1.1 503 Service Unavailable\r\n\r\nBUSY".freeze
+ -    }.freeze
+ +    # Indicate that there was an internal error, obviously.
+ +    ERROR_500_RESPONSE = "HTTP/1.1 500 Internal Server Error\r\n\r\n".freeze
+ +
+ +    # A common header for indicating the server is too busy.  Not used yet.
+ +    ERROR_503_RESPONSE = "HTTP/1.1 503 Service Unavailable\r\n\r\nBUSY".freeze
+  
+      # The basic max request size we'll try to read.
+      CHUNK_SIZE = 16 * 1024
+@@ -167,9 +167,6 @@
+      LINE_END = "\r\n".freeze
+      REMOTE_ADDR = "REMOTE_ADDR".freeze
+      HTTP_X_FORWARDED_FOR = "HTTP_X_FORWARDED_FOR".freeze
+ -    HTTP_X_FORWARDED_SSL = "HTTP_X_FORWARDED_SSL".freeze
+ -    HTTP_X_FORWARDED_SCHEME = "HTTP_X_FORWARDED_SCHEME".freeze
+ -    HTTP_X_FORWARDED_PROTO = "HTTP_X_FORWARDED_PROTO".freeze
+  
+      SERVER_NAME = "SERVER_NAME".freeze
+      SERVER_PORT = "SERVER_PORT".freeze
+@@ -178,6 +175,7 @@
+      PORT_443 = "443".freeze
+      LOCALHOST = "localhost".freeze
+      LOCALHOST_IP = "127.0.0.1".freeze
+ +    LOCALHOST_ADDR = "127.0.0.1:0".freeze
+  
+      SERVER_PROTOCOL = "SERVER_PROTOCOL".freeze
+      HTTP_11 = "HTTP/1.1".freeze
+@@ -230,23 +228,12 @@
+      COLON = ": ".freeze
+  
+      NEWLINE = "\n".freeze
+ +    HTTP_INJECTION_REGEX = /[\r\n]/.freeze
+  
+      HIJACK_P = "rack.hijack?".freeze
+      HIJACK = "rack.hijack".freeze
+      HIJACK_IO = "rack.hijack_io".freeze
+  
+      EARLY_HINTS = "rack.early_hints".freeze
+ -
+ -    # Illegal character in the key or value of response header
+ -    DQUOTE = "\"".freeze
+ -    HTTP_HEADER_DELIMITER = Regexp.escape("(),/:;<=>?@[]{}\\").freeze
+ -    ILLEGAL_HEADER_KEY_REGEX = /[\x00-\x20#{DQUOTE}#{HTTP_HEADER_DELIMITER}]/.freeze
+ -    # header values can contain HTAB?
+ -    ILLEGAL_HEADER_VALUE_REGEX = /[\x00-\x08\x0A-\x1F]/.freeze
+ -
+ -    # Banned keys of response header
+ -    BANNED_HEADER_KEY = /\A(rack\.|status\z)/.freeze
+ -
+ -    PROXY_PROTOCOL_V1_REGEX = /^PROXY (?:TCP4|TCP6|UNKNOWN) ([^\r]+)\r\n/.freeze
+    end
+  end
+
+""""""
+删除文件: lib/puma/request.rb
+# frozen_string_literal: true
+
+module Puma
+
+  # The methods here are included in Server, but are separated into this file.
+  # All the methods here pertain to passing the request to the app, then
+  # writing the response back to the client.
+  #
+  # None of the methods here are called externally, with the exception of
+  # #handle_request, which is called in Server#process_client.
+  # @version 5.0.3
+  #
+  module Request
+
+    include Puma::Const
+
+    # Takes the request contained in +client+, invokes the Rack application to construct
+    # the response and writes it back to +client.io+.
+    #
+    # It'll return +false+ when the connection is closed, this doesn't mean
+    # that the response wasn't successful.
+    #
+    # It'll return +:async+ if the connection remains open but will be handled
+    # elsewhere, i.e. the connection has been hijacked by the Rack application.
+    #
+    # Finally, it'll return +true+ on keep-alive connections.
+    # @param client [Puma::Client]
+    # @param lines [Puma::IOBuffer]
+    # @param requests [Integer]
+    # @return [Boolean,:async]
+    #
+    def handle_request(client, lines, requests)
+      env = client.env
+      io  = client.io   # io may be a MiniSSL::Socket
+
+      return false if closed_socket?(io)
+
+      normalize_env env, client
+
+      env[PUMA_SOCKET] = io
+
+      if env[HTTPS_KEY] && io.peercert
+        env[PUMA_PEERCERT] = io.peercert
+      end
+
+      env[HIJACK_P] = true
+      env[HIJACK] = client
+
+      body = client.body
+
+      head = env[REQUEST_METHOD] == HEAD
+
+      env[RACK_INPUT] = body
+      env[RACK_URL_SCHEME] ||= default_server_port(env) == PORT_443 ? HTTPS : HTTP
+
+      if @early_hints
+        env[EARLY_HINTS] = lambda { |headers|
+          begin
+            fast_write io, str_early_hints(headers)
+          rescue ConnectionError => e
+            @events.debug_error e
+            # noop, if we lost the socket we just won't send the early hints
+          end
+        }
+      end
+
+      req_env_post_parse env
+
+      # A rack extension. If the app writes #call'ables to this
+      # array, we will invoke them when the request is done.
+      #
+      after_reply = env[RACK_AFTER_REPLY] = []
+
+      begin
+        begin
+          status, headers, res_body = @thread_pool.with_force_shutdown do
+            @app.call(env)
+          end
+
+          return :async if client.hijacked
+
+          status = status.to_i
+
+          if status == -1
+            unless headers.empty? and res_body == []
+              raise "async response must have empty headers and body"
+            end
+
+            return :async
+          end
+        rescue ThreadPool::ForceShutdown => e
+          @events.unknown_error e, client, "Rack app"
+          @events.log "Detected force shutdown of a thread"
+
+          status, headers, res_body = lowlevel_error(e, env, 503)
+        rescue Exception => e
+          @events.unknown_error e, client, "Rack app"
+
+          status, headers, res_body = lowlevel_error(e, env, 500)
+        end
+
+        res_info = {}
+        res_info[:content_length] = nil
+        res_info[:no_body] = head
+
+        res_info[:content_length] = if res_body.kind_of? Array and res_body.size == 1
+          res_body[0].bytesize
+        else
+          nil
+        end
+
+        cork_socket io
+
+        str_headers(env, status, headers, res_info, lines, requests, client)
+
+        line_ending = LINE_END
+
+        content_length  = res_info[:content_length]
+        response_hijack = res_info[:response_hijack]
+
+        if res_info[:no_body]
+          if content_length and status != 204
+            lines.append CONTENT_LENGTH_S, content_length.to_s, line_ending
+          end
+
+          lines << LINE_END
+          fast_write io, lines.to_s
+          return res_info[:keep_alive]
+        end
+
+        if content_length
+          lines.append CONTENT_LENGTH_S, content_length.to_s, line_ending
+          chunked = false
+        elsif !response_hijack and res_info[:allow_chunked]
+          lines << TRANSFER_ENCODING_CHUNKED
+          chunked = true
+        end
+
+        lines << line_ending
+
+        fast_write io, lines.to_s
+
+        if response_hijack
+          response_hijack.call io
+          return :async
+        end
+
+        begin
+          res_body.each do |part|
+            next if part.bytesize.zero?
+            if chunked
+               fast_write io, (part.bytesize.to_s(16) << line_ending)
+               fast_write io, part            # part may have different encoding
+               fast_write io, line_ending
+            else
+              fast_write io, part
+            end
+            io.flush
+          end
+
+          if chunked
+            fast_write io, CLOSE_CHUNKED
+            io.flush
+          end
+        rescue SystemCallError, IOError
+          raise ConnectionError, "Connection error detected during write"
+        end
+
+      ensure
+        begin
+          uncork_socket io
+
+          body.close
+          client.tempfile.unlink if client.tempfile
+        ensure
+          # Whatever happens, we MUST call `close` on the response body.
+          # Otherwise Rack::BodyProxy callbacks may not fire and lead to various state leaks
+          res_body.close if res_body.respond_to? :close
+        end
+
+        begin
+          after_reply.each { |o| o.call }
+        rescue StandardError => e
+          @log_writer.debug_error e
+        end
+      end
+
+      res_info[:keep_alive]
+    end
+
+    # @param env [Hash] see Puma::Client#env, from request
+    # @return [Puma::Const::PORT_443,Puma::Const::PORT_80]
+    #
+    def default_server_port(env)
+      if ['on', HTTPS].include?(env[HTTPS_KEY]) || env[HTTP_X_FORWARDED_PROTO].to_s[0...5] == HTTPS || env[HTTP_X_FORWARDED_SCHEME] == HTTPS || env[HTTP_X_FORWARDED_SSL] == "on"
+        PORT_443
+      else
+        PORT_80
+      end
+    end
+
+    # Writes to an io (normally Client#io) using #syswrite
+    # @param io [#syswrite] the io to write to
+    # @param str [String] the string written to the io
+    # @raise [ConnectionError]
+    #
+    def fast_write(io, str)
+      n = 0
+      while true
+        begin
+          n = io.syswrite str
+        rescue Errno::EAGAIN, Errno::EWOULDBLOCK
+          unless io.wait_writable WRITE_TIMEOUT
+            raise ConnectionError, "Socket timeout writing data"
+          end
+
+          retry
+        rescue  Errno::EPIPE, SystemCallError, IOError
+          raise ConnectionError, "Socket timeout writing data"
+        end
+
+        return if n == str.bytesize
+        str = str.byteslice(n..-1)
+      end
+    end
+    private :fast_write
+
+    # @param status [Integer] status from the app
+    # @return [String] the text description from Puma::HTTP_STATUS_CODES
+    #
+    def fetch_status_code(status)
+      HTTP_STATUS_CODES.fetch(status) { 'CUSTOM' }
+    end
+    private :fetch_status_code
+
+    # Given a Hash +env+ for the request read from +client+, add
+    # and fixup keys to comply with Rack's env guidelines.
+    # @param env [Hash] see Puma::Client#env, from request
+    # @param client [Puma::Client] only needed for Client#peerip
+    # @todo make private in 6.0.0
+    #
+    def normalize_env(env, client)
+      if host = env[HTTP_HOST]
+        # host can be a hostname, ipv4 or bracketed ipv6. Followed by an optional port.
+        if colon = host.rindex("]:") # IPV6 with port
+          env[SERVER_NAME] = host[0, colon+1]
+          env[SERVER_PORT] = host[colon+2, host.bytesize]
+        elsif !host.start_with?("[") && colon = host.index(":") # not hostname or IPV4 with port
+          env[SERVER_NAME] = host[0, colon]
+          env[SERVER_PORT] = host[colon+1, host.bytesize]
+        else
+          env[SERVER_NAME] = host
+          env[SERVER_PORT] = default_server_port(env)
+        end
+      else
+        env[SERVER_NAME] = LOCALHOST
+        env[SERVER_PORT] = default_server_port(env)
+      end
+
+      unless env[REQUEST_PATH]
+        # it might be a dumbass full host request header
+        uri = URI.parse(env[REQUEST_URI])
+        env[REQUEST_PATH] = uri.path
+
+        raise "No REQUEST PATH" unless env[REQUEST_PATH]
+
+        # A nil env value will cause a LintError (and fatal errors elsewhere),
+        # so only set the env value if there actually is a value.
+        env[QUERY_STRING] = uri.query if uri.query
+      end
+
+      env[PATH_INFO] = env[REQUEST_PATH]
+
+      # From https://www.ietf.org/rfc/rfc3875 :
+      # "Script authors should be aware that the REMOTE_ADDR and
+      # REMOTE_HOST meta-variables (see sections 4.1.8 and 4.1.9)
+      # may not identify the ultimate source of the request.
+      # They identify the client for the immediate request to the
+      # server; that client may be a proxy, gateway, or other
+      # intermediary acting on behalf of the actual source client."
+      #
+
+      unless env.key?(REMOTE_ADDR)
+        begin
+          addr = client.peerip
+        rescue Errno::ENOTCONN
+          # Client disconnects can result in an inability to get the
+          # peeraddr from the socket; default to localhost.
+          addr = LOCALHOST_IP
+        end
+
+        # Set unix socket addrs to localhost
+        addr = LOCALHOST_IP if addr.empty?
+
+        env[REMOTE_ADDR] = addr
+      end
+    end
+    # private :normalize_env
+
+    # @param header_key [#to_s]
+    # @return [Boolean]
+    #
+    def illegal_header_key?(header_key)
+      !!(ILLEGAL_HEADER_KEY_REGEX =~ header_key.to_s)
+    end
+
+    # @param header_value [#to_s]
+    # @return [Boolean]
+    #
+    def illegal_header_value?(header_value)
+      !!(ILLEGAL_HEADER_VALUE_REGEX =~ header_value.to_s)
+    end
+    private :illegal_header_key?, :illegal_header_value?
+
+    # Fixup any headers with `,` in the name to have `_` now. We emit
+    # headers with `,` in them during the parse phase to avoid ambiguity
+    # with the `-` to `_` conversion for critical headers. But here for
+    # compatibility, we'll convert them back. This code is written to
+    # avoid allocation in the common case (ie there are no headers
+    # with `,` in their names), that's why it has the extra conditionals.
+    # @param env [Hash] see Puma::Client#env, from request, modifies in place
+    # @version 5.0.3
+    #
+    def req_env_post_parse(env)
+      to_delete = nil
+      to_add = nil
+
+      env.each do |k,v|
+        if k.start_with?("HTTP_") and k.include?(",") and k != "HTTP_TRANSFER,ENCODING"
+          if to_delete
+            to_delete << k
+          else
+            to_delete = [k]
+          end
+
+          unless to_add
+            to_add = {}
+          end
+
+          to_add[k.tr(",", "_")] = v
+        end
+      end
+
+      if to_delete
+        to_delete.each { |k| env.delete(k) }
+        env.merge! to_add
+      end
+    end
+    private :req_env_post_parse
+
+    # Used in the lambda for env[ `Puma::Const::EARLY_HINTS` ]
+    # @param headers [Hash] the headers returned by the Rack application
+    # @return [String]
+    # @version 5.0.3
+    #
+    def str_early_hints(headers)
+      eh_str = "HTTP/1.1 103 Early Hints\r\n".dup
+      headers.each_pair do |k, vs|
+        next if illegal_header_key?(k)
+
+        if vs.respond_to?(:to_s) && !vs.to_s.empty?
+          vs.to_s.split(NEWLINE).each do |v|
+            next if illegal_header_value?(v)
+            eh_str << "#{k}: #{v}\r\n"
+          end
+        else
+          eh_str << "#{k}: #{vs}\r\n"
+        end
+      end
+      "#{eh_str}\r\n".freeze
+    end
+    private :str_early_hints
+
+    # Processes and write headers to the IOBuffer.
+    # @param env [Hash] see Puma::Client#env, from request
+    # @param status [Integer] the status returned by the Rack application
+    # @param headers [Hash] the headers returned by the Rack application
+    # @param res_info [Hash] used to pass info between this method and #handle_request
+    # @param lines [Puma::IOBuffer] modified inn place
+    # @param requests [Integer] number of inline requests handled
+    # @param client [Puma::Client]
+    # @version 5.0.3
+    #
+    def str_headers(env, status, headers, res_info, lines, requests, client)
+      line_ending = LINE_END
+      colon = COLON
+
+      http_11 = env[HTTP_VERSION] == HTTP_11
+      if http_11
+        res_info[:allow_chunked] = true
+        res_info[:keep_alive] = env.fetch(HTTP_CONNECTION, "").downcase != CLOSE
+
+        # An optimization. The most common response is 200, so we can
+        # reply with the proper 200 status without having to compute
+        # the response header.
+        #
+        if status == 200
+          lines << HTTP_11_200
+        else
+          lines.append "HTTP/1.1 ", status.to_s, " ",
+                       fetch_status_code(status), line_ending
+
+          res_info[:no_body] ||= status < 200 || STATUS_WITH_NO_ENTITY_BODY[status]
+        end
+      else
+        res_info[:allow_chunked] = false
+        res_info[:keep_alive] = env.fetch(HTTP_CONNECTION, "").downcase == KEEP_ALIVE
+
+        # Same optimization as above for HTTP/1.1
+        #
+        if status == 200
+          lines << HTTP_10_200
+        else
+          lines.append "HTTP/1.0 ", status.to_s, " ",
+                       fetch_status_code(status), line_ending
+
+          res_info[:no_body] ||= status < 200 || STATUS_WITH_NO_ENTITY_BODY[status]
+        end
+      end
+
+      # regardless of what the client wants, we always close the connection
+      # if running without request queueing
+      res_info[:keep_alive] &&= @queue_requests
+
+      # Close the connection after a reasonable number of inline requests
+      # if the server is at capacity and the listener has a new connection ready.
+      # This allows Puma to service connections fairly when the number
+      # of concurrent connections exceeds the size of the threadpool.
+      res_info[:keep_alive] &&= requests < @max_fast_inline ||
+        @thread_pool.busy_threads < @max_threads ||
+        !client.listener.to_io.wait_readable(0)
+
+      res_info[:response_hijack] = nil
+
+      headers.each do |k, vs|
+        next if illegal_header_key?(k)
+
+        case k.downcase
+        when CONTENT_LENGTH2
+          next if illegal_header_value?(vs)
+          res_info[:content_length] = vs
+          next
+        when TRANSFER_ENCODING
+          res_info[:allow_chunked] = false
+          res_info[:content_length] = nil
+        when HIJACK
+          res_info[:response_hijack] = vs
+          next
+        when BANNED_HEADER_KEY
+          next
+        end
+
+        if vs.respond_to?(:to_s) && !vs.to_s.empty?
+          vs.to_s.split(NEWLINE).each do |v|
+            next if illegal_header_value?(v)
+            lines.append k, colon, v, line_ending
+          end
+        else
+          lines.append k, colon, line_ending
+        end
+      end
+
+      # HTTP/1.1 & 1.0 assume different defaults:
+      # - HTTP 1.0 assumes the connection will be closed if not specified
+      # - HTTP 1.1 assumes the connection will be kept alive if not specified.
+      # Only set the header if we're doing something which is not the default
+      # for this protocol version
+      if http_11
+        lines << CONNECTION_CLOSE if !res_info[:keep_alive]
+      else
+        lines << CONNECTION_KEEP_ALIVE if res_info[:keep_alive]
+      end
+    end
+    private :str_headers
+  end
+end
+
+""""""
+删除文件: test/test_request_invalid.rb
+require_relative "helper"
+require "puma/events"
+
+# These tests check for invalid request headers and metadata.
+# Content-Length, Transfer-Encoding, and chunked body size
+# values are checked for validity
+#
+# See https://datatracker.ietf.org/doc/html/rfc7230
+#
+# https://datatracker.ietf.org/doc/html/rfc7230#section-3.3.2 Content-Length
+# https://datatracker.ietf.org/doc/html/rfc7230#section-3.3.1 Transfer-Encoding
+# https://datatracker.ietf.org/doc/html/rfc7230#section-4.1   chunked body size
+#
+class TestRequestInvalid < Minitest::Test
+  # running parallel seems to take longer...
+  # parallelize_me! unless JRUBY_HEAD
+
+  GET_PREFIX = "GET / HTTP/1.1\r\nConnection: close\r\n"
+  CHUNKED = "1\r\nH\r\n4\r\nello\r\n5\r\nWorld\r\n0\r\n\r\n"
+
+  def setup
+    @host = '127.0.0.1'
+
+    @ios = []
+
+    # this app should never be called, used for debugging
+    app = ->(env) {
+      body = ''.dup
+      env.each do |k,v|
+        body << "#{k} = #{v}\n"
+        if k == 'rack.input'
+          body << "#{v.read}\n"
+        end
+      end
+      [200, {}, [body]]
+    }
+
+    events = Puma::Events.strings
+    @server = Puma::Server.new app, events
+    @port = (@server.add_tcp_listener @host, 0).addr[1]
+    @server.run
+    sleep 0.15 if Puma.jruby?
+  end
+
+  def teardown
+    @server.stop(true)
+    @ios.each { |io| io.close if io && !io.closed? }
+  end
+
+  def send_http_and_read(req)
+    send_http(req).read
+  end
+
+  def send_http(req)
+    new_connection << req
+  end
+
+  def new_connection
+    TCPSocket.new(@host, @port).tap {|sock| @ios << sock}
+  end
+
+  def assert_status(str, status = 400)
+    assert str.start_with?("HTTP/1.1 #{status}"), "'#{str[/[^\r]+/]}' should be #{status}"
+  end
+
+  # ──────────────────────────────────── below are invalid Content-Length
+
+  def test_content_length_multiple
+    te = [
+      'Content-Length: 5',
+      'Content-Length: 5'
+    ].join "\r\n"
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\nHello\r\n\r\n"
+
+    assert_status data
+  end
+
+  def test_content_length_bad_characters_1
+    te = 'Content-Length: 5.01'
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\nHello\r\n\r\n"
+
+    assert_status data
+  end
+
+  def test_content_length_bad_characters_2
+    te = 'Content-Length: +5'
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\nHello\r\n\r\n"
+
+    assert_status data
+  end
+
+  def test_content_length_bad_characters_3
+    te = 'Content-Length: 5 test'
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\nHello\r\n\r\n"
+
+    assert_status data
+  end
+
+  # ──────────────────────────────────── below are invalid Transfer-Encoding
+
+  def test_transfer_encoding_chunked_not_last
+    te = [
+      'Transfer-Encoding: chunked',
+      'Transfer-Encoding: gzip'
+    ].join "\r\n"
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\n#{CHUNKED}"
+
+    assert_status data
+  end
+
+  def test_transfer_encoding_chunked_multiple
+    te = [
+      'Transfer-Encoding: chunked',
+      'Transfer-Encoding: gzip',
+      'Transfer-Encoding: chunked'
+    ].join "\r\n"
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\n#{CHUNKED}"
+
+    assert_status data
+  end
+
+  def test_transfer_encoding_invalid_single
+    te = 'Transfer-Encoding: xchunked'
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\n#{CHUNKED}"
+
+    assert_status data, 501
+  end
+
+  def test_transfer_encoding_invalid_multiple
+    te = [
+      'Transfer-Encoding: x_gzip',
+      'Transfer-Encoding: gzip',
+      'Transfer-Encoding: chunked'
+    ].join "\r\n"
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\n#{CHUNKED}"
+
+    assert_status data, 501
+  end
+
+  def test_transfer_encoding_single_not_chunked
+    te = 'Transfer-Encoding: gzip'
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\n#{CHUNKED}"
+
+    assert_status data
+  end
+
+  # ──────────────────────────────────── below are invalid chunked size
+
+  def test_chunked_size_bad_characters_1
+    te = 'Transfer-Encoding: chunked'
+    chunked ='5.01'
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\n1\r\nh\r\n#{chunked}\r\nHello\r\n0\r\n\r\n"
+
+    assert_status data
+  end
+
+  def test_chunked_size_bad_characters_2
+    te = 'Transfer-Encoding: chunked'
+    chunked ='+5'
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\n1\r\nh\r\n#{chunked}\r\nHello\r\n0\r\n\r\n"
+
+    assert_status data
+  end
+
+  def test_chunked_size_bad_characters_3
+    te = 'Transfer-Encoding: chunked'
+    chunked ='5 bad'
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\n1\r\nh\r\n#{chunked}\r\nHello\r\n0\r\n\r\n"
+
+    assert_status data
+  end
+
+  def test_chunked_size_bad_characters_4
+    te = 'Transfer-Encoding: chunked'
+    chunked ='0xA'
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\n1\r\nh\r\n#{chunked}\r\nHelloHello\r\n0\r\n\r\n"
+
+    assert_status data
+  end
+
+  # size is less than bytesize
+  def test_chunked_size_mismatch_1
+    te = 'Transfer-Encoding: chunked'
+    chunked =
+      "5\r\nHello\r\n" \
+      "4\r\nWorld\r\n" \
+      "0"
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\n#{chunked}\r\n\r\n"
+
+    assert_status data
+  end
+
+  # size is greater than bytesize
+  def test_chunked_size_mismatch_2
+    te = 'Transfer-Encoding: chunked'
+    chunked =
+      "5\r\nHello\r\n" \
+      "6\r\nWorld\r\n" \
+      "0"
+
+    data = send_http_and_read "#{GET_PREFIX}#{te}\r\n\r\n#{chunked}\r\n\r\n"
+
+    assert_status data
+  end
+end
+
+""""""

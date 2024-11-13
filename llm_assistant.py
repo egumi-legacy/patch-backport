@@ -1,6 +1,6 @@
 import os
 import json
-from openai_client import OpenAI_Client
+from qwen_client import QWen_Client
 from loguru import logger
 import dotenv
 from pathlib import Path
@@ -22,7 +22,8 @@ class LLMAssistant:
         if not _api_key or not _base_url:
             raise ValueError("请确保输入中包含api_key, base_url, 或者设置了OPENAI_API_KEY和OPENAI_BASE_URL环境变量")
 
-        self.client = OpenAI_Client(_api_key, _base_url)
+        # self.client = OpenAI_Client(_api_key, _base_url)
+        self.client = QWen_Client(_api_key, _base_url)
         self.model = inputs.get("model", "gpt-4o")
         self.response_file = inputs.get("response_file", None)
 
@@ -155,7 +156,8 @@ class LLMAssistant:
     def call_llm(self, prompts):
         responses = []
         for prompt in prompts:
-            print(f"prompt in call_llm: {prompt}")
+            # print(f"prompt in call_llm: {prompt}")
+            # print(f"prompt[content]: {prompt['content']}")
             is_valid = self.client.check_prompt_length(prompt, self.model) > 0
             if not is_valid:
                 # TODO: 使用truncate_messages   
@@ -243,7 +245,7 @@ class LLMAssistant:
 
     def run(self):
         prompts = self.prompts
-        print(f"prompts in run: {prompts}")
+        # print(f"prompts in run: {prompts}")
         responses = self.call_llm(prompts)
 
         openai_responses = []

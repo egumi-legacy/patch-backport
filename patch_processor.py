@@ -108,6 +108,7 @@ class PatchProcessor:
                 file_contents.append(content)
             else:
                 logger.error(f"无法获取文件 {file_path} 在 {ref_value} 的内容")
+                raise RuntimeError(f"已退出")
         
         return file_contents
 
@@ -299,7 +300,7 @@ class PatchProcessor:
     #         )
     #         diffs.append({'filename': original_file_content['filename'], 'diff': ''.join(diff)})
     #     return diffs
-    def generate_folder_diff(self, folder1, folder2, output_file, context_lines=1):
+    def generate_folder_diff(self, folder1, folder2, output_file, context_lines=3):
         # 生成两个文件夹之间的差异，类似git diff的输出。
         with open(output_file, 'w', encoding='utf-8') as out_file:
             files1 = set(f.relative_to(folder1) for f in folder1.rglob('*') if f.is_file())
@@ -313,7 +314,7 @@ class PatchProcessor:
                     with open(path2, 'r', encoding='utf-8') as f:
                         out_file.write(f.read())
                 elif not path2.exists():
-                    out_file.write(f"删除文件: {file}\n")
+                    out_file.write(f"deleted file: {file}\n")
                     with open(path1, 'r', encoding='utf-8') as f:
                         out_file.write(f.read())
                 else:
@@ -328,7 +329,7 @@ class PatchProcessor:
                             lineterm=''
                         ))
                         if diff:
-                            out_file.write(f"修改文件: {file}\n")
+                            out_file.write(f"modified file: {file}\n")
                             in_comment = False
                             for line in diff:
                                 if line.strip().startswith('/*'):
@@ -389,7 +390,8 @@ class PatchProcessor:
             self.write_file_contents(target_file_contents, self.target_version)
 
         # 3. 获取两个版本文件的diff并保存
-        self.generate_folder_diff(base_dir / 'newer', base_dir / self.target_version, base_dir / 'diff')
+        # self.generate_folder_diff(base_dir / 'newer', base_dir / self.target_version, base_dir / 'diff')
+        self.generate_folder_diff(base_dir / self.target_version, base_dir / 'newer', base_dir / 'diff')
 
         # 4. 获取patch文件
         # 使用curl模块将self.url中的github commit url后加上.patch获取patch文件并写入patch文件夹
@@ -400,7 +402,7 @@ class PatchProcessor:
             patch_url = self.url + '.patch'
             print(f"patch_url: {patch_url}")
             output_file = str(base_dir / 'patch' / 'patch.txt')
-            print(f"output_file: {output_file}")
+            # print(f"output_file: {output_file}")
             subprocess.run(['curl', '-L', patch_url, '-o', output_file])
         
         patch_values = [{"patchCode": (base_dir / 'patch' / 'patch.txt').read_text(), "diffCode": (base_dir / 'diff').read_text()}]

@@ -1,0 +1,26 @@
+From 8e057db25bff1dc7a98e9ae72e0083825b9ac545 Mon Sep 17 00:00:00 2001
+From: John Hawthorn <john@hawthorn.email>
+Date: Thu, 10 Oct 2024 20:32:00 -0700
+Subject: [PATCH] Avoid backtracking in Token#raw_params
+
+Thanks to scyoon for the patch
+
+[CVE-2024-47887]
+---
+ actionpack/lib/action_controller/metal/http_authentication.rb | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/actionpack/lib/action_controller/metal/http_authentication.rb b/actionpack/lib/action_controller/metal/http_authentication.rb
+index 2ad4df5b53ad8..ef0886bd4af9b 100644
+--- a/actionpack/lib/action_controller/metal/http_authentication.rb
++++ b/actionpack/lib/action_controller/metal/http_authentication.rb
+@@ -483,7 +483,8 @@ def rewrite_param_values(array_params)
+       # pairs by the standardized <tt>:</tt>, <tt>;</tt>, or <tt>\t</tt>
+       # delimiters defined in +AUTHN_PAIR_DELIMITERS+.
+       def raw_params(auth)
+-        _raw_params = auth.sub(TOKEN_REGEX, "").split(/\s*#{AUTHN_PAIR_DELIMITERS}\s*/)
++        _raw_params = auth.sub(TOKEN_REGEX, "").split(AUTHN_PAIR_DELIMITERS).map(&:strip)
++        _raw_params.reject!(&:empty?)
+ 
+         if !_raw_params.first&.start_with?(TOKEN_KEY)
+           _raw_params[0] = "#{TOKEN_KEY}#{_raw_params.first}"
