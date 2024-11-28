@@ -9,6 +9,7 @@ from pathlib import Path
 from llm_assistant import LLMAssistant
 from loguru import logger
 import difflib
+from difflib import SequenceMatcher
 
 
 class PatchProcessor:
@@ -30,6 +31,8 @@ class PatchProcessor:
         self.owner = self.commit_info['owner']
         self.repo = self.commit_info['repo']
         self.patch_commit_sha = self.commit_info['commit_sha']
+        self.base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
+        input.update(basedir = self.base_dir)
         
 
     def make_commit_info(self, owner = None, repo = None, **kwargs):
@@ -302,6 +305,8 @@ class PatchProcessor:
     #     return diffs
     def generate_folder_diff(self, folder1, folder2, output_file, context_lines=3):
         # 生成两个文件夹之间的差异，类似git diff的输出。
+        # folder1: 新版本文件夹
+        # folder2: 目标版本文件夹，通常为旧版本
         with open(output_file, 'w', encoding='utf-8') as out_file:
             files1 = set(f.relative_to(folder1) for f in folder1.rglob('*') if f.is_file())
             files2 = set(f.relative_to(folder2) for f in folder2.rglob('*') if f.is_file())
@@ -310,13 +315,13 @@ class PatchProcessor:
                 path1 = folder1 / file
                 path2 = folder2 / file
                 if not path1.exists():
-                    out_file.write(f"新增文件: {file}\n")
-                    with open(path2, 'r', encoding='utf-8') as f:
-                        out_file.write(f.read())
+                    out_file.write(f"The file does not exist in the new version: {file}\n")
+                    # with open(path2, 'r', encoding='utf-8') as f:
+                    #     out_file.write(f.read())
                 elif not path2.exists():
-                    out_file.write(f"deleted file: {file}\n")
-                    with open(path1, 'r', encoding='utf-8') as f:
-                        out_file.write(f.read())
+                    out_file.write(f"The file does not exist in the older (target) version: {file}\n")
+                    # with open(path1, 'r', encoding='utf-8') as f:
+                    #     out_file.write(f.read())
                 else:
                     with open(path1, 'r', encoding='utf-8') as f1, open(path2, 'r', encoding='utf-8') as f2:
                         lines1 = f1.readlines()
@@ -348,7 +353,7 @@ class PatchProcessor:
         print(f"差异已保存到 {output_file}")
 
     def write_file_contents(self, file_contents, folder_name):
-        # 在patchfile目录下创建一个文件夹，命名为owner_repo，如果存在则跳过
+        # 在patchfile目录下创建一个文件夹，命名为owner_repo_sha[:6]，如果存在则跳过
         base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
         if not base_dir.exists():
             base_dir.mkdir(parents=True)
@@ -360,14 +365,315 @@ class PatchProcessor:
                     file_path.parent.mkdir(parents=True)
             file_path.write_text(file_content['content'])
 
+    def get_response_path(self):
+        """获取响应文件的路径"""
+        output_file_name = f"output_{self.input['target_version']}_{self.input['model']}"
+        return self.base_dir / output_file_name
+
     def save_response_to_project(self, response):
         # 将response写入到project文件夹中
-        base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
-        if not base_dir.exists():
-            base_dir.mkdir(parents=True)
-        output_file_name = f"output_{self.input['target_version']}_{self.input['model']}"
-        output_path = base_dir / output_file_name
+        if response is None:
+            return None
+        output_path = self.get_response_path()
+        if not output_path.exists():
+            output_path.parent.mkdir(parents=True)
+            
         output_path.write_text(response)
+        return output_path
+
+    def apply_llm_patch(self, llm_response_path):
+        """
+        将 LLM 生成的 patch 应用到旧版本的源文件
+        
+        :param llm_response_path: LLM 生成的响应内容路径
+        """
+        llm_response = llm_response_path.read_text()
+        logger.info("test--------------")
+        
+        base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
+        target_dir = base_dir / self.target_version
+        output_dir = base_dir / f"adapted_{self.target_version}"
+        
+        # 解析 LLM 响应，提取每个文件的 diff
+        current_file = None
+        current_diff = []
+        files_to_patch = {}
+        
+        for line in llm_response.splitlines():
+            if line.startswith('diff --git'):
+                if current_file and current_diff:
+                    files_to_patch[current_file] = '\n'.join(current_diff)
+                # 从 diff --git a/path/to/file b/path/to/file 提取文件路径
+                current_file = line.split(' ')[-1][2:] # 取 b/path/to/file 并去掉 b/
+                current_diff = []
+                continue
+            if line.startswith('index '):
+                continue
+            if current_file:
+                current_diff.append(line)
+        
+        # 添加最后一个文件的 diff
+        if current_file and current_diff:
+            files_to_patch[current_file] = '\n'.join(current_diff)
+        
+        # 创建输出目录
+        if not output_dir.exists():
+            output_dir.mkdir(parents=True)
+        
+        # 应用修改到每个文件
+        for file_path, diff_content in files_to_patch.items():
+            source_file = target_dir / file_path
+            target_file = output_dir / file_path
+            
+            if not source_file.exists():
+                logger.error(f"源文件不存在: {source_file}")
+                continue
+                
+            # 确保目标目录存在
+            target_file.parent.mkdir(parents=True, exist_ok=True)
+            
+            # 应用 diff
+            try:
+                self._apply_diff_to_file(diff_content, source_file, target_file)
+                logger.info(f"成功应用修改到文件: {file_path}")
+            except Exception as e:
+                logger.error(f"应用修改到文件 {file_path} 时出错: {str(e)}")
+
+    # def _apply_diff_to_file(self, diff_content, source_file, target_file):
+    #     """
+    #     将 diff 应用到单个文件
+        
+    #     :param diff_content: 文件的 diff 内容
+    #     :param source_file: 源文件路径
+    #     :param target_file: 目标文件路径
+    #     """
+    #     with open(source_file, 'r', encoding='utf-8') as f:
+    #         original_lines = f.readlines()
+        
+    #     new_lines = original_lines[:]
+    #     current_line = 0
+    #     hunk_offset = 0
+        
+    #     # 解析 diff 内容
+    #     diff_lines = diff_content.splitlines()
+    #     i = 0
+    #     while i < len(diff_lines):
+    #         line = diff_lines[i].strip()
+            
+    #         # 跳过文件头
+    #         if line.startswith('---') or line.startswith('+++'):
+    #             i += 1
+    #             continue
+                
+    #         # 处理 hunk header
+    #         if line.startswith('@@'):
+    #             match = re.match(r'@@ -(\d+),(\d+) \+(\d+),(\d+) @@', line)
+    #             if match:
+    #                 old_start, old_count, new_start, new_count = map(int, match.groups())
+    #                 current_line = old_start - 1  # 转换为 0-based 索引
+    #                 hunk_offset = 0
+    #             i += 1
+    #             continue
+                
+    #         # 处理修改行
+    #         if line.startswith('-'):
+    #             # 删除行
+    #             if 0 <= current_line + hunk_offset < len(new_lines):
+    #                 del new_lines[current_line + hunk_offset]
+    #                 hunk_offset -= 1
+    #         elif line.startswith('+'):
+    #             # 添加行
+    #             new_line = line[1:] + '\n'
+    #             new_lines.insert(current_line + hunk_offset, new_line)
+    #             hunk_offset += 1
+    #         elif line.startswith(' '):
+    #             # 上下文行，检查是否匹配
+    #             if 0 <= current_line + hunk_offset < len(new_lines):
+    #                 expected_line = line[1:] + '\n'
+    #                 actual_line = new_lines[current_line + hunk_offset]
+    #                 if actual_line.rstrip() != expected_line.rstrip():
+    #                     logger.warning(f"上下文不匹配在行 {current_line + 1}")
+    #                     logger.warning(f"预期: {expected_line.rstrip()}")
+    #                     logger.warning(f"实际: {actual_line.rstrip()}")
+    #             current_line += 1
+            
+    #         i += 1
+        
+    #     # 写入修改后的内容
+    #     with open(target_file, 'w', encoding='utf-8') as f:
+    #         f.writelines(new_lines)
+
+    def _apply_diff_to_file(self, diff_content, source_file, target_file):
+        """
+        使用上下文匹配的方式将 diff 应用到文件
+        
+        :param diff_content: 文件的 diff 内容
+        :param source_file: 源文件路径
+        :param target_file: 目标文件路径
+        """
+        with open(source_file, 'r', encoding='utf-8') as f:
+            original_lines = f.readlines()
+        
+        new_lines = original_lines[:]
+        
+        # 解析 diff 内容，按 hunk 分组
+        hunks = self._parse_hunks(diff_content)
+        
+        # 对每个 hunk 进行处理
+        for hunk in hunks:
+            # 找到最佳匹配位置
+            best_position = self._find_best_match_position(hunk['context_before'], 
+                                                        hunk['context_after'],
+                                                        new_lines)
+            
+            if best_position is not None:
+                # 应用修改
+                self._apply_hunk_changes(new_lines, best_position, 
+                                    hunk['removed_lines'],
+                                    hunk['added_lines'])
+            else:
+                logger.error(f"无法找到匹配的位置用于以下修改：\n{hunk['content']}")
+        
+        # 写入修改后的内容
+        with open(target_file, 'w', encoding='utf-8') as f:
+            f.writelines(new_lines)
+
+    def _parse_hunks(self, diff_content):
+        """解析 diff 内容，提取每个 hunk 的上下文和修改内容"""
+        hunks = []
+        current_hunk = None
+        
+        for line in diff_content.splitlines():
+            # 跳过文件头
+            if line.startswith(('---', '+++', 'index')):
+                continue
+                
+            # 新的 hunk 开始
+            if line.startswith('@@'):
+                if current_hunk:
+                    hunks.append(current_hunk)
+                current_hunk = {
+                    'content': line + '\n',
+                    'context_before': [],
+                    'context_after': [],
+                    'removed_lines': [],
+                    'added_lines': [],
+                    'in_change': False
+                }
+                continue
+                
+            if not current_hunk:
+                continue
+                
+            current_hunk['content'] += line + '\n'
+            
+            if line.startswith(' '):
+                if current_hunk['in_change']:
+                    current_hunk['context_after'].append(line[1:])
+                else:
+                    current_hunk['context_before'].append(line[1:])
+            elif line.startswith('-'):
+                current_hunk['in_change'] = True
+                current_hunk['removed_lines'].append(line[1:])
+            elif line.startswith('+'):
+                current_hunk['in_change'] = True
+                current_hunk['added_lines'].append(line[1:])
+        
+        if current_hunk:
+            hunks.append(current_hunk)
+        
+        return hunks
+
+    def _find_best_match_position(self, context_before, context_after, file_lines, 
+                                context_size=3, threshold=0.8):
+        """
+        使用上下文匹配找到最佳修改位置
+        
+        :param context_before: 修改前的上下文行
+        :param context_after: 修改后的上下文行
+        :param file_lines: 文件的所有行
+        :param context_size: 匹配的上下文大小
+        :param threshold: 匹配度阈值
+        :return: 最佳匹配位置，如果没有找到好的匹配则返回 None
+        """
+        if not context_before and not context_after:
+            return None
+            
+        best_match_score = 0
+        best_position = None
+        
+        # 构建上下文匹配字符串
+        context_str = ''.join(context_before + context_after)
+        
+        # 在文件中滑动窗口寻找最佳匹配
+        for i in range(len(file_lines) - len(context_before + context_after) + 1):
+            window = file_lines[i:i + len(context_before + context_after)]
+            window_str = ''.join(window)
+            
+            # 计算匹配度
+            matcher = SequenceMatcher(None, context_str, window_str)
+            score = matcher.ratio()
+            
+            if score > best_match_score:
+                best_match_score = score
+                best_position = i + len(context_before)
+        
+        # 如果最佳匹配超过阈值，返回位置
+        if best_match_score >= threshold:
+            return best_position
+        
+        # 如果没有找到好的匹配，尝试只匹配前后文的一部分
+        if len(context_before) > context_size:
+            context_before = context_before[-context_size:]
+        if len(context_after) > context_size:
+            context_after = context_after[:context_size]
+            
+        return self._find_best_match_position(context_before, context_after, 
+                                            file_lines, context_size, threshold - 0.1)
+
+    def _apply_hunk_changes(self, lines, position, removed_lines, added_lines):
+        """
+        在指定位置应用修改
+        
+        :param lines: 要修改的行列表
+        :param position: 修改位置
+        :param removed_lines: 要删除的行
+        :param added_lines: 要添加的行
+        """
+        # 验证要删除的行
+        actual_lines = lines[position:position + len(removed_lines)]
+        if self._lines_match(actual_lines, removed_lines):
+            # 删除旧行
+            del lines[position:position + len(removed_lines)]
+            # 插入新行
+            for i, line in enumerate(added_lines):
+                lines.insert(position + i, line + '\n')
+        else:
+            logger.warning("要删除的行与实际内容不匹配，尝试强制应用修改")
+            # 强制应用修改
+            del lines[position:position + len(removed_lines)]
+            for i, line in enumerate(added_lines):
+                lines.insert(position + i, line + '\n')
+
+    def _lines_match(self, lines1, lines2, threshold=0.8):
+        """
+        检查两组行是否匹配
+        
+        :param lines1: 第一组行
+        :param lines2: 第二组行
+        :param threshold: 匹配度阈值
+        :return: 是否匹配
+        """
+        if not lines1 or not lines2:
+            return False
+            
+        text1 = ''.join(lines1)
+        text2 = ''.join(lines2)
+        
+        matcher = SequenceMatcher(None, text1, text2)
+        return matcher.ratio() >= threshold
+
+    
 
 
     def run(self):
@@ -390,8 +696,8 @@ class PatchProcessor:
             self.write_file_contents(target_file_contents, self.target_version)
 
         # 3. 获取两个版本文件的diff并保存
-        # self.generate_folder_diff(base_dir / 'newer', base_dir / self.target_version, base_dir / 'diff')
-        self.generate_folder_diff(base_dir / self.target_version, base_dir / 'newer', base_dir / 'diff')
+        self.generate_folder_diff(base_dir / 'newer', base_dir / self.target_version, base_dir / 'diff')
+        # self.generate_folder_diff(base_dir / self.target_version, base_dir / 'newer', base_dir / 'diff')
 
         # 4. 获取patch文件
         # 使用curl模块将self.url中的github commit url后加上.patch获取patch文件并写入patch文件夹

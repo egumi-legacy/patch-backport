@@ -2,12 +2,10 @@ A. Commit message:
 Fix issue of listen before chmod on Unix sockets (CVE-2023-45145)
 
 B. Change summary:
-- Modified `anetListen` to take an additional `mode_t perm` parameter.
-- Moved the `chmod` call to before the `listen` call for Unix sockets.
-- Updated `anetUnixServer` to pass the `perm` parameter to `anetListen`.
+The patch ensures that the permissions for Unix sockets are set before calling `listen(2)`. This prevents a race condition where another process could exploit the temporary incorrect permissions.
 
 C. Compatibility Risk:
-Medium
+Low
 
 D. Fixed Code:
 ```diff

@@ -24,7 +24,7 @@ class LLMAssistant:
 
         # self.client = OpenAI_Client(_api_key, _base_url)
         self.client = QWen_Client(_api_key, _base_url)
-        self.model = inputs.get("model", "gpt-4o")
+        self.model = inputs.get("model", "qwen-plus")
         self.response_file = inputs.get("response_file", None)
 
         self.prompt_template_file = inputs.get("prompt_template_file")
@@ -33,6 +33,8 @@ class LLMAssistant:
         self.prompt_value_file = inputs.get("prompt_value_file")
         self.prompts = self.preprocess_prompts().get("prompts")
         self.partitions = inputs.get("partitions", [])
+        self.use_cache = inputs.get("use_cache", False)
+        self.cache_path = inputs.get("cache_path")
         # self.partitions = {
         #     "patch": ["```", "\n", "```"],
         # }
@@ -146,6 +148,7 @@ class LLMAssistant:
                         template = value,
                         data = dict_value,
                     )
+                    # TODO 疑似这里引入了html转义符
                     print(f"new_value: {new_value}")
                     prompt_instance[key] = new_value
                 prompt.append(prompt_instance)
@@ -170,19 +173,24 @@ class LLMAssistant:
                 logger.error(f"Error calling OpenAI: {e}")
                 completion = None
             
-            if completion is None or len(completion.choices) == 0:
+            # if completion is None or len(completion.choices) == 0:
+            if completion is None:
                 logger.error(f"No response from OpenAI")
                 content = ""
                 request_token = 0
                 response_token = 0
-            elif completion.choices[0].finish_reason == "length":
-                content = completion.choices[0].message.content
-                request_token = completion.usage.prompt_tokens
-                response_token = completion.usage.completion_tokens
             else:
-                content = completion.choices[0].message.content
-                request_token = completion.usage.prompt_tokens
-                response_token = completion.usage.completion_tokens
+                # 处理流式响应
+                full_content = ""
+                for chunk in completion:
+                    if hasattr(chunk, 'choices') and len(chunk.choices) > 0:
+                        if hasattr(chunk.choices[0], 'delta') and hasattr(chunk.choices[0].delta, 'content') and chunk.choices[0].delta.content is not None:
+                            full_content += chunk.choices[0].delta.content
+                content = full_content
+                # request_token = completion.usage.prompt_tokens
+                # response_token = completion.usage.completion_tokens
+                request_token = 0  # Stream mode doesn't provide token counts
+                response_token = 0
 
             logger.trace(f"Response received: \n{indent(content, '  ')}")
 
@@ -243,7 +251,31 @@ class LLMAssistant:
         # 使用LLM解决冲突
         pass
 
+    def get_cached_response(self):
+        """从缓存文件中读取响应"""
+        if not self.cache_path or not Path(self.cache_path).exists():
+            logger.warning(f"缓存文件不存在: {self.cache_path}")
+            return None
+            
+        try:
+            with open(self.cache_path, 'r') as f:
+                response = f.read()
+            return [response]  # 保持与 openai_responses 格式一致
+        except Exception as e:
+            logger.error(f"读取缓存响应失败: {e}")
+            return None
+
+
     def run(self):
+        if self.use_cache:
+            cached_responses = self.get_cached_response()
+            if cached_responses:
+                logger.info("使用缓存的响应")
+                return dict(
+                    openai_responses=cached_responses,
+                    request_tokens=[0],
+                    response_tokens=[0]
+                )
         prompts = self.prompts
         # print(f"prompts in run: {prompts}")
         responses = self.call_llm(prompts)

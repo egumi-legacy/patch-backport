@@ -1,0 +1,37 @@
+modified file: src/anet.c
+--- patchfile/redis_redis_7f486e/4.0.11/src/anet.c
++++ patchfile/redis_redis_7f486e/adapted_4.0.11/src/anet.c
+@@ -441,7 +441,10 @@
+      if (bind(s,sa,len) == -1) {
+          anetSetError(err, "bind: %s", strerror(errno));
+          close(s);
+ -        return ANET_ERR;
+ +static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog, mode_t perm) {
+ +    if (sa->sa_family == AF_LOCAL && perm)
+ +        chmod(((struct sockaddr_un *) sa)->sun_path, perm);
+ +
+      }
+  
+      if (listen(s, backlog) == -1) {
+@@ -485,7 +488,7 @@
+          if (af == AF_INET6 && anetV6Only(err,s) == ANET_ERR) goto error;
+          if (anetSetReuseAddr(err,s) == ANET_ERR) goto error;
+          if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog) == ANET_ERR) s = ANET_ERR;
+ -        goto end;
+ +        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog,0) == ANET_ERR) s = ANET_ERR;
+      }
+      if (p == NULL) {
+          anetSetError(err, "unable to bind socket, errno: %d", errno);
+@@ -519,9 +522,7 @@
+          return ANET_ERR;
+  
+      memset(&sa,0,sizeof(sa));
+ -    sa.sun_family = AF_LOCAL;
+ -    strncpy(sa.sun_path,path,sizeof(sa.sun_path)-1);
+ -    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog) == ANET_ERR)
+ +    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog,perm) == ANET_ERR)
+          return ANET_ERR;
+      if (perm)
+          chmod(sa.sun_path, perm);
+
+""""""

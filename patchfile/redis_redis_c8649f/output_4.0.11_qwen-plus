@@ -2,7 +2,7 @@ A. Commit message:
 Prevent pattern matching abuse (CVE-2024-31228)
 
 B. Change summary:
-Added a protection mechanism to prevent pattern matching abuse by limiting the nesting level of patterns to 1000. This change ensures that overly complex patterns do not cause excessive resource consumption.
+Added a nesting limit to the `stringmatchlen_impl` function to prevent abuse of pattern matching. The limit is set to 1000 to avoid excessive recursion and potential denial of service attacks.
 
 C. Compatibility Risk:
 Low

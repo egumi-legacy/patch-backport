@@ -1,8 +1,8 @@
 A. Commit message:
-Avoid backtracking in Token#raw_params for Rails 5.2.4.4
+Avoid backtracking in Token#raw_params (CVE-2024-47887)
 
 B. Change summary:
-Updated the `raw_params` method to avoid backtracking by splitting the authorization string using `AUTHN_PAIR_DELIMITERS` and stripping whitespace. Additionally, empty strings are rejected from the resulting array.
+Updated the `raw_params` method to avoid backtracking by using `split` with `AUTHN_PAIR_DELIMITERS` and `map(&:strip)` to remove leading and trailing whitespace. Additionally, `reject!(&:empty?)` is used to filter out empty strings.
 
 C. Compatibility Risk:
 Low

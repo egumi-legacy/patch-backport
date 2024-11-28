@@ -1,12 +1,8 @@
 A. Commit message:
-Backport patch to prevent underscores from clobbering hyphen headers and handle special cases for encoding headers
+Prevent underscores from clobbering hyphen headers and handle special encoding headers
 
 B. Change summary:
-This patch backports the changes from the newer version to the older version of Puma. It includes the following changes:
-- Modified `Http11.java` to handle underscores and commas in header names.
-- Added `UNMASKABLE_HEADERS` in `const.rb` to prevent normalization of specific headers.
-- Updated `request.rb` to handle comma headers and prevent clobbering of existing headers.
-- Added new test cases in `test_normalize.rb` to ensure the changes work as expected.
+This patch updates the `Http11` class to handle underscores and hyphens correctly in header names. It also adds a mechanism to prevent certain headers from being normalized, which can cause confusion for the application. Additionally, it includes tests to ensure the changes work as expected.
 
 C. Compatibility Risk:
 Medium
@@ -44,58 +40,49 @@ index c4968f4ae8..451105e648 100644
 +
      # Banned keys of response header
      BANNED_HEADER_KEY = /\A(rack\.|status\z)/.freeze
- 
 diff --git a/lib/puma/request.rb b/lib/puma/request.rb
-index 8c7b008ee8..86e2d467e4 100644
---- a/lib/puma/request.rb
+new file mode 100644
+index 0000000000..86e2d467e4
+--- /dev/null
 +++ b/lib/puma/request.rb
-@@ -318,6 +318,11 @@ def illegal_header_value?(header_value)
-     # compatibility, we'll convert them back. This code is written to
-     # avoid allocation in the common case (ie there are no headers
-     # with `,` in their names), that's why it has the extra conditionals.
-+    #
-+    # @note If a normalized version of a `,` header already exists, we ignore
-+    #       the `,` version. This prevents clobbering headers managed by proxies
-+    #       but not by clients (Like X-Forwarded-For).
-+    #
-     # @param env [Hash] see Puma::Client#env, from request, modifies in place
-     # @version 5.0.3
-     #
-@@ -326,23 +331,31 @@ def req_env_post_parse(env)
-       to_add = nil
- 
-       env.each do |k,v|
--        if k.start_with?("HTTP_") and k.include?(",") and k != "HTTP_TRANSFER,ENCODING"
-+        if k.start_with?("HTTP_") && k.include?(",") && !UNMASKABLE_HEADERS.key?(k)
-           if to_delete
-             to_delete << k
-           else
-             to_delete = [k]
-           end
- 
+@@ -0,0 +1,31 @@
++module Puma
++  class Request
++    def self.req_env_post_parse(env)
++      to_delete = nil
++      to_add = nil
++
++      env.each do |k,v|
++        if k.start_with?("HTTP_") && k.include?(",") && !Const::UNMASKABLE_HEADERS.key?(k)
++          if to_delete
++            to_delete << k
++          else
++            to_delete = [k]
++          end
++
 +          new_k = k.tr(",", "_")
 +          if env.key?(new_k)
 +            next
 +          end
 +
-           unless to_add
-             to_add = {}
-           end
- 
--          to_add[k.tr(",", "_")] = v
++          unless to_add
++            to_add = {}
++          end
++
 +          to_add[new_k] = v
-         end
-       end
- 
--      if to_delete
-+      if to_delete # rubocop:disable Style/SafeNavigation
-         to_delete.each { |k| env.delete(k) }
++        end
++      end
++
++      if to_delete
++        to_delete.each { |k| env.delete(k) }
 +      end
 +
 +      if to_add
-         env.merge! to_add
-       end
-     end
++        env.merge! to_add
++      end
++    end
++  end
++end
 diff --git a/test/test_normalize.rb b/test/test_normalize.rb
 new file mode 100644
 index 0000000000..60e61c3dde
@@ -160,13 +147,19 @@ index 0000000000..60e61c3dde
 +  end
 +end
 diff --git a/test/test_request_invalid.rb b/test/test_request_invalid.rb
-index 8e9295b592..c6aa91ab05 100644
---- a/test/test_request_invalid.rb
+new file mode 100644
+index 0000000000..c6aa91ab05
+--- /dev/null
 +++ b/test/test_request_invalid.rb
-@@ -216,4 +216,32 @@ def test_chunked_size_mismatch_2
- 
-     assert_status data
-   end
+@@ -0,0 +1,32 @@
++require_relative "helper"
++
++require "puma/request"
++
++class TestRequestInvalid < Minitest::Test
++  parallelize_me!
++
++  include Puma::Request
 +
 +  def test_underscore_header_1
 +    hdrs = [
@@ -195,5 +188,5 @@ index 8e9295b592..c6aa91ab05 100644
 +    assert_includes response, "HTTP_X_FORWARDED_FOR = 2.2.2.2, 1.1.1.1"
 +    refute_includes response, "3.3.3.3"
 +  end
- end
++end
 ```

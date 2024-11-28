@@ -38,4 +38,4 @@ class QWen_Client:
     # def truncate_messages(self, messages, model):
 
     def call_openai(self, model, messages):
-        return self.client.chat.completions.create(model=model, messages=messages)
+        return self.client.chat.completions.create(model=model, messages=messages, stream=True)

@@ -1,0 +1,201 @@
+===end===
+
+A. Commit message:
+Backport fix for CVE-2024-22034 to prevent overwriting special files in .osc
+
+B. Change summary:
+- Moved source files to a 'sources' subdirectory to prevent name collisions.
+- Updated paths in functions to reflect the new directory structure.
+- Added functions to manage the new directory structure.
+
+C. Compatibility Risk:
+Medium
+
+D. Fixed Code:
+```diff
+diff --git a/osc/commandline.py b/osc/commandline.py
+index 09a72a5f9c..9958174bca 100644
+--- a/osc/commandline.py
++++ b/osc/commandline.py
+@@ -8868,14 +8868,12 @@ def do_repairlink(self, subcmd, opts, *args):
+     store_write_string(destdir, '_linkrepair', '')
+     pac = Package(destdir)
+-    storedir = os.path.join(destdir, store)
+-    for name in sorted(entries.keys()):
++    for name in sorted(entries.keys()):
+         md5_old = entries_old.get(name, '')
+         md5_new = entries_new.get(name, '')
+         md5_oldpatched = entries_oldpatched.get(name, '')
+         if md5_new != '':
+-            self.download(name, md5_new, dir_new, os.path.join(storedir, name))
++            self.download(name, md5_new, dir_new, store_sources_get_path(destdir, name))
+         if md5_old == md5_new:
+             if md5_oldpatched == '':
+                 pac.put_on_deletelist(name)
+@@ -8887,17 +8885,17 @@ def do_repairlink(self, subcmd, opts, *args):
+         if md5_new == '':
+             continue
+         print(statfrmt('U', name))
+-        shutil.copy2(os.path.join(storedir, name), os.path.join(destdir, name))
++        shutil.copy2(store_sources_get_path(destdir, name), os.path.join(destdir, name))
+         pac.put_on_deletelist(name)
+         pac.update_md5(name, md5_new)
+ 
+ def migrate_store_version(dir):
+-    # version is fine, no migration needed
+-    f = open(versionfile, 'w')
+-    f.write(__store_version__ + '')
+-    f.close()
++    # no migration needed, only change metadata version to 1.0
++    v = "1.0"
++    with open(versionfile, 'w') as f:
++        f.write(v + '')
++    migrated = True
+ 
++    if v == "1.0":
++        store_dir = os.path.join(dir, store)
++        sources_dir = os.path.join(dir, store, "sources")
++        os.makedirs(sources_dir, exist_ok=True)
++
++        if is_package_dir(dir) and not store_read_scmurl(dir):
++            scm_files = [i.name for i in store_read_files(dir)]
++
++            for fn in os.listdir(store_dir):
++                old_path = os.path.join(store_dir, fn)
++                new_path = os.path.join(sources_dir, fn)
++                if not os.path.isfile(old_path):
++                    continue
++                if fn in Package.REQ_STOREFILES or fn in Package.OPT_STOREFILES:
++                    continue
++                if fn.startswith("_") and fn not in scm_files:
++                    continue
++                if os.path.isfile(old_path):
++                    os.rename(old_path, new_path)
++
++        v = "2.0"
++        with open(versionfile, 'w') as f:
++            f.write(v + '')
++        migrated = True
+ 
++    if migrated:
++        return
++    msg = 'The osc metadata of your working copy "%s"' % dir
++    msg += 'has __store_version__ = %s, but it should be %s' % (v, __store_version__)
++    msg += 'Please do a fresh checkout or update your client. Sorry about the inconvenience.'
++    raise oscerr.WorkingCopyInconsistent(msg)
+ 
+ def get_source_file_diff(dir, filename, rev, oldfilename=None, olddir=None,
+                          origfilename=None, origdir=None, apiurl=None):
+     if not oldfilename:
+         oldfilename = filename
+     if not olddir:
+-        olddir = os.path.join(dir, store)
++        olddir = os.path.join(dir, store, "sources")
+     if not origfilename:
+         origfilename = filename
+     if not origdir:
+@@ -6796,6 +6824,70 @@ def store_write_initial_packages(dir, project, subelements):
+     root.append(elem)
+     ET.ElementTree(root).write(fname)
+ 
++def store_read_files(dir):
++    files_tree = read_filemeta(dir)
++    files_tree_root = files_tree.getroot()
++    result = []
++    for node in files_tree_root.findall('entry'):
++        f = File(
++            node.get('name'),
++            node.get('md5'),
++            int(node.get('size')),
++            int(node.get('mtime')),
++        )
++        if node.get('skipped'):
++            f.skipped = True
++        result.append(f)
++    return result
++
++def store_sources_get_path(dir, file_name):
++    if "/" in file_name:
++        raise ValueError("Plain file name expected: %s" % file_name)
++    result = os.path.join(dir, store, "sources", file_name)
++    try:
++        os.makedirs(os.path.dirname(result))
++    except FileExistsError:
++        pass
++    return result
++
++def store_sources_list_files(dir):
++    result = []
++    invalid = []
++
++    topdir = os.path.join(dir, store, "sources")
++
++    if not os.path.isdir(topdir):
++        return []
++
++    for fn in os.listdir(topdir):
++        if store_sources_is_file(dir, fn):
++            result.append(fn)
++        else:
++            invalid.append(fn)
++
++    if invalid:
++        msg = ".osc/sources contains entries other than regular files"
++        project = store_read_project(dir)
++        package = store_read_package(dir)
++        raise oscerr.WorkingCopyInconsistent(project, package, invalid, msg)
++
++    return result
++
++def store_sources_is_file(dir, file_name):
++    return os.path.isfile(store_sources_get_path(dir, file_name))
++
++def store_sources_delete_file(dir, file_name):
++    try:
++        os.unlink(store_sources_get_path(dir, file_name))
++    except:
++        pass
++
+ def get_osc_version():
+     return __version__
+ 
+diff --git a/tests/common.py b/tests/common.py
+index f97655cbd1..ce15c7ab99 100644
+--- a/tests/common.py
++++ b/tests/common.py
+@@ -239,8 +239,8 @@ def _check_digests(self, fname, *skipfiles):
+     for i in root.findall('entry'):
+         if i.get('name') in skipfiles:
+             continue
+-        self.assertTrue(os.path.exists(os.path.join('.osc', i.get('name'))))
+-        self.assertEqual(osc.core.dgst(os.path.join('.osc', i.get('name'))), i.get('md5'))
++        self.assertTrue(os.path.exists(os.path.join('.osc', 'sources', i.get('name'))))
++        self.assertEqual(osc.core.dgst(os.path.join('.osc', 'sources', i.get('name'))), i.get('md5'))
+ 
+ def assertXMLEqual(self, act, exp):
+     if xml_equal(act, exp):
+diff --git a/tests/test_addfiles.py b/tests/test_addfiles.py
+index 75d3842031..369a941b07 100644
+--- a/tests/test_addfiles.py
++++ b/tests/test_addfiles.py
+@@ -21,7 +21,7 @@ def testSimpleAdd(self):
+     p.addfile('toadd1')
+     exp = 'A toadd1'
+     self.assertEqual(sys.stdout.getvalue(), exp)
+-    self.assertFalse(os.path.exists(os.path.join('.osc', 'toadd1')))
++    self.assertFalse(os.path.exists(os.path.join('.osc', 'sources', 'toadd1')))
+     self._check_status(p, 'toadd1', 'A')
+     self._check_addlist('toadd1')
+ 
+@@ -33,8 +33,8 @@ def testSimpleMultipleAdd(self):
+     p.addfile('toadd2')
+     exp = 'A toadd1\nA toadd2'
+     self.assertEqual(sys.stdout.getvalue(), exp)
+-    self.assertFalse(os.path.exists(os.path.join('.osc', 'toadd1')))
+-    self.assertFalse(os.path.exists(os.path.join('.osc', 'toadd2')))
++    self.assertFalse(os.path.exists(os.path.join('.osc', 'sources', 'toadd1')))
++    self.assertFalse(os.path.exists(os.path.join('.osc', 'sources', 'toadd2')))
+     self._check_status(p, 'toadd1', 'A')
+     self._check_status(p, 'toadd2', 'A')
+     self._check_addlist('toadd1', 'toadd2')
+```

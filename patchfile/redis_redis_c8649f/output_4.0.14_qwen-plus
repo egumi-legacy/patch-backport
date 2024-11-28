@@ -2,7 +2,7 @@ A. Commit message:
 Prevent pattern matching abuse (CVE-2024-31228)
 
 B. Change summary:
-Added a protection mechanism to prevent abusive patterns in the `stringmatchlen` function by introducing a nesting limit. This ensures that the function does not enter into an infinite loop or excessive recursion.
+Added protection against abusive patterns in the `stringmatchlen` function by introducing a nesting limit. The limit is set to 1000 to prevent excessive recursion that could lead to a denial of service attack.
 
 C. Compatibility Risk:
 Low

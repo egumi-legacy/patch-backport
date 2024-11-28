@@ -56,6 +56,7 @@ class ModifyCode(Step):
             zip(self.files_to_patch, self.extracted_responses), key=lambda x: x[0]["startLine"], reverse=True
         )
         if len(sorted_list) == 0:
+            # self.extracted_responses
             self.set_status(StepStatus.SKIPPED, "No code snippets to modify.")
             return dict(modified_code_files=[])
 

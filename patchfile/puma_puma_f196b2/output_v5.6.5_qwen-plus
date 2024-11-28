@@ -1,8 +1,8 @@
 A. Commit message:
-Backport fix for header normalization and underscore handling
+Backport patch to prevent underscores from clobbering hyphen headers and handle special cases
 
 B. Change summary:
-Backported the changes from the newer version to handle header normalization and underscore handling. This includes special casing encoding headers to prevent application confusion, handling `_` as `,` in JRuby, and silencing RuboCop offenses.
+This patch backports the changes from the newer version to the older version of Puma. It includes modifications to handle underscores in header names, special case encoding headers, and ensure that certain headers are not normalized. Additionally, it adds test cases to validate the behavior.
 
 C. Compatibility Risk:
 Medium

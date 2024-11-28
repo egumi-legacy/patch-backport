@@ -1,11 +1,10 @@
 A. Commit message:
-Add support for sanitized names and handle malformed paths in zipfile.Path
+Add sanitized path handling and test cases for malformed paths
 
 B. Change summary:
-- Added a `SanitizedNames` mixin to sanitize filenames in the zipfile.
-- Updated `CompleteDirs` to inherit from `SanitizedNames`.
-- Added tests for handling malformed paths.
-- Updated the `Path` class to support symlinks and improved globbing.
+- Added a `SanitizedNames` mixin to ensure that paths are sanitized.
+- Modified the `CompleteDirs` class to use the `SanitizedNames` mixin.
+- Added test cases for handling malformed paths in `tests/test_path.py`.
 
 C. Compatibility Risk:
 Medium
@@ -16,7 +15,7 @@ diff --git a/tests/test_path.py b/tests/test_path.py
 index bbf39b2..ace8763 100644
 --- a/tests/test_path.py
 +++ b/tests/test_path.py
-@@ -571,3 +571,19 @@ def test_getinfo_missing(self, alpharep):
+@@ -571,3 +571,21 @@ def test_getinfo_missing(self, alpharep):
          zipfile.Path(alpharep)
          with self.assertRaises(KeyError):
              alpharep.getinfo('does-not-exist')
@@ -110,53 +109,4 @@ index b08016c..f41ae08 100644
  class CompleteDirs(InitializedState, SanitizedNames, zipfile.ZipFile):
      """
      A ZipFile subclass that ensures that implied directories
-@@ -179,8 +241,10 @@ def _extract_text_encoding(encoding=None, *args, **kwargs):
- 
- 
- def _extract_text_encoding(encoding=None, *args, **kwargs):
--    # stacklevel=3 so that the caller of the caller see any warning.
--    return text_encoding(encoding, 3), args, kwargs
-+    # compute stack level so that the caller of the caller sees any warning.
-+    is_pypy = sys.implementation.name == 'pypy'
-+    stack_level = 3 + is_pypy
-+    return text_encoding(encoding, stack_level), args, kwargs
- 
- 
- class Path:
-@@ -260,7 +324,7 @@
-     >>> str(path.parent)
-     'mem'
- 
--    If the zipfile has no filename, such attribtues are not
-+    If the zipfile has no filename, such ﻿attributes are not
-     valid and accessing them will raise an Exception.
- 
-     >>> zf.filename = None
-@@ -388,17 +452,21 @@
- 
-     def is_symlink(self):
-         """
--        Return whether this path is a symlink. Always false (python/cpython#82102).
--        """
--        return False
-+        Return whether this path is a symlink.
-+        """
-+        info = self.root.getinfo(self.at)
-+        mode = info.external_attr >> 16
-+        return stat.S_ISLNK(mode)
- 
-     def glob(self, pattern):
-         if not pattern:
-             raise ValueError(f"Unacceptable pattern: {pattern!r}")
- 
-         prefix = re.escape(self.at)
--        matches = re.compile(prefix + translate(pattern)).fullmatch
--        return map(self._next, filter(matches, self.root.namelist()))
-+        tr = Translator(seps='/')
-+        matches = re.compile(prefix + tr.translate(pattern)).fullmatch
-+        names = (data.filename for data in self.root.filelist)
-+        return map(self._next, filter(matches, names))
- 
-     def rglob(self, pattern):
-         return self.glob(f'**/{pattern}')
 ```

@@ -1,0 +1,110 @@
+modified file: ext/puma_http11/org/jruby/puma/Http11.java
+--- patchfile/puma_puma_f196b2/adapted_v5.6.5/ext/puma_http11/org/jruby/puma/Http11.java
++++ patchfile/puma_puma_f196b2/v5.6.5/ext/puma_http11/org/jruby/puma/Http11.java
+@@ -99,8 +99,6 @@
+              int bite = b.get(i) & 0xFF;
+              if(bite == '-') {
+                  b.set(i, (byte)'_');
+ -            } else if(bite == '_') {
+ -                b.set(i, (byte)',');
+              } else {
+                  b.set(i, (byte)Character.toUpperCase(bite));
+              }
+
+""""""
+modified file: lib/puma/const.rb
+--- patchfile/puma_puma_f196b2/adapted_v5.6.5/lib/puma/const.rb
++++ patchfile/puma_puma_f196b2/v5.6.5/lib/puma/const.rb
+@@ -244,14 +244,6 @@
+      # header values can contain HTAB?
+      ILLEGAL_HEADER_VALUE_REGEX = /[\x00-\x08\x0A-\x1F]/.freeze
+  
+ -    # The keys of headers that should not be convert to underscore
+ -    # normalized versions. These headers are ignored at the request reading layer,
+ -    # but if we normalize them after reading, it's just confusing for the application.
+ -    UNMASKABLE_HEADERS = {
+ -      "HTTP_TRANSFER,ENCODING" => true,
+ -      "HTTP_CONTENT,LENGTH" => true,
+ -    }
+ -
+      # Banned keys of response header
+      BANNED_HEADER_KEY = /\A(rack\.|status\z)/.freeze
+  
+
+""""""
+modified file: lib/puma/request.rb
+--- patchfile/puma_puma_f196b2/adapted_v5.6.5/lib/puma/request.rb
++++ patchfile/puma_puma_f196b2/v5.6.5/lib/puma/request.rb
+@@ -318,11 +318,6 @@
+      # compatibility, we'll convert them back. This code is written to
+      # avoid allocation in the common case (ie there are no headers
+      # with `,` in their names), that's why it has the extra conditionals.
+ -    #
+ -    # @note If a normalized version of a `,` header already exists, we ignore
+ -    #       the `,` version. This prevents clobbering headers managed by proxies
+ -    #       but not by clients (Like X-Forwarded-For).
+ -    #
+      # @param env [Hash] see Puma::Client#env, from request, modifies in place
+      # @version 5.0.3
+      #
+@@ -331,17 +326,9 @@
+        to_add = nil
+  
+        env.each do |k,v|
+ -        if k.start_with?("HTTP_") && k.include?(",") && !UNMASKABLE_HEADERS.key?(k)
+ -          new_k = k.tr(",", "_")
+ -          if env.key?(new_k)
+ -            next
+ -          end
+ -
+ -          to_add[new_k] = v
+ -      if to_delete # rubocop:disable Style/SafeNavigation
+ -      end
+ -
+ -      if to_add
+ +        if k.start_with?("HTTP_") and k.include?(",") and k != "HTTP_TRANSFER,ENCODING"
+ +          if to_delete
+ +            to_delete << k
+            else
+              to_delete = [k]
+            end
+
+""""""
+modified file: test/test_request_invalid.rb
+--- patchfile/puma_puma_f196b2/adapted_v5.6.5/test/test_request_invalid.rb
++++ patchfile/puma_puma_f196b2/v5.6.5/test/test_request_invalid.rb
+@@ -216,32 +216,4 @@
+  
+      assert_status data
+    end
+ -
+ -  def test_underscore_header_1
+ -    hdrs = [
+ -      "X-FORWARDED-FOR: 1.1.1.1",  # proper
+ -      "X-FORWARDED-FOR: 2.2.2.2",  # proper
+ -      "X_FORWARDED-FOR: 3.3.3.3",  # invalid, contains underscore
+ -      "Content-Length: 5",
+ -    ].join "\r\n"
+ -
+ -    response = send_http_and_read "#{GET_PREFIX}#{hdrs}\r\n\r\nHello\r\n\r\n"
+ -
+ -    assert_includes response, "HTTP_X_FORWARDED_FOR = 1.1.1.1, 2.2.2.2"
+ -    refute_includes response, "3.3.3.3"
+ -  end
+ -
+ -  def test_underscore_header_2
+ -    hdrs = [
+ -      "X_FORWARDED-FOR: 3.3.3.3",  # invalid, contains underscore
+ -      "X-FORWARDED-FOR: 2.2.2.2",  # proper
+ -      "X-FORWARDED-FOR: 1.1.1.1",  # proper
+ -      "Content-Length: 5",
+ -    ].join "\r\n"
+ -
+ -    response = send_http_and_read "#{GET_PREFIX}#{hdrs}\r\n\r\nHello\r\n\r\n"
+ -
+ -    assert_includes response, "HTTP_X_FORWARDED_FOR = 2.2.2.2, 1.1.1.1"
+ -    refute_includes response, "3.3.3.3"
+ -  end
+  end
+
+""""""
