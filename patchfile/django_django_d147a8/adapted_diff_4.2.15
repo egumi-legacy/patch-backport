@@ -1,0 +1,99 @@
+modified file: django/utils/html.py
+--- patchfile/django_django_d147a8/4.2.15/django/utils/html.py
++++ patchfile/django_django_d147a8/adapted_4.2.15/django/utils/html.py
+@@ -392,13 +392,16 @@
+  
+              if self.trailing_punctuation_chars_has_semicolon and middle.endswith(";"):
+                  # Only strip if not part of an HTML entity.
+ -                potential_entity = middle[amp:]
+ -                escaped = html.unescape(potential_entity)
+ -                if escaped == potential_entity or escaped.endswith(";"):
+ -                    rstripped = middle.rstrip(";")
+ -                    amount_stripped = len(middle) - len(rstripped)
+ -                    if amp > -1 and amount_stripped > 1:
+ -                        # Leave a trailing semicolon as might be an entity.
+ +                    rstripped = middle.rstrip(self.trailing_punctuation_chars)
+ +                    trail_start = len(rstripped)
+ +                    amount_trailing_semicolons = len(middle) - len(middle.rstrip(&quot;;&quot;))
+ +                    if amp &gt; -1 and amount_trailing_semicolons &gt; 1:
+ +                        # Leave up to most recent semicolon as might be an entity.
+ +                        recent_semicolon = middle[trail_start:].index(&quot;;&quot;)
+ +                        middle_semicolon_index = recent_semicolon + trail_start + 1
+ +                        trail = middle[middle_semicolon_index:] + trail
+ +                        middle = rstripped + middle[trail_start:middle_semicolon_index]
+ +                        trail = middle[trail_start:] + trail
+                          trail = middle[len(rstripped) + 1 :] + trail
+                          middle = rstripped + ";"
+                      else:
+
+""""""
+modified file: docs/ref/templates/builtins.txt
+--- patchfile/django_django_d147a8/4.2.15/docs/ref/templates/builtins.txt
++++ patchfile/django_django_d147a8/adapted_4.2.15/docs/ref/templates/builtins.txt
+@@ -2831,6 +2831,17 @@
+      email addresses that contain single quotes (``'``), things won't work as
+      expected. Apply this filter only to plain text.
+  
+ +.. warning::
+ +
+ +    Using ``urlize`` or ``urlizetrunc`` can incur a performance penalty, which
+ +    can become severe when applied to user controlled values such as content
+ +    stored in a :class:`~django.db.models.TextField`. You can use
+ +    :tfilter:`truncatechars` to add a limit to such inputs:
+ +
+ +    .. code-block:: html+django
+ +
+ +        {{ value|truncatechars:500|urlize }}
+ +
+  .. templatefilter:: urlizetrunc
+  
+  ``urlizetrunc``
+
+""""""
+modified file: tests/template_tests/filter_tests/test_urlize.py
+--- patchfile/django_django_d147a8/4.2.15/tests/template_tests/filter_tests/test_urlize.py
++++ patchfile/django_django_d147a8/adapted_4.2.15/tests/template_tests/filter_tests/test_urlize.py
+@@ -305,6 +305,28 @@
+              "http://testing.com/example</a>.,:;)&quot;!",
+          )
+  
+ +    def test_trailing_semicolon(self):
+ +        self.assertEqual(
+ +            urlize(&quot;http://example.com?x=&amp;amp;&quot;, autoescape=False),
+ +            '&lt;a href=&quot;http://example.com?x=&quot; rel=&quot;nofollow&quot;&gt;'
+ +            &quot;http://example.com?x=&amp;amp;&lt;/a&gt;&quot;,
+ +        )
+ +        self.assertEqual(
+ +            urlize(&quot;http://example.com?x=&amp;amp;;&quot;, autoescape=False),
+ +            '&lt;a href=&quot;http://example.com?x=&quot; rel=&quot;nofollow&quot;&gt;'
+ +            &quot;http://example.com?x=&amp;amp;&lt;/a&gt;;&quot;,
+ +        )
+ +        self.assertEqual(
+ +            urlize(&quot;http://example.com?x=&amp;amp;;;&quot;, autoescape=False),
+ +            '&lt;a href=&quot;http://example.com?x=&quot; rel=&quot;nofollow&quot;&gt;'
+ +            &quot;http://example.com?x=&amp;amp;&lt;/a&gt;;;&quot;,
+ +        )
+ +        self.assertEqual(
+ +            urlize(&quot;http://example.com?x=&amp;amp.;...;&quot;, autoescape=False),
+ +            '&lt;a href=&quot;http://example.com?x=&quot; rel=&quot;nofollow&quot;&gt;'
+ +            &quot;http://example.com?x=&amp;amp&lt;/a&gt;.;...;&quot;,
+ +        )
+ +
+      def test_brackets(self):
+          """
+          #19070 - Check urlize handles brackets properly
+
+""""""
+modified file: tests/utils_tests/test_html.py
+--- patchfile/django_django_d147a8/4.2.15/tests/utils_tests/test_html.py
++++ patchfile/django_django_d147a8/adapted_4.2.15/tests/utils_tests/test_html.py
+@@ -364,6 +364,7 @@
+              "&:" + ";" * 100_000,
+              "&.;" * 100_000,
+              ".;" * 100_000,
+ +            &quot;&amp;&quot; + &quot;;:&quot; * 100_000,
+          )
+          for value in tests:
+              with self.subTest(value=value):
+
+""""""

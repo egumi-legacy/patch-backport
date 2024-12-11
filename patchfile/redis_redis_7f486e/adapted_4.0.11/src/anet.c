@@ -441,10 +441,7 @@ static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int 
     if (bind(s,sa,len) == -1) {
         anetSetError(err, "bind: %s", strerror(errno));
         close(s);
-static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog, mode_t perm) {
-    if (sa->sa_family == AF_LOCAL && perm)
-        chmod(((struct sockaddr_un *) sa)->sun_path, perm);
-
+        return ANET_ERR;
     }
 
     if (listen(s, backlog) == -1) {
@@ -488,7 +485,7 @@ static int _anetTcpServer(char *err, int port, char *bindaddr, int af, int backl
         if (af == AF_INET6 && anetV6Only(err,s) == ANET_ERR) goto error;
         if (anetSetReuseAddr(err,s) == ANET_ERR) goto error;
         if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog) == ANET_ERR) s = ANET_ERR;
-        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog,0) == ANET_ERR) s = ANET_ERR;
+        goto end;
     }
     if (p == NULL) {
         anetSetError(err, "unable to bind socket, errno: %d", errno);
@@ -522,7 +519,9 @@ int anetUnixServer(char *err, char *path, mode_t perm, int backlog)
         return ANET_ERR;
 
     memset(&sa,0,sizeof(sa));
-    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog,perm) == ANET_ERR)
+    sa.sun_family = AF_LOCAL;
+    strncpy(sa.sun_path,path,sizeof(sa.sun_path)-1);
+    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog) == ANET_ERR)
         return ANET_ERR;
     if (perm)
         chmod(sa.sun_path, perm);

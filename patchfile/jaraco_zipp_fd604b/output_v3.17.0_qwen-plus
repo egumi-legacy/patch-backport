@@ -1,10 +1,11 @@
 A. Commit message:
-Add sanitized path handling and test cases for malformed paths
+Add assertions about malformed paths and employ SanitizedNames mixin
 
 B. Change summary:
-- Added a `SanitizedNames` mixin to ensure that paths are sanitized.
-- Modified the `CompleteDirs` class to use the `SanitizedNames` mixin.
-- Added test cases for handling malformed paths in `tests/test_path.py`.
+- Added a test case `test_malformed_paths` to handle malformed paths in `tests/test_path.py`.
+- Introduced the `SanitizedNames` mixin in `zipp/__init__.py` to sanitize zip file names.
+- Employed the `SanitizedNames` mixin in `CompleteDirs` to fix a broken test.
+- Removed the skip decorator from the `test_malformed_paths` test.
 
 C. Compatibility Risk:
 Medium
@@ -15,7 +16,7 @@ diff --git a/tests/test_path.py b/tests/test_path.py
 index bbf39b2..ace8763 100644
 --- a/tests/test_path.py
 +++ b/tests/test_path.py
-@@ -571,3 +571,21 @@ def test_getinfo_missing(self, alpharep):
+@@ -571,3 +571,20 @@ def test_getinfo_missing(self, alpharep):
          zipfile.Path(alpharep)
          with self.assertRaises(KeyError):
              alpharep.getinfo('does-not-exist')
@@ -106,7 +107,9 @@ index b08016c..f41ae08 100644
 +        return joined + '/' * name.endswith('/')
 +
 +
- class CompleteDirs(InitializedState, SanitizedNames, zipfile.ZipFile):
+-class CompleteDirs(InitializedState, zipfile.ZipFile):
++class CompleteDirs(InitializedState, SanitizedNames, zipfile.ZipFile):
      """
      A ZipFile subclass that ensures that implied directories
+     are always included in the namelist.
 ```

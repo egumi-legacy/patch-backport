@@ -8,6 +8,7 @@ import pprint
 from textwrap import indent
 from pprint import pformat
 from chevron import render
+import html
 
 class LLMAssistant:
     def __init__(self, inputs):
@@ -148,7 +149,8 @@ class LLMAssistant:
                         template = value,
                         data = dict_value,
                     )
-                    # TODO 疑似这里引入了html转义符
+                    # 解码HTML转义字符
+                    new_value = html.unescape(new_value)
                     print(f"new_value: {new_value}")
                     prompt_instance[key] = new_value
                 prompt.append(prompt_instance)

@@ -1,0 +1,24 @@
+A. Commit message:
+Avoid backtracking in Token#raw_params for older version
+
+B. Change summary:
+Updated the `raw_params` method to avoid backtracking by using `split` with `AUTHN_PAIR_DELIMITERS` and mapping to strip spaces. Also, removed empty elements from the resulting array.
+
+C. Compatibility Risk:
+Medium
+
+D. Fixed Code:
+diff --git a/actionpack/lib/action_controller/metal/http_authentication.rb b/actionpack/lib/action_controller/metal/http_authentication.rb
+index 439ffd5c99490..e42791bbc23d8 100644
+--- a/actionpack/lib/action_controller/metal/http_authentication.rb
++++ b/actionpack/lib/action_controller/metal/http_authentication.rb
+@@ -506,7 +506,8 @@ def rewrite_param_values(array_params)
+       # pairs by the standardized &lt;tt&gt;:&lt;/tt&gt;, &lt;tt&gt;;&lt;/tt&gt;, or &lt;tt&gt;\t&lt;/tt&gt;
+       # delimiters defined in +AUTHN_PAIR_DELIMITERS+.
+       def raw_params(auth)
+-        _raw_params = auth.sub(TOKEN_REGEX, &quot;&quot;).split(/\s*#{AUTHN_PAIR_DELIMITERS}\s*/)
++        _raw_params = auth.sub(TOKEN_REGEX, &quot;&quot;).split(AUTHN_PAIR_DELIMITERS).map(&amp;:strip)
++        _raw_params.reject!(&amp;:empty?)
+ 
+         if !_raw_params.first&amp;.start_with?(TOKEN_KEY)
+           _raw_params[0] = &quot;#{TOKEN_KEY}#{_raw_params.first}&quot;

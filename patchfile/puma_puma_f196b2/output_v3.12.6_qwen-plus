@@ -1,8 +1,8 @@
 A. Commit message:
-Prevent underscores from clobbering hyphen headers and handle special encoding headers
+Prevent underscores from clobbering hyphen headers and handle special cases in older version
 
 B. Change summary:
-This patch updates the `Http11` class to handle underscores and hyphens correctly in header names. It also adds a mechanism to prevent certain headers from being normalized, which can cause confusion for the application. Additionally, it includes tests to ensure the changes work as expected.
+This patch addresses the issue where underscores in header names could clobber hyphen-separated headers. It also introduces special handling for certain headers to prevent confusion in the application. Additionally, it ensures that the patch is compatible with the older version of the codebase.
 
 C. Compatibility Risk:
 Medium
@@ -48,12 +48,12 @@ index 0000000000..86e2d467e4
 @@ -0,0 +1,31 @@
 +module Puma
 +  class Request
-+    def self.req_env_post_parse(env)
++    def req_env_post_parse(env)
 +      to_delete = nil
 +      to_add = nil
 +
 +      env.each do |k,v|
-+        if k.start_with?("HTTP_") && k.include?(",") && !Const::UNMASKABLE_HEADERS.key?(k)
++        if k.start_with?("HTTP_") && k.include?(",") && !UNMASKABLE_HEADERS.key?(k)
 +          if to_delete
 +            to_delete << k
 +          else
@@ -81,69 +81,6 @@ index 0000000000..86e2d467e4
 +        env.merge! to_add
 +      end
 +    end
-+  end
-+end
-diff --git a/test/test_normalize.rb b/test/test_normalize.rb
-new file mode 100644
-index 0000000000..60e61c3dde
---- /dev/null
-+++ b/test/test_normalize.rb
-@@ -0,0 +1,57 @@
-+# frozen_string_literal: true
-+
-+require_relative "helper"
-+
-+require "puma/request"
-+
-+class TestNormalize < Minitest::Test
-+  parallelize_me!
-+
-+  include Puma::Request
-+
-+  def test_comma_headers
-+    env = {
-+      "HTTP_X_FORWARDED_FOR" => "1.1.1.1",
-+      "HTTP_X_FORWARDED,FOR" => "2.2.2.2",
-+    }
-+
-+    req_env_post_parse env
-+
-+    expected = {
-+      "HTTP_X_FORWARDED_FOR" => "1.1.1.1",
-+    }
-+
-+    assert_equal expected, env
-+
-+    # Test that the iteration order doesn't matter
-+
-+    env = {
-+      "HTTP_X_FORWARDED,FOR" => "2.2.2.2",
-+      "HTTP_X_FORWARDED_FOR" => "1.1.1.1",
-+    }
-+
-+    req_env_post_parse env
-+
-+    expected = {
-+      "HTTP_X_FORWARDED_FOR" => "1.1.1.1",
-+    }
-+
-+    assert_equal expected, env
-+  end
-+
-+  def test_unmaskable_headers
-+    env = {
-+      "HTTP_CONTENT,LENGTH" => "100000",
-+      "HTTP_TRANSFER,ENCODING" => "chunky"
-+    }
-+
-+    req_env_post_parse env
-+
-+    expected = {
-+      "HTTP_CONTENT,LENGTH" => "100000",
-+      "HTTP_TRANSFER,ENCODING" => "chunky"
-+    }
-+
-+    assert_equal expected, env
 +  end
 +end
 diff --git a/test/test_request_invalid.rb b/test/test_request_invalid.rb

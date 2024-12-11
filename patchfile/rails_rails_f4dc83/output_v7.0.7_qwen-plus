@@ -1,8 +1,8 @@
 A. Commit message:
-Fix CVE-2024-47887: Avoid backtracking in Token#raw_params
+Avoid backtracking in Token#raw_params
 
 B. Change summary:
-Modified the `raw_params` method to split the authorization body using `AUTHN_PAIR_DELIMITERS` and strip whitespace from each element. This avoids backtracking and ensures the method is more efficient and secure.
+The patch updates the `raw_params` method to avoid backtracking by splitting the authorization body using the `AUTHN_PAIR_DELIMITERS` and stripping whitespace from each split element. This change ensures that the method is more efficient and less prone to errors.
 
 C. Compatibility Risk:
 Low
@@ -14,7 +14,7 @@ index 017e7a3a2fd48..bb60ffdeba45c 100644
 --- a/actionpack/lib/action_controller/metal/http_authentication.rb
 +++ b/actionpack/lib/action_controller/metal/http_authentication.rb
 @@ -513,14 +513,11 @@ def rewrite_param_values(array_params)
-         array_params.each { |param| (param[1] || +"").gsub! %r/^"|$/, "" }
+         array_params.each { |param| (param[1] || +"").gsub! %r/^"|"$/, "" }
        end
  
 -      WHITESPACED_AUTHN_PAIR_DELIMITERS = /\s*#{AUTHN_PAIR_DELIMITERS}\s*/

@@ -2,10 +2,10 @@ A. Commit message:
 Fix issue of listen before chmod on Unix sockets (CVE-2023-45145)
 
 B. Change summary:
-The patch ensures that the permissions for Unix sockets are set before calling `listen(2)`. This prevents a race condition where another process could exploit the temporary incorrect permissions.
+This patch ensures that the socket permissions are set up prior to calling `listen(2)` to avoid a race condition where another process could exploit the incorrect permissions.
 
 C. Compatibility Risk:
-Low
+Medium
 
 D. Fixed Code:
 ```diff
@@ -31,7 +31,7 @@ index 4ea201df57f..10840fca20d 100644
      if (listen(s, backlog) == -1) {
          anetSetError(err, "listen: %s", strerror(errno));
          close(s);
-@@ -457,7 +460,7 @@ static int _anetTcpServer(char *err, int port, char *bindaddr, int af, int backl
+@@ -457,7 +460,7 @@ static int _anetTcpServer(char *err, int port, char *bindaddr, int af, int backlog)
  
          if (af == AF_INET6 && anetV6Only(err,s) == ANET_ERR) goto error;
          if (anetSetReuseAddr(err,s) == ANET_ERR) goto error;

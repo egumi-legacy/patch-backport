@@ -1,8 +1,9 @@
 A. Commit message:
-Fix lua bit.tohex (CVE-2024-31449)
+Fix lua bit.tohex (CVE-2024-31449) for Redis 4.0.11
 
 B. Change summary:
-- Added a check to handle the INT32_MIN value explicitly in the bit_tohex function to prevent it from being negated, which can lead to undefined behavior.
+- Added a check for `INT32_MIN` in the `bit_tohex` function to handle the edge case where the input is `INT32_MIN`.
+- Updated the test cases to include the new test for the `bit.tohex` bug.
 
 C. Compatibility Risk:
 Low

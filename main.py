@@ -24,7 +24,7 @@ class Main:
 
         use_cache = self.inputs.get("use_cache", False)
         if use_cache:
-            self.inputs["cache_path"] = self.patch_processor.get_response_path()
+            self.inputs["cache_path"] = patch_processor.get_response_path()
         
         
         # self.inputs["prompt_values"] = ['hello', 'world']

@@ -1,6 +1,6 @@
 modified file: src/util.c
 --- patchfile/redis_redis_c8649f/newer/src/util.c
-+++ patchfile/redis_redis_c8649f/4.0.11/src/util.c
++++ patchfile/redis_redis_c8649f/4.0.14/src/util.c
 @@ -28,7 +28,6 @@
    */
   
@@ -31,8 +31,7 @@ modified file: src/util.c
  +int stringmatchlen(const char *pattern, int patternLen,
  +        const char *string, int stringLen, int nocase)
   {
- -    while(patternLen && stringLen) {
- +    while(patternLen) {
+      while(patternLen && stringLen) {
           switch(pattern[0]) {
           case '*':
  -            while (patternLen && pattern[1] == '*') {
@@ -1168,7 +1167,7 @@ modified file: src/util.c
 """"""
 modified file: tests/unit/keyspace.tcl
 --- patchfile/redis_redis_c8649f/newer/tests/unit/keyspace.tcl
-+++ patchfile/redis_redis_c8649f/4.0.11/tests/unit/keyspace.tcl
++++ patchfile/redis_redis_c8649f/4.0.14/tests/unit/keyspace.tcl
 @@ -7,17 +7,11 @@
       } {}
   

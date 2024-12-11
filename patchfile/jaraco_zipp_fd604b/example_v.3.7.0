@@ -1,0 +1,121 @@
+From fd604bd34f0343472521a36da1fbd22e793e14fd Mon Sep 17 00:00:00 2001
+From: "Jason R. Coombs" <jaraco@jaraco.com>
+Date: Fri, 31 May 2024 12:31:40 -0400
+Subject: [PATCH] Merge pull request #120 from jaraco/bugfix/119-malformed-paths 
+    
+    Sanitize malformed paths
+---
+ test_zipp.py | 18 ++++++++++++++++
+ zipp.py      | 61 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 77 insertions(+), 2 deletions(-)
+
+diff --git a/test_zipp.py b/test_zipp.py
+index 1946413..5b59d7d 100644
+--- a/test_zipp.py
++++ b/test_zipp.py
+@@ -413,3 +413,21 @@ class TestPath(unittest.TestCase):
+         for alpharep in self.zipfile_alpharep():
+             file = cls(alpharep).joinpath('some dir').parent
+             assert isinstance(file, cls)
++
++    @__import__('pytest').mark.skip(reason="infinite loop")
++    def test_malformed_paths(self):
++        """
++        Path should handle malformed paths.
++        """
++        data = io.BytesIO()
++        zf = zipfile.ZipFile(data, "w")
++        zf.writestr("/one-slash.txt", b"content")
++        zf.writestr("//two-slash.txt", b"content")
++        zf.writestr("../parent.txt", b"content")
++        zf.filename = ''
++        root = zipfile.Path(zf)
++        assert list(map(str, root.iterdir())) == [
++            'one-slash.txt',
++            'two-slash.txt',
++            'parent.txt',
++        ]
+diff --git a/zipp.py b/zipp.py
+index 26b723c..fa9ac85 100644
+--- a/zipp.py
++++ b/zipp.py
+@@ -3,8 +3,9 @@ import posixpath
+ import zipfile
+ import itertools
+ import contextlib
+-import sys
+ import pathlib
++import re
++import sys
+ 
+ if sys.version_info < (3, 7):
+     from collections import OrderedDict
+@@ -68,7 +69,63 @@ def _difference(minuend, subtrahend):
+     return itertools.filterfalse(set(subtrahend).__contains__, minuend)
+ 
+ 
+-class CompleteDirs(zipfile.ZipFile):
++class SanitizedNames:
++    """
++    ZipFile mix-in to ensure names are sanitized.
++    """
++
++    def namelist(self):
++        return list(map(self._sanitize, super().namelist()))
++
++    @staticmethod
++    def _sanitize(name):
++        r"""
++        Ensure a relative path with posix separators and no dot names.
++        Modeled after
++        https://github.com/python/cpython/blob/bcc1be39cb1d04ad9fc0bd1b9193d3972835a57c/Lib/zipfile/__init__.py#L1799-L1813
++        but provides consistent cross-platform behavior.
++        >>> san = SanitizedNames._sanitize
++        >>> san('/foo/bar')
++        'foo/bar'
++        >>> san('//foo.txt')
++        'foo.txt'
++        >>> san('foo/.././bar.txt')
++        'foo/bar.txt'
++        >>> san('foo../.bar.txt')
++        'foo../.bar.txt'
++        >>> san('\\foo\\bar.txt')
++        'foo/bar.txt'
++        >>> san('D:\\foo.txt')
++        'D/foo.txt'
++        >>> san('\\\\server\\share\\file.txt')
++        'server/share/file.txt'
++        >>> san('\\\\?\\GLOBALROOT\\Volume3')
++        '?/GLOBALROOT/Volume3'
++        >>> san('\\\\.\\PhysicalDrive1\\root')
++        'PhysicalDrive1/root'
++        >>> san('abc/')
++        'abc/'
++        >>> san('../..')
++        Traceback (most recent call last):
++        ...
++        ValueError: Empty filename
++        """
++
++        def allowed(part):
++            return part and part not in {'..', '.'}
++
++        # Remove the drive letter.
++        # Don't use ntpath.splitdrive, because that also strips UNC paths
++        bare = re.sub('^([A-Z]):', r'\1', name, flags=re.IGNORECASE)
++        clean = bare.replace('\\', '/')
++        parts = clean.split('/')
++        joined = '/'.join(filter(allowed, parts))
++        if not joined:
++            raise ValueError("Empty filename")
++        return joined + '/' * name.endswith('/')
++
++
++class CompleteDirs(SanitizedNames, zipfile.ZipFile):
+     """
+     A ZipFile subclass that ensures that implied directories
+     are always included in the namelist.
+-- 
+2.43.0
+
+

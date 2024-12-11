@@ -1,0 +1,34 @@
+modified file: ext/puma_http11/org/jruby/puma/Http11.java
+--- patchfile/puma_puma_f196b2/v3.12.6/ext/puma_http11/org/jruby/puma/Http11.java
++++ patchfile/puma_puma_f196b2/adapted_v3.12.6/ext/puma_http11/org/jruby/puma/Http11.java
+@@ -92,6 +92,8 @@
+                      if((b.get(i) & 0xFF) == '-') {
+                          b.set(i, (byte)'_');
+                      } else {
+ +            } else if(bite == '_') {
+ +                b.set(i, (byte)',');
+                          b.set(i, (byte)Character.toUpperCase((char)b.get(i)));
+                      }
+                  }
+
+""""""
+modified file: lib/puma/const.rb
+--- patchfile/puma_puma_f196b2/v3.12.6/lib/puma/const.rb
++++ patchfile/puma_puma_f196b2/adapted_v3.12.6/lib/puma/const.rb
+@@ -229,6 +229,14 @@
+  
+      NEWLINE = "\n".freeze
+      HTTP_INJECTION_REGEX = /[\r\n]/.freeze
+ +    # The keys of headers that should not be convert to underscore
+ +    # normalized versions. These headers are ignored at the request reading layer,
+ +    # but if we normalize them after reading, it's just confusing for the application.
+ +    UNMASKABLE_HEADERS = {
+ +      "HTTP_TRANSFER,ENCODING" => true,
+ +      "HTTP_CONTENT,LENGTH" => true,
+ +    }
+ +
+  
+      HIJACK_P = "rack.hijack?".freeze
+      HIJACK = "rack.hijack".freeze
+
+""""""

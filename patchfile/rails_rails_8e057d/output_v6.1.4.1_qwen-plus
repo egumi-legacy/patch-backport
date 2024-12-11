@@ -1,0 +1,27 @@
+A. Commit message:
+Avoid backtracking in Token#raw_params (CVE-2024-47887)
+
+B. Change summary:
+- Modified the `raw_params` method to split the `auth` string using `AUTHN_PAIR_DELIMITERS` and map each element to strip whitespace.
+- Added a step to reject empty elements from the resulting array.
+
+C. Compatibility Risk:
+Medium
+
+D. Fixed Code:
+```diff
+diff --git a/actionpack/lib/action_controller/metal/http_authentication.rb b/actionpack/lib/action_controller/metal/http_authentication.rb
+index 2ad4df5b53ad8..ef0886bd4af9b 100644
+--- a/actionpack/lib/action_controller/metal/http_authentication.rb
++++ b/actionpack/lib/action_controller/metal/http_authentication.rb
+@@ -483,7 +483,8 @@ def rewrite_param_values(array_params)
+       # pairs by the standardized <tt>:</tt>, <tt>;</tt>, or <tt>\t</tt>
+       # delimiters defined in +AUTHN_PAIR_DELIMITERS+.
+       def raw_params(auth)
+-        _raw_params = auth.sub(TOKEN_REGEX, "").split(/\s*#{AUTHN_PAIR_DELIMITERS}\s*/)
++        _raw_params = auth.sub(TOKEN_REGEX, "").split(AUTHN_PAIR_DELIMITERS).map(&:strip)
++        _raw_params.reject!(&:empty?)
+ 
+         if !_raw_params.first&.start_with?(TOKEN_KEY)
+           _raw_params[0] = "#{TOKEN_KEY}#{_raw_params.first}"
+```
