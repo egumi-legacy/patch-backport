@@ -1,15 +1,84 @@
-The file does not exist in the older (target) version: django/contrib/auth/forms.py
+modified file: django/contrib/auth/forms.py
+--- patchfile/django_django_bf4888/4.2.15/django/contrib/auth/forms.py
++++ patchfile/django_django_bf4888/adapted_4.2.15/django/contrib/auth/forms.py
+@@ -1,4 +1,4 @@
+ -import unicodedata
+ +import loggingimport unicodedata
+  
+  from django import forms
+  from django.contrib.auth import authenticate, get_user_model, password_validation
+@@ -16,7 +16,7 @@
+  from django.utils.translation import gettext_lazy as _
+  
+  UserModel = get_user_model()
+ -
+ +logger = logging.getLogger("django.contrib.auth")
+  
+  def _unicode_ci_compare(s1, s2):
+      """
+@@ -314,8 +314,7 @@
+              html_email = loader.render_to_string(html_email_template_name, context)
+              email_message.attach_alternative(html_email, "text/html")
+  
+ -        email_message.send()
+ -
+ +        try:            email_message.send()        except Exception:            logger.exception(                "Failed to send password reset email to %s", context["user"].pk            )
+      def get_users(self, email):
+          """Given an email, return matching user(s) who should receive a reset.
+  
 
 """"""
-The file does not exist in the older (target) version: docs/ref/logging.txt
+modified file: docs/ref/logging.txt
+--- patchfile/django_django_bf4888/4.2.15/docs/ref/logging.txt
++++ patchfile/django_django_bf4888/adapted_4.2.15/docs/ref/logging.txt
+@@ -204,7 +204,7 @@
+      Support for logging transaction management queries (``BEGIN``, ``COMMIT``,
+      and ``ROLLBACK``) was added.
+  
+ -.. _django-security-logger:
+ +.. _django-contrib-auth-logger:``django.contrib.auth``~~~~~~~~~~~~~~~~~~~~~~~.. versionadded:: 4.2.16Log messages related to :doc:`contrib/auth`, particularly ``ERROR`` messagesare generated when a :class:`~django.contrib.auth.forms.PasswordResetForm` issuccessfully submitted but the password reset email cannot be delivered due toa mail sending exception... _django-security-logger:
+  
+  ``django.security.*``
+  ~~~~~~~~~~~~~~~~~~~~~
 
 """"""
-The file does not exist in the older (target) version: docs/topics/auth/default.txt
+modified file: docs/topics/auth/default.txt
+--- patchfile/django_django_bf4888/4.2.15/docs/topics/auth/default.txt
++++ patchfile/django_django_bf4888/adapted_4.2.15/docs/topics/auth/default.txt
+@@ -1661,8 +1661,7 @@
+      .. method:: send_mail(subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None)
+  
+          Uses the arguments to send an ``EmailMultiAlternatives``.
+ -        Can be overridden to customize how the email is sent to the user.
+ -
+ +        Can be overridden to customize how the email is sent to the user. If        you choose to override this method, be mindful of handling potential        exceptions raised due to email sending failures.
+          :param subject_template_name: the template for the subject.
+          :param email_template_name: the template for the email body.
+          :param context: context passed to the ``subject_template``,
 
 """"""
-The file does not exist in the older (target) version: tests/auth_tests/test_forms.py
+modified file: tests/auth_tests/test_forms.py
+--- patchfile/django_django_bf4888/4.2.15/tests/auth_tests/test_forms.py
++++ patchfile/django_django_bf4888/adapted_4.2.15/tests/auth_tests/test_forms.py
+@@ -1245,7 +1245,7 @@
+              )
+          )
+  
+ -    @override_settings(AUTH_USER_MODEL="auth_tests.CustomEmailField")
+ +    @override_settings(EMAIL_BACKEND="mail.custombackend.FailingEmailBackend")    def test_save_send_email_exceptions_are_catched_and_logged(self):        (user, username, email) = self.create_dummy_user()        form = PasswordResetForm({"email": email})        self.assertTrue(form.is_valid())        with self.assertLogs("django.contrib.auth", level=0) as cm:            form.save()        self.assertEqual(len(mail.outbox), 0)        self.assertEqual(len(cm.output), 1)        errors = cm.output[0].split("\n")        pk = user.pk        self.assertEqual(            errors[0],            f"ERROR:django.contrib.auth:Failed to send password reset email to {pk}",        )        self.assertEqual(            errors[-1], "ValueError: FailingEmailBackend is doomed to fail."        )    @override_settings(AUTH_USER_MODEL="auth_tests.CustomEmailField")
+      def test_custom_email_field(self):
+          email = "test@mail.com"
+          CustomEmailField.objects.create_user("test name", "test password", email)
 
 """"""
-The file does not exist in the older (target) version: tests/mail/custombackend.py
+modified file: tests/mail/custombackend.py
+--- patchfile/django_django_bf4888/4.2.15/tests/mail/custombackend.py
++++ patchfile/django_django_bf4888/adapted_4.2.15/tests/mail/custombackend.py
+@@ -11,4 +11,4 @@
+      def send_messages(self, email_messages):
+          # Messages are stored in an instance variable for testing.
+          self.test_outbox.extend(email_messages)
+ -        return len(email_messages)
+ +class FailingEmailBackend(BaseEmailBackend):    def send_messages(self, email_messages):        raise ValueError("FailingEmailBackend is doomed to fail.")        return len(email_messages)
 
 """"""

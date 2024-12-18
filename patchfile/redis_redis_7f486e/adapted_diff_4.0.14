@@ -1,3 +1,26 @@
-The file does not exist in the older (target) version: src/anet.c
+modified file: src/anet.c
+--- patchfile/redis_redis_7f486e/4.0.14/src/anet.c
++++ patchfile/redis_redis_7f486e/adapted_4.0.14/src/anet.c
+@@ -437,7 +437,10 @@
+      return totlen;
+  }
+  
+ -static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog) {
+ +static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog, mode_t perm) {
+ +if (sa->sa_family == AF_LOCAL && perm)
+ +chmod(((struct sockaddr_un *) sa)->sun_path, perm);
+ +
+      if (bind(s,sa,len) == -1) {
+          anetSetError(err, "bind: %s", strerror(errno));
+          close(s);
+@@ -484,7 +487,7 @@
+  
+          if (af == AF_INET6 && anetV6Only(err,s) == ANET_ERR) goto error;
+          if (anetSetReuseAddr(err,s) == ANET_ERR) goto error;
+ -        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog) == ANET_ERR) s = ANET_ERR;
+ +        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog,0) == ANET_ERR) s = ANET_ERR;
+          goto end;
+      }
+      if (p == NULL) {
 
 """"""

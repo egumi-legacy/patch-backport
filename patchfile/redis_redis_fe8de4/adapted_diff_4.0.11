@@ -1,6 +1,37 @@
-The file does not exist in the older (target) version: deps/lua/src/lua_bit.c
+modified file: deps/lua/src/lua_bit.c
+--- patchfile/redis_redis_fe8de4/4.0.11/deps/lua/src/lua_bit.c
++++ patchfile/redis_redis_fe8de4/adapted_4.0.11/deps/lua/src/lua_bit.c
+@@ -131,6 +131,7 @@
+    const char *hexdigits = "0123456789abcdef";
+    char buf[8];
+    int i;
+ +  if (n == INT32_MIN) n = INT32_MIN+1;
+    if (n < 0) { n = -n; hexdigits = "0123456789ABCDEF"; }
+    if (n > 8) n = 8;
+    for (i = (int)n; --i >= 0; ) { buf[i] = hexdigits[b & 15]; b >>= 4; }
 
 """"""
-The file does not exist in the older (target) version: tests/unit/scripting.tcl
+modified file: tests/unit/scripting.tcl
+--- patchfile/redis_redis_fe8de4/4.0.11/tests/unit/scripting.tcl
++++ patchfile/redis_redis_fe8de4/adapted_4.0.11/tests/unit/scripting.tcl
+@@ -337,6 +337,18 @@
+          set e
+      } {*ERR*attempted to create global*}
+  
+ +
+ +test {lua bit.tohex bug} {
+ +
+ +set res [run_script {return bit.tohex(65535, -2147483648)} 0]
+ +
+ +r ping
+ +
+ +set res
+ +
+ +} {0000FFFF}
+ +
+ +
+      test {Test an example script DECR_IF_GT} {
+          set decr_if_gt {
+              local current
 
 """"""
