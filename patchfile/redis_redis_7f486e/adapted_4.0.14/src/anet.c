@@ -438,14 +438,14 @@ int anetWrite(int fd, char *buf, int count)
 }
 
 static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog, mode_t perm) {
-if (sa->sa_family == AF_LOCAL && perm)
-chmod(((struct sockaddr_un *) sa)->sun_path, perm);
-
     if (bind(s,sa,len) == -1) {
         anetSetError(err, "bind: %s", strerror(errno));
         close(s);
         return ANET_ERR;
     }
+
+    if (sa->sa_family == AF_LOCAL && perm)
+        chmod(((struct sockaddr_un *) sa)->sun_path, perm);
 
     if (listen(s, backlog) == -1) {
         anetSetError(err, "listen: %s", strerror(errno));
@@ -524,10 +524,8 @@ int anetUnixServer(char *err, char *path, mode_t perm, int backlog)
     memset(&sa,0,sizeof(sa));
     sa.sun_family = AF_LOCAL;
     strncpy(sa.sun_path,path,sizeof(sa.sun_path)-1);
-    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog) == ANET_ERR)
+    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog,perm) == ANET_ERR)
         return ANET_ERR;
-    if (perm)
-        chmod(sa.sun_path, perm);
     return s;
 }
 

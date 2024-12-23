@@ -1,52 +1,43 @@
 modified file: src/util.c
 --- patchfile/redis_redis_c8649f/4.0.14/src/util.c
 +++ patchfile/redis_redis_c8649f/adapted_4.0.14/src/util.c
-@@ -50,8 +50,11 @@
-      while(patternLen && stringLen) {
-          switch(pattern[0]) {
-          case '*':
+@@ -45,7 +45,10 @@
+  
+  int stringmatchlen(const char *pattern, int patternLen,
+ -        const char *string, int stringLen, int nocase)
  +        const char *string, int stringLen, int nocase, int *skipLongerMatches, int nesting)
  +    /* Protection against abusive patterns. */
  +    if (nesting > 1000) return 0;
  +
-              while (pattern[1] == '*') {
- -                pattern++;
-                  patternLen--;
-              }
-              if (patternLen == 1)
-@@ -60,8 +63,8 @@
+  {
+      while(patternLen && stringLen) {
+          switch(pattern[0]) {
+@@ -58,7 +61,7 @@
+                  return 1; /* match */
+              while(stringLen) {
                   if (stringmatchlen(pattern+1, patternLen-1,
-                              string, stringLen, nocase))
-                      return 1; /* match */
+ -                            string, stringLen, nocase))
  +                            string, stringLen, nocase, skipLongerMatches, nesting+1))
+                      return 1; /* match */
                   string++;
- -                stringLen--;
-              }
-              return 0; /* no match */
-              break;
-@@ -182,8 +185,8 @@
-      char buf[128];
-      long mul; /* unit multiplier */
-      long long val;
- +    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches,0);
-      unsigned int digits;
- -
-      if (err) *err = 0;
-  
+                  stringLen--;
 
 """"""
 modified file: tests/unit/keyspace.tcl
 --- patchfile/redis_redis_c8649f/4.0.14/tests/unit/keyspace.tcl
 +++ patchfile/redis_redis_c8649f/adapted_4.0.14/tests/unit/keyspace.tcl
-@@ -273,3 +273,9 @@
-          r keys *
-      } {dlskeriewrioeuwqoirueioqwrueoqwrueqw}
-  }
+@@ -4,6 +4,12 @@
+          assert {[r get x] eq "foo"}
+          r del x
+          r get x
+ +    } {}
  +
  +    test {Regression for pattern matching very long nested loops} {
  +        r flushdb
  +        r SET [string repeat "a" 50000] 1
  +        r KEYS [string repeat "*?" 50000]
- +    } {}
+      } {}
+  
+      test {Vararg DEL} {
 
 """"""

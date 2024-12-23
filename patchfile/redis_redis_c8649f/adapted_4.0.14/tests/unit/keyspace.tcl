@@ -6,6 +6,12 @@ start_server {tags {"keyspace"}} {
         r get x
     } {}
 
+    test {Regression for pattern matching very long nested loops} {
+        r flushdb
+        r SET [string repeat "a" 50000] 1
+        r KEYS [string repeat "*?" 50000]
+    } {}
+
     test {Vararg DEL} {
         r set foo1 a
         r set foo2 b
@@ -273,9 +279,3 @@ start_server {tags {"keyspace"}} {
         r keys *
     } {dlskeriewrioeuwqoirueioqwrueoqwrueqw}
 }
-
-    test {Regression for pattern matching very long nested loops} {
-        r flushdb
-        r SET [string repeat "a" 50000] 1
-        r KEYS [string repeat "*?" 50000]
-    } {}

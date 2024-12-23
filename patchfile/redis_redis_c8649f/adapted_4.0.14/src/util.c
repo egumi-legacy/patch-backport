@@ -45,26 +45,26 @@
 
 /* Glob-style pattern matching. */
 int stringmatchlen(const char *pattern, int patternLen,
-        const char *string, int stringLen, int nocase)
-{
-    while(patternLen && stringLen) {
-        switch(pattern[0]) {
-        case '*':
         const char *string, int stringLen, int nocase, int *skipLongerMatches, int nesting)
     /* Protection against abusive patterns. */
     if (nesting > 1000) return 0;
 
+{
+    while(patternLen && stringLen) {
+        switch(pattern[0]) {
+        case '*':
             while (pattern[1] == '*') {
+                pattern++;
                 patternLen--;
             }
             if (patternLen == 1)
                 return 1; /* match */
             while(stringLen) {
                 if (stringmatchlen(pattern+1, patternLen-1,
-                            string, stringLen, nocase))
-                    return 1; /* match */
                             string, stringLen, nocase, skipLongerMatches, nesting+1))
+                    return 1; /* match */
                 string++;
+                stringLen--;
             }
             return 0; /* no match */
             break;
@@ -185,8 +185,8 @@ long long memtoll(const char *p, int *err) {
     char buf[128];
     long mul; /* unit multiplier */
     long long val;
-    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches,0);
     unsigned int digits;
+
     if (err) *err = 0;
 
     /* Search the first non digit character. */
