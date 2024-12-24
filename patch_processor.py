@@ -469,7 +469,8 @@ class PatchProcessor:
             self.write_file_contents(newer_file_contents, 'newer')
 
         if not (base_dir / self.target_version).exists():
-            target_file_contents = self.get_file_contents_from_ref(file_list, self.make_commit_info(tag=self.target_version))
+            # target_file_contents = self.get_file_contents_from_ref(file_list, self.make_commit_info(tag=self.target_version))
+            target_file_contents = self.get_file_contents_from_ref(file_list, self.make_commit_info(branch=self.target_version))
             self.write_file_contents(target_file_contents, self.target_version)
 
         # 3. 获取两个版本文件的diff并保存
@@ -484,11 +485,11 @@ class PatchProcessor:
         if not (base_dir / 'patch' / 'patch.txt').exists():
             patch_url = self.url + '.patch'
             print(f"patch_url: {patch_url}")
-            output_file = str(base_dir / 'patch' / 'patch.txt')
+            output_file = str(base_dir / 'patch' / f'patch.txt')
             # print(f"output_file: {output_file}")
             subprocess.run(['curl', '-L', patch_url, '-o', output_file])
         
-        patch_values = [{"patchCode": (base_dir / 'patch' / 'patch.txt').read_text(), "diffCode": (base_dir / 'diff').read_text()}]
+        patch_values = [{"patchCode": (base_dir / 'patch' / f'patch.txt').read_text(), "diffCode": (base_dir / 'diff').read_text()}]
 
 
         return dict(prompt_values=patch_values)

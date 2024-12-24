@@ -1,3 +1,4 @@
+# Model 1 
 # patch_url: "https://github.com/django/django/commit/022ab0a75c76ab2ea31dfcc5f2cf5501e378d397"
 # target_version: "5.1"
 # patch_url: "https://github.com/django/django/commit/d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2"
@@ -17,8 +18,8 @@
 # target_version: "4.0.14"
 # patch_url: "https://github.com/rails/rails/commit/b1241f468d1b32235f438c2e2203386e6efd3891"
 # target_version: "v7.0.7"
-patch_url: "https://github.com/rails/rails/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd"
-target_version: "v5.2.4.4"
+# patch_url: "https://github.com/rails/rails/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd"
+# target_version: "v5.2.4.4"
 # target_version: "v6.1.4.1"
 # patch_url: "https://github.com/rails/rails/commit/f4dc83d8926509d0958ec21fcdbc2e7df3d32ce2"
 # target_version: "v7.0.7"
@@ -33,16 +34,50 @@ target_version: "v5.2.4.4"
 # target_version: "4.0.14"
 # patch_url: "https://github.com/redis/redis/commit/fe8de4313f85e0f8af2eff1f78b52cfe56fb4c71"
 # target_version: "4.0.14"
+# patch_url: "https://github.com/gregkh/linux/commit/349f0086ba8b2a169877d21ff15a4d9da3a60054"
+# target_version: "linux-6.12.y"
+mode1:
+  patch_url: "https://github.com/redis/redis/commit/fe8de4313f85e0f8af2eff1f78b52cfe56fb4c71"
+  target_version: "4.0.14"
+
+# 模式2配置
+mode2:
+  repo_url: 'https://github.com/gregkh/linux'
+  branch: 'linux-6.12.y'
+  target_version: "linux-6.12.y"
+  # Commits缓存配置
+  use_cached_commits: true
+  commits_file: "commits.json"  # 可选，默认为 commits.json
+# # Model 2
+# repo_url: 'https://github.com/gregkh/linux'
+# branch: 'linux-6.12.y'
+# target_version: "linux-6.12.y"
+
+
+
+# 通用配置
+common:
+  # Commits缓存配置
+  use_cached_commits: false
+  commits_file: "commits.json"
+
+  # LLMAssistant Inputs
+  model: "qwen-plus"
+  use_cache: true
+  prompt_id: "backport"
+  prompt_template_file: "test_prompts.json"
+  prompt_value_file: "test_prompt_values.json"
+  response_file: "response.txt"
 # LLMAssistant Inputs
-model: "qwen-plus" # gpt-4o, gpt-4o-mini, gpt-4-turbo, gpt-4-turbo-preview
-use_cache: true
-# openai_api_key:
-# openai_base_url:
-# github_api_key:
-prompt_id: "backport"
-prompt_template_file: "test_prompts.json"
-prompt_value_file: "test_prompt_values.json"
-response_file: "response.txt"
+# model: "qwen-plus" # gpt-4o, gpt-4o-mini, gpt-4-turbo, gpt-4-turbo-preview
+# use_cache: false
+# # openai_api_key:
+# # openai_base_url:
+# # github_api_key:
+# prompt_id: "backport"
+# prompt_template_file: "test_prompts.json"
+# prompt_value_file: "test_prompt_values.json"
+# response_file: "response.txt"
 
 # # CommitChanges Inputs
 # disable_branch: false

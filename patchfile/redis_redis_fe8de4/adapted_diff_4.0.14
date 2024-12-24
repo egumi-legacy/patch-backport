@@ -14,18 +14,18 @@ modified file: deps/lua/src/lua_bit.c
 modified file: tests/unit/scripting.tcl
 --- patchfile/redis_redis_fe8de4/4.0.14/tests/unit/scripting.tcl
 +++ patchfile/redis_redis_fe8de4/adapted_4.0.14/tests/unit/scripting.tcl
-@@ -336,6 +336,12 @@
-          catch {r eval {a=10} 0} e
+@@ -337,6 +337,12 @@
           set e
       } {*ERR*attempted to create global*}
+  
  +    test {lua bit.tohex bug} {
  +        set res [run_script {return bit.tohex(65535, -2147483648)} 0]
  +        r ping
  +        set res
  +    } {0000FFFF}
  +
-  
       test {Test an example script DECR_IF_GT} {
           set decr_if_gt {
+              local current
 
 """"""
