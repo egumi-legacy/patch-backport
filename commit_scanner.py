@@ -14,27 +14,33 @@ class CommitScanner:
         :param repo_url: GitHub 仓库URL (例如: "https://github.com/gregkh/linux")
         :param branch: 分支名称 (例如: "linux-6.12.y")
         """
-        dotenv.load_dotenv()
         self.repo_url = repo_url
         self.branch = branch
-        self.github_token = os.getenv('GITHUB_TOKEN')
-        print(f"github_token: {self.github_token}")
-        self.headers = {
-            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
-            'Accept': 'application/json, application/vnd.github+json',
-            'Authorization': f'token {self.github_token}',
-            'Host': 'api.github.com',
-            'Connection': 'keep-alive'
-        }
+        self.git_ops = GitOperations()
+        self.commit_info = self.git_ops.parse_github_url(self.repo_url)
+        self.owner = self.commit_info['owner']
+        self.repo = self.commit_info['repo']
+        # dotenv.load_dotenv()
+        # self.repo_url = repo_url
+        # self.branch = branch
+        # self.github_token = os.getenv('GITHUB_TOKEN')
+        # print(f"github_token: {self.github_token}")
+        # self.headers = {
+        #     'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+        #     'Accept': 'application/json, application/vnd.github+json',
+        #     'Authorization': f'token {self.github_token}',
+        #     'Host': 'api.github.com',
+        #     'Connection': 'keep-alive'
+        # }
         
-        # 解析仓库信息
-        pattern = r'https://github\.com/([^/]+)/([^/]+)'
-        match = re.match(pattern, repo_url)
-        if not match:
-            raise ValueError("无效的 GitHub 仓库 URL")
-        self.owner, self.repo = match.groups()
+        # # 解析仓库信息
+        # pattern = r'https://github\.com/([^/]+)/([^/]+)'
+        # match = re.match(pattern, repo_url)
+        # if not match:
+        #     raise ValueError("无效的 GitHub 仓库 URL")
+        # self.owner, self.repo = match.groups()
 
-    def scan_commits(self, page=1, per_page=50):
+    def scan_commits(self, page=1, per_page=100):
         """扫描提交历史，查找包含上游提交引用的提交"""
         commits_url = f"https://api.github.com/repos/{self.owner}/{self.repo}/commits"
         # https://api.github.com/repos/gregkh/linux/commits?sha=linux-6.12.y&page=1&per_page=100

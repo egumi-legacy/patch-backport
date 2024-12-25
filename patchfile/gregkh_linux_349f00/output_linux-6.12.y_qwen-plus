@@ -1,8 +1,8 @@
 A. Commit message:
-x86/static-call: fix 32-bit build by defining static_call_initialized for non-inline builds
+x86/static-call: fix 32-bit build by defining static_call_initialized for non-inline configurations
 
 B. Change summary:
-The patch defines `static_call_initialized` as "0" when `CONFIG_STATIC_CALL_INLINE` is not set, ensuring compatibility with 32-bit x86 builds. This change ensures that the symbol is available and properly initialized in all configurations.
+The patch defines `static_call_initialized` as "0" when `CONFIG_STATIC_CALL_INLINE` is not set, ensuring that the variable is available in 32-bit x86 builds where it was previously missing.
 
 C. Compatibility Risk:
 Low
@@ -21,16 +21,16 @@ index 785980af89729..78a77a4ae0ea8 100644
  /*
   * Either @site or @tramp can be NULL.
   */
-@@ -161,6 +160,8 @@ extern void arch_static_call_transform(void *site, void *tramp, void *func, bool
+@@ -160,6 +159,8 @@
+ #define static_call_query(name) (READ_ONCE(STATIC_CALL_KEY(name).func))
  
  #ifdef CONFIG_HAVE_STATIC_CALL_INLINE
- 
-+extern int static_call_initialized;
 +
++extern int static_call_initialized;
+ 
  extern int __init static_call_init(void);
  
- extern void static_call_force_reinit(void);
-@@ -226,6 +227,8 @@ extern long __static_call_return0(void);
+@@ -226,6 +227,8 @@
  
  #elif defined(CONFIG_HAVE_STATIC_CALL)
  
@@ -39,13 +39,13 @@ index 785980af89729..78a77a4ae0ea8 100644
  static inline int static_call_init(void) { return 0; }
  
  #define DEFINE_STATIC_CALL(name, _func)					\
-@@ -282,6 +285,8 @@ extern long __static_call_return0(void);
+@@ -281,6 +284,8 @@
+ 	EXPORT_SYMBOL_GPL(STATIC_CALL_TRAMP(name))
  
  #else /* Generic implementation */
- 
-+#define static_call_initialized 0
 +
++#define static_call_initialized 0
+ 
  static inline int static_call_init(void) { return 0; }
  
- static inline long __static_call_return0(void)
 ```

@@ -3,13 +3,14 @@ from ruamel.yaml import YAML
 import pprint
 from llm_assistant import LLMAssistant
 from patch_processor import PatchProcessor
-from commit_scanner import CommitScanner
+# from commit_scanner import CommitScanner
+from git_operations import GitOperations
 import argparse
 from loguru import logger
 import json
 
 _DEFAULT_INPUT_FILE = Path(__file__).parent / "inputs.yaml"
-_DEFAULT_COMMITS_FILE = Path(__file__).parent / "commits.json"
+
 
 class Main:
     def __init__(self):
@@ -85,53 +86,21 @@ class Main:
             if param not in self.inputs:
                 raise ValueError(f"Missing required parameter for mode 2: {param}")
 
-        use_cached_commits = self.inputs.get('use_cached_commits', False)
-        commits_file = Path(self.inputs.get('commits_file', _DEFAULT_COMMITS_FILE))
-
-        upstream_commits = self.get_upstream_commits(use_cached_commits, commits_file)
+        git_operations = GitOperations(self.inputs)
+        upstream_commits = git_operations.get_upstream_commits()
         if not upstream_commits:
             logger.error("未找到上游提交信息")
             return
         
-        scanner = CommitScanner(self.inputs['repo_url'], self.inputs['branch'])
-        
         for commit in upstream_commits:
             logger.info(f"处理上游提交: {commit['upstream_sha']}")
-            commit_details = scanner.get_commit_details(commit)
+            commit_details = git_operations.get_commit_details(commit)
             pprint.pprint(commit_details)
             self.inputs.update(commit_details)
             
             # 复用模式1的处理逻辑
             # self.process_single_commit()
     
-    def load_cached_commits(self, commits_file):
-        """从缓存文件加载commits信息"""
-        if not commits_file.exists():
-            logger.warning(f"Commits缓存文件不存在: {commits_file}")
-            return []
-        
-        with open(commits_file, 'r') as f:
-            return json.load(f)
-
-    def save_commits_cache(self, commits, commits_file):
-        """保存commits信息到缓存文件"""
-        with open(commits_file, 'w') as f:
-            json.dump(commits, f, indent=2)
-        logger.info(f"已保存commits信息到: {commits_file}")
-
-    def get_upstream_commits(self, use_cached_commits=False, commits_file=None):
-        """获取上游commits信息，支持从缓存或API获取"""
-        if use_cached_commits:
-            logger.info("从缓存文件加载commits信息")
-            return self.load_cached_commits(commits_file)
-        
-        logger.info("从GitHub API获取commits信息")
-        scanner = CommitScanner(self.inputs['repo_url'], self.inputs['branch'])
-        commits = scanner.scan_commits()
-        
-        # 保存到缓存文件
-        self.save_commits_cache(commits, commits_file)
-        return commits
 
     def run(self):
         if self.args.mode == 1:
