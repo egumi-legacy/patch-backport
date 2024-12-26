@@ -7,6 +7,8 @@ from pathlib import Path
 from loguru import logger
 import dotenv
 import json
+# from patch_evaluator import PatchEvaluator
+from patch_utils import download_patch
 
 _DEFAULT_COMMITS_FILE = Path(__file__).parent / "commits.json"
 
@@ -35,6 +37,10 @@ class GitOperations:
         
         if self.commit_info['commit_sha']:
             self.patch_commit_sha = self.commit_info['commit_sha']
+
+        # # 设置patch文件存储路径
+        # self.patch_dir = Path(inputs['basedir']) / 'patches'
+        # self.patch_dir.mkdir(exist_ok=True)
         
 
 
@@ -326,3 +332,28 @@ class GitOperations:
             'reference_url': f"https://github.com/{self.owner}/{self.repo}/commit/{commit_info['downstream_sha']}",
             'target_version': self.branch
         }
+
+    # def download_patch_by_type(self, patch_url, patch_type='upstream'):
+    #     """
+    #     下载并缓存patch文件
+    #     """
+    #     # 生成缓存文件名
+    #     url_hash = patch_url.split('/')[-1][:6]  # 使用commit hash的前8位
+    #     cache_name = f"{patch_type}_{url_hash}.patch"
+    #     cache_path = self.patch_dir / cache_name
+        
+    #     return download_patch(patch_url, cache_path, self.use_cached_patches)
+
+    def evaluate_patch_application(self, repo_path, commit_info):
+        """评估patch应用效果"""
+        from patch_evaluator import PatchEvaluator
+        evaluator = PatchEvaluator(repo_path, self.inputs)
+        
+        results = evaluator.evaluate_patch(
+            upstream_patch_url=self.inputs['patch_url'],
+            downstream_patch_url=self.inputs['reference_url'],
+            adapted_dir=Path(self.inputs['basedir']) / f"adapted_{self.inputs['target_version']}",
+            commit_info=commit_info
+        )
+        
+        return results

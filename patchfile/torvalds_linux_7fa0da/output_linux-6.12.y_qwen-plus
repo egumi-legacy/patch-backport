@@ -1,0 +1,212 @@
+A. Commit message:
+Backport hypercall_page removal and related changes from newer version
+
+B. Change summary:
+This patch backports the removal of the `hypercall_page` extern declaration and associated code from the newer version to the older version. It also adjusts the vvar section in the linker script and removes references to `hypercall_page` in various files.
+
+C. Compatibility Risk:
+High
+
+D. Fixed Code:
+```diff
+diff --git a/arch/x86/include/asm/xen/hypercall.h b/arch/x86/include/asm/xen/hypercall.h
+--- a/arch/x86/include/asm/xen/hypercall.h
++++ b/arch/x86/include/asm/xen/hypercall.h
+@@ -87,8 +87,6 @@
+   * weakness as a macro language.  Sorry.  (But let's just give thanks
+   * there aren't more than 5 arguments...)
+   */
+-
+-extern struct { char _entry[32]; } hypercall_page[];
+ 
+ void xen_hypercall_func(void);
+ DECLARE_STATIC_CALL(xen_hypercall, xen_hypercall_func);
+diff --git a/arch/x86/kernel/callthunks.c b/arch/x86/kernel/callthunks.c
+--- a/arch/x86/kernel/callthunks.c
++++ b/arch/x86/kernel/callthunks.c
+@@ -143,11 +143,6 @@
+ 	    dest < (void*)relocate_kernel + KEXEC_CONTROL_CODE_MAX_SIZE)
+ 		return true;
+ #endif
+-#ifdef CONFIG_XEN
+-	if (dest >= (void *)hypercall_page &&
+-	    dest < (void*)hypercall_page + PAGE_SIZE)
+-		return true;
+-#endif
+ 	return false;
+ }
+diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -193,6 +193,29 @@
+ 
+ 	ORC_UNWIND_TABLE
+ 
++	. = ALIGN(PAGE_SIZE);
++	__vvar_page = .;
++
++	.vvar : AT(ADDR(.vvar) - LOAD_OFFSET) {
++		/* work around gold bug 13023 */
++		__vvar_beginning_hack = .;
++
++		/* Place all vvars at the offsets in asm/vvar.h. */
++#define EMIT_VVAR(name, offset)				\
++		. = __vvar_beginning_hack + offset;	\
++		*(.vvar_ ## name)
++#include <asm/vvar.h>
++#undef EMIT_VVAR
++
++		/*
++		 * Pad the rest of the page with zeros.  Otherwise the loader
++		 * can leave garbage here.
++		 */
++		. = __vvar_beginning_hack + PAGE_SIZE;
++	} :data
++
++	. = ALIGN(__vvar_page + PAGE_SIZE, PAGE_SIZE);
++
+ 	. = ALIGN(PAGE_SIZE);
+ 	.init.begin : AT(ADDR(.init.begin) - LOAD_OFFSET) {
+@@ -420,10 +443,6 @@
+ 
+ 	STABS_DEBUG
+ 	DWARF_DEBUG
+-#ifdef CONFIG_PROPELLER_CLANG
+-	.llvm_bb_addr_map : { *(.llvm_bb_addr_map) }
+-#endif
+-
+ 	ELF_DETAILS
+ 
+ 	DISCARDS
+@@ -512,22 +531,3 @@
+ #endif
+ 
+ #endif /* CONFIG_X86_64 */
+-
+-/*
+- * The symbols below are referenced using relative relocations in the
+- * respective ELF notes. This produces build time constants that the
+- * linker will never mark as relocatable. (Using just ABSOLUTE() is not
+- * sufficient for that).
+- */
+-#ifdef CONFIG_XEN
+-#ifdef CONFIG_XEN_PV
+-xen_elfnote_entry_value =
+-	ABSOLUTE(xen_elfnote_entry) + ABSOLUTE(startup_xen);
+-#endif
+-xen_elfnote_hypercall_page_value =
+-	ABSOLUTE(xen_elfnote_hypercall_page) + ABSOLUTE(hypercall_page);
+-#endif
+-#ifdef CONFIG_PVH
+-xen_elfnote_phys32_entry_value =
+-	ABSOLUTE(xen_elfnote_phys32_entry) + ABSOLUTE(pvh_start_xen - LOAD_OFFSET);
+-#endif
+diff --git a/arch/x86/xen/enlighten.c b/arch/x86/xen/enlighten.c
+--- a/arch/x86/xen/enlighten.c
++++ b/arch/x86/xen/enlighten.c
+@@ -21,8 +21,6 @@
+ #include <asm/setup.h>
+ 
+ #include "xen-ops.h"
+-
+-EXPORT_SYMBOL_GPL(hypercall_page);
+ 
+ DEFINE_STATIC_CALL(xen_hypercall, xen_hypercall_hvm);
+ EXPORT_STATIC_CALL_TRAMP(xen_hypercall);
+@@ -110,7 +108,6 @@
+ 	 * dependency chain: it is being called via the xen_hypercall static
+ 	 * call when running as a PVH or HVM guest. Hypercalls need to be
+ 	 * noinstr due to PV guests using hypercalls in noinstr code. So we
+-	 * can safely tag the function body as "instrumentation ok", since
+ 	 * the PV guest requirement is not of interest here (xen_get_vendor()
+ 	 * calls noinstr functions, and static_call_update_early() might do
+ 	 * so, too).
+diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
+--- a/arch/x86/xen/enlighten_hvm.c
++++ b/arch/x86/xen/enlighten_hvm.c
+@@ -106,15 +106,8 @@
+ 	if (xen_pvh_domain())
+ 		pv_info.name = "Xen PVH";
+-	else {
+-		u64 pfn;
+-		uint32_t msr;
+-
++	else
+ 		pv_info.name = "Xen HVM";
+-		msr = cpuid_ebx(base + 2);
+-		pfn = __pa(hypercall_page);
+-		wrmsr_safe(msr, (u32)pfn, (u32)(pfn >> 32));
+-	}
+ 
+ 	xen_setup_features();
+diff --git a/arch/x86/xen/enlighten_pvh.c b/arch/x86/xen/enlighten_pvh.c
+--- a/arch/x86/xen/enlighten_pvh.c
++++ b/arch/x86/xen/enlighten_pvh.c
+@@ -129,16 +129,9 @@
+ 
+ void __init xen_pvh_init(struct boot_params *boot_params)
+ {
+-	u32 msr;
+-	u64 pfn;
+ 
+ 	xen_pvh = 1;
+ 	xen_domain_type = XEN_HVM_DOMAIN;
+ 	xen_start_flags = pvh_start_info.flags;
+-
+-	msr = cpuid_ebx(xen_cpuid_base() + 2);
+-	pfn = __pa(hypercall_page);
+-	wrmsr_safe(msr, (u32)pfn, (u32)(pfn >> 32));
+ 
+ 	x86_init.oem.arch_setup = pvh_arch_setup;
+ 	x86_init.oem.banner = xen_banner;
+diff --git a/arch/x86/xen/xen-head.S b/arch/x86/xen/xen-head.S
+--- a/arch/x86/xen/xen-head.S
++++ b/arch/x86/xen/xen-head.S
+@@ -21,28 +21,6 @@
+ #include <xen/interface/xen.h>
+ #include <xen/interface/xen-mca.h>
+ #include <asm/xen/interface.h>
+-
+-.pushsection .noinstr.text, "ax"
+-	.balign PAGE_SIZE
+-SYM_CODE_START(hypercall_page)
+-	.rept (PAGE_SIZE / 32)
+-		UNWIND_HINT_FUNC
+-		ANNOTATE_NOENDBR
+-		ANNOTATE_UNRET_SAFE
+-		ret
+-		/*
+-		 * Xen will write the hypercall page, and sort out ENDBR.
+-		 */
+-		.skip 31, 0xcc
+-	.endr
+-
+-#define HYPERCALL(n) \
+-	.equ xen_hypercall_##n, hypercall_page + __HYPERVISOR_##n * 32; \
+-	.type xen_hypercall_##n, @function; .size xen_hypercall_##n, 32
+-#include <asm/xen-hypercalls.h>
+-#undef HYPERCALL
+-SYM_CODE_END(hypercall_page)
+-.popsection
+ 
+ #ifdef CONFIG_XEN_PV
+ 	__INIT
+@@ -177,8 +155,7 @@
+ 	ELFNOTE(Xen, XEN_ELFNOTE_VIRT_BASE,      _ASM_PTR __START_KERNEL_map)
+ 	ELFNOTE(Xen, XEN_ELFNOTE_INIT_P2M,       .quad (PUD_SIZE * PTRS_PER_PUD))
+-	ELFNOTE(Xen, XEN_ELFNOTE_ENTRY,          .globl xen_elfnote_entry;
+-		xen_elfnote_entry: _ASM_PTR xen_elfnote_entry_value - .)
++	ELFNOTE(Xen, XEN_ELFNOTE_ENTRY,          _ASM_PTR startup_xen)
+ 	ELFNOTE(Xen, XEN_ELFNOTE_FEATURES,       .ascii "!writable_page_tables")
+ 	ELFNOTE(Xen, XEN_ELFNOTE_PAE_MODE,       .asciz "yes")
+ 	ELFNOTE(Xen, XEN_ELFNOTE_L1_MFN_VALID,
+@@ -199,8 +176,6 @@
+ #else
+ # define FEATURES_DOM0 0
+ #endif
+-	ELFNOTE(Xen, XEN_ELFNOTE_HYPERCALL_PAGE, .globl xen_elfnote_hypercall_page;
+-		xen_elfnote_hypercall_page: _ASM_PTR xen_elfnote_hypercall_page_value - .)
+ 	ELFNOTE(Xen, XEN_ELFNOTE_SUPPORTED_FEATURES,
+ 		.long FEATURES_PV | FEATURES_PVH | FEATURES_DOM0)
+ 	ELFNOTE(Xen, XEN_ELFNOTE_LOADER,         .asciz "generic")
+```

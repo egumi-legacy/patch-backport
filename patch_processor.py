@@ -12,6 +12,7 @@ import difflib
 from difflib import SequenceMatcher
 from patch_adapter import PatchAdapter
 from git_operations import GitOperations
+from patch_utils import download_patch
 
 
 class PatchProcessor:
@@ -36,7 +37,33 @@ class PatchProcessor:
         if self.commit_info['commit_sha']:
             self.patch_commit_sha = self.commit_info['commit_sha']
         self.base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
+        # 设置patch文件存储路径
+        self.patch_dir = self.base_dir / 'patches'
+        # self.patch_dir.mkdir(exist_ok=True)
+        
+        # # 评估结果存储路径
+        # self.evaluation_dir = self.base_dir / 'evaluations'
+        # self.evaluation_dir.mkdir(exist_ok=True)
         inputs.update(basedir = self.base_dir)
+
+        # 缓存设置
+        self.use_cached_patches = inputs.get('use_cached_patches', False)
+
+
+    def download_patch_by_type(self, patch_url, patch_type='upstream'):
+        """
+        下载patch文件，支持缓存
+        
+        :param patch_url: patch的URL
+        :param patch_type: patch类型 ('upstream' 或 'downstream')
+        :return: patch文件路径
+        """
+        # 生成缓存文件名
+        url_hash = patch_url.split('/')[-1][:6]  # 使用commit hash的前6位
+        cache_name = f"{patch_type}_{url_hash}.patch"
+        cache_path = self.patch_dir / cache_name
+        
+        return download_patch(patch_url, cache_path, self.use_cached_patches)
         
 
     def parse_patch(self, patch_content):
@@ -177,17 +204,18 @@ class PatchProcessor:
 
         # 4. 获取patch文件
         # 使用curl模块将self.url中的github commit url后加上.patch获取patch文件并写入patch文件夹
-        if not (base_dir / 'patch').exists():
-            (base_dir / 'patch').mkdir(parents=True)
+        # if not (base_dir / 'patch').exists():
+        #     (base_dir / 'patch').mkdir(parents=True)
         
-        if not (base_dir / 'patch' / 'patch.txt').exists():
-            patch_url = self.url + '.patch'
-            print(f"patch_url: {patch_url}")
-            output_file = str(base_dir / 'patch' / f'patch.txt')
-            # print(f"output_file: {output_file}")
-            subprocess.run(['curl', '-L', patch_url, '-o', output_file])
+        # if not (base_dir / 'patch' / 'patch.txt').exists():
+        #     patch_url = self.url + '.patch'
+        #     print(f"patch_url: {patch_url}")
+        #     output_file = str(base_dir / 'patch' / f'patch.txt')
+        #     # print(f"output_file: {output_file}")
+        #     subprocess.run(['curl', '-L', patch_url, '-o', output_file])
+        patch_path = self.download_patch_by_type(self.url, 'upstream')
         
-        patch_values = [{"patchCode": (base_dir / 'patch' / f'patch.txt').read_text(), "diffCode": (base_dir / 'diff').read_text()}]
+        patch_values = [{"patchCode": patch_path, "diffCode": (base_dir / 'diff').read_text()}]
 
 
         return dict(prompt_values=patch_values)

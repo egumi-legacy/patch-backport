@@ -1,0 +1,120 @@
+modified file: arch/x86/include/asm/processor.h
+--- patchfile/torvalds_linux_efbcd6/newer/arch/x86/include/asm/processor.h
++++ patchfile/torvalds_linux_efbcd6/linux-6.12.y/arch/x86/include/asm/processor.h
+@@ -105,24 +105,6 @@
+  	// Cache level topology IDs
+  	u32			llc_id;
+  	u32			l2c_id;
+ -
+ -	// Hardware defined CPU-type
+ -	union {
+ -		u32		cpu_type;
+ -		struct {
+ -			// CPUID.1A.EAX[23-0]
+ -			u32	intel_native_model_id	:24;
+ -			// CPUID.1A.EAX[31-24]
+ -			u32	intel_type		:8;
+ -		};
+ -		struct {
+ -			// CPUID 0x80000026.EBX
+ -			u32	amd_num_processors	:16,
+ -				amd_power_eff_ranking	:8,
+ -				amd_native_model_id	:4,
+ -				amd_type		:4;
+ -		};
+ -	};
+  };
+  
+  struct cpuinfo_x86 {
+@@ -230,6 +212,8 @@
+  	return BIT_ULL(boot_cpu_data.x86_cache_bits - 1 - PAGE_SHIFT);
+  }
+  
+ +void init_cpu_devs(void);
+ +void get_cpu_vendor(struct cpuinfo_x86 *c);
+  extern void early_cpu_init(void);
+  extern void identify_secondary_cpu(struct cpuinfo_x86 *);
+  extern void print_cpu_info(struct cpuinfo_x86 *);
+
+""""""
+modified file: arch/x86/kernel/cpu/common.c
+--- patchfile/torvalds_linux_efbcd6/newer/arch/x86/kernel/cpu/common.c
++++ patchfile/torvalds_linux_efbcd6/linux-6.12.y/arch/x86/kernel/cpu/common.c
+@@ -169,7 +169,7 @@
+  	}
+  
+  clear_ppin:
+ -	setup_clear_cpu_cap(info->feature);
+ +	clear_cpu_cap(c, info->feature);
+  }
+  
+  static void default_init(struct cpuinfo_x86 *c)
+@@ -276,13 +276,21 @@
+  }
+  early_param("noinvpcid", x86_noinvpcid_setup);
+  
+ +#ifdef CONFIG_X86_32
+ +static int cachesize_override = -1;
+ +static int disable_x86_serial_nr = 1;
+ +
+ +static int __init cachesize_setup(char *str)
+ +{
+ +	get_option(&str, &cachesize_override);
+ +	return 1;
+ +}
+ +__setup("cachesize=", cachesize_setup);
+ +
+ -static inline bool flag_is_changeable_p(unsigned long flag)
+ -{
+ -	unsigned long f1, f2;
+ -
+ -	if (!IS_ENABLED(CONFIG_X86_32))
+ -		return true;
+ +static inline int flag_is_changeable_p(u32 flag)
+ +{
+ +	u32 f1, f2;
+  
+ -bool have_cpuid_p(void)
+ +int have_cpuid_p(void)
+  {
+  	return flag_is_changeable_p(X86_EFLAGS_ID);
+  }
+@@ -352,6 +349,10 @@
+  }
+  __setup("serialnumber", x86_serial_nr_setup);
+  #else
+ +static inline int flag_is_changeable_p(u32 flag)
+ +{
+ +	return 1;
+ +}
+  static inline void squash_the_stupid_serial_number(struct cpuinfo_x86 *c)
+  {
+  }
+@@ -867,7 +868,7 @@
+  		tlb_lld_4m[ENTRIES], tlb_lld_1g[ENTRIES]);
+  }
+  
+ -static void get_cpu_vendor(struct cpuinfo_x86 *c)
+ +void get_cpu_vendor(struct cpuinfo_x86 *c)
+  {
+  	char *v = c->x86_vendor_id;
+  	int i;
+@@ -1087,6 +1088,7 @@
+  
+  static void identify_cpu_without_cpuid(struct cpuinfo_x86 *c)
+  {
+ +#ifdef CONFIG_X86_32
+  	int i;
+  
+  	squash_the_stupid_serial_number(c);
+  
+@@ -1905,7 +1912,9 @@
+  	mcheck_cpu_init(c);
+  
+ +#ifdef CONFIG_NUMA
+  	numa_add_cpu(smp_processor_id());
+ +#endif
+  }
+  
+
+""""""

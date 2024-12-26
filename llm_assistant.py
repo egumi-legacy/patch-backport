@@ -256,6 +256,7 @@ class LLMAssistant:
     def get_cached_response(self):
         """从缓存文件中读取响应"""
         if not self.cache_path or not Path(self.cache_path).exists():
+            # TODO 如果不存在尝试下载。多个的情况
             # logger.warning(f"缓存文件不存在: {self.cache_path}")
             raise ValueError(f"缓存文件不存在，请尝试禁用缓存: {self.cache_path}")
             

@@ -8,6 +8,7 @@ from git_operations import GitOperations
 import argparse
 from loguru import logger
 import json
+from patch_evaluator import PatchEvaluator
 
 _DEFAULT_INPUT_FILE = Path(__file__).parent / "inputs.yaml"
 
@@ -92,15 +93,30 @@ class Main:
             logger.error("未找到上游提交信息")
             return
         
-        for commit in upstream_commits:
+        batch_results = []
+        for commit in upstream_commits[10:15]:
             logger.info(f"处理上游提交: {commit['upstream_sha']}")
             commit_details = git_operations.get_commit_details(commit)
-            pprint.pprint(commit_details)
             self.inputs.update(commit_details)
-            
+
             # 复用模式1的处理逻辑
-            # self.process_single_commit()
-    
+            self.process_single_commit()
+
+            # 评估patch应用效果
+            evaluation_results = git_operations.evaluate_patch_application(
+                repo_path=self.inputs['repo_path'],
+                commit_info=commit
+            )
+            
+            # 收集评估结果
+            batch_results.append({
+                'commit_info': commit,
+                'evaluation': evaluation_results
+            })
+        
+        # 保存批量评估结果
+        evaluator = PatchEvaluator(self.inputs['repo_path'], self.inputs)
+        evaluator.save_batch_evaluation_results(batch_results)
 
     def run(self):
         if self.args.mode == 1:

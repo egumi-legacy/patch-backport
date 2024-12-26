@@ -1,0 +1,445 @@
+A. Commit message:
+Backport Xen hypercall changes for improved stability and security
+
+B. Change summary:
+This patch backports changes to the Xen hypercall interface, ensuring better stability and security in the older version of the kernel. The changes include updating the hypercall mechanism to use static calls, removing deprecated code, and adding necessary headers for compatibility.
+
+C. Compatibility Risk:
+Medium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.
+
+D. Fixed Code:
+```diff
+diff --git a/arch/x86/include/asm/xen/hypercall.h b/arch/x86/include/asm/xen/hypercall.h
+--- a/arch/x86/include/asm/xen/hypercall.h
++++ b/arch/x86/include/asm/xen/hypercall.h
+@@ -39,9 +39,11 @@
+  #include <linux/string.h>
+  #include <linux/types.h>
+  #include <linux/pgtable.h>
+ +#include <linux/instrumentation.h>
+  
+  #include <trace/events/xen.h>
+  
+ +#include <asm/alternative.h>
+  #include <asm/page.h>
+  #include <asm/smap.h>
+  #include <asm/nospec-branch.h>
+@@ -86,11 +88,20 @@
+   * there aren't more than 5 arguments...)
+   */
+  
+ -extern struct { char _entry[32]; } hypercall_page[];
+ -
+ -#define __HYPERCALL		"call hypercall_page+%c[offset]"
+ -#define __HYPERCALL_ENTRY(x)						\
+ -	[offset] "i" (__HYPERVISOR_##x * sizeof(hypercall_page[0]))
+ +void xen_hypercall_func(void);
+ +DECLARE_STATIC_CALL(xen_hypercall, xen_hypercall_func);
+ +
+ +#ifdef MODULE
+ +#define __ADDRESSABLE_xen_hypercall
+ +#else
+ +#define __ADDRESSABLE_xen_hypercall __ADDRESSABLE_ASM_STR(__SCK__xen_hypercall)
+ +#endif
+ +
+ +#define __HYPERCALL					\
+ +	__ADDRESSABLE_xen_hypercall			\
+ +	"call __SCT__xen_hypercall"
+ +
+ +#define __HYPERCALL_ENTRY(x)	"a" (x)
+  
+  #ifdef CONFIG_X86_32
+  #define __HYPERCALL_RETREG	"eax"
+@@ -148,7 +159,7 @@
+  	__HYPERCALL_0ARG();						\
+  	asm volatile (__HYPERCALL					\
+  		      : __HYPERCALL_0PARAM				\
+ -		      : __HYPERCALL_ENTRY(name)				\
+ +		      : __HYPERCALL_ENTRY(__HYPERVISOR_ ## name)	\
+  		      : __HYPERCALL_CLOBBER0);				\
+  	(type)__res;							\
+  })
+@@ -159,7 +170,7 @@
+  	__HYPERCALL_1ARG(a1);						\
+  	asm volatile (__HYPERCALL					\
+  		      : __HYPERCALL_1PARAM				\
+ -		      : __HYPERCALL_ENTRY(name)				\
+ +		      : __HYPERCALL_ENTRY(__HYPERVISOR_ ## name)	\
+  		      : __HYPERCALL_CLOBBER1);				\
+  	(type)__res;							\
+  })
+@@ -170,7 +181,7 @@
+  	__HYPERCALL_2ARG(a1, a2);					\
+  	asm volatile (__HYPERCALL					\
+  		      : __HYPERCALL_2PARAM				\
+ -		      : __HYPERCALL_ENTRY(name)				\
+ +		      : __HYPERCALL_ENTRY(__HYPERVISOR_ ## name)	\
+  		      : __HYPERCALL_CLOBBER2);				\
+  	(type)__res;							\
+  })
+@@ -181,7 +192,7 @@
+  	__HYPERCALL_3ARG(a1, a2, a3);					\
+  	asm volatile (__HYPERCALL					\
+  		      : __HYPERCALL_3PARAM				\
+ -		      : __HYPERCALL_ENTRY(name)				\
+ +		      : __HYPERCALL_ENTRY(__HYPERVISOR_ ## name)	\
+  		      : __HYPERCALL_CLOBBER3);				\
+  	(type)__res;							\
+  })
+@@ -192,7 +203,7 @@
+  	__HYPERCALL_4ARG(a1, a2, a3, a4);				\
+  	asm volatile (__HYPERCALL					\
+  		      : __HYPERCALL_4PARAM				\
+ -		      : __HYPERCALL_ENTRY(name)				\
+ +		      : __HYPERCALL_ENTRY(__HYPERVISOR_ ## name)	\
+  		      : __HYPERCALL_CLOBBER4);				\
+  	(type)__res;							\
+  })
+@@ -206,12 +217,9 @@
+  	__HYPERCALL_DECLS;
+  	__HYPERCALL_5ARG(a1, a2, a3, a4, a5);
+  
+ -	if (call >= PAGE_SIZE / sizeof(hypercall_page[0]))
+ -		return -EINVAL;
+ -
+ -	asm volatile(CALL_NOSPEC
+ +	asm volatile(__HYPERCALL
+  		     : __HYPERCALL_5PARAM
+ -		     : [thunk_target] "a" (&hypercall_page[call])
+ +		     : __HYPERCALL_ENTRY(call)
+  		     : __HYPERCALL_CLOBBER5);
+  
+  	return (long)__res;
+diff --git a/arch/x86/xen/enlighten.c b/arch/x86/xen/enlighten.c
+--- a/arch/x86/xen/enlighten.c
++++ b/arch/x86/xen/enlighten.c
+@@ -2,6 +2,7 @@
+  
+  #include <linux/console.h>
+  #include <linux/cpu.h>
+ +#include <linux/instrumentation.h>
+  #include <linux/kexec.h>
+  #include <linux/memblock.h>
+  #include <linux/slab.h>
+@@ -21,7 +22,8 @@
+  
+  #include "xen-ops.h"
+  
+ -EXPORT_SYMBOL_GPL(hypercall_page);
+ +DEFINE_STATIC_CALL(xen_hypercall, xen_hypercall_hvm);
+ +EXPORT_STATIC_CALL_TRAMP(xen_hypercall);
+  
+  struct shared_info *HYPERVISOR_shared_info = &xen_dummy_shared_info;
+ +
+ +static __ref void xen_get_vendor(void)
+ +{
+ +	init_cpu_devs();
+ +	cpu_detect(&boot_cpu_data);
+ +	get_cpu_vendor(&boot_cpu_data);
+ +}
+ +
+ +void xen_hypercall_setfunc(void)
+ +{
+ +	if (static_call_query(xen_hypercall) != xen_hypercall_hvm)
+ +		return;
+ +
+ +	if ((boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+ +	     boot_cpu_data.x86_vendor == X86_VENDOR_HYGON))
+ +		static_call_update(xen_hypercall, xen_hypercall_amd);
+ +	else
+ +		static_call_update(xen_hypercall, xen_hypercall_intel);
+ +}
+ +
+ +/*
+ + * Evaluate processor vendor in order to select the correct hypercall
+ + * function for HVM/PVH guests.
+ + * Might be called very early in boot before vendor has been set by
+ + * early_cpu_init().
+ + */
+ +noinstr void *__xen_hypercall_setfunc(void)
+ +{
+ +	void (*func)(void);
+ +
+ +	/*
+ +	 * Xen is supported only on CPUs with CPUID, so testing for
+ +	 * X86_FEATURE_CPUID is a test for early_cpu_init() having been
+ +	 * run.
+ +	 *
+ +	 * Note that __xen_hypercall_setfunc() is noinstr only due to a nasty
+ +	 * dependency chain: it is being called via the xen_hypercall static
+ +	 * call when running as a PVH or HVM guest. Hypercalls need to be
+ +	 * noinstr due to PV guests using hypercalls in noinstr code. So we
+ +	 * the PV guest requirement is not of interest here (xen_get_vendor()
+ +	 * calls noinstr functions, and static_call_update_early() might do
+ +	 * so, too).
+ +	 */
+ +	instrumentation_begin();
+ +
+ +	if (!boot_cpu_has(X86_FEATURE_CPUID))
+ +		xen_get_vendor();
+ +
+ +	if ((boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+ +	     boot_cpu_data.x86_vendor == X86_VENDOR_HYGON))
+ +		func = xen_hypercall_amd;
+ +	else
+ +		func = xen_hypercall_intel;
+ +
+ +	static_call_update_early(xen_hypercall, func);
+ +
+ +	instrumentation_end();
+ +
+ +	return func;
+ +}
+  
+  static int xen_cpu_up_online(unsigned int cpu)
+diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
+--- a/arch/x86/xen/enlighten_hvm.c
++++ b/arch/x86/xen/enlighten_hvm.c
+@@ -106,15 +106,8 @@
+  	if (xen_pvh_domain())
+  		pv_info.name = "Xen PVH";
+ -	else {
+ -		u64 pfn;
+ -		uint32_t msr;
+ -
+ +	else
+  		pv_info.name = "Xen HVM";
+ -		msr = cpuid_ebx(base + 2);
+ -		pfn = __pa(hypercall_page);
+ -		wrmsr_safe(msr, (u32)pfn, (u32)(pfn >> 32));
+ -	}
+  
+  	xen_setup_features();
+  
+@@ -299,6 +292,10 @@
+  
+  	if (xen_pv_domain())
+  		return 0;
+ +
+ +	/* Set correct hypercall function. */
+ +	if (xen_domain)
+ +		xen_hypercall_setfunc();
+  
+  	if (xen_pvh_domain() && nopv) {
+diff --git a/arch/x86/xen/enlighten_pv.c b/arch/x86/xen/enlighten_pv.c
+--- a/arch/x86/xen/enlighten_pv.c
++++ b/arch/x86/xen/enlighten_pv.c
+@@ -1341,6 +1341,9 @@
+  
+  	xen_domain_type = XEN_PV_DOMAIN;
+  	xen_start_flags = xen_start_info->flags;
+ +	/* Interrupts are guaranteed to be off initially. */
+ +	early_boot_irqs_disabled = true;
+ +	static_call_update_early(xen_hypercall, xen_hypercall_pv);
+  
+  	xen_setup_features();
+  
+@@ -1431,7 +1434,6 @@
+  	WARN_ON(xen_cpuhp_setup(xen_cpu_up_prepare_pv, xen_cpu_dead_pv));
+  
+  	local_irq_disable();
+ -	early_boot_irqs_disabled = true;
+  
+  	xen_raw_console_write("mapping kernel into physical memory\n");
+  	xen_setup_kernel_pagetable((pgd_t *)xen_start_info->pt_base,
+diff --git a/arch/x86/xen/xen-asm.S b/arch/x86/xen/xen-asm.S
+--- a/arch/x86/xen/xen-asm.S
++++ b/arch/x86/xen/xen-asm.S
+@@ -20,9 +20,32 @@
+  
+  #include <linux/init.h>
+  #include <linux/linkage.h>
+ +#include <linux/objtool.h>
+  #include <../entry/calling.h>
+  
+  .pushsection .noinstr.text, "ax"
+ +/*
+ + * PV hypercall interface to the hypervisor.
+ + *
+ + * Called via inline asm(), so better preserve %rcx and %r11.
+ + *
+ + * Input:
+ + *	%eax: hypercall number
+ + *	%rdi, %rsi, %rdx, %r10, %r8: args 1..5 for the hypercall
+ + * Output: %rax
+ + */
+ +SYM_FUNC_START(xen_hypercall_pv)
+ +	ANNOTATE_NOENDBR
+ +	push %rcx
+ +	push %r11
+ +	UNWIND_HINT_SAVE
+ +	syscall
+ +	UNWIND_HINT_RESTORE
+ +	pop %r11
+ +	pop %rcx
+ +	RET
+ +SYM_FUNC_END(xen_hypercall_pv)
+ +
+diff --git a/arch/x86/xen/xen-head.S b/arch/x86/xen/xen-head.S
+--- a/arch/x86/xen/xen-head.S
++++ b/arch/x86/xen/xen-head.S
+@@ -6,9 +6,11 @@
+  
+  #include <linux/elfnote.h>
+  #include <linux/init.h>
+ +#include <linux/instrumentation.h>
+  
+  #include <asm/boot.h>
+  #include <asm/asm.h>
+ +#include <asm/frame.h>
+  #include <asm/msr.h>
+  #include <asm/page_types.h>
+  #include <asm/percpu.h>
+@@ -19,28 +21,6 @@
+  #include <xen/interface/xen.h>
+  #include <xen/interface/xen-mca.h>
+  #include <asm/xen/interface.h>
+ -
+ -.pushsection .noinstr.text, "ax"
+ -	.balign PAGE_SIZE
+ -SYM_CODE_START(hypercall_page)
+ -	.rept (PAGE_SIZE / 32)
+ -		UNWIND_HINT_FUNC
+ -		ANNOTATE_NOENDBR
+ -		ANNOTATE_UNRET_SAFE
+ -		ret
+ -		/*
+ -		 * Xen will write the hypercall page, and sort out ENDBR.
+ -		 */
+ -		.skip 31, 0xcc
+ -	.endr
+ -
+ -#define HYPERCALL(n) \
+ -	.equ xen_hypercall_##n, hypercall_page + __HYPERVISOR_##n * 32; \
+ -	.type xen_hypercall_##n, @function; .size xen_hypercall_##n, 32
+ -#include <asm/xen-hypercalls.h>
+ -#undef HYPERCALL
+ -SYM_CODE_END(hypercall_page)
+ -.popsection
+  
+  #ifdef CONFIG_XEN_PV
+  	__INIT
+@@ -87,6 +67,87 @@
+  #endif
+  #endif
+  
+ +	.pushsection .noinstr.text, "ax"
+ +/*
+ + * Xen hypercall interface to the hypervisor.
+ + *
+ + * Input:
+ + *     %eax: hypercall number
+ + *   32-bit:
+ + *     %ebx, %ecx, %edx, %esi, %edi: args 1..5 for the hypercall
+ + *   64-bit:
+ + *     %rdi, %rsi, %rdx, %r10, %r8: args 1..5 for the hypercall
+ + * Output: %[er]ax
+ + */
+ +SYM_FUNC_START(xen_hypercall_hvm)
+ +	ENDBR
+ +	FRAME_BEGIN
+ +	/* Save all relevant registers (caller save and arguments). */
+ +#ifdef CONFIG_X86_32
+ +	push %eax
+ +	push %ebx
+ +	push %ecx
+ +	push %edx
+ +	push %esi
+ +	push %edi
+ +#else
+ +	push %rax
+ +	push %rcx
+ +	push %rdx
+ +	push %rdi
+ +	push %rsi
+ +	push %r11
+ +	push %r10
+ +	push %r9
+ +	push %r8
+ +#ifdef CONFIG_FRAME_POINTER
+ +	pushq $0	/* Dummy push for stack alignment. */
+ +#endif
+ +#endif
+ +	/* Set the vendor specific function. */
+ +	call __xen_hypercall_setfunc
+ +	/* Set ZF = 1 if AMD, Restore saved registers. */
+ +#ifdef CONFIG_X86_32
+ +	lea xen_hypercall_amd, %ebx
+ +	cmp %eax, %ebx
+ +	pop %edi
+ +	pop %esi
+ +	pop %edx
+ +	pop %ecx
+ +	pop %ebx
+ +	pop %eax
+ +#else
+ +	lea xen_hypercall_amd(%rip), %rbx
+ +	cmp %rax, %rbx
+ +#ifdef CONFIG_FRAME_POINTER
+ +	pop %rax	/* Dummy pop. */
+ +#endif
+ +	pop %r8
+ +	pop %r9
+ +	pop %r10
+ +	pop %r11
+ +	pop %rsi
+ +	pop %rdi
+ +	pop %rdx
+ +	pop %rcx
+ +	pop %rax
+ +#endif
+ +	/* Use correct hypercall function. */
+ +	jz xen_hypercall_amd
+ +	jmp xen_hypercall_intel
+ +SYM_FUNC_END(xen_hypercall_hvm)
+ +
+ +SYM_FUNC_START(xen_hypercall_amd)
+ +	vmmcall
+ +	RET
+ +SYM_FUNC_END(xen_hypercall_amd)
+ +
+ +SYM_FUNC_START(xen_hypercall_intel)
+ +	vmcall
+ +	RET
+ +SYM_FUNC_END(xen_hypercall_intel)
+ +	.popsection
+ +
+  	ELFNOTE(Xen, XEN_ELFNOTE_GUEST_OS,       .asciz "linux")
+  	ELFNOTE(Xen, XEN_ELFNOTE_GUEST_VERSION,  .asciz "2.6")
+  	ELFNOTE(Xen, XEN_ELFNOTE_XEN_VERSION,    .asciz "xen-3.0")
+@@ -94,8 +155,7 @@
+  	ELFNOTE(Xen, XEN_ELFNOTE_VIRT_BASE,      _ASM_PTR __START_KERNEL_map)
+  	ELFNOTE(Xen, XEN_ELFNOTE_INIT_P2M,       .quad (PUD_SIZE * PTRS_PER_PUD))
+ -	ELFNOTE(Xen, XEN_ELFNOTE_ENTRY,          .globl xen_elfnote_entry;
+ -		xen_elfnote_entry: _ASM_PTR xen_elfnote_entry_value - .)
+ +	ELFNOTE(Xen, XEN_ELFNOTE_ENTRY,          _ASM_PTR startup_xen)
+  	ELFNOTE(Xen, XEN_ELFNOTE_FEATURES,       .ascii "!writable_page_tables")
+  	ELFNOTE(Xen, XEN_ELFNOTE_PAE_MODE,       .asciz "yes")
+  	ELFNOTE(Xen, XEN_ELFNOTE_L1_MFN_VALID,
+@@ -116,8 +176,6 @@
+  #else
+  # define FEATURES_DOM0 0
+  #endif
+ -	ELFNOTE(Xen, XEN_ELFNOTE_HYPERCALL_PAGE, .globl xen_elfnote_hypercall_page;
+ -		xen_elfnote_hypercall_page: _ASM_PTR xen_elfnote_hypercall_page_value - .)
+  	ELFNOTE(Xen, XEN_ELFNOTE_SUPPORTED_FEATURES,
+  		.long FEATURES_PV | FEATURES_PVH | FEATURES_DOM0)
+  	ELFNOTE(Xen, XEN_ELFNOTE_LOADER,         .asciz "generic")
+diff --git a/arch/x86/xen/xen-ops.h b/arch/x86/xen/xen-ops.h
+--- a/arch/x86/xen/xen-ops.h
++++ b/arch/x86/xen/xen-ops.h
+@@ -326,4 +326,13 @@
+  static inline void xen_smp_count_cpus(void) { }
+  #endif /* CONFIG_SMP */
+  
+ +#ifdef CONFIG_XEN_PV
+ +void xen_hypercall_pv(void);
+ +#endif
+ +void xen_hypercall_hvm(void);
+ +void xen_hypercall_amd(void);
+ +void xen_hypercall_intel(void);
+ +void xen_hypercall_setfunc(void);
+ +void *__xen_hypercall_setfunc(void);
+ +
+  #endif /* XEN_OPS_H */
+```
