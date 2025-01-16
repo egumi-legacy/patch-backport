@@ -1,0 +1,25 @@
+A. Commit message:
+LoongArch: Fix reserving screen info memory for above-4G firmware
+
+B. Change summary:
+The patch updates the `init_screen_info` function to correctly handle above-4G addresses for reserving screen info memory by using the `__screen_info_lfb_base` helper function. This ensures that both the lower and higher 32 bits of the address are properly managed.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/arch/loongarch/kernel/efi.c b/arch/loongarch/kernel/efi.c
+index 2bf86aeda874c..de21e72759eeb 100644
+--- a/arch/loongarch/kernel/efi.c
++++ b/arch/loongarch/kernel/efi.c
+@@ -95,7 +95,7 @@ static void __init init_screen_info(void)
+ 	memset(si, 0, sizeof(*si));
+ 	early_memunmap(si, sizeof(*si));
+ 
+-	memblock_reserve(screen_info.lfb_base, screen_info.lfb_size);
++	memblock_reserve(__screen_info_lfb_base(&screen_info), screen_info.lfb_size);
+ }
+ 
+ void __init efi_init(void)
+```

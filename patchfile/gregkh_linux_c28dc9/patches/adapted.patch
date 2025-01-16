@@ -1,0 +1,44 @@
+From 9bf28202400f0b84a413257da8f4b1003d4fa105 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Thu, 9 Jan 2025 17:23:22 +0800
+Subject: [PATCH] Adapted patch for linux-6.12.y
+
+---
+ drivers/power/supply/cros_charge-control.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/power/supply/cros_charge-control.c b/drivers/power/supply/cros_charge-control.c
+index 17c53591ce19..cd9ee2374380 100644
+--- a/drivers/power/supply/cros_charge-control.c
++++ b/drivers/power/supply/cros_charge-control.c
+@@ -134,6 +134,10 @@ static ssize_t cros_chctl_store_threshold(struct device *dev, struct cros_chctl_
+ 		return -EINVAL;
+ 
+ 	if (is_end_threshold) {
++		/* Start threshold is not exposed, use fixed value */
++		if (priv->cmd_version == 2)
++			priv->current_start_threshold = val == 100 ? 0 : val;
++
+ 		if (val <= priv->current_start_threshold)
+ 			return -EINVAL;
+ 		priv->current_end_threshold = val;
+@@ -223,12 +227,10 @@ static umode_t cros_chtl_attr_is_visible(struct kobject *kobj, struct attribute
+ {
+ 	struct cros_chctl_priv *priv = cros_chctl_attr_to_priv(attr, n);
+ 
+-	if (priv->cmd_version < 2) {
+-		if (n == CROS_CHCTL_ATTR_START_THRESHOLD)
+-			return 0;
+-		if (n == CROS_CHCTL_ATTR_END_THRESHOLD)
+-			return 0;
+-	}
++	if (n == CROS_CHCTL_ATTR_START_THRESHOLD && priv->cmd_version < 3)
++		return 0;
++	else if (n == CROS_CHCTL_ATTR_END_THRESHOLD && priv->cmd_version < 2)
++		return 0;
+ 
+ 	return attr->mode;
+ }
+-- 
+2.25.1
+

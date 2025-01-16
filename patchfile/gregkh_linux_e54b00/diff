@@ -1,0 +1,56 @@
+modified file: drivers/gpu/drm/display/drm_dp_mst_topology.c
+--- patchfile/gregkh_linux_e54b00/newer/drivers/gpu/drm/display/drm_dp_mst_topology.c
++++ patchfile/gregkh_linux_e54b00/linux-6.12.y/drivers/gpu/drm/display/drm_dp_mst_topology.c
+@@ -3984,9 +3984,9 @@
+  
+  	mutex_lock(&mgr->qlock);
+ -
+  	txmsg = list_first_entry_or_null(&mgr->tx_msg_downq,
+  					 struct drm_dp_sideband_msg_tx, next);
+ +	mutex_unlock(&mgr->qlock);
+  
+  	if (!txmsg || txmsg->dst != mstb) {
+@@ -3995,17 +3995,11 @@
+  		hdr = &msg->initial_hdr;
+  		drm_dbg_kms(mgr->dev, "Got MST reply with no msg %p %d %d %02x %02x\n",
+  			    mstb, hdr->seqno, hdr->lct, hdr->rad[0], msg->msg[0]);
+ -
+ -		mutex_unlock(&mgr->qlock);
+ -
+  		goto out_clear_reply;
+  	}
+  
+ -	if (!verify_rx_request_type(mgr, txmsg, msg)) {
+ -		mutex_unlock(&mgr->qlock);
+ -
+ +	if (!verify_rx_request_type(mgr, txmsg, msg))
+  		goto out_clear_reply;
+ -	}
+  
+  	drm_dp_sideband_parse_reply(mgr, msg, &txmsg->reply);
+  
+@@ -4019,15 +4013,20 @@
+  			    txmsg->reply.u.nak.nak_data);
+  	}
+  
+ +	memset(msg, 0, sizeof(struct drm_dp_sideband_msg_rx));
+ +	drm_dp_mst_topology_put_mstb(mstb);
+ +
+ +	mutex_lock(&mgr->qlock);
+  	txmsg->state = DRM_DP_SIDEBAND_TX_RX;
+  	list_del(&txmsg->next);
+ -
+  	mutex_unlock(&mgr->qlock);
+  
+  	wake_up_all(&mgr->tx_waitq);
+  
+ +	return 0;
+ +
+  out_clear_reply:
+ -	reset_msg_rx_state(msg);
+ +	memset(msg, 0, sizeof(struct drm_dp_sideband_msg_rx));
+  out:
+  	if (mstb)
+  		drm_dp_mst_topology_put_mstb(mstb);
+
+""""""

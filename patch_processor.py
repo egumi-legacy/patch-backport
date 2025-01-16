@@ -13,12 +13,20 @@ from difflib import SequenceMatcher
 from patch_adapter import PatchAdapter
 from git_operations import GitOperations
 from patch_utils import download_patch
+import html
+from config_manager import ProjectConfig
 
 
 class PatchProcessor:
-    def __init__(self, inputs):
+    def __init__(self, config: ProjectConfig):
+        """
+        初始化处理器
+        
+        :param config: 项目配置对象
+        """
+        self.config = config
+        self.git_operations = GitOperations(config)
         dotenv.load_dotenv()
-        self.inputs = inputs
         self.github_token = os.getenv('GITHUB_TOKEN')
         self.headers = {
             'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
@@ -27,9 +35,9 @@ class PatchProcessor:
             'Host': 'api.github.com',
             'Connection': 'keep-alive'
         }
-        self.url = inputs['patch_url']
-        self.target_version = inputs['target_version']
-        self.git_operations = GitOperations(inputs)
+        self.url = config['patch_url']
+        self.target_version = config['target_version']
+        self.git_operations = GitOperations(config)
         # self.allowed_ref_fields = ['commit_sha', 'tag', 'branch']
         self.commit_info = self.git_operations.parse_github_url(self.url)
         self.owner = self.commit_info['owner']
@@ -44,10 +52,10 @@ class PatchProcessor:
         # # 评估结果存储路径
         # self.evaluation_dir = self.base_dir / 'evaluations'
         # self.evaluation_dir.mkdir(exist_ok=True)
-        inputs.update(basedir = self.base_dir)
+        config.update(basedir = self.base_dir)
 
         # 缓存设置
-        self.use_cached_patches = inputs.get('use_cached_patches', False)
+        self.use_cached_patches = config.get('use_cached_patches', False)
 
 
     def download_patch_by_type(self, patch_url, patch_type='upstream'):
@@ -151,7 +159,7 @@ class PatchProcessor:
 
     def get_response_path(self):
         """获取响应文件的路径"""
-        output_file_name = f"output_{self.inputs['target_version']}_{self.inputs['model']}"
+        output_file_name = f"output_{self.config['target_version']}_{self.config['model']}"
         return self.base_dir / output_file_name
 
     def save_response_to_project(self, response):
@@ -195,7 +203,9 @@ class PatchProcessor:
 
         if not (base_dir / self.target_version).exists():
             # target_file_contents = self.get_file_contents_from_ref(file_list, self.make_commit_info(tag=self.target_version))
-            target_file_contents = self.git_operations.get_file_contents_from_ref(file_list, self.git_operations.make_commit_info(branch=self.target_version))
+            # TODO 这里要判断传进去的到底是branch还是tag
+            target_file_contents = self.git_operations.get_file_contents_from_ref(file_list, self.git_operations.make_commit_info(branch=self.target_version),
+                                                                                  True, self.config['repo_path'])
             self.write_file_contents(target_file_contents, self.target_version)
 
         # 3. 获取两个版本文件的diff并保存
@@ -215,8 +225,7 @@ class PatchProcessor:
         #     subprocess.run(['curl', '-L', patch_url, '-o', output_file])
         patch_path = self.download_patch_by_type(self.url, 'upstream')
         
-        patch_values = [{"patchCode": patch_path, "diffCode": (base_dir / 'diff').read_text()}]
-
+        patch_values = [{"patchCode": html.unescape(Path(patch_path).read_text()), "diffCode": html.unescape((base_dir / 'diff').read_text())}]
 
         return dict(prompt_values=patch_values)
         

@@ -1,0 +1,14 @@
+modified file: drivers/i2c/busses/i2c-microchip-corei2c.c
+--- patchfile/gregkh_linux_9a8f93/newer/drivers/i2c/busses/i2c-microchip-corei2c.c
++++ patchfile/gregkh_linux_9a8f93/linux-6.12.y/drivers/i2c/busses/i2c-microchip-corei2c.c
+@@ -462,7 +462,7 @@
+  
+  static struct platform_driver mchp_corei2c_driver = {
+  	.probe = mchp_corei2c_probe,
+ -	.remove = mchp_corei2c_remove,
+ +	.remove_new = mchp_corei2c_remove,
+  	.driver = {
+  		.name = "microchip-corei2c",
+  		.of_match_table = mchp_corei2c_of_match,
+
+""""""

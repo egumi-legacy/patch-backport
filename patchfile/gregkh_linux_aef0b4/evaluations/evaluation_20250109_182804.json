@@ -1,0 +1,97 @@
+{
+  "timestamp": "20250109_182804",
+  "commit_info": {
+    "upstream_sha": "aef0b4a07277f715bfc2a0d76a16da2bc4e89205",
+    "downstream_sha": "5db43dfda1f232c0baa3333df1568811230d3547",
+    "upstream_url": null,
+    "downstream_url": null
+  },
+  "target_version": "linux-6.12.y",
+  "results": {
+    "upstream_patch_apply": {
+      "success": false,
+      "error": "error: patch failed: drivers/gpu/drm/xe/xe_devcoredump.c:23\nerror: drivers/gpu/drm/xe/xe_devcoredump.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n"
+    },
+    "adapted_patch_apply": {
+      "success": {
+        "success": true,
+        "output": "Applying: Adapted patch for linux-6.12.y\n",
+        "error": null
+      }
+    },
+    "patch_comparison": {
+      "similarity": 0.657751362060426,
+      "diff": [
+        "--- adapted_patch\n",
+        "+++ downstream_patch\n",
+        "@@ -1,24 +1,42 @@\n",
+        "-From ccf7a20ef4644e94a8e6180e7ac89abd9cfee5fc Mon Sep 17 00:00:00 2001\n",
+        "-From: root <root@congroo>\n",
+        "-Date: Thu, 9 Jan 2025 18:28:03 +0800\n",
+        "-Subject: [PATCH] Adapted patch for linux-6.12.y\n",
+        "+From 5db43dfda1f232c0baa3333df1568811230d3547 Mon Sep 17 00:00:00 2001\n",
+        "+From: Matthew Brost <matthew.brost@intel.com>\n",
+        "+Date: Tue, 26 Nov 2024 09:46:11 -0800\n",
+        "+Subject: [PATCH] drm/xe: Take PM ref in delayed snapshot capture worker\n",
+        "+MIME-Version: 1.0\n",
+        "+Content-Type: text/plain; charset=UTF-8\n",
+        "+Content-Transfer-Encoding: 8bit\n",
+        " \n",
+        "+[ Upstream commit aef0b4a07277f715bfc2a0d76a16da2bc4e89205 ]\n",
+        "+\n",
+        "+The delayed snapshot capture worker can access the GPU or VRAM both of\n",
+        "+which require a PM reference. Take a reference in this worker.\n",
+        "+\n",
+        "+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>\n",
+        "+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>\n",
+        "+Fixes: 4f04d07c0a94 (\"drm/xe: Faster devcoredump\")\n",
+        "+Signed-off-by: Matthew Brost <matthew.brost@intel.com>\n",
+        "+Reviewed-by: Matthew Auld <matthew.auld@intel.com>\n",
+        "+Link: https://patchwork.freedesktop.org/patch/msgid/20241126174615.2665852-5-matthew.brost@intel.com\n",
+        "+(cherry picked from commit 1c6878af115a4586a40d6c14d530fa9f93e0bd83)\n",
+        "+Signed-off-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>\n",
+        "+Stable-dep-of: 5dce85fecb87 (\"drm/xe: Move the coredump registration to the worker thread\")\n",
+        "+Signed-off-by: Sasha Levin <sashal@kernel.org>\n",
+        " ---\n",
+        "  drivers/gpu/drm/xe/xe_devcoredump.c | 6 ++++++\n",
+        "  1 file changed, 6 insertions(+)\n",
+        " \n",
+        " diff --git a/drivers/gpu/drm/xe/xe_devcoredump.c b/drivers/gpu/drm/xe/xe_devcoredump.c\n",
+        "-index 5221ee3f1214..a9ac512a9347 100644\n",
+        "+index 5221ee3f12149..c40c91e27f711 100644\n",
+        " --- a/drivers/gpu/drm/xe/xe_devcoredump.c\n",
+        " +++ b/drivers/gpu/drm/xe/xe_devcoredump.c\n",
+        "-@@ -21,6 +21,7 @@\n",
+        "+@@ -20,6 +20,7 @@\n",
+        "+ #include \"xe_guc_ct.h\"\n",
+        "  #include \"xe_guc_submit.h\"\n",
+        "  #include \"xe_hw_engine.h\"\n",
+        "++#include \"xe_pm.h\"\n",
+        "  #include \"xe_sched_job.h\"\n",
+        "-+#include \"xe_pm.h\"\n",
+        "  #include \"xe_vm.h\"\n",
+        "  \n",
+        "- /**\n",
+        " @@ -147,8 +148,11 @@ static void xe_devcoredump_deferred_snap_work(struct work_struct *work)\n",
+        "  {\n",
+        "  \tstruct xe_devcoredump_snapshot *ss = container_of(work, typeof(*ss), work);\n",
+        "@@ -40,6 +58,3 @@\n",
+        "  \t/* Calculate devcoredump size */\n",
+        "  \tss->read.size = __xe_devcoredump_read(NULL, INT_MAX, coredump);\n",
+        "  \n",
+        "--- \n",
+        "-2.25.1\n",
+        "-\n"
+      ]
+    }
+  },
+  "summary": {
+    "status": "adaptation_success",
+    "similarity_score": 0.657751362060426,
+    "notes": [
+      "上游patch无法直接应用",
+      "适配patch应用成功",
+      "与下游patch部分相似"
+    ]
+  }
+}

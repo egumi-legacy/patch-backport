@@ -1,0 +1,25 @@
+A. Commit message:
+ALSA: ump: Don't open legacy substream for an inactive group
+
+B. Change summary:
+Added a check to ensure that legacy MIDI access is not allowed for inactive UMP groups. If the group is inactive, the function now returns -ENODEV.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/sound/core/ump.c b/sound/core/ump.c
+index 6d0aac6c763fe..9f9ad106107f7 100644
+--- a/sound/core/ump.c
++++ b/sound/core/ump.c
+@@ -1087,6 +1087,8 @@ static int snd_ump_legacy_open(struct snd_rawmidi_substream *substream)
+ 	guard(mutex)(&ump->open_mutex);
+ 	if (ump->legacy_substreams[dir][group])
+ 		return -EBUSY;
++	if (!ump->groups[group].active)
++		return -ENODEV;
+ 	if (dir == SNDRV_RAWMIDI_STREAM_OUTPUT) {
+ 		if (!ump->legacy_out_opens) {
+ 			err = snd_rawmidi_kernel_open(&ump->core, 0,
+```

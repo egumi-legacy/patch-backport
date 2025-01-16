@@ -1,0 +1,36 @@
+From d0bd262ea76714cfa82509809094051dd0542993 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Thu, 9 Jan 2025 17:11:34 +0800
+Subject: [PATCH] Adapted patch for linux-6.12.y
+
+---
+ drivers/bluetooth/btusb.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 11755cb1eb16..3354861e9fd4 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -2647,7 +2647,7 @@ static void btusb_mtk_release_iso_intf(struct btusb_data *data)
+ {
+ 	struct btmtk_data *btmtk_data = hci_get_priv(data->hdev);
+ 
+-	if (btmtk_data->isopkt_intf) {
++	if (test_bit(BTMTK_ISOPKT_OVER_INTR, &btmtk_data->flags)) {
+ 		usb_kill_anchored_urbs(&btmtk_data->isopkt_anchor);
+ 		clear_bit(BTMTK_ISOPKT_RUNNING, &btmtk_data->flags);
+ 
+@@ -2677,8 +2677,8 @@ static int btusb_mtk_reset(struct hci_dev *hdev, void *rst_data)
+ 	if (err < 0)
+ 		return err;
+ 
+-	if (test_bit(BTMTK_ISOPKT_RUNNING, &btmtk_data->flags))
+-		btusb_mtk_release_iso_intf(data);
++	/* Release MediaTek ISO data interface */
++	btusb_mtk_release_iso_intf(hdev);
+ 
+ 	btusb_stop_traffic(data);
+ 	usb_kill_anchored_urbs(&data->tx_anchor);
+-- 
+2.25.1
+

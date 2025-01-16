@@ -1,0 +1,29 @@
+A. Commit message:
+dmaengine: loongson2-apb: Change GENMASK to GENMASK_ULL for 32-bit toolchain compatibility
+
+B. Change summary:
+This patch changes the usage of GENMASK to GENMASK_ULL in the definition of LDMA_CONFIG_MASK to ensure compatibility with 32-bit toolchains. This change addresses a smatch static checker warning and prevents build issues when accessing bits beyond 31.
+
+C. Compatibility Risk:
+High
+
+D. Fixed Code:
+diff --git a/drivers/dma/loongson2-apb-dma.c b/drivers/dma/loongson2-apb-dma.c
+new file mode 100644
+index 0000000..c528f02b9f848
+--- /dev/null
++++ b/drivers/dma/loongson2-apb-dma.c
+@@ -0,0 +1,35 @@
++#include <linux/bitops.h>
++#include <linux/dmaengine.h>
++
++/* Bitfields in config field */
++#define LDMA_ASK_VALID		BIT(2)
++#define LDMA_START		BIT(3) /* DMA start operation */
++#define LDMA_STOP		BIT(4) /* DMA stop operation */
++#define LDMA_CONFIG_MASK	GENMASK_ULL(4, 0) /* DMA controller config bits mask */
++
++/* Bitfields in ndesc_addr field of HW descriptor */
++#define LDMA_DESC_EN		BIT(0) /*1: The next descriptor is valid */
++
++/* Rest of the driver code remains unchanged */

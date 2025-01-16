@@ -1,0 +1,28 @@
+A. Commit message:
+tdx-guest: Leak decrypted memory on unrecoverable errors
+
+B. Change summary:
+In CoCo VMs, it is possible for the untrusted host to cause set_memory_decrypted() to fail such that an error is returned and the resulting memory is shared. To avoid returning decrypted (shared) memory to the page allocator, which could lead to functional or security issues, this patch modifies the code to leak the decrypted memory when set_memory_decrypted() fails. Additionally, it removes unnecessary error handling and logging since set_memory_decrypted() will call WARN_ONCE().
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/drivers/virt/coco/tdx-guest/tdx-guest.c b/drivers/virt/coco/tdx-guest/tdx-guest.c
+index d7db6c824e13d..224e7dde9cdee 100644
+--- a/drivers/virt/coco/tdx-guest/tdx-guest.c
++++ b/drivers/virt/coco/tdx-guest/tdx-guest.c
+@@ -124,10 +124,8 @@ static void *alloc_quote_buf(void)
+ 	if (!addr)
+ 		return NULL;
+ 
+-	if (set_memory_decrypted((unsigned long)addr, count)) {
+-		free_pages_exact(addr, len);
++	if (set_memory_decrypted((unsigned long)addr, count))
+ 		return NULL;
+-	}
+ 
+ 	return addr;
+ }
+```

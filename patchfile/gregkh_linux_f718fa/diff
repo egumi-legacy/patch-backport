@@ -1,0 +1,63 @@
+modified file: include/linux/sched.h
+--- patchfile/gregkh_linux_f718fa/newer/include/linux/sched.h
++++ patchfile/gregkh_linux_f718fa/linux-6.12.y/include/linux/sched.h
+@@ -656,12 +656,6 @@
+  	 * @dl_defer_armed tells if the deferrable server is waiting
+  	 * for the replenishment timer to activate it.
+  	 *
+ -	 * @dl_server_active tells if the dlserver is active(started).
+ -	 * dlserver is started on first cfs enqueue on an idle runqueue
+ -	 * and is stopped when a dequeue results in 0 cfs tasks on the
+ -	 * runqueue. In other words, dlserver is active only when cpu's
+ -	 * runqueue has atleast one cfs task.
+ -	 *
+  	 * @dl_defer_running tells if the deferrable server is actually
+  	 * running, skipping the defer phase.
+  	 */
+@@ -670,7 +664,6 @@
+  	unsigned int			dl_non_contending : 1;
+  	unsigned int			dl_overrun	  : 1;
+  	unsigned int			dl_server         : 1;
+ -	unsigned int			dl_server_active  : 1;
+  	unsigned int			dl_defer	  : 1;
+  	unsigned int			dl_defer_armed	  : 1;
+  	unsigned int			dl_defer_running  : 1;
+@@ -1008,7 +1001,7 @@
+  #ifdef CONFIG_ARCH_HAS_CPU_PASID
+  	unsigned			pasid_activated:1;
+  #endif
+ -#ifdef CONFIG_X86_BUS_LOCK_DETECT
+ +#ifdef	CONFIG_CPU_SUP_INTEL
+  	unsigned			reported_split_lock:1;
+  #endif
+  #ifdef CONFIG_TASK_DELAY_ACCT
+@@ -1128,12 +1121,9 @@
+  	char				comm[TASK_COMM_LEN];
+  
+@@ -1451,7 +1441,6 @@
+  
+  	unsigned long long		ftrace_timestamp;
+ -	unsigned long long		ftrace_sleeptime;
+  
+ +extern char *__get_task_comm(char *to, size_t len, struct task_struct *tsk);
+  #define get_task_comm(buf, tsk) ({			\
+ -	BUILD_BUG_ON(sizeof(buf) < TASK_COMM_LEN);	\
+ -	strscpy_pad(buf, (tsk)->comm);			\
+ -	buf;						\
+ +	BUILD_BUG_ON(sizeof(buf) != TASK_COMM_LEN);	\
+ +	__get_task_comm(buf, sizeof(buf), tsk);		\
+  })
+  
+  #ifdef CONFIG_SMP
+@@ -2026,8 +2002,7 @@
+  
+  static inline void clear_tsk_need_resched(struct task_struct *tsk)
+  {
+ -	atomic_long_andnot(_TIF_NEED_RESCHED | _TIF_NEED_RESCHED_LAZY,
+ -			   (atomic_long_t *)&task_thread_info(tsk)->flags);
+ +	clear_tsk_thread_flag(tsk,TIF_NEED_RESCHED);
+  }
+  
+  static inline int test_tsk_need_resched(struct task_struct *tsk)
+
+""""""

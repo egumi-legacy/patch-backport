@@ -1,0 +1,30 @@
+modified file: sound/core/ump.c
+--- patchfile/gregkh_linux_e29e50/newer/sound/core/ump.c
++++ patchfile/gregkh_linux_e29e50/linux-6.12.y/sound/core/ump.c
+@@ -366,7 +366,7 @@
+  {
+  	struct snd_ump_block *fb, *p;
+  
+ -	if (blk >= SNDRV_UMP_MAX_BLOCKS)
+ +	if (blk < 0 || blk >= SNDRV_UMP_MAX_BLOCKS)
+  		return -EINVAL;
+  
+  	if (snd_ump_get_block(ump, blk))
+@@ -387,7 +387,7 @@
+  	fb->info.first_group = first_group;
+  	fb->info.num_groups = num_groups;
+ -	snprintf(fb->info.name, sizeof(fb->info.name), "Group %u-%u",
+ +	snprintf(fb->info.name, sizeof(fb->info.name), "Group %d-%d",
+  		 first_group + 1, first_group + num_groups);
+  
+@@ -1087,8 +1087,6 @@
+  	guard(mutex)(&ump->open_mutex);
+  	if (ump->legacy_substreams[dir][group])
+  		return -EBUSY;
+ -	if (!ump->groups[group].active)
+ -		return -ENODEV;
+  	if (dir == SNDRV_RAWMIDI_STREAM_OUTPUT) {
+  		if (!ump->legacy_out_opens) {
+  			err = snd_rawmidi_kernel_open(&ump->core, 0,
+
+""""""

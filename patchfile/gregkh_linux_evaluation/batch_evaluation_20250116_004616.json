@@ -1,0 +1,263 @@
+{
+  "timestamp": "20250116_004616",
+  "target_version": "linux-6.12.y",
+  "statistics": {
+    "total_patches": 10,
+    "direct_apply_success": 10,
+    "direct_apply_success_rate": 1.0,
+    "adapted_apply_success": 0,
+    "adapted_apply_success_rate": 0.0
+  },
+  "detailed_results": [
+    {
+      "commit_info": {
+        "downstream_sha": "0dd139341f043dfcd77da07ab11be86ea85f8ba5",
+        "downstream_message": "scsi: mpi3mr: Start controller indexing from 0\n\n[ Upstream commit 0d32014f1e3e7a7adf1583c45387f26b9bb3a49d ]\n\nInstead of displaying the controller index starting from '1' make the\ndriver display the controller index starting from '0'.\n\nSigned-off-by: Sumit Saxena <sumit.saxena@broadcom.com>\nSigned-off-by: Ranjan Kumar <ranjan.kumar@broadcom.com>\nLink: https://lore.kernel.org/r/20241110194405.10108-4-ranjan.kumar@broadcom.com\nSigned-off-by: Martin K. Petersen <martin.petersen@oracle.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "0d32014f1e3e7a7adf1583c45387f26b9bb3a49d"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "869fdc6f0606060301aef648231e186c7c542f5a",
+        "downstream_message": "scsi: mpi3mr: Fix corrupt config pages PHY state is switched in sysfs\n\n[ Upstream commit 711201a8b8334a397440ac0b859df0054e174bc9 ]\n\nThe driver, through the SAS transport, exposes a sysfs interface to\nenable/disable PHYs in a controller/expander setup.  When multiple PHYs\nare disabled and enabled in rapid succession, the persistent and current\nconfig pages related to SAS IO unit/SAS Expander pages could get\ncorrupted.\n\nUse separate memory for each config request.\n\nSigned-off-by: Prayas Patel <prayas.patel@broadcom.com>\nSigned-off-by: Ranjan Kumar <ranjan.kumar@broadcom.com>\nLink: https://lore.kernel.org/r/20241110194405.10108-3-ranjan.kumar@broadcom.com\nSigned-off-by: Martin K. Petersen <martin.petersen@oracle.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "711201a8b8334a397440ac0b859df0054e174bc9"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "b8ed09e397f8e4277c26ca0dfea3f78b72244557",
+        "downstream_message": "scsi: mpi3mr: Synchronize access to ioctl data buffer\n\n[ Upstream commit 367ac16e5ff2dcd6b7f00a8f94e6ba98875cb397 ]\n\nThe driver serializes ioctls through a mutex lock but access to the\nioctl data buffer is not guarded by the mutex. This results in multiple\nuser threads being able to write to the driver's ioctl buffer\nsimultaneously.\n\nProtect the ioctl buffer with the ioctl mutex.\n\nSigned-off-by: Sumit Saxena <sumit.saxena@broadcom.com>\nSigned-off-by: Ranjan Kumar <ranjan.kumar@broadcom.com>\nLink: https://lore.kernel.org/r/20241110194405.10108-2-ranjan.kumar@broadcom.com\nSigned-off-by: Martin K. Petersen <martin.petersen@oracle.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "367ac16e5ff2dcd6b7f00a8f94e6ba98875cb397"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "4524a8d175f03917d57a92853b45af0caa412305",
+        "downstream_message": "scsi: mpt3sas: Diag-Reset when Doorbell-In-Use bit is set during driver load time\n\n[ Upstream commit 3f5eb062e8aa335643181c480e6c590c6cedfd22 ]\n\nIssue a Diag-Reset when the \"Doorbell-In-Use\" bit is set during the\ndriver load/initialization.\n\nSigned-off-by: Ranjan Kumar <ranjan.kumar@broadcom.com>\nLink: https://lore.kernel.org/r/20241110173341.11595-2-ranjan.kumar@broadcom.com\nSigned-off-by: Martin K. Petersen <martin.petersen@oracle.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "3f5eb062e8aa335643181c480e6c590c6cedfd22"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "b34f7381cd10514791235f8d79dff50b13d8ae53",
+        "downstream_message": "spi: intel: Add Panther Lake SPI controller support\n\n[ Upstream commit ceb259e43bf572ba7d766e1679ba73861d16203a ]\n\nThe Panther Lake SPI controllers are compatible with the Cannon Lake\ncontrollers. Add support for following SPI controller device IDs:\n - H-series: 0xe323\n - P-series: 0xe423\n - U-series: 0xe423\n\nSigned-off-by: Aapo Vienamo <aapo.vienamo@iki.fi>\nSigned-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>\nLink: https://patch.msgid.link/20241204080208.1036537-1-mika.westerberg@linux.intel.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "ceb259e43bf572ba7d766e1679ba73861d16203a"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "fdaaf929432f3ead52074ff535aecc7bed5deb18",
+        "downstream_message": "bpf: Zero index arg error string for dynptr and iter\n\n[ Upstream commit bd74e238ae6944b462f57ce8752440a011ba4530 ]\n\nAndrii spotted that process_dynptr_func's rejection of incorrect\nargument register type will print an error string where argument numbers\nare not zero-indexed, unlike elsewhere in the verifier.  Fix this by\nsubtracting 1 from regno. The same scenario exists for iterator\nmessages. Fix selftest error strings that match on the exact argument\nnumber while we're at it to ensure clean bisection.\n\nSuggested-by: Andrii Nakryiko <andrii@kernel.org>\nSigned-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>\nLink: https://lore.kernel.org/r/20241203002235.3776418-1-memxor@gmail.com\nSigned-off-by: Alexei Starovoitov <ast@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "bd74e238ae6944b462f57ce8752440a011ba4530"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "a089dad6f92d21184cdd867dbd2af1e9193dde4e",
+        "downstream_message": "platform/x86: asus-nb-wmi: Ignore unknown event 0xCF\n\n[ Upstream commit e9fba20c29e27dc99e55e1c550573a114561bf8c ]\n\nOn the Asus X541UAK an unknown event 0xCF is emited when the charger\nis plugged in. This is caused by the following AML code:\n\n    If (ACPS ())\n    {\n        ACPF = One\n        Local0 = 0x58\n        If (ATKP)\n        {\n            ^^^^ATKD.IANE (0xCF)\n        }\n    }\n    Else\n    {\n        ACPF = Zero\n        Local0 = 0x57\n    }\n\n    Notify (AC0, 0x80) // Status Change\n    If (ATKP)\n    {\n        ^^^^ATKD.IANE (Local0)\n    }\n\n    Sleep (0x64)\n    PNOT ()\n    Sleep (0x0A)\n    NBAT (0x80)\n\nIgnore the 0xCF event to silence the unknown event warning.\n\nReported-by: Pau Espin Pedrol <pespin@espeweb.net>\nCloses: https://lore.kernel.org/platform-driver-x86/54d4860b-ec9c-4992-acf6-db3f90388293@espeweb.net\nSigned-off-by: Armin Wolf <W_Armin@gmx.de>\nReviewed-by: Hans de Goede <hdegoede@redhat.com>\nLink: https://lore.kernel.org/r/20241123224700.18530-1-W_Armin@gmx.de\nReviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>\nSigned-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "e9fba20c29e27dc99e55e1c550573a114561bf8c"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "2d95df70e5945c69ef4d3bca2700713d69db9f86",
+        "downstream_message": "LoongArch: BPF: Adjust the parameter of emit_jirl()\n\n[ Upstream commit c1474bb0b7cff4e8481095bd0618b8f6c2f0aeb4 ]\n\nThe branch instructions beq, bne, blt, bge, bltu, bgeu and jirl belong\nto the format reg2i16, but the sequence of oprand is different for the\ninstruction jirl. So adjust the parameter order of emit_jirl() to make\nit more readable correspond with the Instruction Set Architecture manual.\n\nHere are the instruction formats:\n\n  beq     rj, rd, offs16\n  bne     rj, rd, offs16\n  blt     rj, rd, offs16\n  bge     rj, rd, offs16\n  bltu    rj, rd, offs16\n  bgeu    rj, rd, offs16\n  jirl    rd, rj, offs16\n\nLink: https://loongson.github.io/LoongArch-Documentation/LoongArch-Vol1-EN.html#branch-instructions\nSuggested-by: Huacai Chen <chenhuacai@loongson.cn>\nSigned-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>\nSigned-off-by: Huacai Chen <chenhuacai@loongson.cn>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "c1474bb0b7cff4e8481095bd0618b8f6c2f0aeb4"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "45d7745c89c162f1a044a9f5cecac4bf7fe5eede",
+        "downstream_message": "LoongArch: Fix reserving screen info memory for above-4G firmware\n\n[ Upstream commit 55dc2f8f263448f1e6c7ef135d08e640d5a4826e ]\n\nSince screen_info.lfb_base is a __u32 type, an above-4G address need an\next_lfb_base to present its higher 32bits. In init_screen_info() we can\nuse __screen_info_lfb_base() to handle this case for reserving screen\ninfo memory.\n\nSigned-off-by: Xuefeng Zhao <zhaoxuefeng@loongson.cn>\nSigned-off-by: Jianmin Lv <lvjianmin@loongson.cn>\nSigned-off-by: Tianyang Zhang <zhangtianyang@loongson.cn>\nSigned-off-by: Huacai Chen <chenhuacai@loongson.cn>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "55dc2f8f263448f1e6c7ef135d08e640d5a4826e"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "ca5995f805bbbe2855b652e7d72667da16683a59",
+        "downstream_message": "regmap: Use correct format specifier for logging range errors\n\n[ Upstream commit 3f1aa0c533d9dd8a835caf9a6824449c463ee7e2 ]\n\nThe register addresses are unsigned ints so we should use %u not %d to\nlog them.\n\nSigned-off-by: Mark Brown <broonie@kernel.org>\nLink: https://patch.msgid.link/20241127-regmap-test-high-addr-v1-1-74a48a9e0dc5@kernel.org\nSigned-off-by: Mark Brown <broonie@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "3f1aa0c533d9dd8a835caf9a6824449c463ee7e2"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    }
+  ]
+}

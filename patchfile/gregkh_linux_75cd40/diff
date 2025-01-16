@@ -1,0 +1,335 @@
+modified file: drivers/block/ublk_drv.c
+--- patchfile/gregkh_linux_75cd40/newer/drivers/block/ublk_drv.c
++++ patchfile/gregkh_linux_75cd40/linux-6.12.y/drivers/block/ublk_drv.c
+@@ -60,12 +60,7 @@
+  		| UBLK_F_UNPRIVILEGED_DEV \
+  		| UBLK_F_CMD_IOCTL_ENCODE \
+  		| UBLK_F_USER_COPY \
+ -		| UBLK_F_ZONED \
+ -		| UBLK_F_USER_RECOVERY_FAIL_IO)
+ -
+ -#define UBLK_F_ALL_RECOVERY_FLAGS (UBLK_F_USER_RECOVERY \
+ -		| UBLK_F_USER_RECOVERY_REISSUE \
+ -		| UBLK_F_USER_RECOVERY_FAIL_IO)
+ +		| UBLK_F_ZONED)
+  
+  #define UBLK_PARAM_TYPE_ALL                                \
+@@ -148,7 +143,6 @@
+  	bool force_abort;
+  	bool timeout;
+  	bool canceling;
+ -	bool fail_io; /* copy of dev->state == UBLK_S_DEV_FAIL_IO */
+  	unsigned short nr_io_ready;	/* how many ios setup */
+  	spinlock_t		cancel_lock;
+  	struct ublk_device *dev;
+@@ -185,7 +179,8 @@
+  	unsigned int		nr_queues_ready;
+  	unsigned int		nr_privileged_daemon;
+  
+ -	struct work_struct	nosrv_work;
+ +	struct work_struct	quiesce_work;
+ +	struct work_struct	stop_work;
+  };
+  
+@@ -686,52 +681,22 @@
+  	return __ublk_queue_cmd_buf_size(UBLK_MAX_QUEUE_DEPTH);
+  }
+  
+ -/*
+ - * Should I/O outstanding to the ublk server when it exits be reissued?
+ - * If not, outstanding I/O will get errors.
+ - */
+ -static inline bool ublk_nosrv_should_reissue_outstanding(struct ublk_device *ub)
+ -{
+ -	return (ub->dev_info.flags & UBLK_F_USER_RECOVERY) &&
+ -	       (ub->dev_info.flags & UBLK_F_USER_RECOVERY_REISSUE);
+ -}
+ -
+ -/*
+ - * Should I/O issued while there is no ublk server queue? If not, I/O
+ - * issued while there is no ublk server will get errors.
+ - */
+ -static inline bool ublk_nosrv_dev_should_queue_io(struct ublk_device *ub)
+ -{
+ -	return (ub->dev_info.flags & UBLK_F_USER_RECOVERY) &&
+ -	       !(ub->dev_info.flags & UBLK_F_USER_RECOVERY_FAIL_IO);
+ -}
+ -
+ -/*
+ - * Same as ublk_nosrv_dev_should_queue_io, but uses a queue-local copy
+ - * of the device flags for smaller cache footprint - better for fast
+ - * paths.
+ - */
+ -static inline bool ublk_nosrv_should_queue_io(struct ublk_queue *ubq)
+ +static inline bool ublk_queue_can_use_recovery_reissue(
+ +		struct ublk_queue *ubq)
+  {
+  	return (ubq->flags & UBLK_F_USER_RECOVERY) &&
+ -	       !(ubq->flags & UBLK_F_USER_RECOVERY_FAIL_IO);
+ -}
+ -
+ -/*
+ - * Should ublk devices be stopped (i.e. no recovery possible) when the
+ - * ublk server exits? If not, devices can be used again by a future
+ - * incarnation of a ublk server via the start_recovery/end_recovery
+ - * commands.
+ - */
+ -static inline bool ublk_nosrv_should_stop_dev(struct ublk_device *ub)
+ -{
+ -	return !(ub->dev_info.flags & UBLK_F_USER_RECOVERY);
+ -}
+ -
+ -static inline bool ublk_dev_in_recoverable_state(struct ublk_device *ub)
+ -{
+ -	return ub->dev_info.state == UBLK_S_DEV_QUIESCED ||
+ -	       ub->dev_info.state == UBLK_S_DEV_FAIL_IO;
+ +			(ubq->flags & UBLK_F_USER_RECOVERY_REISSUE);
+ +}
+ +
+ +static inline bool ublk_queue_can_use_recovery(
+ +		struct ublk_queue *ubq)
+ +{
+ +	return ubq->flags & UBLK_F_USER_RECOVERY;
+ +}
+ +
+ +static inline bool ublk_can_use_recovery(struct ublk_device *ub)
+ +{
+ +	return ub->dev_info.flags & UBLK_F_USER_RECOVERY;
+  }
+  
+  static void ublk_free_disk(struct gendisk *disk)
+@@ -1107,7 +1072,7 @@
+  {
+  	WARN_ON_ONCE(io->flags & UBLK_IO_FLAG_ACTIVE);
+  
+ -	if (ublk_nosrv_should_reissue_outstanding(ubq->dev))
+ +	if (ublk_queue_can_use_recovery_reissue(ubq))
+  		blk_mq_requeue_request(req, false);
+  	else
+  		ublk_put_req_ref(ubq, req);
+@@ -1135,7 +1100,7 @@
+  		struct request *rq)
+  {
+ -	if (ublk_nosrv_dev_should_queue_io(ubq->dev))
+ +	if (ublk_queue_can_use_recovery(ubq))
+  		blk_mq_requeue_request(rq, false);
+  	else
+  		blk_mq_end_request(rq, BLK_STS_IOERR);
+@@ -1280,7 +1245,10 @@
+  		struct ublk_device *ub = ubq->dev;
+  
+  		if (ublk_abort_requests(ub, ubq)) {
+ -			schedule_work(&ub->nosrv_work);
+ +			if (ublk_can_use_recovery(ub))
+ +				schedule_work(&ub->quiesce_work);
+ +			else
+ +				schedule_work(&ub->stop_work);
+  		}
+  		return BLK_EH_DONE;
+  	}
+@@ -1294,10 +1262,6 @@
+  	struct ublk_queue *ubq = hctx->driver_data;
+  	struct request *rq = bd->rq;
+  	blk_status_t res;
+ -
+ -	if (unlikely(ubq->fail_io)) {
+ -		return BLK_STS_TARGET;
+ -	}
+  
+  	res = ublk_setup_iod(ubq, rq);
+@@ -1313,7 +1277,7 @@
+  	 * Note: force_abort is guaranteed to be seen because it is set
+  	 * before request queue is unqiuesced.
+  	 */
+ -	if (ublk_nosrv_should_queue_io(ubq) && unlikely(ubq->force_abort))
+ +	if (ublk_queue_can_use_recovery(ubq) && unlikely(ubq->force_abort))
+  		return BLK_STS_IOERR;
+  
+  	if (unlikely(ubq->canceling)) {
+@@ -1534,7 +1498,10 @@
+  	ublk_cancel_cmd(ubq, io, issue_flags);
+  
+  	if (need_schedule) {
+ -		schedule_work(&ub->nosrv_work);
+ +		if (ublk_can_use_recovery(ub))
+ +			schedule_work(&ub->quiesce_work);
+ +		else
+ +			schedule_work(&ub->stop_work);
+  	}
+  }
+  
+@@ -1595,6 +1562,20 @@
+  	blk_mq_quiesce_queue(ub->ub_disk->queue);
+  	ublk_wait_tagset_rqs_idle(ub);
+  	ub->dev_info.state = UBLK_S_DEV_QUIESCED;
+ +}
+ +
+ +static void ublk_quiesce_work_fn(struct work_struct *work)
+ +{
+ +	struct ublk_device *ub =
+ +		container_of(work, struct ublk_device, quiesce_work);
+ +
+ +	mutex_lock(&ub->mutex);
+ +	if (ub->dev_info.state != UBLK_S_DEV_LIVE)
+ +		goto unlock;
+ +	__ublk_quiesce_dev(ub);
+ + unlock:
+ +	mutex_unlock(&ub->mutex);
+ +	ublk_cancel_dev(ub);
+  }
+  
+  static void ublk_unquiesce_dev(struct ublk_device *ub)
+@@ -1625,7 +1606,7 @@
+  	mutex_lock(&ub->mutex);
+  	if (ub->dev_info.state == UBLK_S_DEV_DEAD)
+  		goto unlock;
+ -	if (ublk_nosrv_dev_should_queue_io(ub)) {
+ +	if (ublk_can_use_recovery(ub)) {
+  		if (ub->dev_info.state == UBLK_S_DEV_LIVE)
+  			__ublk_quiesce_dev(ub);
+  		ublk_unquiesce_dev(ub);
+@@ -1640,37 +1621,6 @@
+  	ub->ub_disk = NULL;
+  	spin_unlock(&ub->lock);
+  	put_disk(disk);
+ - unlock:
+ -	mutex_unlock(&ub->mutex);
+ -	ublk_cancel_dev(ub);
+ -}
+ -
+ -static void ublk_nosrv_work(struct work_struct *work)
+ -{
+ -	struct ublk_device *ub =
+ -		container_of(work, struct ublk_device, nosrv_work);
+ -	int i;
+ -
+ -	if (ublk_nosrv_should_stop_dev(ub)) {
+ -		ublk_stop_dev(ub);
+ -		return;
+ -	}
+ -
+ -	mutex_lock(&ub->mutex);
+ -	if (ub->dev_info.state != UBLK_S_DEV_LIVE)
+ -		goto unlock;
+ -
+ -	if (ublk_nosrv_dev_should_queue_io(ub)) {
+ -		__ublk_quiesce_dev(ub);
+ -	} else {
+ -		blk_mq_quiesce_queue(ub->ub_disk->queue);
+ -		ub->dev_info.state = UBLK_S_DEV_FAIL_IO;
+ -		for (i = 0; i < ub->dev_info.nr_hw_queues; i++) {
+ -			ublk_get_queue(ub, i)->fail_io = true;
+ -		}
+ -		blk_mq_unquiesce_queue(ub->ub_disk->queue);
+ -	}
+ -
+   unlock:
+  	mutex_unlock(&ub->mutex);
+  	ublk_cancel_dev(ub);
+@@ -2189,6 +2139,14 @@
+  	return ret;
+  }
+  
+ +static void ublk_stop_work_fn(struct work_struct *work)
+ +{
+ +	struct ublk_device *ub =
+ +		container_of(work, struct ublk_device, stop_work);
+ +
+ +	ublk_stop_dev(ub);
+ +}
+ +
+  static void ublk_align_max_io_size(struct ublk_device *ub)
+  {
+@@ -2213,7 +2171,8 @@
+  static void ublk_remove(struct ublk_device *ub)
+  {
+  	ublk_stop_dev(ub);
+ -	cancel_work_sync(&ub->nosrv_work);
+ +	cancel_work_sync(&ub->stop_work);
+ +	cancel_work_sync(&ub->quiesce_work);
+  	cdev_device_del(&ub->cdev, &ub->cdev_dev);
+  	ublk_put_device(ub);
+  	ublks_added--;
+@@ -2279,7 +2238,7 @@
+  		lim.features |= BLK_FEAT_ZONED;
+  		lim.max_active_zones = p->max_active_zones;
+  		lim.max_open_zones =  p->max_open_zones;
+ -		lim.max_hw_zone_append_sectors = p->max_zone_append_sectors;
+ +		lim.max_zone_append_sectors = p->max_zone_append_sectors;
+  	}
+  
+  	if (ub->params.basic.attrs & UBLK_ATTR_VOLATILE_CACHE) {
+@@ -2421,19 +2380,6 @@
+  		info.flags &= ~UBLK_F_UNPRIVILEGED_DEV;
+  	else if (!(info.flags & UBLK_F_UNPRIVILEGED_DEV))
+  		return -EPERM;
+ -
+ -	/* forbid nonsense combinations of recovery flags */
+ -	switch (info.flags & UBLK_F_ALL_RECOVERY_FLAGS) {
+ -	case 0:
+ -	case UBLK_F_USER_RECOVERY:
+ -	case (UBLK_F_USER_RECOVERY | UBLK_F_USER_RECOVERY_REISSUE):
+ -	case (UBLK_F_USER_RECOVERY | UBLK_F_USER_RECOVERY_FAIL_IO):
+ -		break;
+ -	default:
+ -		pr_warn("%s: invalid recovery flags %llx\n", __func__,
+ -			info.flags & UBLK_F_ALL_RECOVERY_FLAGS);
+ -		return -EINVAL;
+ -	}
+  
+ -	if (test_bit(UB_STATE_OPEN, &ub->state) || !ublk_dev_in_recoverable_state(ub)) {
+ +	if (test_bit(UB_STATE_OPEN, &ub->state) ||
+ +			ub->dev_info.state != UBLK_S_DEV_QUIESCED) {
+  		ret = -EBUSY;
+  		goto out_unlock;
+  	}
+@@ -2805,7 +2750,6 @@
+  	const struct ublksrv_ctrl_cmd *header = io_uring_sqe_cmd(cmd->sqe);
+  	int ublksrv_pid = (int)header->data[0];
+  	int ret = -EINVAL;
+ -	int i;
+  
+  	pr_devel("%s: Waiting for new ubq_daemons(nr: %d) are ready, dev id %d...\n",
+  			__func__, ub->dev_info.nr_hw_queues, header->dev_id);
+@@ -2817,32 +2761,21 @@
+  			__func__, ub->dev_info.nr_hw_queues, header->dev_id);
+  
+  	mutex_lock(&ub->mutex);
+ -	if (ublk_nosrv_should_stop_dev(ub))
+ +	if (!ublk_can_use_recovery(ub))
+  		goto out_unlock;
+  
+ -	if (!ublk_dev_in_recoverable_state(ub)) {
+ +	if (ub->dev_info.state != UBLK_S_DEV_QUIESCED) {
+  		ret = -EBUSY;
+  		goto out_unlock;
+  	}
+  	ub->dev_info.ublksrv_pid = ublksrv_pid;
+  	pr_devel("%s: new ublksrv_pid %d, dev id %d\n",
+  			__func__, ublksrv_pid, header->dev_id);
+ -
+ -	if (ublk_nosrv_dev_should_queue_io(ub)) {
+ -		ub->dev_info.state = UBLK_S_DEV_LIVE;
+ -		blk_mq_unquiesce_queue(ub->ub_disk->queue);
+ -		pr_devel("%s: queue unquiesced, dev id %d.\n",
+ -				__func__, header->dev_id);
+ -		blk_mq_kick_requeue_list(ub->ub_disk->queue);
+ -	} else {
+ -		blk_mq_quiesce_queue(ub->ub_disk->queue);
+ -		ub->dev_info.state = UBLK_S_DEV_LIVE;
+ -		for (i = 0; i < ub->dev_info.nr_hw_queues; i++) {
+ -			ublk_get_queue(ub, i)->fail_io = false;
+ -		}
+ -		blk_mq_unquiesce_queue(ub->ub_disk->queue);
+ -	}
+ -
+ +	blk_mq_unquiesce_queue(ub->ub_disk->queue);
+ +	pr_devel("%s: queue unquiesced, dev id %d.\n",
+ +			__func__, header->dev_id);
+ +	blk_mq_kick_requeue_list(ub->ub_disk->queue);
+ +	ub->dev_info.state = UBLK_S_DEV_LIVE;
+  	ret = 0;
+   out_unlock:
+  	mutex_unlock(&ub->mutex);
+
+""""""

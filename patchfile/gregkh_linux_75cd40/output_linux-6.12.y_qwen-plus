@@ -1,0 +1,63 @@
+A. Commit message:
+ublk: detach gendisk from ublk device if add_disk() fails
+
+B. Change summary:
+This patch ensures that the gendisk is detached from the ublk device if add_disk() fails, preventing a use-after-free scenario when getting the disk's reference in ublk_abort_requests(). A new function `ublk_detach_disk()` is introduced to handle the detachment logic.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/drivers/block/ublk_drv.c b/drivers/block/ublk_drv.c
+index d4aed12dd436b..934ab9332c80a 100644
+--- a/drivers/block/ublk_drv.c
++++ b/drivers/block/ublk_drv.c
+@@ -1618,6 +1618,21 @@ static void ublk_unquiesce_dev(struct ublk_device *ub)
+ 	blk_mq_kick_requeue_list(ub->ub_disk->queue);
+ }
+ 
++static struct gendisk *ublk_detach_disk(struct ublk_device *ub)
++{
++	struct gendisk *disk;
++
++	/* Sync with ublk_abort_queue() by holding the lock */
++	spin_lock(&ub->lock);
++	disk = ub->ub_disk;
++	ub->dev_info.state = UBLK_S_DEV_DEAD;
++	ub->dev_info.ublksrv_pid = -1;
++	ub->ub_disk = NULL;
++	spin_unlock(&ub->lock);
++
++	return disk;
++}
++
+ static void ublk_stop_dev(struct ublk_device *ub)
+ {
+ 	struct gendisk *disk;
+@@ -1631,14 +1646,7 @@ static void ublk_stop_dev(struct ublk_device *ub)
+ 		ublk_unquiesce_dev(ub);
+ 	}
+ 	del_gendisk(ub->ub_disk);
+-
+-	/* Sync with ublk_abort_queue() by holding the lock */
+-	spin_lock(&ub->lock);
+-	disk = ub->ub_disk;
+-	ub->dev_info.state = UBLK_S_DEV_DEAD;
+-	ub->dev_info.ublksrv_pid = -1;
+-	ub->ub_disk = NULL;
+-	spin_unlock(&ub->lock);
++	disk = ublk_detach_disk(ub);
+ 	put_disk(disk);
+  unlock:
+ 	mutex_unlock(&ub->mutex);
+@@ -2336,7 +2344,7 @@ static int ublk_ctrl_start_dev(struct ublk_device *ub, struct io_uring_cmd *cmd)
+ 
+ out_put_cdev:
+ 	if (ret) {
+-		ub->dev_info.state = UBLK_S_DEV_DEAD;
++		ublk_detach_disk(ub);
+ 		ublk_put_device(ub);
+ 	}
+ 	if (ret)
+```

@@ -1,0 +1,84 @@
+{
+  "timestamp": "20250109_160004",
+  "commit_info": {
+    "upstream_sha": "66a0a2b0473c39ae85c44628d14e4366fdc0aa0d",
+    "downstream_sha": "f3e6eaf033f44ad10a141f44f5cea766ad54c3dc",
+    "upstream_url": null,
+    "downstream_url": null
+  },
+  "target_version": "linux-6.12.y",
+  "results": {
+    "upstream_patch_apply": {
+      "success": false,
+      "error": "error: patch failed: sound/sh/sh_dac_audio.c:163\nerror: sound/sh/sh_dac_audio.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n"
+    },
+    "adapted_patch_apply": {
+      "success": {
+        "success": true,
+        "output": "Applying: Adapted patch for linux-6.12.y\n",
+        "error": null
+      }
+    },
+    "patch_comparison": {
+      "similarity": 0.5783549783549784,
+      "diff": [
+        "--- adapted_patch\n",
+        "+++ downstream_patch\n",
+        "@@ -1,25 +1,34 @@\n",
+        "-From 830e91295ce20cb33a996c5eae385e0d6f9a5de5 Mon Sep 17 00:00:00 2001\n",
+        "-From: root <root@congroo>\n",
+        "-Date: Thu, 9 Jan 2025 16:00:03 +0800\n",
+        "-Subject: [PATCH] Adapted patch for linux-6.12.y\n",
+        "+From f3e6eaf033f44ad10a141f44f5cea766ad54c3dc Mon Sep 17 00:00:00 2001\n",
+        "+From: Takashi Iwai <tiwai@suse.de>\n",
+        "+Date: Fri, 20 Dec 2024 12:44:16 +0100\n",
+        "+Subject: [PATCH] ALSA: sh: Fix wrong argument order for copy_from_iter()\n",
+        " \n",
+        "+commit 66a0a2b0473c39ae85c44628d14e4366fdc0aa0d upstream.\n",
+        "+\n",
+        "+Fix a brown paper bag bug I introduced at converting to the standard\n",
+        "+iter helper; the arguments were wrongly passed and have to be\n",
+        "+swapped.\n",
+        "+\n",
+        "+Fixes: 9b5f8ee43e48 (\"ALSA: sh: Use standard helper for buffer accesses\")\n",
+        "+Reported-by: kernel test robot <lkp@intel.com>\n",
+        "+Closes: https://lore.kernel.org/oe-kbuild-all/202412140019.jat5Dofr-lkp@intel.com/\n",
+        "+Link: https://patch.msgid.link/20241220114417.5898-1-tiwai@suse.de\n",
+        "+Signed-off-by: Takashi Iwai <tiwai@suse.de>\n",
+        "+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>\n",
+        " ---\n",
+        "  sound/sh/sh_dac_audio.c | 2 +-\n",
+        "  1 file changed, 1 insertion(+), 1 deletion(-)\n",
+        " \n",
+        " diff --git a/sound/sh/sh_dac_audio.c b/sound/sh/sh_dac_audio.c\n",
+        "-index e7b6ce7bd086..57b743fdbff0 100644\n",
+        "+index 5a9f77908a3d2..1c1c14708f018 100644\n",
+        " --- a/sound/sh/sh_dac_audio.c\n",
+        " +++ b/sound/sh/sh_dac_audio.c\n",
+        " @@ -163,7 +163,7 @@ static int snd_sh_dac_pcm_copy(struct snd_pcm_substream *substream,\n",
+        "  \t/* channel is not used (interleaved data) */\n",
+        "  \tstruct snd_sh_dac *chip = snd_pcm_substream_chip(substream);\n",
+        "  \n",
+        "--\tif (copy_from_iter_toio(chip->data_buffer + pos, src, count))\n",
+        "-+\tif (copy_from_iter_toio(chip->data_buffer + pos, count, src) != count)\n",
+        "+-\tif (copy_from_iter(chip->data_buffer + pos, src, count) != count)\n",
+        "++\tif (copy_from_iter(chip->data_buffer + pos, count, src) != count)\n",
+        "  \t\treturn -EFAULT;\n",
+        "  \tchip->buffer_end = chip->data_buffer + pos + count;\n",
+        "  \n",
+        "--- \n",
+        "-2.25.1\n",
+        "-\n"
+      ]
+    }
+  },
+  "summary": {
+    "status": "adaptation_success",
+    "similarity_score": 0.5783549783549784,
+    "notes": [
+      "上游patch无法直接应用",
+      "适配patch应用成功",
+      "与下游patch部分相似"
+    ]
+  }
+}

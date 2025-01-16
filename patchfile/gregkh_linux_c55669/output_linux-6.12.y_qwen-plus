@@ -1,0 +1,27 @@
+A. Commit message:
+udf: Skip parent dir link count update if corrupted
+
+B. Change summary:
+This patch ensures that if the parent directory link count is too low, likely indicating inode corruption, it skips updating its link count. This prevents unexpected issues that could arise if the link count goes to 0 prematurely.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+diff --git a/fs/udf/namei.c b/fs/udf/namei.c
+index 78a603129dd58..2be775d30ac10 100644
+--- a/fs/udf/namei.c
++++ b/fs/udf/namei.c
+@@ -517,7 +517,11 @@ static int udf_rmdir(struct inode *dir, struct dentry *dentry)
+ 			 inode->i_nlink);
+ 	clear_nlink(inode);
+ 	inode->i_size = 0;
+-	inode_dec_link_count(dir);
++	if (dir->i_nlink >= 3)
++		inode_dec_link_count(dir);
++	else
++		udf_warn(inode->i_sb, "parent dir link count too low (%u)\n",
++			 dir->i_nlink);
+ 	udf_add_fid_counter(dir->i_sb, true, -1);
+ 	inode_set_mtime_to_ts(dir,
+ 			      inode_set_ctime_to_ts(dir, inode_set_ctime_current(inode)));

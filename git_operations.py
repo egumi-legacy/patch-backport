@@ -37,6 +37,11 @@ class GitOperations:
         
         if self.commit_info['commit_sha']:
             self.patch_commit_sha = self.commit_info['commit_sha']
+            # 设置base_dir
+            self.base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
+            self.inputs.update(basedir = self.base_dir)
+
+        
 
         # # 设置patch文件存储路径
         # self.patch_dir = Path(inputs['basedir']) / 'patches'
@@ -64,6 +69,7 @@ class GitOperations:
         return commit_info
 
     def parse_github_url(self, url):
+        """处理输入可能是patch_url或repo_url的情况"""
         # 解析github url，获取owner, repo, commit_sha
         pattern = r'https://github\.com/([^/]+)/([^/]+)/commit/([^/]+)'
         match = re.search(pattern, url)
@@ -94,25 +100,70 @@ class GitOperations:
         files = commit_content['files']
         file_list = [file['filename'] for file in files]
         return file_list
-    
-    def get_file_contents_from_ref(self, file_path_list, ref):
+
+    def get_file_contents_from_ref(self, file_path_list, ref, use_local=False, repo_path=None):
         """
         获取指定引用（tag/commit/branch）下的文件内容
-        使用多个API端点尝试获取文件内容
-        """
-        owner = ref['owner']
-        repo = ref['repo']
-        ref_field = self.allowed_ref_fields
         
-        # 从ref中获取commit_sha, tag, branch其中一个
-        for field in ref_field:
+        Args:
+            file_path_list: 需要获取的文件路径列表
+            ref: 包含引用信息的字典
+            use_local: 是否使用本地仓库获取文件内容
+            repo_path: 本地仓库路径，当use_local=True时必须提供
+        """
+        if use_local:
+            if not repo_path:
+                raise ValueError("使用本地模式时必须提供repo_path参数")
+            return self._get_file_contents_local(file_path_list, ref, repo_path)
+        else:
+            return self._get_file_contents_remote(file_path_list, ref)
+
+    def _get_file_contents_local(self, file_path_list, ref, repo_path):
+        """使用本地git仓库获取文件内容"""
+        # 从ref中获取引用值（commit_sha/tag/branch）
+        for field in self.allowed_ref_fields:
             if field in ref:
                 ref_value = ref[field]
                 break
         
         file_contents = []
         for file_path in file_path_list:
-            logger.info(f"正在获取文件 {file_path} 在 {ref_value} 的内容")
+            logger.info(f"正在从本地仓库获取文件 {file_path} 在 {ref_value} 的内容")
+            try:
+                # 使用git show命令获取指定版本的文件内容
+                result = subprocess.run(
+                    ['git', 'show', f'{ref_value}:{file_path}'],
+                    cwd=repo_path,
+                    capture_output=True,
+                    text=True,
+                    check=True
+                )
+                content = {
+                    'filename': file_path,
+                    'content': result.stdout,
+                    'sha': None  # 本地模式下可能不需要sha
+                }
+                file_contents.append(content)
+            except subprocess.CalledProcessError as e:
+                logger.warning(f"无法获取文件 {file_path} 在 {ref_value} 的内容: {e.stderr}")
+                continue
+        
+        return file_contents
+
+    def _get_file_contents_remote(self, file_path_list, ref):
+        """使用GitHub API获取文件内容（原有的远程获取逻辑）"""
+        owner = ref['owner']
+        repo = ref['repo']
+        
+        # 从ref中获取引用值
+        for field in self.allowed_ref_fields:
+            if field in ref:
+                ref_value = ref[field]
+                break
+        
+        file_contents = []
+        for file_path in file_path_list:
+            logger.info(f"正在通过API获取文件 {file_path} 在 {ref_value} 的内容")
             
             # 方法1: 使用 contents API
             content = self._get_file_using_contents_api(owner, repo, file_path, ref_value)
@@ -126,9 +177,43 @@ class GitOperations:
                 file_contents.append(content)
             else:
                 logger.warning(f"无法获取文件 {file_path} 在 {ref_value} 的内容")
-                # raise RuntimeError(f"已退出")
         
         return file_contents
+    
+    # def get_file_contents_from_ref(self, file_path_list, ref):
+    #     """
+    #     获取指定引用（tag/commit/branch）下的文件内容
+    #     使用多个API端点尝试获取文件内容
+    #     """
+    #     owner = ref['owner']
+    #     repo = ref['repo']
+    #     ref_field = self.allowed_ref_fields
+        
+    #     # 从ref中获取commit_sha, tag, branch其中一个
+    #     for field in ref_field:
+    #         if field in ref:
+    #             ref_value = ref[field]
+    #             break
+        
+    #     file_contents = []
+    #     for file_path in file_path_list:
+    #         logger.info(f"正在获取文件 {file_path} 在 {ref_value} 的内容")
+            
+    #         # 方法1: 使用 contents API
+    #         content = self._get_file_using_contents_api(owner, repo, file_path, ref_value)
+            
+    #         # 如果方法1失败，尝试方法2
+    #         if content is None:
+    #             logger.info(f"使用 contents API 失败，尝试使用 Git Data API")
+    #             content = self._get_file_using_git_data_api(owner, repo, file_path, ref_value)
+            
+    #         if content:
+    #             file_contents.append(content)
+    #         else:
+    #             logger.warning(f"无法获取文件 {file_path} 在 {ref_value} 的内容")
+    #             # raise RuntimeError(f"已退出")
+        
+    #     return file_contents
 
 
     def _get_file_using_contents_api(self, owner, repo, file_path, ref):
@@ -156,6 +241,7 @@ class GitOperations:
         try:
             # 1. 首先获取引用的commit SHA
             commit_sha = self._get_ref_commit_sha(owner, repo, ref)
+            logger.info(f"-------------commit_sha:{commit_sha}")
             if not commit_sha:
                 return None
                 
@@ -328,7 +414,7 @@ class GitOperations:
 
     def get_commit_details(self, commit_info):
         return {
-            'patch_url': f"https://github.com/torvalds/linux/commit/{commit_info['upstream_sha']}",
+            'patch_url': f"https://github.com/{self.owner}/{self.repo}/commit/{commit_info['upstream_sha']}",
             'reference_url': f"https://github.com/{self.owner}/{self.repo}/commit/{commit_info['downstream_sha']}",
             'target_version': self.branch
         }
@@ -348,6 +434,9 @@ class GitOperations:
         """评估patch应用效果"""
         from patch_evaluator import PatchEvaluator
         evaluator = PatchEvaluator(repo_path, self.inputs)
+
+        logger.info(f"upstream_patch: {self.inputs['patch_url']}")
+        logger.info(f"downstream_patch: {self.inputs['reference_url']}")
         
         results = evaluator.evaluate_patch(
             upstream_patch_url=self.inputs['patch_url'],

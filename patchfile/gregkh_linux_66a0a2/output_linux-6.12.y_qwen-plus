@@ -1,0 +1,24 @@
+A. Commit message:
+ALSA: sh: Fix wrong argument order for copy_from_iter_toio()
+
+B. Change summary:
+The patch fixes the incorrect argument order in the `copy_from_iter_toio()` function call within the ALSA SH DAC audio driver. The arguments were swapped to ensure proper functionality.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/sound/sh/sh_dac_audio.c b/sound/sh/sh_dac_audio.c
+index a4d07438ad64b..3f5422145c5e2 100644
+--- a/sound/sh/sh_dac_audio.c
++++ b/sound/sh/sh_dac_audio.c
+@@ -163,7 +163,7 @@ static int snd_sh_dac_pcm_copy(struct snd_pcm_substream *substream,
+ 	/* channel is not used (interleaved data) */
+ 	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
+ 
+-	if (copy_from_iter_toio(chip->data_buffer + pos, src, count))
++	if (copy_from_iter_toio(chip->data_buffer + pos, count, src) != count)
+ 		return -EFAULT;
+ 	chip->buffer_end = chip->data_buffer + pos + count;
+```

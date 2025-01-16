@@ -9,6 +9,7 @@ import argparse
 from loguru import logger
 import json
 from patch_evaluator import PatchEvaluator
+from config_manager import ProjectConfig
 
 _DEFAULT_INPUT_FILE = Path(__file__).parent / "inputs.yaml"
 
@@ -17,15 +18,10 @@ class Main:
     def __init__(self):
         self.args = self.parse_arguments()
         with open(_DEFAULT_INPUT_FILE, "r") as file:
-            self.yaml_config = YAML().load(file)
+            yaml_config = YAML().load(file)
         
-        # if self.args.mode == 2:
-        #     # 获取是否使用缓存的commits文件
-        #     self.use_cached_commits = self.inputs.get('use_cached_commits', False)
-        #     self.commits_file = Path(self.inputs.get('commits_file', _DEFAULT_COMMITS_FILE))
-
         # 初始化配置
-        self.initialize_config()
+        self.config = self.initialize_config(yaml_config)
         
     def parse_arguments(self):
         parser = argparse.ArgumentParser(description='Patch Processing Tool')
@@ -33,89 +29,70 @@ class Main:
                           help='Mode 1: Single commit patch, Mode 2: Multiple commits from branch')
         return parser.parse_args()
     
-    def initialize_config(self):
+    def initialize_config(self, yaml_config):
+        """初始化配置对象"""
         # 获取通用配置
-        self.inputs = self.yaml_config.get('common', {})
+        common_config = yaml_config.get('common', {})
         
         # 根据模式合并特定配置
-        mode_config = {}
-        if self.args.mode == 1:
-            mode_config = self.yaml_config.get('mode1', {})
-        else:
-            mode_config = self.yaml_config.get('mode2', {})
+        mode_config = yaml_config.get(f'mode{self.args.mode}', {})
         
         # 合并配置
-        self.inputs.update(mode_config)
-
-    def process_single_commit(self):
-        # 确保必要的参数存在
-        required_params = ['patch_url', 'target_version']
-        for param in required_params:
-            if param not in self.inputs:
-                raise ValueError(f"Missing required parameter for mode 1: {param}")
-            
-        # 处理单个提交
-        patch_processor = PatchProcessor(self.inputs)
-        patch_processor_outputs = patch_processor.run()
-        self.inputs.update(patch_processor_outputs)
-
-        use_cache = self.inputs.get("use_cache", False)
-        if use_cache:
-            self.inputs["cache_path"] = patch_processor.get_response_path()
-
-        llm_output = LLMAssistant(self.inputs).run()
-        self.inputs.update(llm_output)
-
-        for response in llm_output["openai_responses"]:
-            if not use_cache:
-                output_path = patch_processor.save_response_to_project(response)
-            else:
-                output_path = self.inputs["cache_path"]
-
-            patch_processor.apply_llm_patch(output_path)
-            patch_processor.generate_folder_diff(
-                self.inputs['basedir'] / self.inputs['target_version'],
-                self.inputs['basedir'] / f'adapted_{self.inputs["target_version"]}',
-                self.inputs['basedir'] / f'adapted_diff_{self.inputs["target_version"]}'
-            )
+        config_dict = {**common_config, **mode_config}
+        config_dict['mode'] = self.args.mode
         
+        return ProjectConfig(**config_dict)
 
     def process_multiple_commits(self):
-        # 确保必要的参数存在
-        required_params = ['repo_url', 'branch', 'target_version']
-        for param in required_params:
-            if param not in self.inputs:
-                raise ValueError(f"Missing required parameter for mode 2: {param}")
-
-        git_operations = GitOperations(self.inputs)
+        git_operations = GitOperations(self.config)
         upstream_commits = git_operations.get_upstream_commits()
         if not upstream_commits:
             logger.error("未找到上游提交信息")
-            return
+            raise Exception("未找到上游提交信息")
         
         batch_results = []
-        for commit in upstream_commits[10:15]:
+        
+        for commit in upstream_commits[55:56]:
             logger.info(f"处理上游提交: {commit['upstream_sha']}")
+            
+            # 更新commit相关配置
             commit_details = git_operations.get_commit_details(commit)
-            self.inputs.update(commit_details)
-
-            # 复用模式1的处理逻辑
-            self.process_single_commit()
-
-            # 评估patch应用效果
-            evaluation_results = git_operations.evaluate_patch_application(
-                repo_path=self.inputs['repo_path'],
+            self.config.update(**commit_details)
+            
+            # 更新base_dir
+            owner, repo = git_operations.parse_github_url(commit_details['patch_url'])
+            self.config.update_base_dir(owner, repo, commit['upstream_sha'])
+            
+            # 创建评估器
+            evaluator = PatchEvaluator(self.config)
+            
+            # 首先尝试直接应用上游补丁
+            evaluation_result = evaluator.try_direct_apply(
+                upstream_patch_url=self.config.patch_url,
                 commit_info=commit
             )
             
-            # 收集评估结果
+            # 如果直接应用失败，进行LLM处理
+            if not evaluation_result['upstream_apply']['success']:
+                logger.info("直接应用失败，开始LLM处理流程...")
+                processor = PatchProcessor(self.config)
+                processor.process_single_commit()
+                
+                # 评估适配后的结果
+                adapted_result = evaluator.evaluate_adapted_patch(
+                    adapted_dir=self.config.base_dir / f"adapted_{self.config.target_version}",
+                    downstream_patch_url=self.config.reference_url
+                )
+                
+                evaluation_result.update(adapted_result)
+            else:
+                logger.info("直接应用成功，跳过LLM处理流程")
+            
             batch_results.append({
                 'commit_info': commit,
-                'evaluation': evaluation_results
+                'evaluation': evaluation_result
             })
         
-        # 保存批量评估结果
-        evaluator = PatchEvaluator(self.inputs['repo_path'], self.inputs)
         evaluator.save_batch_evaluation_results(batch_results)
 
     def run(self):
@@ -126,7 +103,6 @@ class Main:
         else:
             raise ValueError(f"Invalid mode: {self.args.mode}")
 
-        
 
 if __name__ == "__main__":
     main = Main()

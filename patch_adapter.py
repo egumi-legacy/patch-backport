@@ -919,7 +919,7 @@ class PatchAdapter:
                 
                 # 写入修改后的文件
                 with open(target_file, 'w', encoding='utf-8') as f:
-                    logger.info("success.\n")
+                    # logger.info("success.\n")
                     f.writelines(modified_lines)
                 logger.info(f"成功应用修改到文件: {file_path}")
                 

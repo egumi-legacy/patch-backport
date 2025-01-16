@@ -1,0 +1,23 @@
+modified file: fs/smb/server/smb_common.c
+--- patchfile/gregkh_linux_e18655/newer/fs/smb/server/smb_common.c
++++ patchfile/gregkh_linux_e18655/linux-6.12.y/fs/smb/server/smb_common.c
+@@ -358,7 +358,7 @@
+  static int smb1_allocate_rsp_buf(struct ksmbd_work *work)
+  {
+  	work->response_buf = kzalloc(MAX_CIFS_SMALL_BUFFER_SIZE,
+ -			KSMBD_DEFAULT_GFP);
+ +			GFP_KERNEL);
+  	work->response_sz = MAX_CIFS_SMALL_BUFFER_SIZE;
+  
+  	if (!work->response_buf) {
+@@ -576,7 +576,7 @@
+  
+  	ksmbd_debug(SMB, "Unsupported SMB1 protocol\n");
+  
+ -	if (ksmbd_iov_pin_rsp(work, (void *)neg_rsp + 4,
+ +	if (ksmbd_iov_pin_rsp(work, (void *)neg_rsp,
+  			      sizeof(struct smb_negotiate_rsp) - 4))
+  		return -ENOMEM;
+  
+
+""""""

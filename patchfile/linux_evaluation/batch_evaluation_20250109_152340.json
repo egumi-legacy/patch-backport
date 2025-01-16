@@ -1,0 +1,94 @@
+{
+  "timestamp": "20250109_152340",
+  "target_version": "linux-6.12.y",
+  "statistics": {
+    "total_patches": 1,
+    "direct_apply_success": 0,
+    "direct_apply_success_rate": 0.0,
+    "adapted_apply_success": 1,
+    "adapted_apply_success_rate": 1.0
+  },
+  "detailed_results": [
+    {
+      "commit_info": {
+        "upstream_sha": "e65a1b7fad0e112573eea7d64d4ab4fc513b8695",
+        "downstream_sha": "5792ae1cb1b00ae91ce514d2ec94c2efd954e6ca",
+        "upstream_url": null,
+        "downstream_url": null
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": false,
+          "error": "fatal: could not open 'patchfile/gregkh_linux_e65a1b/patches/upstream_e65a1b.patch' for reading: No such file or directory\n"
+        },
+        "adapted_patch_apply": {
+          "success": true,
+          "error": null
+        },
+        "patch_comparison": {
+          "similarity": 0.5943396226415094,
+          "diff": [
+            "--- adapted_patch\n",
+            "+++ downstream_patch\n",
+            "@@ -1,17 +1,33 @@\n",
+            "-From d4be63088fc561139eff67529d9b0f74524e4762 Mon Sep 17 00:00:00 2001\n",
+            "-From: root <root@congroo>\n",
+            "-Date: Thu, 9 Jan 2025 15:23:38 +0800\n",
+            "-Subject: [PATCH] Adapted patch for linux-6.12.y\n",
+            "+From 5792ae1cb1b00ae91ce514d2ec94c2efd954e6ca Mon Sep 17 00:00:00 2001\n",
+            "+From: =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>\n",
+            "+Date: Sun, 8 Dec 2024 15:59:27 +0100\n",
+            "+Subject: [PATCH] power: supply: cros_charge-control: allow start_threshold ==\n",
+            "+ end_threshold\n",
+            "+MIME-Version: 1.0\n",
+            "+Content-Type: text/plain; charset=UTF-8\n",
+            "+Content-Transfer-Encoding: 8bit\n",
+            " \n",
+            "+commit e65a1b7fad0e112573eea7d64d4ab4fc513b8695 upstream.\n",
+            "+\n",
+            "+Allow setting the start and stop thresholds to the same value.\n",
+            "+There is no reason to disallow it.\n",
+            "+\n",
+            "+Suggested-by: Thomas Koch <linrunner@gmx.net>\n",
+            "+Fixes: c6ed48ef5259 (\"power: supply: add ChromeOS EC based charge control driver\")\n",
+            "+Cc: stable@vger.kernel.org\n",
+            "+Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>\n",
+            "+Link: https://lore.kernel.org/r/20241208-cros_charge-control-v2-v1-2-8d168d0f08a3@weissschuh.net\n",
+            "+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>\n",
+            "+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>\n",
+            " ---\n",
+            "  drivers/power/supply/cros_charge-control.c | 4 ++--\n",
+            "  1 file changed, 2 insertions(+), 2 deletions(-)\n",
+            " \n",
+            " diff --git a/drivers/power/supply/cros_charge-control.c b/drivers/power/supply/cros_charge-control.c\n",
+            "-index 17c53591ce19..6a97b00c87ce 100644\n",
+            "+index 58ca6d9ed6132..108b121db4423 100644\n",
+            " --- a/drivers/power/supply/cros_charge-control.c\n",
+            " +++ b/drivers/power/supply/cros_charge-control.c\n",
+            "-@@ -134,11 +134,11 @@ static ssize_t cros_chctl_store_threshold(struct device *dev, struct cros_chctl_\n",
+            "+@@ -139,11 +139,11 @@ static ssize_t cros_chctl_store_threshold(struct device *dev, struct cros_chctl_\n",
+            "  \t\treturn -EINVAL;\n",
+            "  \n",
+            "  \tif (is_end_threshold) {\n",
+            "@@ -25,6 +41,3 @@\n",
+            "  \t\t\treturn -EINVAL;\n",
+            "  \t\tpriv->current_start_threshold = val;\n",
+            "  \t}\n",
+            "--- \n",
+            "-2.25.1\n",
+            "-\n"
+          ]
+        }
+      },
+      "summary": {
+        "status": "adaptation_success",
+        "similarity_score": 0.5943396226415094,
+        "notes": [
+          "上游patch无法直接应用",
+          "适配patch应用成功",
+          "与下游patch部分相似"
+        ]
+      }
+    }
+  ]
+}

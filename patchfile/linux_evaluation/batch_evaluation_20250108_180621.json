@@ -1,0 +1,473 @@
+{
+  "timestamp": "20250108_180621",
+  "target_version": "linux-6.12.y",
+  "statistics": {
+    "total_patches": 5,
+    "direct_apply_success": 0,
+    "direct_apply_success_rate": 0.0,
+    "adapted_apply_success": 5,
+    "adapted_apply_success_rate": 1.0
+  },
+  "detailed_results": [
+    {
+      "commit_info": {
+        "upstream_sha": "e0cec363197e41af870613e8e17b30bf0e3d41b5",
+        "downstream_sha": "bcfb9d856bd6bbd077484e57cd316d1079b42b76",
+        "upstream_url": null,
+        "downstream_url": null
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": false,
+          "error": "fatal: could not open 'patchfile/gregkh_linux_e0cec3/patches/upstream_e0cec3.patch' for reading: No such file or directory\n"
+        },
+        "adapted_patch_apply": {
+          "success": true,
+          "error": null
+        },
+        "patch_comparison": {
+          "similarity": 0.4407319013524264,
+          "diff": [
+            "--- adapted_patch\n",
+            "+++ downstream_patch\n",
+            "@@ -1,14 +1,53 @@\n",
+            "-From 5cf3052bce659073e494f3eab18017e5ae18d262 Mon Sep 17 00:00:00 2001\n",
+            "-From: root <root@congroo>\n",
+            "-Date: Wed, 8 Jan 2025 18:04:39 +0800\n",
+            "-Subject: [PATCH] Adapted patch for linux-6.12.y\n",
+            "+From bcfb9d856bd6bbd077484e57cd316d1079b42b76 Mon Sep 17 00:00:00 2001\n",
+            "+From: Carlos Song <carlos.song@nxp.com>\n",
+            "+Date: Wed, 18 Dec 2024 12:42:38 +0800\n",
+            "+Subject: [PATCH] i2c: imx: add imx7d compatible string for applying erratum\n",
+            "+ ERR007805\n",
+            " \n",
+            "+commit e0cec363197e41af870613e8e17b30bf0e3d41b5 upstream.\n",
+            "+\n",
+            "+Compatible string \"fsl,imx7d-i2c\" is not exited at i2c-imx driver\n",
+            "+compatible string table, at the result, \"fsl,imx21-i2c\" will be\n",
+            "+matched, but it will cause erratum ERR007805 not be applied in fact.\n",
+            "+\n",
+            "+So Add \"fsl,imx7d-i2c\" compatible string in i2c-imx driver to apply\n",
+            "+the erratum ERR007805(https://www.nxp.com/docs/en/errata/IMX7DS_3N09P.pdf).\n",
+            "+\n",
+            "+\"\n",
+            "+ERR007805 I2C: When the I2C clock speed is configured for 400 kHz,\n",
+            "+the SCL low period violates the I2C spec of 1.3 uS min\n",
+            "+\n",
+            "+Description: When the I2C module is programmed to operate at the\n",
+            "+maximum clock speed of 400 kHz (as defined by the I2C spec), the SCL\n",
+            "+clock low period violates the I2C spec of 1.3 uS min. The user must\n",
+            "+reduce the clock speed to obtain the SCL low time to meet the 1.3us\n",
+            "+I2C minimum required. This behavior means the SoC is not compliant\n",
+            "+to the I2C spec at 400kHz.\n",
+            "+\n",
+            "+Workaround: To meet the clock low period requirement in fast speed\n",
+            "+mode, SCL must be configured to 384KHz or less.\n",
+            "+\"\n",
+            "+\n",
+            "+\"fsl,imx7d-i2c\" already is documented in binding doc. This erratum\n",
+            "+fix has been included in imx6_i2c_hwdata and it is the same in all\n",
+            "+I.MX6/7/8, so just reuse it.\n",
+            "+\n",
+            "+Fixes: 39c025721d70 (\"i2c: imx: Implement errata ERR007805 or e7805 bus frequency limit\")\n",
+            "+Cc: stable@vger.kernel.org # v5.18+\n",
+            "+Signed-off-by: Carlos Song <carlos.song@nxp.com>\n",
+            "+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>\n",
+            "+Reviewed-by: Frank Li <Frank.Li@nxp.com>\n",
+            "+Fixes: 39c025721d70 (\"i2c: imx: Implement errata ERR007805 or e7805 bus frequency limit\")\n",
+            "+Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>\n",
+            "+Link: https://lore.kernel.org/r/20241218044238.143414-1-carlos.song@nxp.com\n",
+            "+Signed-off-by: Andi Shyti <andi.shyti@kernel.org>\n",
+            "+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>\n",
+            " ---\n",
+            "  drivers/i2c/busses/i2c-imx.c | 1 +\n",
+            "  1 file changed, 1 insertion(+)\n",
+            " \n",
+            " diff --git a/drivers/i2c/busses/i2c-imx.c b/drivers/i2c/busses/i2c-imx.c\n",
+            "-index 98539313cbc9..c5224d43eea4 100644\n",
+            "+index 98539313cbc97..c5224d43eea45 100644\n",
+            " --- a/drivers/i2c/busses/i2c-imx.c\n",
+            " +++ b/drivers/i2c/busses/i2c-imx.c\n",
+            " @@ -282,6 +282,7 @@ static const struct of_device_id i2c_imx_dt_ids[] = {\n",
+            "@@ -19,6 +58,3 @@\n",
+            "  \t{ .compatible = \"fsl,imx7s-i2c\", .data = &imx6_i2c_hwdata, },\n",
+            "  \t{ .compatible = \"fsl,imx8mm-i2c\", .data = &imx6_i2c_hwdata, },\n",
+            "  \t{ .compatible = \"fsl,imx8mn-i2c\", .data = &imx6_i2c_hwdata, },\n",
+            "--- \n",
+            "-2.25.1\n",
+            "-\n"
+          ]
+        }
+      },
+      "summary": {
+        "status": "adaptation_success",
+        "similarity_score": 0.4407319013524264,
+        "notes": [
+          "上游patch无法直接应用",
+          "适配patch应用成功",
+          "与下游patch差异较大"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "upstream_sha": "aa5d2ca7c179c40669edb5e96d931bf9828dea3d",
+        "downstream_sha": "5e44779d12bd3cd3930d4b7566edec2ea69972b7",
+        "upstream_url": null,
+        "downstream_url": null
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": false,
+          "error": "fatal: could not open 'patchfile/gregkh_linux_aa5d2c/patches/upstream_aa5d2c.patch' for reading: No such file or directory\n"
+        },
+        "adapted_patch_apply": {
+          "success": true,
+          "error": null
+        },
+        "patch_comparison": {
+          "similarity": 0.7767226686145605,
+          "diff": [
+            "--- adapted_patch\n",
+            "+++ downstream_patch\n",
+            "@@ -1,14 +1,30 @@\n",
+            "-From dc5b9496e1f44bfa423ea450def436dc6f48269d Mon Sep 17 00:00:00 2001\n",
+            "-From: root <root@congroo>\n",
+            "-Date: Wed, 8 Jan 2025 18:05:12 +0800\n",
+            "-Subject: [PATCH] Adapted patch for linux-6.12.y\n",
+            "+From 5e44779d12bd3cd3930d4b7566edec2ea69972b7 Mon Sep 17 00:00:00 2001\n",
+            "+From: Kan Liang <kan.liang@linux.intel.com>\n",
+            "+Date: Mon, 16 Dec 2024 08:02:52 -0800\n",
+            "+Subject: [PATCH] perf/x86/intel: Fix bitmask of OCR and FRONTEND events for\n",
+            "+ LNC\n",
+            " \n",
+            "+commit aa5d2ca7c179c40669edb5e96d931bf9828dea3d upstream.\n",
+            "+\n",
+            "+The released OCR and FRONTEND events utilized more bits on Lunar Lake\n",
+            "+p-core. The corresponding mask in the extra_regs has to be extended to\n",
+            "+unblock the extra bits.\n",
+            "+\n",
+            "+Add a dedicated intel_lnc_extra_regs.\n",
+            "+\n",
+            "+Fixes: a932aa0e868f (\"perf/x86: Add Lunar Lake and Arrow Lake support\")\n",
+            "+Reported-by: Andi Kleen <ak@linux.intel.com>\n",
+            "+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>\n",
+            "+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>\n",
+            "+Cc: stable@vger.kernel.org\n",
+            "+Link: https://lkml.kernel.org/r/20241216160252.430858-1-kan.liang@linux.intel.com\n",
+            "+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>\n",
+            " ---\n",
+            "  arch/x86/events/intel/core.c | 12 +++++++++++-\n",
+            "  1 file changed, 11 insertions(+), 1 deletion(-)\n",
+            " \n",
+            " diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c\n",
+            "-index d879478db3f5..28b4312f2563 100644\n",
+            "+index d879478db3f57..28b4312f25631 100644\n",
+            " --- a/arch/x86/events/intel/core.c\n",
+            " +++ b/arch/x86/events/intel/core.c\n",
+            " @@ -429,6 +429,16 @@ static struct event_constraint intel_lnc_event_constraints[] = {\n",
+            "@@ -37,6 +53,3 @@\n",
+            "  }\n",
+            "  \n",
+            "  static __always_inline void intel_pmu_init_skt(struct pmu *pmu)\n",
+            "--- \n",
+            "-2.25.1\n",
+            "-\n"
+          ]
+        }
+      },
+      "summary": {
+        "status": "adaptation_success",
+        "similarity_score": 0.7767226686145605,
+        "notes": [
+          "上游patch无法直接应用",
+          "适配patch应用成功",
+          "与下游patch部分相似"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "upstream_sha": "a60b990798eb17433d0283788280422b1bd94b18",
+        "downstream_sha": "aed157301c659a48f5564cc4568cf0e5c8831af0",
+        "upstream_url": null,
+        "downstream_url": null
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": false,
+          "error": "fatal: could not open 'patchfile/gregkh_linux_a60b99/patches/upstream_a60b99.patch' for reading: No such file or directory\n"
+        },
+        "adapted_patch_apply": {
+          "success": true,
+          "error": null
+        },
+        "patch_comparison": {
+          "similarity": 0.5999552272218491,
+          "diff": [
+            "--- adapted_patch\n",
+            "+++ downstream_patch\n",
+            "@@ -1,15 +1,48 @@\n",
+            "-From 494fac9deca35e64058956940554d94bf0a0d820 Mon Sep 17 00:00:00 2001\n",
+            "-From: root <root@congroo>\n",
+            "-Date: Wed, 8 Jan 2025 18:05:38 +0800\n",
+            "-Subject: [PATCH] Adapted patch for linux-6.12.y\n",
+            "+From aed157301c659a48f5564cc4568cf0e5c8831af0 Mon Sep 17 00:00:00 2001\n",
+            "+From: Thomas Gleixner <tglx@linutronix.de>\n",
+            "+Date: Sat, 14 Dec 2024 12:50:18 +0100\n",
+            "+Subject: [PATCH] PCI/MSI: Handle lack of irqdomain gracefully\n",
+            " \n",
+            "+commit a60b990798eb17433d0283788280422b1bd94b18 upstream.\n",
+            "+\n",
+            "+Alexandre observed a warning emitted from pci_msi_setup_msi_irqs() on a\n",
+            "+RISCV platform which does not provide PCI/MSI support:\n",
+            "+\n",
+            "+ WARNING: CPU: 1 PID: 1 at drivers/pci/msi/msi.h:121 pci_msi_setup_msi_irqs+0x2c/0x32\n",
+            "+ __pci_enable_msix_range+0x30c/0x596\n",
+            "+ pci_msi_setup_msi_irqs+0x2c/0x32\n",
+            "+ pci_alloc_irq_vectors_affinity+0xb8/0xe2\n",
+            "+\n",
+            "+RISCV uses hierarchical interrupt domains and correctly does not implement\n",
+            "+the legacy fallback. The warning triggers from the legacy fallback stub.\n",
+            "+\n",
+            "+That warning is bogus as the PCI/MSI layer knows whether a PCI/MSI parent\n",
+            "+domain is associated with the device or not. There is a check for MSI-X,\n",
+            "+which has a legacy assumption. But that legacy fallback assumption is only\n",
+            "+valid when legacy support is enabled, but otherwise the check should simply\n",
+            "+return -ENOTSUPP.\n",
+            "+\n",
+            "+Loongarch tripped over the same problem and blindly enabled legacy support\n",
+            "+without implementing the legacy fallbacks. There are weak implementations\n",
+            "+which return an error, so the problem was papered over.\n",
+            "+\n",
+            "+Correct pci_msi_domain_supports() to evaluate the legacy mode and add\n",
+            "+the missing supported check into the MSI enable path to complete it.\n",
+            "+\n",
+            "+Fixes: d2a463b29741 (\"PCI/MSI: Reject multi-MSI early\")\n",
+            "+Reported-by: Alexandre Ghiti <alexghiti@rivosinc.com>\n",
+            "+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>\n",
+            "+Tested-by: Alexandre Ghiti <alexghiti@rivosinc.com>\n",
+            "+Cc: stable@vger.kernel.org\n",
+            "+Link: https://lore.kernel.org/all/87ed2a8ow5.ffs@tglx\n",
+            "+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>\n",
+            " ---\n",
+            "  drivers/pci/msi/irqdomain.c | 7 +++++--\n",
+            "  drivers/pci/msi/msi.c       | 4 ++++\n",
+            "  2 files changed, 9 insertions(+), 2 deletions(-)\n",
+            " \n",
+            " diff --git a/drivers/pci/msi/irqdomain.c b/drivers/pci/msi/irqdomain.c\n",
+            "-index 569125726b3e..d7ba8795d60f 100644\n",
+            "+index 569125726b3e1..d7ba8795d60f8 100644\n",
+            " --- a/drivers/pci/msi/irqdomain.c\n",
+            " +++ b/drivers/pci/msi/irqdomain.c\n",
+            " @@ -350,8 +350,11 @@ bool pci_msi_domain_supports(struct pci_dev *pdev, unsigned int feature_mask,\n",
+            "@@ -27,7 +60,7 @@\n",
+            "  \tif (!irq_domain_is_msi_parent(domain)) {\n",
+            "  \t\t/*\n",
+            " diff --git a/drivers/pci/msi/msi.c b/drivers/pci/msi/msi.c\n",
+            "-index 3a45879d85db..2f647cac4cae 100644\n",
+            "+index 3a45879d85db9..2f647cac4cae3 100644\n",
+            " --- a/drivers/pci/msi/msi.c\n",
+            " +++ b/drivers/pci/msi/msi.c\n",
+            " @@ -433,6 +433,10 @@ int __pci_enable_msi_range(struct pci_dev *dev, int minvec, int maxvec,\n",
+            "@@ -41,6 +74,3 @@\n",
+            "  \tnvec = pci_msi_vec_count(dev);\n",
+            "  \tif (nvec < 0)\n",
+            "  \t\treturn nvec;\n",
+            "--- \n",
+            "-2.25.1\n",
+            "-\n"
+          ]
+        }
+      },
+      "summary": {
+        "status": "adaptation_success",
+        "similarity_score": 0.5999552272218491,
+        "notes": [
+          "上游patch无法直接应用",
+          "适配patch应用成功",
+          "与下游patch部分相似"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "upstream_sha": "27834971f616c5e154423c578fa95e0444444ce1",
+        "downstream_sha": "1429ae7b7d4759a1e362456b8911c701bae655b4",
+        "upstream_url": null,
+        "downstream_url": null
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": false,
+          "error": "fatal: could not open 'patchfile/gregkh_linux_278349/patches/upstream_278349.patch' for reading: No such file or directory\n"
+        },
+        "adapted_patch_apply": {
+          "success": true,
+          "error": null
+        },
+        "patch_comparison": {
+          "similarity": 0.4811529933481153,
+          "diff": [
+            "--- adapted_patch\n",
+            "+++ downstream_patch\n",
+            "@@ -1,14 +1,37 @@\n",
+            "-From b9f37896a3209665b012be8603c2737486d0b3e9 Mon Sep 17 00:00:00 2001\n",
+            "-From: root <root@congroo>\n",
+            "-Date: Wed, 8 Jan 2025 18:05:55 +0800\n",
+            "-Subject: [PATCH] Adapted patch for linux-6.12.y\n",
+            "+From 1429ae7b7d4759a1e362456b8911c701bae655b4 Mon Sep 17 00:00:00 2001\n",
+            "+From: Li RongQing <lirongqing@baidu.com>\n",
+            "+Date: Wed, 19 Jun 2024 19:18:01 +0800\n",
+            "+Subject: [PATCH] virt: tdx-guest: Just leak decrypted memory on unrecoverable\n",
+            "+ errors\n",
+            " \n",
+            "+commit 27834971f616c5e154423c578fa95e0444444ce1 upstream.\n",
+            "+\n",
+            "+In CoCo VMs it is possible for the untrusted host to cause\n",
+            "+set_memory_decrypted() to fail such that an error is returned\n",
+            "+and the resulting memory is shared. Callers need to take care\n",
+            "+to handle these errors to avoid returning decrypted (shared)\n",
+            "+memory to the page allocator, which could lead to functional\n",
+            "+or security issues.\n",
+            "+\n",
+            "+Leak the decrypted memory when set_memory_decrypted() fails,\n",
+            "+and don't need to print an error since set_memory_decrypted()\n",
+            "+will call WARN_ONCE().\n",
+            "+\n",
+            "+Fixes: f4738f56d1dc (\"virt: tdx-guest: Add Quote generation support using TSM_REPORTS\")\n",
+            "+Signed-off-by: Li RongQing <lirongqing@baidu.com>\n",
+            "+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>\n",
+            "+Signed-off-by: Ingo Molnar <mingo@kernel.org>\n",
+            "+Reviewed-by: Rick Edgecombe <rick.p.edgecombe@intel.com>\n",
+            "+Reviewed-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>\n",
+            "+Cc: stable@vger.kernel.org\n",
+            "+Link: https://lore.kernel.org/all/20240619111801.25630-1-lirongqing%40baidu.com\n",
+            "+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>\n",
+            " ---\n",
+            "  drivers/virt/coco/tdx-guest/tdx-guest.c | 4 +---\n",
+            "  1 file changed, 1 insertion(+), 3 deletions(-)\n",
+            " \n",
+            " diff --git a/drivers/virt/coco/tdx-guest/tdx-guest.c b/drivers/virt/coco/tdx-guest/tdx-guest.c\n",
+            "-index d7db6c824e13..224e7dde9cde 100644\n",
+            "+index d7db6c824e13d..224e7dde9cdee 100644\n",
+            " --- a/drivers/virt/coco/tdx-guest/tdx-guest.c\n",
+            " +++ b/drivers/virt/coco/tdx-guest/tdx-guest.c\n",
+            " @@ -124,10 +124,8 @@ static void *alloc_quote_buf(void)\n",
+            "@@ -23,6 +46,3 @@\n",
+            "  \n",
+            "  \treturn addr;\n",
+            "  }\n",
+            "--- \n",
+            "-2.25.1\n",
+            "-\n"
+          ]
+        }
+      },
+      "summary": {
+        "status": "adaptation_success",
+        "similarity_score": 0.4811529933481153,
+        "notes": [
+          "上游patch无法直接应用",
+          "适配patch应用成功",
+          "与下游patch差异较大"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "upstream_sha": "dc81e556f2a017d681251ace21bf06c126d5a192",
+        "downstream_sha": "b939f108e86b76119428a6fa4e92491e09ac7867",
+        "upstream_url": null,
+        "downstream_url": null
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": false,
+          "error": "fatal: could not open 'patchfile/gregkh_linux_dc81e5/patches/upstream_dc81e5.patch' for reading: No such file or directory\n"
+        },
+        "adapted_patch_apply": {
+          "success": true,
+          "error": null
+        },
+        "patch_comparison": {
+          "similarity": 0.47072035937750684,
+          "diff": [
+            "--- adapted_patch\n",
+            "+++ downstream_patch\n",
+            "@@ -1,14 +1,48 @@\n",
+            "-From 71403ed7f650e7e061b0170799bf9d5755481a6d Mon Sep 17 00:00:00 2001\n",
+            "-From: root <root@congroo>\n",
+            "-Date: Wed, 8 Jan 2025 18:06:21 +0800\n",
+            "-Subject: [PATCH] Adapted patch for linux-6.12.y\n",
+            "+From b939f108e86b76119428a6fa4e92491e09ac7867 Mon Sep 17 00:00:00 2001\n",
+            "+From: \"Xin Li (Intel)\" <xin@zytor.com>\n",
+            "+Date: Wed, 13 Nov 2024 09:59:34 -0800\n",
+            "+Subject: [PATCH] x86/fred: Clear WFE in missing-ENDBRANCH #CPs\n",
+            " \n",
+            "+commit dc81e556f2a017d681251ace21bf06c126d5a192 upstream.\n",
+            "+\n",
+            "+An indirect branch instruction sets the CPU indirect branch tracker\n",
+            "+(IBT) into WAIT_FOR_ENDBRANCH (WFE) state and WFE stays asserted\n",
+            "+across the instruction boundary.  When the decoder finds an\n",
+            "+inappropriate instruction while WFE is set ENDBR, the CPU raises a #CP\n",
+            "+fault.\n",
+            "+\n",
+            "+For the \"kernel IBT no ENDBR\" selftest where #CPs are deliberately\n",
+            "+triggered, the WFE state of the interrupted context needs to be\n",
+            "+cleared to let execution continue.  Otherwise when the CPU resumes\n",
+            "+from the instruction that just caused the previous #CP, another\n",
+            "+missing-ENDBRANCH #CP is raised and the CPU enters a dead loop.\n",
+            "+\n",
+            "+This is not a problem with IDT because it doesn't preserve WFE and\n",
+            "+IRET doesn't set WFE.  But FRED provides space on the entry stack\n",
+            "+(in an expanded CS area) to save and restore the WFE state, thus the\n",
+            "+WFE state is no longer clobbered, so software must clear it.\n",
+            "+\n",
+            "+Clear WFE to avoid dead looping in ibt_clear_fred_wfe() and the\n",
+            "+!ibt_fatal code path when execution is allowed to continue.\n",
+            "+\n",
+            "+Clobbering WFE in any other circumstance is a security-relevant bug.\n",
+            "+\n",
+            "+[ dhansen: changelog rewording ]\n",
+            "+\n",
+            "+Fixes: a5f6c2ace997 (\"x86/shstk: Add user control-protection fault handler\")\n",
+            "+Signed-off-by: Xin Li (Intel) <xin@zytor.com>\n",
+            "+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>\n",
+            "+Signed-off-by: Ingo Molnar <mingo@kernel.org>\n",
+            "+Acked-by: Dave Hansen <dave.hansen@linux.intel.com>\n",
+            "+Cc: stable@vger.kernel.org\n",
+            "+Link: https://lore.kernel.org/all/20241113175934.3897541-1-xin%40zytor.com\n",
+            "+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>\n",
+            " ---\n",
+            "  arch/x86/kernel/cet.c | 30 ++++++++++++++++++++++++++++++\n",
+            "  1 file changed, 30 insertions(+)\n",
+            " \n",
+            " diff --git a/arch/x86/kernel/cet.c b/arch/x86/kernel/cet.c\n",
+            "-index d2c732a34e5d..303bf74d175b 100644\n",
+            "+index d2c732a34e5d9..303bf74d175b3 100644\n",
+            " --- a/arch/x86/kernel/cet.c\n",
+            " +++ b/arch/x86/kernel/cet.c\n",
+            " @@ -81,6 +81,34 @@ static void do_user_cp_fault(struct pt_regs *regs, unsigned long error_code)\n",
+            "@@ -62,6 +96,3 @@\n",
+            "  \t\treturn;\n",
+            "  \t}\n",
+            "  \tBUG();\n",
+            "--- \n",
+            "-2.25.1\n",
+            "-\n"
+          ]
+        }
+      },
+      "summary": {
+        "status": "adaptation_success",
+        "similarity_score": 0.47072035937750684,
+        "notes": [
+          "上游patch无法直接应用",
+          "适配patch应用成功",
+          "与下游patch差异较大"
+        ]
+      }
+    }
+  ]
+}
