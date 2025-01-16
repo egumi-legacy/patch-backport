@@ -55,7 +55,7 @@ class PatchProcessor:
         config.update(basedir = self.base_dir)
 
         # 缓存设置
-        self.use_cached_patches = config.get('use_cached_patches', False)
+        self.use_cached_patches = config.use_cached_patches
 
 
     def download_patch_by_type(self, patch_url, patch_type='upstream'):
@@ -228,6 +228,41 @@ class PatchProcessor:
         patch_values = [{"patchCode": html.unescape(Path(patch_path).read_text()), "diffCode": html.unescape((base_dir / 'diff').read_text())}]
 
         return dict(prompt_values=patch_values)
+        
+        
+
+    def process_single_commit(self):
+        """
+        处理单个提交的补丁
+        """
+        # 运行基本处理流程
+        patch_processor_outputs = self.run()
+        self.config.update(**patch_processor_outputs)
+
+        # 处理LLM响应
+        use_cache = self.config.extra_config.get("use_cache", False)
+        if use_cache:
+            self.config.extra_config["cache_path"] = self.get_response_path()
+
+        # 调用LLM处理
+        llm_assistant = LLMAssistant(self.config)
+        llm_output = llm_assistant.run()
+        self.config.update(**llm_output)
+
+        # 处理LLM输出
+        for response in llm_output["openai_responses"]:
+            if not use_cache:
+                output_path = self.save_response_to_project(response)
+            else:
+                output_path = self.config.extra_config["cache_path"]
+
+            # 应用补丁并生成差异
+            self.apply_llm_patch(output_path)
+            self.generate_folder_diff(
+                self.config.base_dir / self.config.target_version,
+                self.config.base_dir / f'adapted_{self.config.target_version}',
+                self.config.base_dir / f'adapted_diff_{self.config.target_version}'
+            )
         
         
 

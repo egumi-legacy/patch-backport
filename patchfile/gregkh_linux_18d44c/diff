@@ -1,0 +1,120 @@
+modified file: fs/ceph/file.c
+--- patchfile/gregkh_linux_18d44c/newer/fs/ceph/file.c
++++ patchfile/gregkh_linux_18d44c/linux-6.12.y/fs/ceph/file.c
+@@ -1066,7 +1066,7 @@
+  	if (ceph_inode_is_shutdown(inode))
+  		return -EIO;
+  
+ -	if (!len || !i_size)
+ +	if (!len)
+  		return 0;
+ -		if (ret < len && (off + ret < i_size)) {
+ +		if (ret >= 0 && ret < len && (off + ret < i_size)) {
+  			int zlen = min(len - ret, i_size - off - ret);
+  			int zoff = page_off + ret;
+  
+@@ -1204,11 +1199,13 @@
+  			ret += zlen;
+  		}
+  
+ -		if (off + ret > i_size)
+ -			left = (i_size > off) ? i_size - off : 0;
+ +		idx = 0;
+ +		if (ret <= 0)
+ +			left = 0;
+ +		else if (off + ret > i_size)
+ +			left = i_size - off;
+  		else
+  			left = ret;
+ -
+  		while (left > 0) {
+  			size_t plen, copied;
+  
+@@ -1224,8 +1221,13 @@
+  				break;
+  			}
+  		}
+ -
+ -		ceph_osdc_put_request(req);
+ +		ceph_release_page_vector(pages, num_pages);
+ +
+ +		if (ret < 0) {
+ +			if (ret == -EBLOCKLISTED)
+ +				fsc->blocklisted = true;
+ +			break;
+ +		}
+  
+  		if (off >= i_size || !more)
+  			break;
+@@ -1551,16 +1553,6 @@
+  			break;
+  		}
+  
+ -		op = &req->r_ops[0];
+ -		if (sparse) {
+ -			extent_cnt = __ceph_sparse_read_ext_count(inode, size);
+ -			ret = ceph_alloc_sparse_ext_map(op, extent_cnt);
+ -			if (ret) {
+ -				ceph_osdc_put_request(req);
+ -				break;
+ -			}
+ -		}
+ -
+  		len = iter_get_bvecs_alloc(iter, size, &bvecs, &num_pages);
+  		if (len < 0) {
+  			ceph_osdc_put_request(req);
+@@ -1569,8 +1561,6 @@
+  		}
+  		if (len != size)
+  			osd_req_op_extent_update(req, 0, len);
+ -
+ -		osd_req_op_extent_osd_data_bvecs(req, 0, bvecs, num_pages, len);
+  
+
+""""""
+modified file: net/ceph/osd_client.c
+--- patchfile/gregkh_linux_18d44c/newer/net/ceph/osd_client.c
++++ patchfile/gregkh_linux_18d44c/linux-6.12.y/net/ceph/osd_client.c
+@@ -4999,6 +4999,40 @@
+  }
+  EXPORT_SYMBOL(ceph_osdc_notify);
+  
+ +/*
+ + * Return the number of milliseconds since the watch was last
+ + * confirmed, or an error.  If there is an error, the watch is no
+ + * longer valid, and should be destroyed with ceph_osdc_unwatch().
+ + */
+ +int ceph_osdc_watch_check(struct ceph_osd_client *osdc,
+ +			  struct ceph_osd_linger_request *lreq)
+ +{
+ +	unsigned long stamp, age;
+ +	int ret;
+ +
+ +	down_read(&osdc->lock);
+ +	mutex_lock(&lreq->lock);
+ +	stamp = lreq->watch_valid_thru;
+ +	if (!list_empty(&lreq->pending_lworks)) {
+ +		struct linger_work *lwork =
+ +		    list_first_entry(&lreq->pending_lworks,
+ +				     struct linger_work,
+ +				     pending_item);
+ +
+ +		if (time_before(lwork->queued_stamp, stamp))
+ +			stamp = lwork->queued_stamp;
+ +	}
+ +	age = jiffies - stamp;
+ +	dout("%s lreq %p linger_id %llu age %lu last_error %d\n", __func__,
+ +	     lreq, lreq->linger_id, age, lreq->last_error);
+ +	/* we are truncating to msecs, so return a safe upper bound */
+ +	ret = lreq->last_error ?: 1 + jiffies_to_msecs(age);
+ +
+ +	mutex_unlock(&lreq->lock);
+ +	up_read(&osdc->lock);
+ +	return ret;
+ +}
+ +
+  static int decode_watcher(void **p, void *end, struct ceph_watch_item *item)
+  {
+  	u8 struct_v;
+
+""""""

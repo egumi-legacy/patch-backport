@@ -52,7 +52,7 @@ class Main:
         
         batch_results = []
         
-        for commit in upstream_commits[55:56]:
+        for commit in upstream_commits[260:280]:
             logger.info(f"处理上游提交: {commit['upstream_sha']}")
             
             # 更新commit相关配置
@@ -60,8 +60,12 @@ class Main:
             self.config.update(**commit_details)
             
             # 更新base_dir
-            owner, repo = git_operations.parse_github_url(commit_details['patch_url'])
-            self.config.update_base_dir(owner, repo, commit['upstream_sha'])
+            url_info = git_operations.parse_github_url(commit_details['patch_url'])
+            self.config.update_base_dir(
+                owner=url_info['owner'],
+                repo=url_info['repo'],
+                commit_sha=commit['upstream_sha']
+            )
             
             # 创建评估器
             evaluator = PatchEvaluator(self.config)
@@ -88,12 +92,35 @@ class Main:
             else:
                 logger.info("直接应用成功，跳过LLM处理流程")
             
+            # 收集评估结果
             batch_results.append({
                 'commit_info': commit,
                 'evaluation': evaluation_result
             })
         
+        # 保存批量评估结果
+        # evaluator = PatchEvaluator(self.inputs['repo_path'], self.inputs)
         evaluator.save_batch_evaluation_results(batch_results)
+
+    def process_single_commit(self):
+        """
+        处理模式1：单个提交补丁
+        """
+        # 确保必要的参数存在
+        required_params = ['patch_url', 'target_version']
+        for param in required_params:
+            if not getattr(self.config, param):
+                raise ValueError(f"Missing required parameter for mode 1: {param}")
+        
+        # 解析URL并更新base_dir
+        git_operations = GitOperations(self.config)
+        owner, repo = git_operations.parse_github_url(self.config.patch_url)
+        commit_sha = git_operations.parse_github_url(self.config.patch_url)['commit_sha']
+        self.config.update_base_dir(owner, repo, commit_sha)
+        
+        # 处理单个提交
+        processor = PatchProcessor(self.config)
+        processor.process_single_commit()
 
     def run(self):
         if self.args.mode == 1:

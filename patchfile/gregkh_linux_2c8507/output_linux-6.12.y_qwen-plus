@@ -1,0 +1,25 @@
+A. Commit message:
+btrfs: backport swap activation rescheduling to avoid core monopolization
+
+B. Change summary:
+This patch backports the addition of a voluntary reschedule during swap file activation to prevent monopolizing a CPU core when processing thousands of extents. The change ensures that the system remains responsive by yielding the CPU periodically.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 4675f43..c4675f4 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -10078,6 +10078,8 @@ static int btrfs_swap_activate(struct swap_info_struct *sis, struct file *file,
+ 			ret = -EINTR;
+ 			goto out;
+ 		}
++
++		cond_resched();
+ 	}
+ 
+ 	if (bsi.block_len)
+```

@@ -9,11 +9,12 @@ import dotenv
 import json
 # from patch_evaluator import PatchEvaluator
 from patch_utils import download_patch
+from config_manager import ProjectConfig
 
 _DEFAULT_COMMITS_FILE = Path(__file__).parent / "commits.json"
 
 class GitOperations:
-    def __init__(self, inputs):
+    def __init__(self, config: ProjectConfig):
         """初始化 Git 操作类"""
         dotenv.load_dotenv()
         self.github_token = os.getenv('GITHUB_TOKEN')
@@ -24,22 +25,26 @@ class GitOperations:
             'Host': 'api.github.com',
             'Connection': 'keep-alive'
         }
-        self.inputs = inputs
-        self.use_cached_commits = self.inputs.get('use_cached_commits', False)
-        self.commits_file = Path(self.inputs.get('commits_file', _DEFAULT_COMMITS_FILE))
-        self.branch = self.inputs['branch'] if 'branch' in self.inputs else None
+        self.config = config
+        self.use_cached_commits = config.use_cached_commits
+        self.commits_file = config.commits_file
+        self.branch = config.branch
         # 可能是模式1的 patch_url，也可能是模式2的 repo_url
-        self.url = self.inputs['repo_url'] if 'repo_url' in self.inputs else self.inputs['patch_url']
+        self.url = config.repo_url if config.repo_url else config.patch_url
         self.allowed_ref_fields = ['commit_sha', 'tag', 'branch']
         self.commit_info = self.parse_github_url(self.url)
         self.owner = self.commit_info['owner']
         self.repo = self.commit_info['repo']
+
+        self.commits_pages_start = config.commits_pages_start
+        self.commits_pages_end = config.commits_pages_end
+        self.commits_per_page = config.commits_per_page
         
         if self.commit_info['commit_sha']:
             self.patch_commit_sha = self.commit_info['commit_sha']
             # 设置base_dir
             self.base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
-            self.inputs.update(basedir = self.base_dir)
+            self.config.update(basedir = self.base_dir)
 
         
 
@@ -345,56 +350,86 @@ class GitOperations:
         logger.info(f"未提取到上游提交: {commit_message}")
         return None
 
-    def scan_commits(self, branch, page=1, per_page=100):
-        """扫描提交历史，查找包含上游提交引用的提交"""
+    def scan_commits(self, branch, start_page=1, end_page=1, per_page=100):
+        """
+        扫描提交历史，查找包含上游提交引用的提交
+        
+        :param branch: 分支名
+        :param start_page: 起始页码
+        :param end_page: 结束页码
+        :param per_page: 每页数量
+        :return: 上游提交列表
+        """
         if branch is None:
             raise ValueError("branch 为空，无法扫描提交历史")
+        
+        # 使用配置中的值
+        if self.commits_pages_start is not None:
+            start_page = self.commits_pages_start
+        if self.commits_pages_end is not None:
+            end_page = self.commits_pages_end
+        if self.commits_per_page is not None:
+            per_page = self.commits_per_page
+            
+        logger.info(f"扫描提交历史: 页码范围={start_page}-{end_page}, 每页={per_page}")
+        
+        all_upstream_commits = []
+        
+        # 遍历所有页面
+        for page in range(start_page, end_page + 1):
+            commits_url = f"https://api.github.com/repos/{self.owner}/{self.repo}/commits"
+            params = {
+                'sha': branch,
+                'per_page': per_page,
+                'page': page
+            }
+            
+            try:
+                logger.info(f"获取第 {page} 页提交...")
+                response = requests.get(commits_url, headers=self.headers, params=params)
+                logger.debug(f"请求URL: {response.url}")
+                response.raise_for_status()
+                commits = response.json()
+                
+                if not commits:  # 如果返回空列表，说明已经没有更多提交
+                    logger.info(f"第 {page} 页没有更多提交")
+                    break
+                
+                # 处理当前页的提交
+                for commit in commits:
+                    commit_message = commit['commit']['message']
+                    upstream_sha = self._extract_upstream_commit(commit_message)
+                    if upstream_sha:
+                        all_upstream_commits.append({
+                            'downstream_sha': commit['sha'],
+                            'downstream_message': commit_message,
+                            'upstream_sha': upstream_sha
+                        })
+                
+            except requests.exceptions.RequestException as e:
+                logger.error(f"获取第 {page} 页提交失败: {e}")
+                continue
+            
+            logger.info(f"第 {page} 页处理完成，当前共找到 {len(all_upstream_commits)} 个上游提交")
+        
+        return all_upstream_commits
 
-        commits_url = f"https://api.github.com/repos/{self.owner}/{self.repo}/commits"
-        # https://api.github.com/repos/gregkh/linux/commits?sha=linux-6.12.y&page=1&per_page=100
-        # https://api.github.com/repos/gregkh/linux/commits?sha=linux-6.12.y&per_page=100&page=1
-        params = {
-            'sha': branch,
-            'per_page': per_page,
-            'page': page
-        }
-        
-        try:
-            response = requests.get(commits_url, headers=self.headers, params=params)
-            print(f"request url:{response.url}")
-            response.raise_for_status()
-            commits = response.json()
-            upstream_commits = []
-            for commit in commits:
-                commit_message = commit['commit']['message']
-                upstream_sha = self._extract_upstream_commit(commit_message)
-                if upstream_sha:
-                    upstream_commits.append({
-                        'downstream_sha': commit['sha'],
-                        'downstream_message': commit_message,
-                        'upstream_sha': upstream_sha
-                    })
-            
-            return upstream_commits
-            
-        except requests.exceptions.RequestException as e:
-            logger.error(f"获取提交历史失败: {e}")
-            return []
-        
     def get_upstream_commits(self):
-        """获取上游commits信息，支持从缓存或API获取"""
-        if self.use_cached_commits:
+        """获取上游提交信息"""
+        if self.use_cached_commits and self.commits_file.exists():
             logger.info("从缓存文件加载commits信息")
-            return self.load_cached_commits(self.commits_file)
+            with open(self.commits_file, 'r') as f:
+                return json.load(f)
         
-        logger.info("从GitHub API获取commits信息")
-
-        # scanner = CommitScanner(self.inputs['repo_url'], self.inputs['branch'])
-        commits = self.scan_commits(branch=self.branch)
+        # 扫描提交历史
+        upstream_commits = self.scan_commits(self.branch)
         
-        # 保存到缓存文件
-        self.save_commits_cache(commits, self.commits_file)
-        return commits
+        # 缓存结果
+        logger.info("保存commits信息到缓存文件")
+        with open(self.commits_file, 'w') as f:
+            json.dump(upstream_commits, f, indent=2)
+        
+        return upstream_commits
     
     def load_cached_commits(self, commits_file):
         """从缓存文件加载commits信息"""
@@ -433,15 +468,15 @@ class GitOperations:
     def evaluate_patch_application(self, repo_path, commit_info):
         """评估patch应用效果"""
         from patch_evaluator import PatchEvaluator
-        evaluator = PatchEvaluator(repo_path, self.inputs)
+        evaluator = PatchEvaluator(repo_path, self.config)
 
-        logger.info(f"upstream_patch: {self.inputs['patch_url']}")
-        logger.info(f"downstream_patch: {self.inputs['reference_url']}")
+        logger.info(f"upstream_patch: {self.config.patch_url}")
+        logger.info(f"downstream_patch: {self.config.reference_url}")
         
         results = evaluator.evaluate_patch(
-            upstream_patch_url=self.inputs['patch_url'],
-            downstream_patch_url=self.inputs['reference_url'],
-            adapted_dir=Path(self.inputs['basedir']) / f"adapted_{self.inputs['target_version']}",
+            upstream_patch_url=self.config.patch_url,
+            downstream_patch_url=self.config.reference_url,
+            adapted_dir=Path(self.config.basedir) / f"adapted_{self.config.target_version}",
             commit_info=commit_info
         )
         

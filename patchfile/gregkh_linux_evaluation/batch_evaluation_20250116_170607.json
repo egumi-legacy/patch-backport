@@ -1,0 +1,513 @@
+{
+  "timestamp": "20250116_170607",
+  "target_version": "linux-6.12.y",
+  "statistics": {
+    "total_patches": 20,
+    "direct_apply_success": 20,
+    "direct_apply_success_rate": 1.0,
+    "adapted_apply_success": 0,
+    "adapted_apply_success_rate": 0.0
+  },
+  "detailed_results": [
+    {
+      "commit_info": {
+        "downstream_sha": "56216257d4292a49e0cc5e368d8e0e4a79269be4",
+        "downstream_message": "watchdog: mediatek: Add support for MT6735 TOPRGU/WDT\n\n[ Upstream commit 15ddf704f56f8c95ff74dfd1157ed8646b322fa1 ]\n\nAdd support for the Top Reset Generation Unit/Watchdog Timer found on\nMT6735.\n\nSigned-off-by: Yassine Oudjana <y.oudjana@protonmail.com>\nReviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>\nReviewed-by: Guenter Roeck <linux@roeck-us.net>\nLink: https://lore.kernel.org/r/20241106104738.195968-3-y.oudjana@protonmail.com\nSigned-off-by: Guenter Roeck <linux@roeck-us.net>\nSigned-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "15ddf704f56f8c95ff74dfd1157ed8646b322fa1"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "a42417a8cffc01ee920f30867319193478868c79",
+        "downstream_message": "Revert \"watchdog: s3c2410_wdt: use exynos_get_pmu_regmap_by_phandle() for PMU regs\"\n\n[ Upstream commit ccfb765944bb66813398958983cb8141e2624a6b ]\n\nThis reverts commit 746f0770f916e6c48e422d6a34e67eae16707f0e.\n\nNow that we can register a SoC specific regmap with syscon using\nof_syscon_register_regmap() api we can switch back to using\nsyscon_regmap_lookup_by_phandle() in the client drivers.\n\nSigned-off-by: Peter Griffin <peter.griffin@linaro.org>\nReviewed-by: Sam Protsenko <semen.protsenko@linaro.org>\nReviewed-by: Guenter Roeck <linux@roeck-us.net>\nLink: https://lore.kernel.org/r/20241029191131.2329414-1-peter.griffin@linaro.org\nSigned-off-by: Guenter Roeck <linux@roeck-us.net>\nSigned-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "ccfb765944bb66813398958983cb8141e2624a6b"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "486fc631cc499a16bbf38c0b383df2bb83b7e18d",
+        "downstream_message": "watchdog: rzg2l_wdt: Power on the watchdog domain in the restart handler\n\n[ Upstream commit bad201b2ac4e238c6d4b6966a220240e3861640c ]\n\nOn RZ/G3S the watchdog can be part of a software-controlled PM domain. In\nthis case, the watchdog device need to be powered on in\nstruct watchdog_ops::restart API. This can be done though\npm_runtime_resume_and_get() API if the watchdog PM domain and watchdog\ndevice are marked as IRQ safe. We mark the watchdog PM domain as IRQ safe\nwith GENPD_FLAG_IRQ_SAFE when the watchdog PM domain is registered and the\nwatchdog device though pm_runtime_irq_safe().\n\nBefore commit e4cf89596c1f (\"watchdog: rzg2l_wdt: Fix 'BUG: Invalid wait\ncontext'\") pm_runtime_get_sync() was used in watchdog restart handler\n(which is similar to pm_runtime_resume_and_get() except the later one\nhandles the runtime resume errors).\n\nCommit e4cf89596c1f (\"watchdog: rzg2l_wdt: Fix 'BUG: Invalid wait\ncontext'\") dropped the pm_runtime_get_sync() and replaced it with\nclk_prepare_enable() to avoid invalid wait context due to genpd_lock()\nin genpd_runtime_resume() being called from atomic context. But\nclk_prepare_enable() doesn't fit for this either (as reported by\nUlf Hansson) as clk_prepare() can also sleep (it just not throw invalid\nwait context warning as it is not written for this).\n\nBecause the watchdog device is marked now as IRQ safe (though this patch)\nthe irq_safe_dev_in_sleep_domain() call from genpd_runtime_resume() returns\n1 for devices not registering an IRQ safe PM domain for watchdog (as the\nwatchdog device is IRQ safe, PM domain is not and watchdog PM domain is\nalways-on), this being the case for RZ/G3S with old device trees and\nthe rest of the SoCs that use this driver, we can now drop also the\nclk_prepare_enable() calls in restart handler and rely on\npm_runtime_resume_and_get().\n\nThus, drop clk_prepare_enable() and use pm_runtime_resume_and_get() in\nwatchdog restart handler.\n\nSigned-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>\nReviewed-by: Ulf Hansson <ulf.hansson@linaro.org>\nReviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>\nAcked-by: Guenter Roeck <linux@roeck-us.net>\nLink: https://lore.kernel.org/r/20241015164732.4085249-5-claudiu.beznea.uj@bp.renesas.com\nSigned-off-by: Guenter Roeck <linux@roeck-us.net>\nSigned-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "bad201b2ac4e238c6d4b6966a220240e3861640c"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "b94011427ee3c9073e277416435590628590b4ba",
+        "downstream_message": "watchdog: it87_wdt: add PWRGD enable quirk for Qotom QCML04\n\n[ Upstream commit 43439076383a7611300334d1357c0f8883f40816 ]\n\nFor the watchdog timer to work properly on the QCML04 board we need to\nset PWRGD enable in the Environment Controller Configuration Registers\nSpecial Configuration Register 1 when it is not already set, this may\nbe the case when the watchdog is not enabled from within the BIOS.\n\nSigned-off-by: James Hilliard <james.hilliard1@gmail.com>\nReviewed-by: Guenter Roeck <linux@roeck-us.net>\nLink: https://lore.kernel.org/r/20241025063441.3494837-1-james.hilliard1@gmail.com\nSigned-off-by: Guenter Roeck <linux@roeck-us.net>\nSigned-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "43439076383a7611300334d1357c0f8883f40816"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "68662d78afbc03d8365df6d0f58ffb962f2a170c",
+        "downstream_message": "tracing/kprobe: Make trace_kprobe's module callback called after jump_label update\n\n[ Upstream commit d685d55dfc86b1a4bdcec77c3c1f8a83f181264e ]\n\nMake sure the trace_kprobe's module notifer callback function is called\nafter jump_label's callback is called. Since the trace_kprobe's callback\neventually checks jump_label address during registering new kprobe on\nthe loading module, jump_label must be updated before this registration\nhappens.\n\nLink: https://lore.kernel.org/all/173387585556.995044.3157941002975446119.stgit@devnote2/\n\nFixes: 614243181050 (\"tracing/kprobes: Support module init function probing\")\nSigned-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "d685d55dfc86b1a4bdcec77c3c1f8a83f181264e"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "a39ff5bf2357c737f558b28f4f579261bdbc2966",
+        "downstream_message": "stddef: make __struct_group() UAPI C++-friendly\n\n[ Upstream commit 724c6ce38bbaeb4b3f109b0e066d6c0ecd15446c ]\n\nFor the most part of the C++ history, it couldn't have type\ndeclarations inside anonymous unions for different reasons. At the\nsame time, __struct_group() relies on the latters, so when the @TAG\nargument is not empty, C++ code doesn't want to build (even under\n`extern \"C\"`):\n\n../linux/include/uapi/linux/pkt_cls.h:25:24: error:\n'struct tc_u32_sel::<unnamed union>::tc_u32_sel_hdr,' invalid;\nan anonymous union may only have public non-static data members\n[-fpermissive]\n\nThe safest way to fix this without trying to switch standards (which\nis impossible in UAPI anyway) etc., is to disable tag declaration\nfor that language. This won't break anything since for now it's not\nbuildable at all.\nUse a separate definition for __struct_group() when __cplusplus is\ndefined to mitigate the error, including the version from tools/.\n\nFixes: 50d7bd38c3aa (\"stddef: Introduce struct_group() helper macro\")\nReported-by: Christopher Ferris <cferris@google.com>\nCloses: https://lore.kernel.org/linux-hardening/Z1HZpe3WE5As8UAz@google.com\nSuggested-by: Kees Cook <kees@kernel.org> # __struct_group_tag()\nSigned-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>\nReviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>\nLink: https://lore.kernel.org/r/20241219135734.2130002-1-aleksander.lobakin@intel.com\nSigned-off-by: Kees Cook <kees@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "724c6ce38bbaeb4b3f109b0e066d6c0ecd15446c"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "155829fd1e1d18cdd0f4cb808a8566a2f65bafd5",
+        "downstream_message": "power: supply: bq24190: Fix BQ24296 Vbus regulator support\n\n[ Upstream commit b3ded6072c5600704cfa3ce3a8dc8718d34bda66 ]\n\nThere are 2 issues with bq24296_set_otg_vbus():\n\n1. When writing the OTG_CONFIG bit it uses POC_CHG_CONFIG_SHIFT which\n   should be POC_OTG_CONFIG_SHIFT.\n\n2. When turning the regulator off it never turns charging back on. Note\n   this must be done through bq24190_charger_set_charge_type(), to ensure\n   that the charge_type property value of none/trickle/fast is honored.\n\nResolve both issues to fix BQ24296 Vbus regulator support not working.\n\nFixes: b150a703b56f (\"power: supply: bq24190_charger: Add support for BQ24296\")\nSigned-off-by: Hans de Goede <hdegoede@redhat.com>\nLink: https://lore.kernel.org/r/20241116203648.169100-2-hdegoede@redhat.com\nSigned-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "b3ded6072c5600704cfa3ce3a8dc8718d34bda66"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "6d9cd27105459f169993a4c5f216499a946dbf34",
+        "downstream_message": "powerpc/pseries/vas: Add close() callback in vas_vm_ops struct\n\n[ Upstream commit 05aa156e156ef3168e7ab8a68721945196495c17 ]\n\nThe mapping VMA address is saved in VAS window struct when the\npaste address is mapped. This VMA address is used during migration\nto unmap the paste address if the window is active. The paste\naddress mapping will be removed when the window is closed or with\nthe munmap(). But the VMA address in the VAS window is not updated\nwith munmap() which is causing invalid access during migration.\n\nThe KASAN report shows:\n[16386.254991] BUG: KASAN: slab-use-after-free in reconfig_close_windows+0x1a0/0x4e8\n[16386.255043] Read of size 8 at addr c00000014a819670 by task drmgr/696928\n\n[16386.255096] CPU: 29 UID: 0 PID: 696928 Comm: drmgr Kdump: loaded Tainted: G    B              6.11.0-rc5-nxgzip #2\n[16386.255128] Tainted: [B]=BAD_PAGE\n[16386.255148] Hardware name: IBM,9080-HEX Power11 (architected) 0x820200 0xf000007 of:IBM,FW1110.00 (NH1110_016) hv:phyp pSeries\n[16386.255181] Call Trace:\n[16386.255202] [c00000016b297660] [c0000000018ad0ac] dump_stack_lvl+0x84/0xe8 (unreliable)\n[16386.255246] [c00000016b297690] [c0000000006e8a90] print_report+0x19c/0x764\n[16386.255285] [c00000016b297760] [c0000000006e9490] kasan_report+0x128/0x1f8\n[16386.255309] [c00000016b297880] [c0000000006eb5c8] __asan_load8+0xac/0xe0\n[16386.255326] [c00000016b2978a0] [c00000000013f898] reconfig_close_windows+0x1a0/0x4e8\n[16386.255343] [c00000016b297990] [c000000000140e58] vas_migration_handler+0x3a4/0x3fc\n[16386.255368] [c00000016b297a90] [c000000000128848] pseries_migrate_partition+0x4c/0x4c4\n...\n\n[16386.256136] Allocated by task 696554 on cpu 31 at 16377.277618s:\n[16386.256149]  kasan_save_stack+0x34/0x68\n[16386.256163]  kasan_save_track+0x34/0x80\n[16386.256175]  kasan_save_alloc_info+0x58/0x74\n[16386.256196]  __kasan_slab_alloc+0xb8/0xdc\n[16386.256209]  kmem_cache_alloc_noprof+0x200/0x3d0\n[16386.256225]  vm_area_alloc+0x44/0x150\n[16386.256245]  mmap_region+0x214/0x10c4\n[16386.256265]  do_mmap+0x5fc/0x750\n[16386.256277]  vm_mmap_pgoff+0x14c/0x24c\n[16386.256292]  ksys_mmap_pgoff+0x20c/0x348\n[16386.256303]  sys_mmap+0xd0/0x160\n...\n\n[16386.256350] Freed by task 0 on cpu 31 at 16386.204848s:\n[16386.256363]  kasan_save_stack+0x34/0x68\n[16386.256374]  kasan_save_track+0x34/0x80\n[16386.256384]  kasan_save_free_info+0x64/0x10c\n[16386.256396]  __kasan_slab_free+0x120/0x204\n[16386.256415]  kmem_cache_free+0x128/0x450\n[16386.256428]  vm_area_free_rcu_cb+0xa8/0xd8\n[16386.256441]  rcu_do_batch+0x2c8/0xcf0\n[16386.256458]  rcu_core+0x378/0x3c4\n[16386.256473]  handle_softirqs+0x20c/0x60c\n[16386.256495]  do_softirq_own_stack+0x6c/0x88\n[16386.256509]  do_softirq_own_stack+0x58/0x88\n[16386.256521]  __irq_exit_rcu+0x1a4/0x20c\n[16386.256533]  irq_exit+0x20/0x38\n[16386.256544]  interrupt_async_exit_prepare.constprop.0+0x18/0x2c\n...\n\n[16386.256717] Last potentially related work creation:\n[16386.256729]  kasan_save_stack+0x34/0x68\n[16386.256741]  __kasan_record_aux_stack+0xcc/0x12c\n[16386.256753]  __call_rcu_common.constprop.0+0x94/0xd04\n[16386.256766]  vm_area_free+0x28/0x3c\n[16386.256778]  remove_vma+0xf4/0x114\n[16386.256797]  do_vmi_align_munmap.constprop.0+0x684/0x870\n[16386.256811]  __vm_munmap+0xe0/0x1f8\n[16386.256821]  sys_munmap+0x54/0x6c\n[16386.256830]  system_call_exception+0x1a0/0x4a0\n[16386.256841]  system_call_vectored_common+0x15c/0x2ec\n\n[16386.256868] The buggy address belongs to the object at c00000014a819670\n                which belongs to the cache vm_area_struct of size 168\n[16386.256887] The buggy address is located 0 bytes inside of\n                freed 168-byte region [c00000014a819670, c00000014a819718)\n\n[16386.256915] The buggy address belongs to the physical page:\n[16386.256928] page: refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x14a81\n[16386.256950] memcg:c0000000ba430001\n[16386.256961] anon flags: 0x43ffff800000000(node=4|zone=0|lastcpupid=0x7ffff)\n[16386.256975] page_type: 0xfdffffff(slab)\n[16386.256990] raw: 043ffff800000000 c00000000501c080 0000000000000000 5deadbee00000001\n[16386.257003] raw: 0000000000000000 00000000011a011a 00000001fdffffff c0000000ba430001\n[16386.257018] page dumped because: kasan: bad access detected\n\nThis patch adds close() callback in vas_vm_ops vm_operations_struct\nwhich will be executed during munmap() before freeing VMA. The VMA\naddress in the VAS window is set to NULL after holding the window\nmmap_mutex.\n\nFixes: 37e6764895ef (\"powerpc/pseries/vas: Add VAS migration handler\")\nSigned-off-by: Haren Myneni <haren@linux.ibm.com>\nSigned-off-by: Madhavan Srinivasan <maddy@linux.ibm.com>\nLink: https://patch.msgid.link/20241214051758.997759-1-haren@linux.ibm.com\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "05aa156e156ef3168e7ab8a68721945196495c17"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "16258a1d930309cc3b9d9c79eebe379eb3263384",
+        "downstream_message": "ASoC: Intel: sof_sdw: Fix DMI match for Lenovo 21Q6 and 21Q7\n\ncommit 7c449ef0fdce540bfb235a2d93e7184864c3388b upstream.\n\nUpdate the DMI match for a Lenovo laptop to the new DMI identifier.\n\nThis laptop ships with a different DMI identifier to what was expected,\nand now has two identifiers.\n\nSigned-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>\nFixes: 83c062ae81e8 (\"ASoC: Intel: sof_sdw: Add quirks for some new Lenovo laptops\")\nSigned-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>\nLink: https://patch.msgid.link/20241216140821.153670-2-yung-chuan.liao@linux.intel.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>",
+        "upstream_sha": "7c449ef0fdce540bfb235a2d93e7184864c3388b"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "3b0f5d3e5ebda725f7c4351ba488ac18d5846e4d",
+        "downstream_message": "ASoC: dt-bindings: realtek,rt5645: Fix CPVDD voltage comment\n\ncommit 6f4a0fd03ce856c6d9811429b9969b4f27e2eaee upstream.\n\nBoth the ALC5645 and ALC5650 datasheets specify a recommended voltage of\n1.8V for CPVDD, not 3.5V.\n\nFix the comment.\n\nCc: Matthias Brugger <matthias.bgg@gmail.com>\nFixes: 26aa19174f0d (\"ASoC: dt-bindings: rt5645: add suppliers\")\nFixes: 83d43ab0a1cb (\"ASoC: dt-bindings: realtek,rt5645: Convert to dtschema\")\nSigned-off-by: Chen-Yu Tsai <wenst@chromium.org>\nAcked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>\nLink: https://patch.msgid.link/20241211035403.4157760-1-wenst@chromium.org\nSigned-off-by: Mark Brown <broonie@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>",
+        "upstream_sha": "6f4a0fd03ce856c6d9811429b9969b4f27e2eaee"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "f4d68bdfaef6a0d4619a821154f49f8f1c2a80d4",
+        "downstream_message": "ASoC: Intel: sof_sdw: Fix DMI match for Lenovo 21QA and 21QB\n\ncommit ba7d47a54bf23a7201bdd2978e16b04fc1cb1f6e upstream.\n\nUpdate the DMI match for a Lenovo laptop to the new DMI identifier.\n\nThis laptop ships with a different DMI identifier to what was expected,\nand now has two identifiers.\n\nSigned-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>\nFixes: ea657f6b24e1 (\"ASoC: Intel: sof_sdw: Add quirk for cs42l43 system using host DMICs\")\nSigned-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>\nLink: https://patch.msgid.link/20241216140821.153670-3-yung-chuan.liao@linux.intel.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>",
+        "upstream_sha": "ba7d47a54bf23a7201bdd2978e16b04fc1cb1f6e"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "7a51e3a5a1b8af7803c2455233b74fae5f10e8a0",
+        "downstream_message": "ASoC: amd: ps: Fix for enabling DMIC on acp63 platform via _DSD entry\n\ncommit 88438444fdddd0244c8b2697713adcca3e71599e upstream.\n\nAdd condition check to register ACP PDM sound card by reading\n_WOV acpi entry.\n\nFixes: 0386d765f27a (\"ASoC: amd: ps: refactor acp device configuration read logic\")\n\nSigned-off-by: Venkata Prasad Potturu <venkataprasad.potturu@amd.com>\nLink: https://patch.msgid.link/20241213061147.1060451-1-venkataprasad.potturu@amd.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>",
+        "upstream_sha": "88438444fdddd0244c8b2697713adcca3e71599e"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "d2f090ea57f8d6587e09d4066f740a8617767b3d",
+        "downstream_message": "mtd: rawnand: fix double free in atmel_pmecc_create_user()\n\ncommit d8e4771f99c0400a1873235704b28bb803c83d17 upstream.\n\nThe \"user\" pointer was converted from being allocated with kzalloc() to\nbeing allocated by devm_kzalloc().  Calling kfree(user) will lead to a\ndouble free.\n\nFixes: 6d734f1bfc33 (\"mtd: rawnand: atmel: Fix possible memory leak\")\nSigned-off-by: Dan Carpenter <dan.carpenter@linaro.org>\nSigned-off-by: Miquel Raynal <miquel.raynal@bootlin.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>",
+        "upstream_sha": "d8e4771f99c0400a1873235704b28bb803c83d17"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "ba465de3022a47a52a29b9dd5b2e4a5c38c3d31c",
+        "downstream_message": "platform/chrome: cros_ec_lpc: fix product identity for early Framework Laptops\n\ncommit dcd59d0d7d51b2a4b768fc132b0d74a97dfd6d6a upstream.\n\nThe product names for the Framework Laptop (12th and 13th Generation\nIntel Core) are incorrect as of 62be134abf42.\n\nFixes: 62be134abf42 (\"platform/chrome: cros_ec_lpc: switch primary DMI data for Framework Laptop\")\nCc: stable@vger.kernel.org # 6.12.x\nSigned-off-by: Dustin L. Howett <dustin@howett.net>\nReviewed-by: Thomas Weißschuh <linux@weissschuh.net>\nLink: https://lore.kernel.org/r/20241224-platform-chrome-cros_ec_lpc-fix-product-identity-for-early-framework-laptops-v1-1-0d31d6e1d22c@howett.net\nSigned-off-by: Tzung-Bi Shih <tzungbi@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>",
+        "upstream_sha": "dcd59d0d7d51b2a4b768fc132b0d74a97dfd6d6a"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "909ecf15cb70f78cdb5c930f58df01db039a0ff8",
+        "downstream_message": "ASoC: SOF: Intel: hda-dai: Do not release the link DMA on STOP\n\ncommit e8d0ba147d901022bcb69da8d8fd817f84e9f3ca upstream.\n\nThe linkDMA should not be released on stop trigger since a stream re-start\nmight happen without closing of the stream. This leaves a short time for\nother streams to 'steal' the linkDMA since it has been released.\n\nThis issue is not easy to reproduce under normal conditions as usually\nafter stop the stream is closed, or the same stream is restarted, but if\nanother stream got in between the stop and start, like this:\naplay -Dhw:0,3 -c2 -r48000 -fS32_LE /dev/zero -d 120\nCTRL+z\naplay -Dhw:0,0 -c2 -r48000 -fS32_LE /dev/zero -d 120\n\nthen the link DMA channels will be mixed up, resulting firmware error or\ncrash.\n\nFixes: ab5593793e90 (\"ASoC: SOF: Intel: hda: Always clean up link DMA during stop\")\nCc: stable@vger.kernel.org\nCloses: https://github.com/thesofproject/sof/issues/9695\nSigned-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>\nReviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>\nReviewed-by: Liam Girdwood <liam.r.girdwood@intel.com>\nReviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>\nLink: https://patch.msgid.link/20241217091019.31798-1-peter.ujfalusi@linux.intel.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>",
+        "upstream_sha": "e8d0ba147d901022bcb69da8d8fd817f84e9f3ca"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "54376d8d26596f98ed7432a788314bb9154bf3e3",
+        "downstream_message": "dmaengine: at_xdmac: avoid null_prt_deref in at_xdmac_prep_dma_memset\n\ncommit c43ec96e8d34399bd9dab2f2dc316b904892133f upstream.\n\nThe at_xdmac_memset_create_desc may return NULL, which will lead to a\nnull pointer dereference. For example, the len input is error, or the\natchan->free_descs_list is empty and memory is exhausted. Therefore, add\ncheck to avoid this.\n\nFixes: b206d9a23ac7 (\"dmaengine: xdmac: Add memset support\")\nSigned-off-by: Chen Ridong <chenridong@huawei.com>\nLink: https://lore.kernel.org/r/20241029082845.1185380-1-chenridong@huaweicloud.com\nSigned-off-by: Vinod Koul <vkoul@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>",
+        "upstream_sha": "c43ec96e8d34399bd9dab2f2dc316b904892133f"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "ed31336f811778cfdb76c6fcecfebf5ed0de4fc3",
+        "downstream_message": "dmaengine: apple-admac: Avoid accessing registers in probe\n\ncommit 8d55e8a16f019211163f1180fd9f9fbe05901900 upstream.\n\nThe ADMAC attached to the AOP has complex power sequencing, and is\npower gated when the probe callback runs. Move the register reads\nto other functions, where we can guarantee that the hardware is\nswitched on.\n\nFixes: 568aa6dd641f (\"dmaengine: apple-admac: Allocate cache SRAM to channels\")\nSigned-off-by: Sasha Finkelstein <fnkl.kernel@gmail.com>\nLink: https://lore.kernel.org/r/20241124-admac-power-v1-1-58f2165a4d55@gmail.com\nSigned-off-by: Vinod Koul <vkoul@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>",
+        "upstream_sha": "8d55e8a16f019211163f1180fd9f9fbe05901900"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "f5d231592430abdae07dd422671b3514e10196f2",
+        "downstream_message": "dmaengine: fsl-edma: implement the cleanup path of fsl_edma3_attach_pd()\n\ncommit ccfa3131d4a0347988e73638edea5c8281b6d2c7 upstream.\n\nCurrent implementation of fsl_edma3_attach_pd() does not provide a\ncleanup path, resulting in a memory leak. For example,\ndev_pm_domain_detach() is not called after dev_pm_domain_attach_by_id(),\nand the device link created with the DL_FLAG_STATELESS is not released\nexplicitly.\n\nTherefore, provide a cleanup function fsl_edma3_detach_pd() and call it\nupon failure. Also add a devm_add_action_or_reset() call with this\nfunction after a successful fsl_edma3_attach_pd().\n\nFixes: 72f5801a4e2b (\"dmaengine: fsl-edma: integrate v3 support\")\nSigned-off-by: Joe Hattori <joe@pf.is.s.u-tokyo.ac.jp>\nLink: https://lore.kernel.org/r/20241221075712.3297200-1-joe@pf.is.s.u-tokyo.ac.jp\nSigned-off-by: Vinod Koul <vkoul@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>",
+        "upstream_sha": "ccfa3131d4a0347988e73638edea5c8281b6d2c7"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "4ecd6f505e4f23689701b4c2b72a1144cd9eee3c",
+        "downstream_message": "dmaengine: amd: qdma: Remove using the private get and set dma_ops APIs\n\ncommit dcbef0798eb825cd584f7a93f62bed63f7fbbfc9 upstream.\n\nThe get_dma_ops and set_dma_ops APIs were never for driver to use. Remove\nthese calls from QDMA driver. Instead, pass the DMA device pointer from the\nqdma_platdata structure.\n\nFixes: 73d5fc92a11c (\"dmaengine: amd: qdma: Add AMD QDMA driver\")\nSigned-off-by: Lizhi Hou <lizhi.hou@amd.com>\nReviewed-by: Christoph Hellwig <hch@lst.de>\nLink: https://lore.kernel.org/r/20240918181022.2155715-1-lizhi.hou@amd.com\nSigned-off-by: Vinod Koul <vkoul@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>",
+        "upstream_sha": "dcbef0798eb825cd584f7a93f62bed63f7fbbfc9"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    },
+    {
+      "commit_info": {
+        "downstream_sha": "d8c3d13f5519688295189a81c8b819ac2b4a1d94",
+        "downstream_message": "dmaengine: tegra: Return correct DMA status when paused\n\ncommit ebc008699fd95701c9af5ebaeb0793eef81a71d5 upstream.\n\nCurrently, the driver does not return the correct DMA status when a DMA\npause is issued by the client drivers. This causes GPCDMA users to\nassume that DMA is still running, while in reality, the DMA is paused.\n\nReturn DMA_PAUSED for tx_status() if the channel is paused in the middle\nof a transfer.\n\nFixes: ee17028009d4 (\"dmaengine: tegra: Add tegra gpcdma driver\")\nCc: stable@vger.kernel.org\nSigned-off-by: Akhil R <akhilrajeev@nvidia.com>\nSigned-off-by: Kartik Rajput <kkartik@nvidia.com>\nLink: https://lore.kernel.org/r/20241212124412.5650-1-kkartik@nvidia.com\nSigned-off-by: Vinod Koul <vkoul@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>",
+        "upstream_sha": "ebc008699fd95701c9af5ebaeb0793eef81a71d5"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    }
+  ]
+}

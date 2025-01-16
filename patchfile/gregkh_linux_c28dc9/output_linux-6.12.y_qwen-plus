@@ -2,7 +2,7 @@ A. Commit message:
 power: supply: cros_charge-control: hide start threshold on v2 cmd
 
 B. Change summary:
-This patch hides the start threshold on v2 systems to prevent permanent charge and discharge cycles. Instead, it programs the EC with start == end which forces the EC to reach and stay at that level. Additionally, it adjusts the visibility of attributes based on the command version.
+This patch hides the start threshold for ECs implementing the v2 command to prevent permanent charge and discharge cycles. It ensures that the start threshold is set to the same value as the end threshold on v2 systems, forcing the EC to reach and stay at that level. Additionally, it updates the visibility of attributes based on the command version.
 
 C. Compatibility Risk:
 Medium
@@ -24,7 +24,7 @@ index 108b121db4423..9b0a7500296b4 100644
  		if (val < priv->current_start_threshold)
  			return -EINVAL;
  		priv->current_end_threshold = val;
-@@ -234,12 +238,10 @@ static umode_t cros_chtl_attr_is_visible(struct kobject *kobj, struct attribute
+@@ -234,12 +238,10 @@ static umode_t cros_chtl_attr_is_visible(struct kobject *kobj, struct attribute *
  {
  	struct cros_chctl_priv *priv = cros_chctl_attr_to_priv(attr, n);
  

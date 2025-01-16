@@ -50,10 +50,14 @@ mode2:
   branch: 'linux-6.12.y'
   target_version: "linux-6.12.y"
   repo_path: "../backport-test/linux"
-  # Commits缓存配置
-  use_cached_commits: true
-  commits_file: "commits.json"  # 可选，默认为 commits.json
   use_cached_patches: true
+  # Commits 缓存配置
+  use_cached_commits: true  # 是否使用之前缓存过的commits list
+  commits_file: "commits.json"  # 可选，默认为 commits.json
+  # 更改下面两项要把 commits 缓存设为 false
+  commits_pages_start: 1  # 起始页
+  commits_pages_end: 3    # 结束页
+  commits_per_page: 100   # 每页数量，范围为 1-100
 # # Model 2
 # repo_url: 'https://github.com/gregkh/linux'
 # branch: 'linux-6.12.y'

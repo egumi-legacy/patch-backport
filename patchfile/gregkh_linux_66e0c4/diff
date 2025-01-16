@@ -1,0 +1,50 @@
+modified file: fs/ceph/file.c
+--- patchfile/gregkh_linux_66e0c4/newer/fs/ceph/file.c
++++ patchfile/gregkh_linux_66e0c4/linux-6.12.y/fs/ceph/file.c
+@@ -1066,7 +1066,7 @@
+  	if (ceph_inode_is_shutdown(inode))
+  		return -EIO;
+  
+ -	if (!len || !i_size)
+ +	if (!len)
+  		return 0;
+ -		if (ret < len && (off + ret < i_size)) {
+ +		if (ret >= 0 && ret < len && (off + ret < i_size)) {
+  			int zlen = min(len - ret, i_size - off - ret);
+  			int zoff = page_off + ret;
+  
+@@ -1204,11 +1199,13 @@
+  			ret += zlen;
+  		}
+  
+ -		if (off + ret > i_size)
+ -			left = (i_size > off) ? i_size - off : 0;
+ +		idx = 0;
+ +		if (ret <= 0)
+ +			left = 0;
+ +		else if (off + ret > i_size)
+ +			left = i_size - off;
+  		else
+  			left = ret;
+ -
+  		while (left > 0) {
+  			size_t plen, copied;
+  
+@@ -1224,8 +1221,13 @@
+  				break;
+  			}
+  		}
+ -
+ -		ceph_osdc_put_request(req);
+ +		ceph_release_page_vector(pages, num_pages);
+ +
+ +		if (ret < 0) {
+ +			if (ret == -EBLOCKLISTED)
+ +				fsc->blocklisted = true;
+ +			break;
+ +		}
+  
+  		if (off >= i_size || !more)
+  			break;
+
+""""""

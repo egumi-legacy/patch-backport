@@ -1,0 +1,31 @@
+modified file: fs/ceph/file.c
+--- patchfile/gregkh_linux_9abee4/newer/fs/ceph/file.c
++++ patchfile/gregkh_linux_9abee4/linux-6.12.y/fs/ceph/file.c
+@@ -1127,7 +1127,7 @@
+  
+  		osd_req_op_extent_osd_data_pages(req, 0, pages, read_len,
+  						 offset_in_page(read_off),
+ -						 false, true);
+ +						 false, false);
+  
+  		op = &req->r_ops[0];
+  		if (sparse) {
+@@ -1185,6 +1185,8 @@
+  			ret = min_t(ssize_t, fret, len);
+  		}
+ +
+ +		ceph_osdc_put_request(req);
+  
+  		if (ret >= 0 && ret < len && (off + ret < i_size)) {
+@@ -1219,8 +1221,7 @@
+  				break;
+  			}
+  		}
+ -
+ -		ceph_osdc_put_request(req);
+ +		ceph_release_page_vector(pages, num_pages);
+  
+  		if (ret < 0) {
+  			if (ret == -EBLOCKLISTED)
+
+""""""

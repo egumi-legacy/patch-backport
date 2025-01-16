@@ -9,61 +9,42 @@ from textwrap import indent
 from pprint import pformat
 from chevron import render
 import html
+from config_manager import ProjectConfig
 
 class LLMAssistant:
-    def __init__(self, inputs):
+    def __init__(self, config: ProjectConfig):
+        """
+        初始化LLM助手
+        
+        :param config: 项目配置对象
+        """
         dotenv.load_dotenv()
-        # 默认从环境变量中获取API密钥和基础URL
-        inputs.setdefault("openai_api_key", os.environ.get("OPENAI_API_KEY"))
-        inputs.setdefault("openai_base_url", os.environ.get("OPENAI_BASE_URL"))
-
-        _api_key = inputs.get("openai_api_key")
-        _base_url = inputs.get("openai_base_url")
+        self.config = config
+        
+        # 从环境变量获取API密钥和基础URL
+        _api_key = os.environ.get("OPENAI_API_KEY")
+        _base_url = os.environ.get("OPENAI_BASE_URL")
 
         if not _api_key or not _base_url:
-            raise ValueError("请确保输入中包含api_key, base_url, 或者设置了OPENAI_API_KEY和OPENAI_BASE_URL环境变量")
+            raise ValueError("请确保设置了环境变量 OPENAI_API_KEY 和 OPENAI_BASE_URL")
 
-        # self.client = OpenAI_Client(_api_key, _base_url)
+        # 初始化API客户端
         self.client = QWen_Client(_api_key, _base_url)
-        self.model = inputs.get("model", "qwen-plus")
-        self.response_file = inputs.get("response_file", None)
-
-        self.prompt_template_file = inputs.get("prompt_template_file")
-        self.prompt_id = inputs.get("prompt_id")
-        self.prompt_values = inputs.get("prompt_values")
-        self.prompt_value_file = inputs.get("prompt_value_file")
-        self.prompts = self.preprocess_prompts().get("prompts")
-        self.partitions = inputs.get("partitions", [])
-        self.use_cache = inputs.get("use_cache", False)
-        self.cache_path = inputs.get("cache_path")
-        # self.partitions = {
-        #     "patch": ["```", "\n", "```"],
-        # }
-        # self.prompt_values = inputs.get("prompt_values")
         
-
-
-
-        # if prompt_template_file is not None:
-        #     prompt_template_file_path = Path(prompt_template_file)
-        #     if not prompt_template_file_path.is_file():
-        #         raise ValueError(f'Unable to find Prompt template file: "{prompt_template_file}"')
-        #     try:
-        #         with open(prompt_template_file_path, "r") as fp:
-        #             self.prompts = json.load(fp)
-        #     except json.JSONDecodeError as e:
-        #         raise ValueError(f'Invalid Json Prompt template file "{prompt_template_file}": {e}')
-        # elif "prompts" in inputs.keys():
-        #     self.prompts = inputs["prompts"]
-        # else:
-        #     raise ValueError('Missing required data: "prompt_template_file" or "prompts"')
-
-
-        # self.prompt_values = inputs.get("prompt_values")
-        # if self.prompt_values is None:
-        #     raise ValueError('Missing required data: "prompt_values"')
+        # 从配置获取其他非敏感信息
+        self.model = config.model
+        self.response_file = config.response_file
+        self.prompt_template_file = config.prompt_template_file
+        self.prompt_id = config.prompt_id
+        self.prompt_values = config.extra_config.get("prompt_values")
+        self.prompt_value_file = config.prompt_value_file
+        self.prompts = self.preprocess_prompts().get("prompts")
+        self.partitions = config.extra_config.get("partitions", [])
+        self.use_cache = config.use_cache
+        self.cache_path = config.extra_config.get("cache_path")
 
     def get_prompt_template_from_file(self, prompt_template_file, prompt_id):
+        """从文件中获取prompt模板"""
         if prompt_template_file is not None:
             prompt_template_file = Path(prompt_template_file)
             if not prompt_template_file.is_file():
@@ -88,7 +69,6 @@ class LLMAssistant:
         
         return prompts
 
-
     def check_prompt_values(self):
         # 优先使用prompt_values，如果为空则使用prompt_value_file
         prompt_value_file = self.prompt_value_file
@@ -106,8 +86,6 @@ class LLMAssistant:
                 raise ValueError(f"Unable to read Prompt value file: {prompt_value_file}: {e}")
         return prompt_values
 
-
-    
     def save_response_to_file(self, responses):
         file_path = os.path.abspath(self.response_file)
         mode = "a" if os.path.exists(file_path) else "w"
@@ -120,7 +98,6 @@ class LLMAssistant:
                 }
                 json.dump(data, f, indent=4)
                 f.write("\n")
-
 
     def preprocess_prompts(self):
         if len(self.prompt_values) == 0:

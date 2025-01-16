@@ -1,0 +1,98 @@
+A. Commit message:
+Backport ceph: improve error handling and short/overflow-read logic in __ceph_sync_read()
+
+B. Change summary:
+This patch backports improvements to the read logic in __ceph_sync_read() to ensure more predictable and efficient behavior in various edge cases. Key changes include:
+- Return early if the requested read length is zero or if the file size (`i_size`) is zero.
+- Initialize the index variable (`idx`) where needed and reorder some code to ensure it is always set before use.
+- Improve error handling by checking for negative return values earlier.
+- Remove redundant encrypted file checks after failures. Only attempt filesystem-level decryption if the read succeeded.
+- Simplify leftover calculations to correctly handle cases where the read extends beyond the end of the file or stops short.
+
+C. Compatibility Risk:
+Medium
+
+D. Fixed Code:
+```diff
+diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+index ce342a5d4b8b0..8e0400d461a2a 100644
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -1066,7 +1066,7 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
+ 	if (ceph_inode_is_shutdown(inode))
+ 		return -EIO;
+ 
+-	if (!len)
++	if (!len || !i_size)
+ 		return 0;
+ 	/*
+ 	 * flush any page cache pages in this range.  this
+@@ -1086,7 +1086,7 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
+ 		int num_pages;
+ 		size_t page_off;
+ 		bool more;
+-		int idx;
++		int idx = 0;
+ 		size_t left;
+ 		struct ceph_osd_req_op *op;
+ 		u64 read_off = off;
+@@ -1127,7 +1127,7 @@
+  
+  		osd_req_op_extent_osd_data_pages(req, 0, pages, read_len,
+  						 offset_in_page(read_off),
+-						 false, true);
++						 false, false);
+  
+  		op = &req->r_ops[0];
+  		if (sparse) {
+@@ -1160,7 +1160,14 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
+ 		else if (ret == -ENOENT)
+ 			ret = 0;
+ 
+-		if (ret > 0 && IS_ENCRYPTED(inode)) {
++		if (ret < 0) {
++			ceph_osdc_put_request(req);
++			if (ret == -EBLOCKLISTED)
++				fsc->blocklisted = true;
++			break;
++		}
++
++		if (IS_ENCRYPTED(inode)) {
+ 			int fret;
+ 
+ 			fret = ceph_fscrypt_decrypt_extents(inode, pages,
+@@ -1185,6 +1192,7 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
+  			ret = min_t(ssize_t, fret, len);
+  		}
+ +
+  		ceph_osdc_put_request(req);
+  
+  		if (ret >= 0 && ret < len && (off + ret < i_size)) {
+@@ -1187,13 +1195,11 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
+ 			ret += zlen;
+ 		}
+ 
+-		idx = 0;
+-		if (ret <= 0)
+-			left = 0;
+-		else if (off + ret > i_size)
+-			left = i_size - off;
++		if (off + ret > i_size)
++			left = (i_size > off) ? i_size - off : 0;
+ 		else
+ 			left = ret;
++
+ 		while (left > 0) {
+ 			size_t plen, copied;
+ 
+@@ -1219,8 +1225,7 @@
+  				break;
+  			}
+  		}
+-
+-		ceph_osdc_put_request(req);
++		ceph_release_page_vector(pages, num_pages);
+  
+  		if (ret < 0) {
+  			if (ret == -EBLOCKLISTED)
+```

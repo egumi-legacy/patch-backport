@@ -1,0 +1,38 @@
+{
+  "timestamp": "20250116_153350",
+  "target_version": "linux-6.12.y",
+  "statistics": {
+    "total_patches": 1,
+    "direct_apply_success": 1,
+    "direct_apply_success_rate": 1.0,
+    "adapted_apply_success": 0,
+    "adapted_apply_success_rate": 0.0
+  },
+  "detailed_results": [
+    {
+      "commit_info": {
+        "downstream_sha": "98575bd6e7b143cc1ddbcce7415076cf95bcbf0c",
+        "downstream_message": "smb: server: Fix building with GCC 15\n\n[ Upstream commit e18655cf35a5958fbf4ae9ca3ebf28871a3a1801 ]\n\nGCC 15 introduces -Werror=unterminated-string-initialization by default,\nthis results in the following build error\n\nfs/smb/server/smb_common.c:21:35: error: initializer-string for array of 'char' is too long [-Werror=unterminated-string-ini\ntialization]\n   21 | static const char basechars[43] = \"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_-!@#$%\";\n      |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\ncc1: all warnings being treated as errors\n\nTo this we are replacing char basechars[43] with a character pointer\nand then using strlen to get the length.\n\nSigned-off-by: Brahmajit Das <brahmajit.xyz@gmail.com>\nAcked-by: Namjae Jeon <linkinjeon@kernel.org>\nSigned-off-by: Steve French <stfrench@microsoft.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>",
+        "upstream_sha": "e18655cf35a5958fbf4ae9ca3ebf28871a3a1801"
+      },
+      "results": {
+        "upstream_patch_apply": {
+          "success": true,
+          "error": ""
+        },
+        "adapted_patch_apply": {
+          "success": false,
+          "error": null
+        },
+        "patch_comparison": null
+      },
+      "summary": {
+        "status": "direct_apply_success",
+        "similarity_score": null,
+        "notes": [
+          "上游patch可以直接应用"
+        ]
+      }
+    }
+  ]
+}
