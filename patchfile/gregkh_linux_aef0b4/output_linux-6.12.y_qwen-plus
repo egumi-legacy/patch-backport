@@ -2,10 +2,10 @@ A. Commit message:
 drm/xe: Take PM ref in delayed snapshot capture worker for 6.12.y
 
 B. Change summary:
-The delayed snapshot capture worker can access the GPU or VRAM, which requires a PM reference. This patch ensures that a PM reference is taken in this worker for the 6.12.y kernel version.
+This patch backports the changes from a newer version to ensure that the delayed snapshot capture worker takes a power management (PM) reference before accessing the GPU or VRAM. This is necessary to prevent potential issues related to power management during the snapshot capture process.
 
 C. Compatibility Risk:
-Medium
+Low
 
 D. Fixed Code:
 ```diff

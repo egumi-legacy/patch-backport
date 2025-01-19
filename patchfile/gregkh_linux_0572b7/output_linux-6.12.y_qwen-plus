@@ -2,7 +2,7 @@ A. Commit message:
 wifi: iwlwifi: be less noisy if the NIC is dead in S3
 
 B. Change summary:
-This patch backports changes to ensure that fewer error messages are printed when the NIC is dead upon resume. It catches the error earlier and exits earlier, leading to a cleaner log and following the same recovery path as before by reloading the firmware.
+This patch modifies the behavior of the Intel iwlwifi driver to reduce unnecessary error messages when the NIC is dead upon resume from S3. It catches the error earlier and exits early, ensuring that we reach the same recovery path as before: reloading the firmware.
 
 C. Compatibility Risk:
 Medium
@@ -106,6 +106,7 @@ index fae9eabfa56ee..a6082150deab1 100644
 -
  	return ret;
  }
+ 
 diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
 index 3b9943eb69341..d19b3bd0866bd 100644
 --- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
@@ -118,4 +119,5 @@ index 3b9943eb69341..d19b3bd0866bd 100644
 +		trans->state = IWL_TRANS_NO_FW;
  
  	return ret;
+ }
 ```

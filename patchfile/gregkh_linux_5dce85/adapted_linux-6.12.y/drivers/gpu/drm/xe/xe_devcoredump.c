@@ -225,7 +225,7 @@ static void xe_devcoredump_deferred_snap_work(struct work_struct *work)
 
 	/*
 	 * NB: Despite passing a GFP_ flags parameter here, more allocations are done
-	 * internally using GFP_KERNEL explicitly. Hence this call must be in the worker
+	 * internally using GFP_KERNEL expliictly. Hence this call must be in the worker
 	 * thread and not in the initial capture call.
 	 */
 	dev_coredumpm_timeout(gt_to_xe(ss->gt)->drm.dev, THIS_MODULE, coredump, 0, GFP_KERNEL,

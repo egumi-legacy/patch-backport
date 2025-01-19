@@ -10,6 +10,7 @@ from loguru import logger
 import json
 from patch_evaluator import PatchEvaluator
 from config_manager import ProjectConfig
+import re
 
 _DEFAULT_INPUT_FILE = Path(__file__).parent / "inputs.yaml"
 
@@ -27,7 +28,20 @@ class Main:
         parser = argparse.ArgumentParser(description='Patch Processing Tool')
         parser.add_argument('--mode', type=int, choices=[1, 2], required=True,
                           help='Mode 1: Single commit patch, Mode 2: Multiple commits from branch')
-        return parser.parse_args()
+        
+        # 为模式1添加可选参数
+        mode1_group = parser.add_argument_group('Mode 1 arguments')
+        mode1_group.add_argument('--patch-url', type=str,
+                          help='Full URL to the commit patch')
+        mode1_group.add_argument('--owner', type=str,
+                          help='Repository owner for local repo (e.g., "django" in django/django)')
+        mode1_group.add_argument('--repo', type=str,
+                          help='Repository name for local repo (e.g., "django" in django/django)')
+        mode1_group.add_argument('--target', type=str,
+                          help='Target version for backporting')
+        
+        args = parser.parse_args()
+        return args
     
     def initialize_config(self, yaml_config):
         """初始化配置对象"""
@@ -41,6 +55,21 @@ class Main:
         config_dict = {**common_config, **mode_config}
         config_dict['mode'] = self.args.mode
         
+        # 如果是模式1，使用命令行参数覆盖配置文件
+        if self.args.mode == 1:
+            # 处理patch_url
+            if self.args.patch_url:
+                config_dict['patch_url'] = self.args.patch_url
+            
+            # 处理仓库信息
+            if self.args.owner and self.args.repo:
+                config_dict['repo_owner'] = self.args.owner
+                config_dict['repo_name'] = self.args.repo
+            
+            # 处理目标版本
+            if self.args.target:
+                config_dict['target_version'] = self.args.target
+        
         return ProjectConfig(**config_dict)
 
     def process_multiple_commits(self):
@@ -52,7 +81,7 @@ class Main:
         
         batch_results = []
         
-        for commit in upstream_commits[260:280]:
+        for commit in upstream_commits[170:295]:
             logger.info(f"处理上游提交: {commit['upstream_sha']}")
             
             # 更新commit相关配置
@@ -114,9 +143,13 @@ class Main:
         
         # 解析URL并更新base_dir
         git_operations = GitOperations(self.config)
-        owner, repo = git_operations.parse_github_url(self.config.patch_url)
-        commit_sha = git_operations.parse_github_url(self.config.patch_url)['commit_sha']
-        self.config.update_base_dir(owner, repo, commit_sha)
+        # owner, repo = git_operations.parse_github_url(self.config.patch_url)
+        url_info = git_operations.parse_github_url(self.config.patch_url)
+        self.config.update_base_dir(
+                owner=url_info['owner'],
+                repo=url_info['repo'],
+                commit_sha=url_info['commit_sha']
+            )
         
         # 处理单个提交
         processor = PatchProcessor(self.config)

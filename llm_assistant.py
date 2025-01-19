@@ -232,14 +232,17 @@ class LLMAssistant:
 
     def get_cached_response(self):
         """从缓存文件中读取响应"""
-        if not self.cache_path or not Path(self.cache_path).exists():
-            # TODO 如果不存在尝试下载。多个的情况
-            # logger.warning(f"缓存文件不存在: {self.cache_path}")
-            raise ValueError(f"缓存文件不存在，请尝试禁用缓存: {self.cache_path}")
+        if not self.cache_path:
+            raise ValueError("未设置缓存路径，请检查配置")
+            
+        cache_path = Path(self.cache_path)
+        if not cache_path.exists():
+            raise ValueError(f"缓存文件不存在: {cache_path}")
             
         try:
-            with open(self.cache_path, 'r') as f:
+            with open(cache_path, 'r') as f:
                 response = f.read()
+            logger.info(f"成功读取缓存响应: {cache_path}")
             return [response]  # 保持与 openai_responses 格式一致
         except Exception as e:
             logger.error(f"读取缓存响应失败: {e}")

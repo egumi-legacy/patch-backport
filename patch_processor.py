@@ -240,9 +240,14 @@ class PatchProcessor:
         self.config.update(**patch_processor_outputs)
 
         # 处理LLM响应
-        use_cache = self.config.extra_config.get("use_cache", False)
+        use_cache = self.config.use_cache
         if use_cache:
-            self.config.extra_config["cache_path"] = self.get_response_path()
+            # 确保在使用缓存前设置缓存路径
+            cache_path = self.get_response_path()
+            self.config.extra_config.update({
+                "cache_path": cache_path
+            })
+            logger.info(f"使用缓存路径: {cache_path}")
 
         # 调用LLM处理
         llm_assistant = LLMAssistant(self.config)

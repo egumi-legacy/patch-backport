@@ -1,0 +1,29 @@
+A. Commit message:
+io_uring: check if iowq is killed before queuing
+
+B. Change summary:
+This patch ensures that `io_queue_iowq` checks if the task work queue (`io_wq`) has been killed or if the current task is a kernel thread before attempting to queue the request. If either condition is true, it cancels the request with `-ECANCELED`. This prevents potential use-after-free issues when the task work runs after io_uring termination.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
+index 432b95ca9c85e..d3403c8216db8 100644
+--- a/io_uring/io_uring.c
++++ b/io_uring/io_uring.c
+@@ -514,7 +514,11 @@ static void io_queue_iowq(struct io_kiocb *req)
+ 	struct io_uring_task *tctx = req->task->io_uring;
+ 
+ 	BUG_ON(!tctx);
+-	BUG_ON(!tctx->io_wq);
++
++	if ((current->flags & PF_KTHREAD) || !tctx->io_wq) {
++		io_req_task_queue_fail(req, -ECANCELED);
++		return;
++	}
+ 
+ 	/* init ->work of the whole link before punting */
+ 	io_prep_async_link(req);
+```

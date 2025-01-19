@@ -10,11 +10,13 @@ class ProjectConfig:
     mode: int
     
     # Git相关配置
-    patch_url: Optional[str] = None  # mode1
+    patch_url: Optional[str] = None  # mode1: URL to the patch
+    repo_owner: Optional[str] = None # mode1: Repository owner for local repo
+    repo_name: Optional[str] = None  # mode1: Repository name for local repo
     target_version: Optional[str] = None
     repo_url: Optional[str] = None  # mode2
     branch: Optional[str] = None  # mode2
-    repo_path: Optional[Path] = None  # mode2
+    repo_path: Optional[Path] = None
     reference_url: Optional[str] = None  # mode2
     commits_pages_start: int = 1  # 起始页
     commits_pages_end: int = 1    # 结束页
@@ -94,3 +96,9 @@ class ProjectConfig:
         if hasattr(self, key):
             return getattr(self, key)
         return self.extra_config.get(key) 
+
+    def get_repo_url(self) -> Optional[str]:
+        """获取仓库URL"""
+        if self.mode == 1 and self.repo_owner and self.repo_name:
+            return f"https://github.com/{self.repo_owner}/{self.repo_name}"
+        return self.repo_url 

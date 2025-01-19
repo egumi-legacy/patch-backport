@@ -1,6 +1,6 @@
-From 9a8030cc56039746be5092d6dffe432b8d050592 Mon Sep 17 00:00:00 2001
+From 416ea58ac94294e39e71956af43b814cfffe8d11 Mon Sep 17 00:00:00 2001
 From: root <root@congroo>
-Date: Thu, 9 Jan 2025 17:40:39 +0800
+Date: Thu, 16 Jan 2025 17:35:56 +0800
 Subject: [PATCH] Adapted patch for linux-6.12.y
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH] Adapted patch for linux-6.12.y
  1 file changed, 39 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/gpu/drm/xe/xe_devcoredump.c b/drivers/gpu/drm/xe/xe_devcoredump.c
-index 5221ee3f1214..c677bf8628c6 100644
+index 5221ee3f1214..7f977199f0a4 100644
 --- a/drivers/gpu/drm/xe/xe_devcoredump.c
 +++ b/drivers/gpu/drm/xe/xe_devcoredump.c
 @@ -216,6 +216,45 @@ static void xe_devcoredump_free(void *data)
@@ -24,7 +24,7 @@ index 5221ee3f1214..c677bf8628c6 100644
 +
 +	/*
 +	 * NB: Despite passing a GFP_ flags parameter here, more allocations are done
-+	 * internally using GFP_KERNEL explicitly. Hence this call must be in the worker
++	 * internally using GFP_KERNEL expliictly. Hence this call must be in the worker
 +	 * thread and not in the initial capture call.
 +	 */
 +	dev_coredumpm_timeout(gt_to_xe(ss->gt)->drm.dev, THIS_MODULE, coredump, 0, GFP_KERNEL,
