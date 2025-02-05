@@ -1,8 +1,8 @@
 A. Commit message:
-ALSA: ump: Backport fix for truncated string warning in legacy substream names
+ALSA: ump: Shut up truncated string warning
 
 B. Change summary:
-Backported the use of scnprintf() instead of snprintf() to eliminate compile warnings due to intentional truncation in the legacy substream name update logic.
+The patch replaces `snprintf` with `scnprintf` in the function `fill_substream_names` to address a compile warning related to intentional truncation of strings. This ensures that the code remains warning-free while maintaining the intended functionality.
 
 C. Compatibility Risk:
 Low

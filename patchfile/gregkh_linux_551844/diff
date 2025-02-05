@@ -1,0 +1,124 @@
+modified file: net/mptcp/protocol.c
+--- patchfile/gregkh_linux_551844/newer/net/mptcp/protocol.c
++++ patchfile/gregkh_linux_551844/linux-6.12.y/net/mptcp/protocol.c
+@@ -1939,8 +1939,6 @@
+ 	goto out;
+
+ }
+
+ 
+
+-static void mptcp_rcv_space_adjust(struct mptcp_sock *msk, int copied);
+
+-
+
+ static int __mptcp_recvmsg_mskq(struct mptcp_sock *msk,
+
+ 				struct msghdr *msg,
+
+ 				size_t len, int flags,
+
+@@ -1994,7 +1992,6 @@
+ 			break;
+
+ 	}
+
+ 
+
+-	mptcp_rcv_space_adjust(msk, copied);
+
+ 	return copied;
+
+ }
+
+ 
+
+@@ -2271,12 +2268,15 @@
+ 		}
+
+ 
+
+ 		pr_debug("block timeout %ld\n", timeo);
+
++		mptcp_rcv_space_adjust(msk, copied);
+
+ 		err = sk_wait_data(sk, &timeo, NULL);
+
+ 		if (err < 0) {
+
+ 			err = copied ? : err;
+
+ 			goto out_err;
+
+ 		}
+
+ 	}
+
++
+
++	mptcp_rcv_space_adjust(msk, copied);
+
+ 
+
+ out_err:
+
+ 	if (cmsg_flags && copied >= 0) {
+
+@@ -3147,7 +3147,8 @@
+ 
+
+ 	sock_hold(sk);
+
+ 	pr_debug("msk=%p state=%d\n", sk, sk->sk_state);
+
+-	mptcp_pm_connection_closed(msk);
+
++	if (msk->token)
+
++		mptcp_event(MPTCP_EVENT_CLOSED, msk, NULL, GFP_KERNEL);
+
+ 
+
+ 	if (sk->sk_state == TCP_CLOSE) {
+
+ 		__mptcp_destroy_sock(sk);
+
+@@ -3213,7 +3214,8 @@
+ 	mptcp_stop_rtx_timer(sk);
+
+ 	mptcp_stop_tout_timer(sk);
+
+ 
+
+-	mptcp_pm_connection_closed(msk);
+
++	if (msk->token)
+
++		mptcp_event(MPTCP_EVENT_CLOSED, msk, NULL, GFP_KERNEL);
+
+ 
+
+ 	/* msk->subflow is still intact, the following will not free the first
+
+ 	 * subflow
+
+@@ -3528,8 +3530,7 @@
+ 	timeout += jiffies;
+
+ 
+
+ 	WARN_ON_ONCE(icsk->icsk_ack.pending & ICSK_ACK_TIMER);
+
+-	smp_store_release(&icsk->icsk_ack.pending,
+
+-			  icsk->icsk_ack.pending | ICSK_ACK_SCHED | ICSK_ACK_TIMER);
+
++	icsk->icsk_ack.pending |= ICSK_ACK_SCHED | ICSK_ACK_TIMER;
+
+ 	icsk->icsk_ack.timeout = timeout;
+
+ 	sk_reset_timer(ssk, &icsk->icsk_delack_timer, timeout);
+
+ }
+
+""""""

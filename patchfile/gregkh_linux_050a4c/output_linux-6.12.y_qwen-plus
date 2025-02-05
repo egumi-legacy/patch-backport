@@ -1,0 +1,34 @@
+A. Commit message:
+net/mlx5: DR, select MSIX vector 0 for completion queue creation
+
+B. Change summary:
+Modified the code to consistently select MSIX vector 0 for CQ creation when creating a software steering completion queue (CQ). This change enhances predictability and avoids complications with interrupt monitoring tools since SW steering uses polling rather than event-driven interrupts.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/sws/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/sws/dr_send.c
+index 6fa06ba2d3465..f57c84e5128bc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/sws/dr_send.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/sws/dr_send.c
+@@ -1067,7 +1067,6 @@ static struct mlx5dr_cq *dr_create_cq(struct mlx5_core_dev *mdev,
+ 	int inlen, err, eqn;
+ 	void *cqc, *in;
+ 	__be64 *pas;
+-	int vector;
+ 	u32 i;
+ 
+ 	cq = kzalloc(sizeof(*cq), GFP_KERNEL);
+@@ -1096,8 +1095,7 @@ static struct mlx5dr_cq *dr_create_cq(struct mlx5_core_dev *mdev,
+ 	if (!in)
+ 		goto err_cqwq;
+ 
+-	vector = raw_smp_processor_id() % mlx5_comp_vectors_max(mdev);
+-	err = mlx5_comp_eqn_get(mdev, vector, &eqn);
++	err = mlx5_comp_eqn_get(mdev, 0, &eqn);
+ 	if (err) {
+ 		kvfree(in);
+ 		goto err_cqwq;
+```

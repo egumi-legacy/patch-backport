@@ -1,8 +1,8 @@
 A. Commit message:
-btrfs: backport fix for swap file activation failure due to extents that used to be shared
+btrfs: fix swap file activation failure due to extents that used to be shared
 
 B. Change summary:
-This patch backports the fix for a bug where swap file activation would fail due to false positives from can_nocow_extent(). The original code incorrectly determined if an extent was shared, leading to unnecessary failures during swap file activation. The new implementation iterates over the inode's file extent items and uses btrfs_is_data_extent_shared() for accurate checks.
+This patch reworks the btrfs_swap_activate() function to iterate over the inode's file extent items and use the accurate btrfs_is_data_extent_shared() instead of relying on extent maps and can_nocow_extent(). This ensures that swap file activation does not fail due to false positives from can_nocow_extent().
 
 C. Compatibility Risk:
 Medium
@@ -189,5 +189,4 @@ index b2abc0aa53003..b87f19630b009 100644
 +	btrfs_free_path(path);
  	if (ret)
  		return ret;
- 
 ```

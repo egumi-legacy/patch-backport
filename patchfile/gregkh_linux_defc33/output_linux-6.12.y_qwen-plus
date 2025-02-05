@@ -2,13 +2,12 @@ A. Commit message:
 Bluetooth: btusb: mediatek: backport changes for ISO interface conditions
 
 B. Change summary:
-Backported changes to modify the conditions for claiming and releasing the USB ISO interface for MediaTek Bluetooth devices. This ensures compatibility with older kernel versions while maintaining the necessary functionality updates.
+Backported changes to adjust the conditions for claiming and releasing the USB ISO interface in the Bluetooth driver for MediaTek ISO data transmission. Updated checks for the ISO packet flag and ensured proper handling of the ISO interface during setup, reset, and shutdown operations.
 
 C. Compatibility Risk:
 Medium
 
 D. Fixed Code:
-```diff
 diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
 index 79c178cd5db78..63c17d342fe9b 100644
 --- a/drivers/bluetooth/btusb.c
@@ -61,4 +60,3 @@ index 79c178cd5db78..63c17d342fe9b 100644
  
  	return ret;
  }
-```

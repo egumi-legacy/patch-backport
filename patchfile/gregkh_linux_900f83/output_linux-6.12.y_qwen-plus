@@ -1,0 +1,37 @@
+A. Commit message:
+selinux: ignore unknown extended permissions in older kernel
+
+B. Change summary:
+This patch backports the changes from a newer version to handle unknown extended permissions in SELinux without causing a kernel panic. It replaces the `BUG()` calls with warning messages and ensures that unknown permissions are ignored gracefully.
+
+C. Compatibility Risk:
+Medium
+
+D. Fixed Code:
+```diff
+diff --git a/security/selinux/ss/services.c b/security/selinux/ss/services.c
+index 971c45d576ba1..3d5c563cfc4c8 100644
+--- a/security/selinux/ss/services.c
++++ b/security/selinux/ss/services.c
+@@ -979,7 +979,10 @@ void services_compute_xperms_decision(struct extended_perms_decision *xpermd,
+ 			return;
+ 		break;
+ 	default:
+-		BUG();
++		pr_warn_once(
++			"SELinux: unknown extended permission (%u) will be ignored\n",
++			node->datum.u.xperms->specified);
++		return;
+ 	}
+ 
+ 	if (node->key.specified == AVTAB_XPERMS_ALLOWED) {
+@@ -998,7 +1001,8 @@ void services_compute_xperms_decision(struct extended_perms_decision *xpermd,
+ 					    &node->datum.u.xperms->perms,
+ 					    xpermd->dontaudit);
+ 	} else {
+-		BUG();
++		pr_warn_once("SELinux: unknown specified key (%u)\n",
++			     node->key.specified);
+ 	}
+ }
+```

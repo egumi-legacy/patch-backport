@@ -1,8 +1,8 @@
 A. Commit message:
-Bluetooth: btusb: mediatek: add intf release flow when usb disconnect
+Bluetooth: btusb: mediatek: Add interface release flow for older version
 
 B. Change summary:
-This patch adds the necessary steps to release the USB intr interface used for ISO data transmission before unregistering the HCI device when a MediaTek Bluetooth USB dongle is disconnected. This prevents potential kernel panics that could occur during the HCI device unregistration process.
+This patch backports the changes to ensure that the MediaTek-specific USB intr interface is properly released before unregistering the HCI device when a USB disconnect occurs. This prevents potential kernel panics during HCI device unregistration.
 
 C. Compatibility Risk:
 Medium
@@ -10,7 +10,7 @@ Medium
 D. Fixed Code:
 ```diff
 diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 79c178cd5db78..f528d28615fc5 100644
+index f528d28615fc5..79c178cd5db78 100644
 --- a/drivers/bluetooth/btusb.c
 +++ b/drivers/bluetooth/btusb.c
 @@ -2619,9 +2619,9 @@ static void btusb_mtk_claim_iso_intf(struct btusb_data *data)
@@ -75,20 +75,4 @@ index 79c178cd5db78..f528d28615fc5 100644
  	}
  
  	if (id->driver_info & BTUSB_SWAVE) {
-@@ -4016,9 +4039,6 @@
- 
- 	if (data->diag)
- 		usb_set_intfdata(data->diag, NULL);
--
--	if (data->disconnect)
--		data->disconnect(hdev);
- 
- 	hci_unregister_dev(hdev);
 ```
-
-Explanation of changes:
-- The `btusb_mtk_release_iso_intf` function now takes a `struct hci_dev *hdev` parameter instead of `struct btusb_data *data`.
-- Added the `btusb_mtk_disconnect` function to handle the disconnection process and ensure the interface is released properly.
-- Updated calls to `btusb_mtk_release_iso_intf` to pass `hdev` instead of `data`.
-- Registered the `disconnect` callback in `btusb_probe` for MediaTek devices.
-- Removed the redundant call to `data->disconnect` in the cleanup path as it is now handled by the registered callback.

@@ -1,65 +1,23 @@
 A. Commit message:
-dmaengine: Add loongson2-apb driver with GENMASK_ULL for 64-bit compatibility
+dmaengine: loongson2-apb: Change GENMASK to GENMASK_ULL for 32-bit toolchain compatibility
 
 B. Change summary:
-This commit introduces the Loongson LS2X APB DMA controller driver to the older version of the codebase. The driver has been updated to use GENMASK_ULL instead of GENMASK to ensure 64-bit compatibility and avoid build issues on 32-bit toolchains.
+This patch addresses a smatch static checker warning by changing the usage of GENMASK to GENMASK_ULL in the Loongson LS2X APB DMA controller driver. This change ensures that the code correctly handles 64-bit values on 32-bit toolchains, preventing build issues caused by accessing bits > 31.
 
 C. Compatibility Risk:
-High
+Low
 
 D. Fixed Code:
-```diff
 diff --git a/drivers/dma/loongson2-apb-dma.c b/drivers/dma/loongson2-apb-dma.c
-new file mode 100644
-index 0000000000000..c528f02b9f848
---- /dev/null
+index 367ed34ce4da5..c528f02b9f848 100644
+--- a/drivers/dma/loongson2-apb-dma.c
 +++ b/drivers/dma/loongson2-apb-dma.c
-@@ -0,0 +1,373 @@
-+/*
-+ * Loongson LS2X APB DMA Controller Driver
-+ *
-+ * Copyright (C) 2024 Loongson Technology Corporation Limited
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ */
-+
-+#include <linux/bitops.h>
-+#include <linux/dmaengine.h>
-+#include <linux/init.h>
-+#include <linux/interrupt.h>
-+#include <linux/module.h>
-+#include <linux/of_dma.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+
-+#define LDMA_ASK_VALID		BIT(2)
-+#define LDMA_START		BIT(3) /* DMA start operation */
-+#define LDMA_STOP		BIT(4) /* DMA stop operation */
+@@ -31,7 +31,7 @@
+ #define LDMA_ASK_VALID		BIT(2)
+ #define LDMA_START		BIT(3) /* DMA start operation */
+ #define LDMA_STOP		BIT(4) /* DMA stop operation */
+-#define LDMA_CONFIG_MASK	GENMASK(4, 0) /* DMA controller config bits mask */
 +#define LDMA_CONFIG_MASK	GENMASK_ULL(4, 0) /* DMA controller config bits mask */
-+
-+/* Bitfields in ndesc_addr field of HW descriptor */
-+#define LDMA_DESC_EN		BIT(0) /*1: The next descriptor is valid */
-+
-+/* ... rest of the driver code ... */
-+
-+static int __init ls2x_apb_dma_init(void)
-+{
-+	return platform_driver_register(&ls2x_apb_dma_driver);
-+}
-+module_init(ls2x_apb_dma_init);
-+
-+static void __exit ls2x_apb_dma_exit(void)
-+{
-+	platform_driver_unregister(&ls2x_apb_dma_driver);
-+}
-+module_exit(ls2x_apb_dma_exit);
-+
-+MODULE_AUTHOR("Loongson Technology Corporation Limited");
-+MODULE_DESCRIPTION("Loongson LS2X APB DMA Controller Driver");
-+MODULE_LICENSE("GPL v2");
-```
-
-Note: The above patch includes only the relevant part of the driver code that was provided in the original patch. The full driver code should be included as necessary.
+ 
+ /* Bitfields in ndesc_addr field of HW descriptor */
+ #define LDMA_DESC_EN		BIT(0) /*1: The next descriptor is valid */

@@ -81,7 +81,7 @@ class Main:
         
         batch_results = []
         
-        for commit in upstream_commits[170:295]:
+        for commit in upstream_commits[130:200]:
             logger.info(f"处理上游提交: {commit['upstream_sha']}")
             
             # 更新commit相关配置
@@ -99,10 +99,16 @@ class Main:
             # 创建评估器
             evaluator = PatchEvaluator(self.config)
             
+            # 下载patch文件
+            patch_path = evaluator.download_patch_by_type(self.config.patch_url, 'upstream')
+            if not patch_path:
+                logger.error("下载patch失败，跳过此commit")
+                continue
+            
             # 首先尝试直接应用上游补丁
             evaluation_result = evaluator.try_direct_apply(
-                upstream_patch_url=self.config.patch_url,
-                commit_info=commit
+                patch_file=patch_path,
+                single_file=False
             )
             
             # 如果直接应用失败，进行LLM处理
@@ -146,14 +152,55 @@ class Main:
         # owner, repo = git_operations.parse_github_url(self.config.patch_url)
         url_info = git_operations.parse_github_url(self.config.patch_url)
         self.config.update_base_dir(
-                owner=url_info['owner'],
-                repo=url_info['repo'],
-                commit_sha=url_info['commit_sha']
-            )
+            owner=url_info['owner'],
+            repo=url_info['repo'],
+            commit_sha=url_info['commit_sha']
+        )
         
-        # 处理单个提交
-        processor = PatchProcessor(self.config)
-        processor.process_single_commit()
+        # 创建评估器
+        evaluator = PatchEvaluator(self.config)
+        
+        # 下载patch文件
+        patch_path = evaluator.download_patch_by_type(self.config.patch_url, 'upstream')
+        if not patch_path:
+            logger.error("下载patch失败")
+            return
+        
+        # 首先尝试直接应用上游补丁
+        evaluation_result = evaluator.try_direct_apply(
+            patch_file=patch_path,
+            single_file=False
+        )
+        
+        # 如果直接应用失败，进行LLM处理
+        if not evaluation_result['upstream_apply']['success']:
+            logger.info("直接应用失败，开始LLM处理流程...")
+            processor = PatchProcessor(self.config)
+            processor.process_single_commit()
+            
+            # 评估适配后的结果
+            adapted_result = evaluator.evaluate_adapted_patch(
+                adapted_dir=self.config.base_dir / f"adapted_{self.config.target_version}",
+                downstream_patch_url=None  # 模式1没有下游补丁
+            )
+            
+            evaluation_result.update(adapted_result)
+        else:
+            logger.info("直接应用成功，跳过LLM处理流程")
+        
+        # 保存评估结果
+        commit_info = {
+            'upstream_sha': url_info['commit_sha'],
+            'downstream_sha': None,  # 模式1没有下游提交
+            'downstream_message': None
+        }
+        
+        batch_results = [{
+            'commit_info': commit_info,
+            'evaluation': evaluation_result
+        }]
+        
+        evaluator.save_batch_evaluation_results(batch_results)
 
     def run(self):
         if self.args.mode == 1:

@@ -1,0 +1,13 @@
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index c4675f4345fd7..623d9d7ab4803 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -10078,6 +10078,8 @@ static int btrfs_swap_activate(struct swap_info_struct *sis, struct file *file,
+ 			ret = -EINTR;
+ 			goto out;
+ 		}
++
++		cond_resched();
+ 	}
+ 
+ 	if (bsi.block_len)

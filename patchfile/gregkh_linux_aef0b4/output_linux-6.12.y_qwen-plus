@@ -1,8 +1,8 @@
 A. Commit message:
-drm/xe: Take PM ref in delayed snapshot capture worker for 6.12.y
+drm/xe: Take PM ref in delayed snapshot capture worker for older version
 
 B. Change summary:
-This patch backports the changes from a newer version to ensure that the delayed snapshot capture worker takes a power management (PM) reference before accessing the GPU or VRAM. This is necessary to prevent potential issues related to power management during the snapshot capture process.
+The delayed snapshot capture worker can access the GPU or VRAM, both of which require a PM reference. This patch ensures that a PM reference is taken and released appropriately within the worker function to prevent potential issues with power management.
 
 C. Compatibility Risk:
 Low
@@ -16,8 +16,9 @@ index d2679c5d976b0..0b0cd6aa1d9fb 100644
 @@ -23,6 +23,7 @@
  #include "xe_guc_submit.h"
  #include "xe_hw_engine.h"
- #include "xe_sched_job.h"
+ #include "xe_module.h"
 +#include "xe_pm.h"
+ #include "xe_sched_job.h"
  #include "xe_vm.h"
  
 @@ -158,8 +159,11 @@ static void xe_devcoredump_deferred_snap_work(struct work_struct *work)

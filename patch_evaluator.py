@@ -92,8 +92,45 @@ class PatchEvaluator:
         
         return download_patch(patch_url, cache_path, self.use_cached_patches)
 
+    def cleanup_test_branch(self, branch_name):
+        """
+        清理测试分支
+        
+        :param branch_name: 要清理的分支名称
+        """
+        if not branch_name:
+            return
+        
+        try:
+            # 首先切换回目标版本分支
+            subprocess.run(
+                ['git', 'checkout', self.config['target_version']],
+                cwd=self.repo_path,
+                check=True,
+                capture_output=True,
+                text=True
+            )
+            
+            # 删除测试分支
+            subprocess.run(
+                ['git', 'branch', '-D', branch_name],
+                cwd=self.repo_path,
+                check=True,
+                capture_output=True,
+                text=True
+            )
+            logger.info(f"清理测试分支: {branch_name}")
+        except subprocess.CalledProcessError as e:
+            logger.warning(f"清理分支时发生错误: {e.stderr}")
+        except Exception as e:
+            logger.warning(f"清理分支时发生错误: {str(e)}")
+
     def prepare_repo_branch(self):
-        """准备一个干净的分支用于测试"""
+        """
+        准备一个干净的分支用于测试
+        
+        :return: 创建的分支名称，如果失败则返回None
+        """
         branch_name = f"test_patch_{self.config['target_version']}"
         try:
             # 确保在目标版本的基础上创建新分支
@@ -105,6 +142,20 @@ class PatchEvaluator:
                 text=True
             )
             
+            # 如果分支已存在，先删除它
+            try:
+                subprocess.run(
+                    ['git', 'branch', '-D', branch_name],
+                    cwd=self.repo_path,
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
+                logger.info(f"删除已存在的测试分支: {branch_name}")
+            except subprocess.CalledProcessError:
+                # 如果分支不存在，忽略错误
+                pass
+            
             # 创建新的测试分支
             subprocess.run(
                 ['git', 'checkout', '-b', branch_name],
@@ -114,9 +165,33 @@ class PatchEvaluator:
                 text=True
             )
             logger.info(f"创建测试分支: {branch_name}")
+            
+            # 确保工作区干净
+            subprocess.run(
+                ['git', 'reset', '--hard', 'HEAD'],
+                cwd=self.repo_path,
+                check=True,
+                capture_output=True,
+                text=True
+            )
+            subprocess.run(
+                ['git', 'clean', '-fd'],
+                cwd=self.repo_path,
+                check=True,
+                capture_output=True,
+                text=True
+            )
+            
             return branch_name
         except subprocess.CalledProcessError as e:
             logger.error(f"准备测试分支失败: {e.stderr}")
+            # 发生错误时，尝试清理
+            self.cleanup_test_branch(branch_name)
+            return None
+        except Exception as e:
+            logger.error(f"准备测试分支时发生错误: {str(e)}")
+            # 发生错误时，尝试清理
+            self.cleanup_test_branch(branch_name)
             return None
 
     def apply_upstream_patch(self, patch_path):
@@ -551,13 +626,13 @@ class PatchEvaluator:
     #                      cwd=self.repo_path)
 
     #     return results
-    def try_direct_apply(self, upstream_patch_url, commit_info=None):
+    def try_direct_apply(self, patch_file, single_file=False):
         """
-        尝试直接应用上游补丁
+        尝试直接应用patch
         
-        :param upstream_patch_url: 上游补丁URL
-        :param commit_info: 提交信息
-        :return: 评估结果字典
+        :param patch_file: patch文件路径
+        :param single_file: 是否是单文件patch
+        :return: 评估结果
         """
         results = {
             'upstream_apply': None,
@@ -566,27 +641,66 @@ class PatchEvaluator:
         }
         
         try:
-            # 1. 准备测试分支
+            # 准备测试分支
             branch_name = self.prepare_repo_branch()
             if not branch_name:
                 return results
-
-            # 2. 下载并尝试应用上游patch
-            upstream_patch = self.download_patch_by_type(upstream_patch_url, 'upstream')
-            if upstream_patch:
-                results['upstream_apply'] = self.apply_upstream_patch(upstream_patch)
-
+            
+            # 尝试应用patch
+            if single_file:
+                results['upstream_apply'] = self.apply_single_file_patch(patch_file)
+            else:
+                results['upstream_apply'] = self.apply_upstream_patch(patch_file)
+            
         except Exception as e:
-            logger.error(f"直接应用过程中出错: {str(e)}")
-            results['upstream_apply'] = {'success': False, 'error': str(e)}
+            logger.error(f"评估过程发生错误: {str(e)}")
         finally:
-            # 清理：切回原分支并删除测试分支
-            subprocess.run(['git', 'checkout', self.config['target_version']], 
-                         cwd=self.repo_path)
-            subprocess.run(['git', 'branch', '-D', branch_name], 
-                         cwd=self.repo_path)
-
+            # 清理工作
+            self.cleanup_test_branch(branch_name)
+        
         return results
+
+    
+
+    def apply_single_file_patch(self, patch_file):
+        """
+        应用单个文件的patch
+        
+        :param patch_file: patch文件路径
+        :return: 应用结果
+        """
+        try:
+            result = subprocess.run(
+                ['git', 'apply', '--check', str(patch_file)],
+                cwd=self.repo_path,
+                capture_output=True,
+                text=True
+            )
+            
+            if result.returncode == 0:
+                # 如果检查通过，实际应用patch
+                apply_result = subprocess.run(
+                    ['git', 'apply', str(patch_file)],
+                    cwd=self.repo_path,
+                    capture_output=True,
+                    text=True
+                )
+                success = apply_result.returncode == 0
+                return {
+                    'success': success,
+                    'output': apply_result.stdout,
+                    'error': apply_result.stderr if not success else None
+                }
+            else:
+                return {
+                    'success': False,
+                    'error': result.stderr
+                }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
 
     def evaluate_adapted_patch(self, adapted_dir, downstream_patch_url=None):
         """
