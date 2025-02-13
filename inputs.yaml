@@ -70,11 +70,33 @@ mode2:
 common:
   # LLMAssistant Inputs
   model: "qwen-plus"
-  use_cache: false
+  use_cache: true
   prompt_id: "backport"
   prompt_template_file: "test_prompts.json"
   prompt_value_file: "test_prompt_values.json"
   response_file: "response.txt"
+  # repo_path: "/path/to/repo"
+  # patch_dir: "patchfile"
+  # evaluation_dir: "evaluation"
+  # target_version: "5.10"
+  # use_cached_patches: true
+  
+  pipeline:
+    enabled_modules:
+      - direct_apply
+      - llm_adapter
+      - patch_adapter
+      - compiler
+    module_configs:
+      direct_apply:
+        timeout: 30
+      llm_adapter:
+        # model: "qwen-plus"
+        temperature: 0.7
+      compiler:
+        clean_after: true
+    stop_on_failure: false
+
 # LLMAssistant Inputs
 # model: "qwen-plus" # gpt-4o, gpt-4o-mini, gpt-4-turbo, gpt-4-turbo-preview
 # use_cache: false

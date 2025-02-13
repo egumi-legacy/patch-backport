@@ -116,6 +116,7 @@ class GitOperations:
             use_local: 是否使用本地仓库获取文件内容
             repo_path: 本地仓库路径，当use_local=True时必须提供
         """
+        logger.info(f"获取内容中：{file_path_list}")
         if use_local:
             if not repo_path:
                 raise ValueError("使用本地模式时必须提供repo_path参数")

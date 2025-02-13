@@ -15,8 +15,6 @@ from git_operations import GitOperations
 from patch_utils import download_patch
 import html
 from config_manager import ProjectConfig
-from patch_evaluator import PatchEvaluator
-import shutil
 
 
 class PatchProcessor:
@@ -198,12 +196,12 @@ class PatchProcessor:
         base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
         
         # 2. 解析commit信息
-        if not (base_dir / 'newer').exists():
+        if not (base_dir / 'newer').exists() or not list((base_dir / 'newer').iterdir()):
             # bug: 如果commit之前的commit没有file_list中的文件，则无法获取到文件内容
             newer_file_contents = self.git_operations.get_file_before_commit(commit_info)
             self.write_file_contents(newer_file_contents, 'newer')
 
-        if not (base_dir / self.target_version).exists():
+        if not (base_dir / self.target_version).exists() or not list((base_dir / self.target_version).iterdir()):
             # target_file_contents = self.get_file_contents_from_ref(file_list, self.make_commit_info(tag=self.target_version))
             # TODO 这里要判断传进去的到底是branch还是tag
             target_file_contents = self.git_operations.get_file_contents_from_ref(file_list, self.git_operations.make_commit_info(branch=self.target_version),
@@ -233,55 +231,6 @@ class PatchProcessor:
         
         
 
-    def process_single_file_patch(self, file_path, patch_content):
-        """
-        处理单个文件的patch
-        
-        :param file_path: 文件路径
-        :param patch_content: patch内容
-        :return: (success, patch_result)
-        """
-        # 创建临时文件来存储单个文件的patch
-        temp_patch_file = self.patch_dir / f"temp_{Path(file_path).name}.patch"
-        temp_patch_file.write_text(patch_content)
-        
-        # 创建评估器
-        evaluator = PatchEvaluator(self.config)
-        
-        # 尝试直接应用patch
-        result = evaluator.try_direct_apply(
-            patch_file=temp_patch_file,
-            single_file=True
-        )
-        
-        return result['upstream_apply']['success'], temp_patch_file if result['upstream_apply']['success'] else None
-
-    def split_patch_by_files(self, patch_content):
-        """
-        将patch按文件拆分
-        
-        :param patch_content: 完整的patch内容
-        :return: Dict[str, str] 文件路径到对应patch内容的映射
-        """
-        file_patches = {}
-        current_file = None
-        current_content = []
-        
-        for line in patch_content.splitlines():
-            if line.startswith('diff --git'):
-                if current_file:
-                    file_patches[current_file] = '\n'.join(current_content)
-                current_file = line.split()[-1].lstrip('b/')
-                current_content = [line]
-            else:
-                if current_file:
-                    current_content.append(line)
-        
-        if current_file:
-            file_patches[current_file] = '\n'.join(current_content)
-        
-        return file_patches
-
     def process_single_commit(self):
         """
         处理单个提交的补丁
@@ -289,143 +238,36 @@ class PatchProcessor:
         # 运行基本处理流程
         patch_processor_outputs = self.run()
         self.config.update(**patch_processor_outputs)
-        # # 处理LLM响应
-        # use_cache = self.config.use_cache
-        # if use_cache:
-        #     # 确保在使用缓存前设置缓存路径
-        #     cache_path = self.get_response_path()
-        #     self.config.extra_config.update({
-        #         "cache_path": cache_path
-        #     })
-        #     logger.info(f"使用缓存路径: {cache_path}")
 
-        # # 调用LLM处理
-        # llm_assistant = LLMAssistant(self.config)
-        # llm_output = llm_assistant.run()
-        # self.config.update(**llm_output)
+        # 处理LLM响应
+        use_cache = self.config.use_cache
+        if use_cache:
+            # 确保在使用缓存前设置缓存路径
+            cache_path = self.get_response_path()
+            self.config.extra_config.update({
+                "cache_path": cache_path
+            })
+            logger.info(f"使用缓存路径: {cache_path}")
 
-        # # 处理LLM输出
-        # for response in llm_output["openai_responses"]:
-        #     if not use_cache:
-        # 获取原始patch内容
-        patch_path = self.download_patch_by_type(self.config.patch_url, 'upstream')
-        patch_content = Path(patch_path).read_text()
-        
-        # 按文件拆分patch
-        file_patches = self.split_patch_by_files(patch_content)
-        
-        # 存储成功和失败的文件
-        successful_patches = {}
-        failed_files = set()
-        
-        # 逐个文件尝试应用patch
-        for file_path, file_patch in file_patches.items():
-            success, patch_file = self.process_single_file_patch(file_path, file_patch)
-            if success:
-                successful_patches[file_path] = patch_file
-            else:
-                failed_files.add(file_path)
-        
-        # 如果有失败的文件，使用LLM处理
-        if failed_files:
-            logger.info(f"以下文件需要LLM处理: {failed_files}")
-            # 只为失败的文件生成diff
-            self.generate_partial_diff(failed_files)
-            
-            # 调用LLM处理
-            llm_assistant = LLMAssistant(self.config)
-            llm_output = llm_assistant.run()
-            self.config.update(**llm_output)
-            
-            # 处理LLM输出
-            for response in llm_output["openai_responses"]:
+        # 调用LLM处理
+        llm_assistant = LLMAssistant(self.config)
+        llm_output = llm_assistant.run()
+        self.config.update(**llm_output)
+
+        # 处理LLM输出
+        for response in llm_output["openai_responses"]:
+            if not use_cache:
                 output_path = self.save_response_to_project(response)
-            # else:
-            #     output_path = self.config.extra_config["cache_path"]
+            else:
+                output_path = self.config.extra_config["cache_path"]
 
-            # # 应用补丁并生成差异
-            # self.apply_llm_patch(output_path)
-            # self.generate_folder_diff(
-            #     self.config.base_dir / self.config.target_version,
-            #     self.config.base_dir / f'adapted_{self.config.target_version}',
-            #     self.config.base_dir / f'adapted_diff_{self.config.target_version}'
-            # )
-                self.apply_llm_patch(output_path)
+            # 应用补丁并生成差异
+            self.apply_llm_patch(output_path)
+            self.generate_folder_diff(
+                self.config.base_dir / self.config.target_version,
+                self.config.base_dir / f'adapted_{self.config.target_version}',
+                self.config.base_dir / f'adapted_diff_{self.config.target_version}'
+            )
         
-        # 合并所有成功的patch
-        self.merge_successful_patches(successful_patches)
         
-    def generate_partial_diff(self, file_paths):
-        """
-        只为指定的文件生成diff
-        
-        :param file_paths: 需要生成diff的文件路径集合
-        """
-        base_dir = self.config.base_dir
-        diff_file = base_dir / 'diff'
-        
-        with open(diff_file, 'w', encoding='utf-8') as out_file:
-            for file_path in file_paths:
-                path1 = base_dir / 'newer' / file_path
-                path2 = base_dir / self.target_version / file_path
-                
-                if path1.exists() and path2.exists():
-                    with open(path1, 'r', encoding='utf-8') as f1, open(path2, 'r', encoding='utf-8') as f2:
-                        lines1 = f1.readlines()
-                        lines2 = f2.readlines()
-                        diff = list(difflib.unified_diff(
-                            lines1, lines2,
-                            fromfile=str(path1),
-                            tofile=str(path2),
-                            n=3,
-                            lineterm=''
-                        ))
-                        if diff:
-                            out_file.write(f"modified file: {file_path}\n")
-                            out_file.write('\n'.join(diff))
-                            out_file.write('\n' + '"' * 6 + '\n')
-
-    def merge_successful_patches(self, successful_patches):
-        """
-        合并所有成功应用的补丁
-        
-        :param successful_patches: Dict[str, Path] 文件路径到对应patch文件的映射
-        """
-        if not successful_patches:
-            logger.info("没有需要合并的成功补丁")
-            return
-        
-        logger.info(f"开始合并 {len(successful_patches)} 个成功的补丁")
-        
-        # 创建适配后的目录
-        adapted_dir = self.config.base_dir / f"adapted_{self.config.target_version}"
-        adapted_dir.mkdir(parents=True, exist_ok=True)
-        
-        # 复制成功应用补丁的文件
-        for file_path in successful_patches.keys():
-            source_path = self.config.repo_path / file_path
-            target_path = adapted_dir / file_path
-            
-            if source_path.exists():
-                # 确保目标目录存在
-                target_path.parent.mkdir(parents=True, exist_ok=True)
-                # 复制文件
-                shutil.copy2(source_path, target_path)
-                logger.info(f"复制成功应用补丁的文件: {file_path}")
-        
-        # 保存成功的patch文件
-        successful_patch_dir = self.patch_dir / "successful"
-        successful_patch_dir.mkdir(exist_ok=True)
-        
-        for file_path, patch_file in successful_patches.items():
-            target_patch = successful_patch_dir / f"{Path(file_path).name}.patch"
-            shutil.copy2(patch_file, target_patch)
-            logger.info(f"保存成功的patch文件: {target_patch}")
-        
-        # 生成合并后的差异文件
-        self.generate_folder_diff(
-            self.config.base_dir / self.config.target_version,
-            adapted_dir,
-            self.config.base_dir / f'adapted_diff_{self.config.target_version}'
-        )
 

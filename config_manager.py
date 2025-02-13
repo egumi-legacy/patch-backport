@@ -1,7 +1,16 @@
 from pathlib import Path
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 import os
+
+@dataclass
+class PipelineConfig:
+    """Pipeline配置"""
+    enabled_modules: List[str] = field(default_factory=lambda: [
+        "direct_apply", "llm_adapter", "patch_adapter", "compiler"
+    ])
+    module_configs: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    stop_on_failure: bool = False
 
 @dataclass
 class ProjectConfig:
@@ -41,6 +50,9 @@ class ProjectConfig:
     # 其他配置
     extra_config: Dict[str, Any] = field(default_factory=dict)
 
+    # 新增pipeline配置
+    pipeline: PipelineConfig = field(default_factory=PipelineConfig)
+
     def __post_init__(self):
         """初始化后的处理"""
         # 转换路径类型
@@ -56,6 +68,14 @@ class ProjectConfig:
             self.prompt_value_file = Path(self.prompt_value_file)
         if self.response_file and isinstance(self.response_file, str):
             self.response_file = Path(self.response_file)
+
+        # 确保目录存在
+        if self.base_dir:
+            self.base_dir.mkdir(parents=True, exist_ok=True)
+
+        # 如果提供了pipeline配置，创建PipelineConfig对象
+        if isinstance(self.pipeline, dict):
+            self.pipeline = PipelineConfig(**self.pipeline)
 
     def update(self, **kwargs):
         """更新配置"""
@@ -102,3 +122,49 @@ class ProjectConfig:
         if self.mode == 1 and self.repo_owner and self.repo_name:
             return f"https://github.com/{self.repo_owner}/{self.repo_name}"
         return self.repo_url 
+
+    def dict(self) -> Dict[str, Any]:
+        """转换为字典"""
+        return {
+            'repo_path': str(self.repo_path),
+            'patch_dir': str(self.patch_dir),
+            'evaluation_dir': str(self.evaluation_dir),
+            'base_dir': str(self.base_dir) if self.base_dir else None,
+            'target_version': self.target_version,
+            'mode': self.mode,
+            'patch_url': self.patch_url,
+            'reference_url': self.reference_url,
+            'repo_owner': self.repo_owner,
+            'repo_name': self.repo_name,
+            'commit_sha': self.commit_sha,
+            'use_cached_patches': self.use_cached_patches,
+            'pipeline': {
+                'enabled_modules': self.pipeline.enabled_modules,
+                'module_configs': self.pipeline.module_configs,
+                'stop_on_failure': self.pipeline.stop_on_failure
+            }
+        } 
+
+    def validate_config(self) -> List[str]:
+        """验证配置的完整性和正确性"""
+        errors = []
+        
+        # 检查必要的路径
+        if not self.repo_path.exists():
+            errors.append(f"仓库路径不存在: {self.repo_path}")
+        
+        # 检查模式相关的必要参数
+        if self.mode == 1:
+            if not self.patch_url:
+                errors.append("模式1需要patch_url参数")
+        
+        # 检查pipeline配置
+        if not self.pipeline.enabled_modules:
+            errors.append("pipeline.enabled_modules不能为空")
+        
+        # 检查模块配置
+        for module in self.pipeline.enabled_modules:
+            if module not in ["direct_apply", "llm_adapter", "patch_adapter", "compiler"]:
+                errors.append(f"未知的模块: {module}")
+        
+        return errors 
