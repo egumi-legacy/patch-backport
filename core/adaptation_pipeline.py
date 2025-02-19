@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 from pathlib import Path
 import yaml
 from datetime import datetime
@@ -6,39 +6,47 @@ import time
 from loguru import logger
 from modules.base_module import BaseModule
 from core.adaptation_result import AdaptationResult
+from config_manager import ProjectConfig
+from modules.base_module import ModuleContext
 
 class AdaptationPipeline:
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: ProjectConfig):
+        """
+        初始化适配管道
+        :param config: ProjectConfig对象，包含所有必要的配置
+        """
         self.config = config
-        self.modules: Dict[str, BaseModule] = {}
-        self.results_dir = Path(config.get("results_dir", "results"))
+        self.modules = {}
+        self.results_dir = config.base_dir / "results"
         self.results_dir.mkdir(parents=True, exist_ok=True)
         
         # 初始化启用的模块
-        logger.info("in init...")
-        self._initialize_modules()
+        if not config.pipeline.enabled_modules:
+            raise ValueError("No modules enabled in pipeline configuration")
+            
+        self._initialize_modules(config.pipeline.enabled_modules)
     
-    def _initialize_modules(self):
-        """初始化所有配置中启用的模块"""
-        enabled_modules = self.config.get("enabled_modules", [])
+    def _initialize_modules(self, enabled_modules: List[str]):
+        """初始化模块"""
+        # logger.debug(f"开始初始化模块，配置信息: {self.config}")
         for module_name in enabled_modules:
             try:
-                module_config = self.config.get(f"{module_name}_config", {})
-                logger.info(f"{module_config}")
-                # 添加模块特定的配置验证
-                if module_name == "direct_apply":
-                    required_fields = ["repo_path", "target_version"]
-                    missing = [f for f in required_fields if f not in module_config]
-                    if missing:
-                        logger.info("missing.")
-                        raise ValueError(f"Missing required fields for direct_apply: {missing}")
-                logger.info("not missing")
+                # 获取模块类
                 module_class = self._get_module_class(module_name)
-                if module_class:
-                    self.modules[module_name] = module_class(module_config)
+                if not module_class:
+                    logger.warning(f"Module {module_name} not found, skipping")
+                    continue
+                
+                # logger.debug(f"初始化模块 {module_name} 的配置: {self.config}")
+                # 直接使用ProjectConfig对象初始化模块
+                module = module_class(self.config)
+                self.modules[module_name] = module
+                
             except Exception as e:
-                logger.error(f"初始化模块 {module_name} 失败: {str(e)}")
-                if self.config.get("stop_on_failure", True):
+                logger.error(f"初始化模块 {module_name} 失败: {e}")
+                import traceback
+                logger.debug(f"错误堆栈: {traceback.format_exc()}")
+                if self.config.pipeline.stop_on_failure:
                     raise
     
     def _get_module_class(self, module_name: str) -> type:
@@ -46,92 +54,102 @@ class AdaptationPipeline:
         from modules import module_registry
         return module_registry.get(module_name)
     
-    def process_patch(self, patch_info: Dict[str, Any]) -> AdaptationResult:
+    def process_patch(self, context: ModuleContext) -> AdaptationResult:
         """处理补丁"""
-        context = {
-            "patch_info": patch_info,
-            "start_time": datetime.now(),
-            "module_results": []
-        }
-        
-        # 记录初始元数据
-        metadata = {
-            "timestamp": context["start_time"].isoformat(),
-            "commit_sha": patch_info.get("commit_sha"),
-            "target_version": patch_info.get("target_version")
-        }
-        
-        # 记录配置信息
-        configuration = {
-            "enabled_modules": list(self.modules.keys()),
-            "module_configs": {name: module.config for name, module in self.modules.items()}
-        }
-        
         try:
-            # 按顺序执行每个模块
+            # 执行每个模块
             for module_name, module in self.modules.items():
-                start_time = time.time()
                 try:
+                    logger.info(f"执行模块: {module_name}")
+                    start_time = datetime.now()
+                    
+                    # 执行模块
                     context = module.execute(context)
-                    duration = time.time() - start_time
                     
                     # 记录模块执行结果
+                    duration = (datetime.now() - start_time).total_seconds()
                     module_result = {
-                        "module": module_name,
-                        "duration": duration,
-                        "success": True,
-                        "metrics": module.get_metrics()
+                        'module': module_name,
+                        'success': True,
+                        'duration': duration,
+                        'metrics': module.get_metrics()
                     }
+                    
+                    context.module_results.append(module_result)
                     
                 except Exception as e:
+                    logger.error(f"模块 {module_name} 执行失败: {e}")
+                    import traceback
+                    logger.error(f"错误堆栈: {traceback.format_exc()}")
                     module_result = {
-                        "module": module_name,
-                        "duration": time.time() - start_time,
-                        "success": False,
-                        "error": str(e)
+                        'module': module_name,
+                        'success': False,
+                        'error': str(e),
+                        'duration': (datetime.now() - start_time).total_seconds()
                     }
+                    context.module_results.append(module_result)
                     
-                context["module_results"].append(module_result)
-                
-                # 如果模块失败且配置为失败时停止，则中断流程
-                if not module_result["success"] and self.config.get("stop_on_failure", True):
-                    break
+                    if self.config.pipeline.stop_on_failure:
+                        raise
             
-            # 整理最终结果
-            results = {
-                "module_results": context["module_results"],
-                "final_status": self._get_final_status(context)
-            }
+            # 创建适配结果
+            return AdaptationResult(
+                metadata={
+                    'timestamp': datetime.now().isoformat(),
+                    'commit_sha': context.patch_info.get('commit_sha'),
+                    'patch_url': context.patch_info.get('patch_url'),
+                    'target_version': context.patch_info.get('target_version')
+                },
+                configuration=self.config.dict(),
+                results={
+                    'module_results': context.module_results,
+                    'final_status': self._get_final_status(context)
+                }
+            )
             
         except Exception as e:
-            results = {
-                "module_results": context.get("module_results", []),
-                "final_status": {
-                    "success": False,
-                    "error": str(e)
+            logger.error(f"Pipeline执行失败: {e}")
+            return AdaptationResult(
+                metadata={
+                    'timestamp': datetime.now().isoformat(),
+                    'error': str(e)
+                },
+                configuration=self.config.dict(),
+                results={
+                    'module_results': context.module_results,
+                    'final_status': {
+                        'success': False,
+                        'error': str(e)
+                    }
                 }
+            )
+    
+    def _get_final_status(self, context: ModuleContext) -> Dict[str, Any]:
+        """获取最终状态"""
+        # 检查是否有直接应用成功
+        if (context.direct_apply_result and 
+            context.direct_apply_result.get('success', False)):
+            return {
+                'success': True,
+                'method': 'direct_apply',
+                'message': '直接应用成功'
             }
         
-        # 创建结果对象
-        adaptation_result = AdaptationResult(
-            metadata=metadata,
-            configuration=configuration,
-            results=results
-        )
+        # 检查是否有成功的适配补丁
+        if context.adapted_patches:
+            successful_patches = [p for p in context.adapted_patches 
+                                if p.get('success', False)]
+            if successful_patches:
+                return {
+                    'success': True,
+                    'method': 'llm_adaptation',
+                    'message': f'成功适配 {len(successful_patches)} 个补丁'
+                }
         
-        # 保存结果
-        self._save_result(adaptation_result)
-        
-        return adaptation_result
-    
-    def _get_final_status(self, context: Dict[str, Any]) -> Dict[str, Any]:
-        """获取最终状态"""
-        module_results = context["module_results"]
+        # 如果都失败了
         return {
-            "success": all(r["success"] for r in module_results),
-            "total_duration": sum(r["duration"] for r in module_results),
-            "successful_modules": [r["module"] for r in module_results if r["success"]],
-            "failed_modules": [r["module"] for r in module_results if not r["success"]]
+            'success': False,
+            'message': '所有适配方法都失败了'
         }
     
     def _save_result(self, result: AdaptationResult):

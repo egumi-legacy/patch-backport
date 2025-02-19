@@ -227,7 +227,9 @@ class PatchProcessor:
         
         patch_values = [{"patchCode": html.unescape(Path(patch_path).read_text()), "diffCode": html.unescape((base_dir / 'diff').read_text())}]
 
-        return dict(prompt_values=patch_values)
+        # self.config.extra_config.update(prompt_values = patch_values)
+
+        return dict(prompt_values = patch_values)
         
         
 

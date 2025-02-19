@@ -1,0 +1,255 @@
+configuration:
+  enabled_modules:
+  - direct_apply
+  - patch_adapter
+  - compiler
+  module_configs:
+    compiler:
+      base_dir: patchfile/gregkh_linux_2a4f56
+      commit_sha: 2a4f56fbcc473d8faeb29b73082df39efbe5893c
+      evaluation_dir: patchfile/gregkh_linux_2a4f56/evaluations
+      mode: 2
+      patch_dir: patchfile/gregkh_linux_2a4f56/patches
+      patch_url: https://github.com/gregkh/linux/commit/2a4f56fbcc473d8faeb29b73082df39efbe5893c
+      pipeline:
+        enabled_modules: &id002 !!python/object/new:ruamel.yaml.comments.CommentedSeq
+          listitems:
+          - direct_apply
+          - llm_adapter
+          - patch_adapter
+          - compiler
+          state:
+            _yaml_format: !!python/object/new:ruamel.yaml.comments.Format
+              state: !!python/tuple
+              - null
+              - _flow_style: false
+            _yaml_line_col: !!python/object:ruamel.yaml.comments.LineCol
+              col: 6
+              data:
+                0:
+                - 85
+                - 8
+                1:
+                - 86
+                - 8
+                2:
+                - 87
+                - 8
+                3:
+                - 88
+                - 8
+              line: 85
+        module_configs: &id003 !!python/object/apply:ruamel.yaml.comments.CommentedMap
+          dictitems:
+            compiler: !!python/object/apply:ruamel.yaml.comments.CommentedMap
+              dictitems:
+                clean_after: true
+              state: !!python/tuple
+              - _yaml_format: !!python/object/new:ruamel.yaml.comments.Format
+                  state: !!python/tuple
+                  - null
+                  - _flow_style: false
+                _yaml_line_col: !!python/object:ruamel.yaml.comments.LineCol
+                  col: 8
+                  data:
+                    clean_after:
+                    - 96
+                    - 8
+                    - 96
+                    - 21
+                  line: 96
+              - _ok: !!set
+                  clean_after: null
+                _ref: []
+            direct_apply: !!python/object/apply:ruamel.yaml.comments.CommentedMap
+              dictitems:
+                timeout: 30
+              state: !!python/tuple
+              - _yaml_format: !!python/object/new:ruamel.yaml.comments.Format
+                  state: !!python/tuple
+                  - null
+                  - _flow_style: false
+                _yaml_line_col: !!python/object:ruamel.yaml.comments.LineCol
+                  col: 8
+                  data:
+                    timeout:
+                    - 91
+                    - 8
+                    - 91
+                    - 17
+                  line: 91
+              - _ok: !!set
+                  timeout: null
+                _ref: []
+            llm_adapter: !!python/object/apply:ruamel.yaml.comments.CommentedMap
+              dictitems:
+                temperature: !!python/object/new:ruamel.yaml.scalarfloat.ScalarFloat
+                  args:
+                  - 0.7
+                  state:
+                    _e_sign: null
+                    _e_width: null
+                    _exp: null
+                    _m_lead0: 1
+                    _m_sign: false
+                    _prec: 1
+                    _underscore: null
+                    _width: 3
+              state: !!python/tuple
+              - _yaml_format: !!python/object/new:ruamel.yaml.comments.Format
+                  state: !!python/tuple
+                  - null
+                  - _flow_style: false
+                _yaml_line_col: !!python/object:ruamel.yaml.comments.LineCol
+                  col: 8
+                  data:
+                    temperature:
+                    - 94
+                    - 8
+                    - 94
+                    - 21
+                  line: 94
+              - _ok: !!set
+                  temperature: null
+                _ref: []
+                _yaml_comment: !!python/object/new:ruamel.yaml.comments.Comment
+                  state: !!python/tuple
+                  - null
+                  - _items: {}
+                    _post: []
+                    _pre: null
+                    comment:
+                    - null
+                    - &id001
+                      - !!python/object/new:ruamel.yaml.tokens.CommentToken
+                        state: !!python/tuple
+                        - null
+                        - _value: '# model: "qwen-plus"
+
+                            '
+                          end_mark: null
+                          start_mark: !!python/object/new:ruamel.yaml.error.FileMark
+                            state: !!python/tuple
+                            - null
+                            - column: 8
+                              index: 3603
+                              line: 93
+                              name: /home/elpsy/workspace/sow/patch-backport/inputs.yaml
+          state: !!python/tuple
+          - _yaml_format: !!python/object/new:ruamel.yaml.comments.Format
+              state: !!python/tuple
+              - null
+              - _flow_style: false
+            _yaml_line_col: !!python/object:ruamel.yaml.comments.LineCol
+              col: 6
+              data:
+                compiler:
+                - 95
+                - 6
+                - 96
+                - 8
+                direct_apply:
+                - 90
+                - 6
+                - 91
+                - 8
+                llm_adapter:
+                - 92
+                - 6
+                - 94
+                - 8
+              line: 90
+          - _ok: !!set
+              compiler: null
+              direct_apply: null
+              llm_adapter: null
+            _ref: []
+            _yaml_comment: !!python/object/new:ruamel.yaml.comments.Comment
+              state: !!python/tuple
+              - null
+              - _items:
+                  llm_adapter:
+                  - null
+                  - null
+                  - null
+                  - *id001
+                _post: []
+                _pre: null
+                comment: null
+        stop_on_failure: false
+      reference_url: https://github.com/gregkh/linux/commit/de85624c623dbb5fdb3ae7b08b66894a072c0cc0
+      repo_name: linux
+      repo_owner: gregkh
+      repo_path: ../backport-test/linux
+      target_version: linux-6.12.y
+      use_cached_patches: true
+    direct_apply:
+      base_dir: patchfile/gregkh_linux_2a4f56
+      commit_sha: 2a4f56fbcc473d8faeb29b73082df39efbe5893c
+      evaluation_dir: patchfile/gregkh_linux_2a4f56/evaluations
+      mode: 2
+      patch_dir: patchfile/gregkh_linux_2a4f56/patches
+      patch_url: https://github.com/gregkh/linux/commit/2a4f56fbcc473d8faeb29b73082df39efbe5893c
+      pipeline:
+        enabled_modules: *id002
+        module_configs: *id003
+        stop_on_failure: false
+      reference_url: https://github.com/gregkh/linux/commit/de85624c623dbb5fdb3ae7b08b66894a072c0cc0
+      repo_name: linux
+      repo_owner: gregkh
+      repo_path: ../backport-test/linux
+      target_version: linux-6.12.y
+      use_cached_patches: true
+    patch_adapter:
+      base_dir: patchfile/gregkh_linux_2a4f56
+      commit_sha: 2a4f56fbcc473d8faeb29b73082df39efbe5893c
+      evaluation_dir: patchfile/gregkh_linux_2a4f56/evaluations
+      mode: 2
+      patch_dir: patchfile/gregkh_linux_2a4f56/patches
+      patch_url: https://github.com/gregkh/linux/commit/2a4f56fbcc473d8faeb29b73082df39efbe5893c
+      pipeline:
+        enabled_modules: *id002
+        module_configs: *id003
+        stop_on_failure: false
+      reference_url: https://github.com/gregkh/linux/commit/de85624c623dbb5fdb3ae7b08b66894a072c0cc0
+      repo_name: linux
+      repo_owner: gregkh
+      repo_path: ../backport-test/linux
+      target_version: linux-6.12.y
+      use_cached_patches: true
+metadata:
+  commit_sha: 2a4f56fbcc473d8faeb29b73082df39efbe5893c
+  target_version: linux-6.12.y
+  timestamp: '2025-02-19T21:08:24.273511'
+results:
+  final_status:
+    failed_modules: []
+    success: true
+    successful_modules:
+    - direct_apply
+    - patch_adapter
+    - compiler
+    total_duration: 0.0005331039428710938
+  module_results:
+  - duration: 0.0001354217529296875
+    metrics:
+      apply_success: false
+      error_count: 0
+    module: direct_apply
+    success: true
+  - duration: 0.00018978118896484375
+    metrics:
+      failed_patches: 0
+      success_rate: 0
+      successful_patches: 0
+    module: patch_adapter
+    success: true
+  - duration: 0.0002079010009765625
+    metrics:
+      average_files_per_compilation: 0
+      failed_compilations: 0
+      success_rate: 0
+      successful_compilations: 0
+      total_files: 0
+    module: compiler
+    success: true

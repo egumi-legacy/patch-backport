@@ -1,0 +1,375 @@
+modified file: drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+--- patchfile/gregkh_linux_2a4f56/newer/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ patchfile/gregkh_linux_2a4f56/linux-6.12.y/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -350,15 +350,19 @@
+  
+  	shampo->bitmap = bitmap_zalloc_node(shampo->hd_per_wq, GFP_KERNEL,
+  					    node);
+ +	shampo->info = kvzalloc_node(array_size(shampo->hd_per_wq,
+ +						sizeof(*shampo->info)),
+ +				     GFP_KERNEL, node);
+  	shampo->pages = kvzalloc_node(array_size(shampo->hd_per_wq,
+  						 sizeof(*shampo->pages)),
+  				     GFP_KERNEL, node);
+ -	if (!shampo->bitmap || !shampo->pages)
+ +	if (!shampo->bitmap || !shampo->info || !shampo->pages)
+  		goto err_nomem;
+  
+  	return 0;
+  
+  err_nomem:
+ +	kvfree(shampo->info);
+  	kvfree(shampo->bitmap);
+  	kvfree(shampo->pages);
+  
+@@ -368,6 +372,7 @@
+  static void mlx5e_rq_shampo_hd_info_free(struct mlx5e_rq *rq)
+  {
+  	kvfree(rq->mpwqe.shampo->bitmap);
+ +	kvfree(rq->mpwqe.shampo->info);
+  	kvfree(rq->mpwqe.shampo->pages);
+  }
+  
+@@ -762,6 +767,8 @@
+  				u32 *pool_size,
+  				int node)
+  {
+ +	void *wqc = MLX5_ADDR_OF(rqc, rqp->rqc, wq);
+ +	int wq_size;
+  	int err;
+  
+  	if (!test_bit(MLX5E_RQ_STATE_SHAMPO, &rq->state))
+@@ -786,9 +793,9 @@
+  		cpu_to_be32(rq->mpwqe.shampo->mkey);
+  	rq->mpwqe.shampo->hd_per_wqe =
+  		mlx5e_shampo_hd_per_wqe(mdev, params, rqp);
+ -	rq->mpwqe.shampo->pages_per_wq =
+ -		rq->mpwqe.shampo->hd_per_wq / MLX5E_SHAMPO_WQ_HEADER_PER_PAGE;
+ -	*pool_size += rq->mpwqe.shampo->pages_per_wq;
+ +	wq_size = BIT(MLX5_GET(wq, wqc, log_wq_sz));
+ +	*pool_size += (rq->mpwqe.shampo->hd_per_wqe * wq_size) /
+ +		     MLX5E_SHAMPO_WQ_HEADER_PER_PAGE;
+  	return 0;
+  
+  err_hw_gro_data:
+@@ -1119,7 +1126,7 @@
+  	struct mlx5_cqe64 *cqe;
+  
+  	if (test_bit(MLX5E_RQ_STATE_MINI_CQE_ENHANCED, &rq->state)) {
+ -		while ((cqe = mlx5_cqwq_get_cqe_enhanced_comp(cqwq)))
+ +		while ((cqe = mlx5_cqwq_get_cqe_enahnced_comp(cqwq)))
+  			mlx5_cqwq_pop(cqwq);
+  	} else {
+  		while ((cqe = mlx5_cqwq_get_cqe(cqwq)))
+@@ -2079,44 +2086,6 @@
+  	mlx5e_free_xdpsq(sq);
+  }
+  
+ -static struct mlx5e_xdpsq *mlx5e_open_xdpredirect_sq(struct mlx5e_channel *c,
+ -						     struct mlx5e_params *params,
+ -						     struct mlx5e_channel_param *cparam,
+ -						     struct mlx5e_create_cq_param *ccp)
+ -{
+ -	struct mlx5e_xdpsq *xdpsq;
+ -	int err;
+ -
+ -	xdpsq = kvzalloc_node(sizeof(*xdpsq), GFP_KERNEL, c->cpu);
+ -	if (!xdpsq)
+ -		return ERR_PTR(-ENOMEM);
+ -
+ -	err = mlx5e_open_cq(c->mdev, params->tx_cq_moderation,
+ -			    &cparam->xdp_sq.cqp, ccp, &xdpsq->cq);
+ -	if (err)
+ -		goto err_free_xdpsq;
+ -
+ -	err = mlx5e_open_xdpsq(c, params, &cparam->xdp_sq, NULL, xdpsq, true);
+ -	if (err)
+ -		goto err_close_xdpsq_cq;
+ -
+ -	return xdpsq;
+ -
+ -err_close_xdpsq_cq:
+ -	mlx5e_close_cq(&xdpsq->cq);
+ -err_free_xdpsq:
+ -	kvfree(xdpsq);
+ -
+ -	return ERR_PTR(err);
+ -}
+ -
+ -static void mlx5e_close_xdpredirect_sq(struct mlx5e_xdpsq *xdpsq)
+ -{
+ -	mlx5e_close_xdpsq(xdpsq);
+ -	mlx5e_close_cq(&xdpsq->cq);
+ -	kvfree(xdpsq);
+ -}
+ -
+  static int mlx5e_alloc_cq_common(struct mlx5_core_dev *mdev,
+  				 struct net_device *netdev,
+  				 struct workqueue_struct *workqueue,
+@@ -2507,7 +2476,6 @@
+  			     struct mlx5e_params *params,
+  			     struct mlx5e_channel_param *cparam)
+  {
+ -	const struct net_device_ops *netdev_ops = c->netdev->netdev_ops;
+  	struct dim_cq_moder icocq_moder = {0, 0};
+  	struct mlx5e_create_cq_param ccp;
+  	int err;
+@@ -2528,18 +2496,15 @@
+  	if (err)
+  		goto err_close_icosq_cq;
+  
+ -	if (netdev_ops->ndo_xdp_xmit) {
+ -		c->xdpsq = mlx5e_open_xdpredirect_sq(c, params, cparam, &ccp);
+ -		if (IS_ERR(c->xdpsq)) {
+ -			err = PTR_ERR(c->xdpsq);
+ -			goto err_close_tx_cqs;
+ -		}
+ -	}
+ +	err = mlx5e_open_cq(c->mdev, params->tx_cq_moderation, &cparam->xdp_sq.cqp, &ccp,
+ +			    &c->xdpsq.cq);
+ +	if (err)
+ +		goto err_close_tx_cqs;
+  
+  	err = mlx5e_open_cq(c->mdev, params->rx_cq_moderation, &cparam->rq.cqp, &ccp,
+  			    &c->rq.cq);
+  	if (err)
+ -		goto err_close_xdpredirect_sq;
+ +		goto err_close_xdp_tx_cqs;
+  
+  	err = c->xdp ? mlx5e_open_cq(c->mdev, params->tx_cq_moderation, &cparam->xdp_sq.cqp,
+  				     &ccp, &c->rq_xdpsq.cq) : 0;
+@@ -2551,7 +2516,7 @@
+  	err = mlx5e_open_icosq(c, params, &cparam->async_icosq, &c->async_icosq,
+  			       mlx5e_async_icosq_err_cqe_work);
+  	if (err)
+ -		goto err_close_rq_xdpsq_cq;
+ +		goto err_close_xdpsq_cq;
+  
+  	mutex_init(&c->icosq_recovery_lock);
+  
+@@ -2575,7 +2540,15 @@
+  			goto err_close_rq;
+  	}
+  
+ +	err = mlx5e_open_xdpsq(c, params, &cparam->xdp_sq, NULL, &c->xdpsq, true);
+ +	if (err)
+ +		goto err_close_xdp_sq;
+ +
+  	return 0;
+ +
+ +err_close_xdp_sq:
+ +	if (c->xdp)
+ +		mlx5e_close_xdpsq(&c->rq_xdpsq);
+  
+  err_close_rq:
+  	mlx5e_close_rq(&c->rq);
+@@ -2589,16 +2562,15 @@
+  err_close_async_icosq:
+  	mlx5e_close_icosq(&c->async_icosq);
+  
+ -err_close_rq_xdpsq_cq:
+ +err_close_xdpsq_cq:
+  	if (c->xdp)
+  		mlx5e_close_cq(&c->rq_xdpsq.cq);
+  
+  err_close_rx_cq:
+  	mlx5e_close_cq(&c->rq.cq);
+  
+ -err_close_xdpredirect_sq:
+ -	if (c->xdpsq)
+ -		mlx5e_close_xdpredirect_sq(c->xdpsq);
+ +err_close_xdp_tx_cqs:
+ +	mlx5e_close_cq(&c->xdpsq.cq);
+  
+  err_close_tx_cqs:
+  	mlx5e_close_tx_cqs(c);
+@@ -2614,6 +2586,7 @@
+  
+  static void mlx5e_close_queues(struct mlx5e_channel *c)
+  {
+ +	mlx5e_close_xdpsq(&c->xdpsq);
+  	if (c->xdp)
+  		mlx5e_close_xdpsq(&c->rq_xdpsq);
+@@ -2626,8 +2599,7 @@
+  	if (c->xdp)
+  		mlx5e_close_cq(&c->rq_xdpsq.cq);
+  	mlx5e_close_cq(&c->rq.cq);
+ -	if (c->xdpsq)
+ -		mlx5e_close_xdpredirect_sq(c->xdpsq);
+ +	mlx5e_close_cq(&c->xdpsq.cq);
+  	mlx5e_close_tx_cqs(c);
+  	mlx5e_close_cq(&c->icosq.cq);
+  	mlx5e_close_cq(&c->async_icosq.cq);
+@@ -2732,7 +2704,7 @@
+  	c->aff_mask = irq_get_effective_affinity_mask(irq);
+  	c->lag_port = mlx5e_enumerate_lag_port(mdev, ix);
+  
+ -	netif_napi_add_config(netdev, &c->napi, mlx5e_napi_poll, ix);
+ +	netif_napi_add(netdev, &c->napi, mlx5e_napi_poll);
+  	netif_napi_set_irq(&c->napi, irq);
+  
+  	err = mlx5e_open_queues(c, params, cparam);
+@@ -4588,10 +4560,6 @@
+  out:
+  	WRITE_ONCE(netdev->mtu, params->sw_mtu);
+  	mutex_unlock(&priv->state_lock);
+ -
+ -	if (!err)
+ -		netdev_update_features(netdev);
+ -
+  	return err;
+  }
+  
+
+""""""
+modified file: drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+--- patchfile/gregkh_linux_2a4f56/newer/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ patchfile/gregkh_linux_2a4f56/linux-6.12.y/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -600,8 +600,7 @@
+  			if (c->xdp)
+  				sqs[num_sqs++] = c->rq_xdpsq.sqn;
+  
+ -			if (c->xdpsq)
+ -				sqs[num_sqs++] = c->xdpsq->sqn;
+ +			sqs[num_sqs++] = c->xdpsq.sqn;
+  		}
+  	}
+  	if (ptp_sq) {
+
+""""""
+modified file: drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+--- patchfile/gregkh_linux_2a4f56/newer/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ patchfile/gregkh_linux_2a4f56/linux-6.12.y/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -53,6 +53,9 @@
+  #include "lag/lag.h"
+  #include "en/tc/post_meter.h"
+  
+ +#define mlx5_esw_for_each_rep(esw, i, rep) \
+ +	xa_for_each(&((esw)->offloads.vport_reps), i, rep)
+ +
+@@ -2329,36 +2332,18 @@
+  	return err;
+  }
+  
+ -static void esw_mode_change(struct mlx5_eswitch *esw, u16 mode)
+ -{
+ -	mlx5_devcom_comp_lock(esw->dev->priv.hca_devcom_comp);
+ -	if (esw->dev->priv.flags & MLX5_PRIV_FLAGS_DISABLE_IB_ADEV ||
+ -	    mlx5_core_mp_enabled(esw->dev)) {
+ -		esw->mode = mode;
+ -		mlx5_rescan_drivers_locked(esw->dev);
+ -		mlx5_devcom_comp_unlock(esw->dev->priv.hca_devcom_comp);
+ -		return;
+ -	}
+ -
+ -	esw->dev->priv.flags |= MLX5_PRIV_FLAGS_DISABLE_IB_ADEV;
+ -	mlx5_rescan_drivers_locked(esw->dev);
+ -	esw->mode = mode;
+ -	esw->dev->priv.flags &= ~MLX5_PRIV_FLAGS_DISABLE_IB_ADEV;
+ -	mlx5_rescan_drivers_locked(esw->dev);
+ -	mlx5_devcom_comp_unlock(esw->dev->priv.hca_devcom_comp);
+ -}
+ -
+  static int esw_offloads_start(struct mlx5_eswitch *esw,
+  			      struct netlink_ext_ack *extack)
+  {
+  	int err;
+  
+ -	esw_mode_change(esw, MLX5_ESWITCH_OFFLOADS);
+ +	esw->mode = MLX5_ESWITCH_OFFLOADS;
+  	err = mlx5_eswitch_enable_locked(esw, esw->dev->priv.sriov.num_vfs);
+  	if (err) {
+  		NL_SET_ERR_MSG_MOD(extack,
+  				   "Failed setting eswitch to offloads");
+ -		esw_mode_change(esw, MLX5_ESWITCH_LEGACY);
+ +		esw->mode = MLX5_ESWITCH_LEGACY;
+ +		mlx5_rescan_drivers(esw->dev);
+  		return err;
+  	}
+  	if (esw->offloads.inline_mode == MLX5_INLINE_MODE_NONE) {
+@@ -2635,7 +2620,7 @@
+  	return err;
+  
+  load_err:
+ -	mlx5_esw_offloads_devlink_port_unregister(vport);
+ +	mlx5_esw_offloads_devlink_port_unregister(esw, vport);
+  	return err;
+  }
+  
+@@ -2646,7 +2631,7 @@
+  
+  	mlx5_esw_offloads_rep_unload(esw, vport->vport);
+  
+ -	mlx5_esw_offloads_devlink_port_unregister(vport);
+ +	mlx5_esw_offloads_devlink_port_unregister(esw, vport);
+  }
+  
+  static int esw_set_slave_root_fdb(struct mlx5_core_dev *master,
+@@ -3602,7 +3587,7 @@
+  {
+  	int err;
+  
+ -	esw_mode_change(esw, MLX5_ESWITCH_LEGACY);
+ +	esw->mode = MLX5_ESWITCH_LEGACY;
+  
+
+""""""
+modified file: include/linux/mlx5/driver.h
+--- patchfile/gregkh_linux_2a4f56/newer/include/linux/mlx5/driver.h
++++ patchfile/gregkh_linux_2a4f56/linux-6.12.y/include/linux/mlx5/driver.h
+@@ -45,6 +45,7 @@
+  #include <linux/workqueue.h>
+  #include <linux/mempool.h>
+  #include <linux/interrupt.h>
+ +#include <linux/idr.h>
+  #include <linux/notifier.h>
+  #include <linux/refcount.h>
+  #include <linux/auxiliary_bus.h>
+@@ -473,6 +474,36 @@
+  	u16			max_ec_vfs;
+  };
+  
+ +struct mlx5_fc_pool {
+ +	struct mlx5_core_dev *dev;
+ +	struct mutex pool_lock; /* protects pool lists */
+ +	struct list_head fully_used;
+ +	struct list_head partially_used;
+ +	struct list_head unused;
+ +	int available_fcs;
+ +	int used_fcs;
+ +	int threshold;
+ +};
+ +
+ +struct mlx5_fc_stats {
+ +	spinlock_t counters_idr_lock; /* protects counters_idr */
+ +	struct idr counters_idr;
+ +	struct list_head counters;
+ +	struct llist_head addlist;
+ +	struct llist_head dellist;
+ +
+ +	struct workqueue_struct *wq;
+ +	struct delayed_work work;
+ +	unsigned long next_query;
+ +	unsigned long sampling_interval; /* jiffies */
+ +	u32 *bulk_query_out;
+ +	int bulk_query_len;
+ +	size_t num_counters;
+ +	bool bulk_query_alloc_failed;
+ +	unsigned long next_bulk_query_alloc;
+ +	struct mlx5_fc_pool fc_pool;
+ +};
+ +
+  struct mlx5_events;
+  struct mlx5_mpfs;
+  struct mlx5_eswitch;
+@@ -599,7 +630,7 @@
+  	struct mlx5_devcom_comp_dev *hca_devcom_comp;
+  	struct mlx5_fw_reset	*fw_reset;
+  	struct mlx5_core_roce	roce;
+ -	struct mlx5_fc_stats		*fc_stats;
+ +	struct mlx5_fc_stats		fc_stats;
+  	struct mlx5_rl_table            rl_table;
+  	struct mlx5_ft_pool		*ft_pool;
+  
+
+""""""

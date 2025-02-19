@@ -1,0 +1,104 @@
+modified file: kernel/workqueue.c
+--- patchfile/gregkh_linux_d57212/newer/kernel/workqueue.c
++++ patchfile/gregkh_linux_d57212/linux-6.12.y/kernel/workqueue.c
+@@ -3680,27 +3680,23 @@
+   * check_flush_dependency - check for flush dependency sanity
+   * @target_wq: workqueue being flushed
+   * @target_work: work item being flushed (NULL for workqueue flushes)
+ - * @from_cancel: are we called from the work cancel path
+   *
+   * %current is trying to flush the whole @target_wq or @target_work on it.
+ - * If this is not the cancel path (which implies work being flushed is either
+ - * already running, or will not be at all), check if @target_wq doesn't have
+ - * %WQ_MEM_RECLAIM and verify that %current is not reclaiming memory or running
+ - * on a workqueue which doesn't have %WQ_MEM_RECLAIM as that can break forward-
+ - * progress guarantee leading to a deadlock.
+ + * If @target_wq doesn't have %WQ_MEM_RECLAIM, verify that %current is not
+ + * reclaiming memory or running on a workqueue which doesn't have
+ + * %WQ_MEM_RECLAIM as that can break forward-progress guarantee leading to
+ + * a deadlock.
+   */
+  static void check_flush_dependency(struct workqueue_struct *target_wq,
+ -				   struct work_struct *target_work,
+ -				   bool from_cancel)
+ -{
+ -	work_func_t target_func;
+ +				   struct work_struct *target_work)
+ +{
+ +	work_func_t target_func = target_work ? target_work->func : NULL;
+  	struct worker *worker;
+  
+ -	if (from_cancel || target_wq->flags & WQ_MEM_RECLAIM)
+ +	if (target_wq->flags & WQ_MEM_RECLAIM)
+  		return;
+  
+  	worker = current_wq_worker();
+ -	target_func = target_work ? target_work->func : NULL;
+  
+  	WARN_ONCE(current->flags & PF_MEMALLOC,
+  		  "workqueue: PF_MEMALLOC task %d(%s) is flushing !WQ_MEM_RECLAIM %s:%ps",
+@@ -3837,28 +3833,16 @@
+  {
+  	bool wait = false;
+  	struct pool_workqueue *pwq;
+ -	struct worker_pool *current_pool = NULL;
+  
+  	if (flush_color >= 0) {
+  		WARN_ON_ONCE(atomic_read(&wq->nr_pwqs_to_flush));
+  		atomic_set(&wq->nr_pwqs_to_flush, 1);
+  	}
+  
+ -	/*
+ -	 * For unbound workqueue, pwqs will map to only a few pools.
+ -	 * Most of the time, pwqs within the same pool will be linked
+ -	 * sequentially to wq->pwqs by cpu index. So in the majority
+ -	 * of pwq iters, the pool is the same, only doing lock/unlock
+ -	 * if the pool has changed. This can largely reduce expensive
+ -	 * lock operations.
+ -	 */
+  	for_each_pwq(pwq, wq) {
+ -		if (current_pool != pwq->pool) {
+ -			if (likely(current_pool))
+ -				raw_spin_unlock_irq(&current_pool->lock);
+ -			current_pool = pwq->pool;
+ -			raw_spin_lock_irq(&current_pool->lock);
+ -		}
+ +		struct worker_pool *pool = pwq->pool;
+ +
+ +		raw_spin_lock_irq(&pool->lock);
+  
+  		if (flush_color >= 0) {
+  			WARN_ON_ONCE(pwq->flush_color != -1);
+@@ -3875,10 +3859,8 @@
+  			pwq->work_color = work_color;
+  		}
+  
+ -	}
+ -
+ -	if (current_pool)
+ -		raw_spin_unlock_irq(&current_pool->lock);
+ +		raw_spin_unlock_irq(&pool->lock);
+ +	}
+  
+  	if (flush_color >= 0 && atomic_dec_and_test(&wq->nr_pwqs_to_flush))
+  		complete(&wq->first_flusher->done);
+@@ -3984,7 +3966,7 @@
+  		list_add_tail(&this_flusher.list, &wq->flusher_overflow);
+  	}
+  
+ -	check_flush_dependency(wq, NULL, false);
+ +	check_flush_dependency(wq, NULL);
+  
+  	mutex_unlock(&wq->mutex);
+  
+@@ -4159,7 +4141,7 @@
+  	}
+  
+  	wq = pwq->wq;
+ -	check_flush_dependency(wq, work, from_cancel);
+ +	check_flush_dependency(wq, work);
+  
+  	insert_wq_barrier(pwq, barr, work, worker);
+  	raw_spin_unlock_irq(&pool->lock);
+
+""""""

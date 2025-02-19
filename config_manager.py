@@ -5,12 +5,19 @@ import os
 
 @dataclass
 class PipelineConfig:
-    """Pipeline配置"""
+    """Pipeline配置类"""
     enabled_modules: List[str] = field(default_factory=lambda: [
         "direct_apply", "llm_adapter", "patch_adapter", "compiler"
     ])
-    module_configs: Dict[str, Dict[str, Any]] = field(default_factory=dict)
     stop_on_failure: bool = False
+    module_configs: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+
+    def __post_init__(self):
+        """验证配置"""
+        valid_modules = {"direct_apply", "llm_adapter", "patch_adapter", "compiler"}
+        invalid_modules = set(self.enabled_modules) - valid_modules
+        if invalid_modules:
+            raise ValueError(f"Invalid modules: {invalid_modules}")
 
 @dataclass
 class ProjectConfig:
@@ -88,6 +95,9 @@ class ProjectConfig:
 
     def update_base_dir(self, owner: str, repo: str, commit_sha: str):
         """更新base_dir"""
+        self.repo_owner = owner
+        self.repo_name = repo
+        self.commit_sha = commit_sha
         self.base_dir = Path('patchfile') / f"{owner}_{repo}_{commit_sha[:6]}"
         self.base_dir.mkdir(parents=True, exist_ok=True)
         return self.base_dir

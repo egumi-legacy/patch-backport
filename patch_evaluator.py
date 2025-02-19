@@ -19,8 +19,14 @@ class PatchEvaluator:
         """
         
         self.config = config
-        self.repo_path = config['repo_path']
-        if not self.repo_path or not self.repo_path.exists():
+        
+        # 确保repo_path存在且是Path对象
+        if not isinstance(config.repo_path, Path):
+            self.repo_path = Path(config.repo_path)
+        else:
+            self.repo_path = config.repo_path
+        
+        if not self.repo_path.exists():
             raise ValueError(f"Git仓库路径不存在: {self.repo_path}")
         
         # 创建临时工作目录
@@ -35,11 +41,11 @@ class PatchEvaluator:
 
         # 评估结果存储路径
         logger.info("hello")
-        self.evaluation_dir = Path(config['results_dir'])
+        self.evaluation_dir = config.evaluation_dir
         self.evaluation_dir.mkdir(parents=True, exist_ok=True)
         
-        # # 缓存设置
-        self.use_cached_patches = config['use_cached_patches']
+        # 缓存设置
+        self.use_cached_patches = config.use_cached_patches
         self.last_apply_success = False
         self.error_count = 0
 

@@ -1,0 +1,61 @@
+configuration:
+  base_dir: patchfile/gregkh_linux_d57212
+  commit_sha: d57212f281fda9056412cd6cca983d9d2eb89f53
+  evaluation_dir: patchfile/gregkh_linux_d57212/evaluations
+  mode: 2
+  patch_dir: patchfile/gregkh_linux_d57212/patches
+  patch_url: https://github.com/gregkh/linux/commit/d57212f281fda9056412cd6cca983d9d2eb89f53
+  pipeline:
+    enabled_modules:
+    - direct_apply
+    - llm_adapter
+    - patch_adapter
+    - compiler
+    module_configs:
+      compiler:
+        clean_after: true
+      direct_apply:
+        timeout: 30
+      llm_adapter:
+        temperature: {}
+    stop_on_failure: false
+  reference_url: https://github.com/gregkh/linux/commit/0e394dd11e95e114401a9c21f5b7a5f51fb644a8
+  repo_name: linux
+  repo_owner: gregkh
+  repo_path: ../backport-test/linux
+  target_version: linux-6.12.y
+  use_cached_patches: true
+metadata:
+  commit_sha: d57212f281fda9056412cd6cca983d9d2eb89f53
+  patch_url: https://github.com/gregkh/linux/commit/d57212f281fda9056412cd6cca983d9d2eb89f53
+  target_version: linux-6.12.y
+  timestamp: '2025-02-20T03:14:02.046104'
+results:
+  final_status:
+    message: "\u6240\u6709\u9002\u914D\u65B9\u6CD5\u90FD\u5931\u8D25\u4E86"
+    success: false
+  module_results:
+  - duration: 0.001789
+    error: '''ModuleContext'' object does not support item assignment'
+    module: direct_apply
+    success: false
+  - duration: 0.622557
+    metrics:
+      average_tokens_per_success: 0
+      successful_adaptations: 0
+      total_tokens: 0
+    module: llm_adapter
+    success: true
+  - duration: 0.000904
+    error: '''ModuleContext'' object has no attribute ''get'''
+    module: patch_adapter
+    success: false
+  - duration: 0.000359
+    metrics:
+      average_files_per_compilation: 0
+      failed_compilations: 0
+      success_rate: 0
+      successful_compilations: 0
+      total_files: 0
+    module: compiler
+    success: true

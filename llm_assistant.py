@@ -36,12 +36,25 @@ class LLMAssistant:
         self.response_file = config.response_file
         self.prompt_template_file = config.prompt_template_file
         self.prompt_id = config.prompt_id
+        print(f"config in LLM:{config}")
+        
         self.prompt_values = config.extra_config.get("prompt_values")
+        print(f"self.prompt_values:{self.prompt_values}")
         self.prompt_value_file = config.prompt_value_file
-        self.prompts = self.preprocess_prompts().get("prompts")
+        # self.prompts = self.preprocess_prompts().get("prompts")
+        self._prompts = None
         self.partitions = config.extra_config.get("partitions", [])
         self.use_cache = config.use_cache
         self.cache_path = config.extra_config.get("cache_path")
+        # self.cache_path = config.base_dir / 
+
+    @property
+    def prompts(self):
+        """延迟加载prompts"""
+        if self._prompts is None:
+            processed = self.preprocess_prompts()
+            self._prompts = processed.get("prompts")
+        return self._prompts
 
     def get_prompt_template_from_file(self, prompt_template_file, prompt_id):
         """从文件中获取prompt模板"""
@@ -100,9 +113,12 @@ class LLMAssistant:
                 f.write("\n")
 
     def preprocess_prompts(self):
-        if len(self.prompt_values) == 0:
-            logger.error(f"prompt_values is empty")
-            return dict(prompts=[])
+        try:
+            if len(self.prompt_values) == 0:
+                logger.error(f"prompt_values is empty")
+                return dict(prompts=[])
+        except:
+            raise Exception("there is an error.")
 
         # 从文件中找到prompt_id对应的prompt，即prompt_template中prompts字段下的字典列表
         self.prompt_template = self.get_prompt_template_from_file(self.prompt_template_file, self.prompt_id)

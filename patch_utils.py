@@ -6,6 +6,23 @@ from loguru import logger
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from urllib.parse import urlparse
+from config_manager import ProjectConfig
+
+# def download_patch_by_type(self, patch_url, patch_type='upstream'):
+#     """
+#     下载patch文件，支持缓存
+    
+#     :param patch_url: patch的URL
+#     :param patch_type: patch类型 ('upstream' 或 'downstream')
+#     :return: patch文件路径
+#     """
+#     # 生成缓存文件名
+#     url_hash = patch_url.split('/')[-1][:6]  # 使用commit hash的前6位
+#     cache_name = f"{patch_type}_{url_hash}.patch"
+#     cache_path = self.patch_dir / cache_name
+    
+#     return download_patch(patch_url, cache_path, self.use_cached_patches)
+
 
 def download_patch(patch_url, output_path, use_cached_patches=False):
     """

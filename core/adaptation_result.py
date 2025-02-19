@@ -1,6 +1,10 @@
-from typing import Dict, Any
+from typing import Dict, Any, OrderedDict
+from pathlib import Path
 from dataclasses import dataclass, asdict
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 @dataclass
 class AdaptationResult:
@@ -10,12 +14,40 @@ class AdaptationResult:
     results: Dict[str, Any]  # 处理结果（各模块的执行结果）
     
     def to_dict(self) -> Dict[str, Any]:
-        """转换为字典格式"""
-        return {
-            'metadata': self.metadata,
-            'configuration': self.configuration,
-            'results': self.results
-        }
+        """转换为可序列化的字典"""
+        def _convert_value(value):
+            if isinstance(value, Path):
+                return str(value)
+            elif isinstance(value, datetime):
+                return value.isoformat()
+            elif isinstance(value, (dict, OrderedDict)):
+                return {k: _convert_value(v) for k, v in value.items()}
+            elif isinstance(value, (list, tuple)):
+                return [_convert_value(v) for v in value]
+            elif isinstance(value, (set, frozenset)):
+                return [_convert_value(v) for v in value]
+            elif hasattr(value, 'dict') and callable(value.dict):
+                return value.dict()
+            elif hasattr(value, 'to_dict') and callable(value.to_dict):
+                return value.to_dict()
+            elif hasattr(value, '__dict__'):
+                return {k: _convert_value(v) for k, v in value.__dict__.items() 
+                       if not k.startswith('_')}
+            return value
+
+        try:
+            return {
+                'metadata': _convert_value(self.metadata),
+                'configuration': _convert_value(self.configuration),
+                'results': _convert_value(self.results)
+            }
+        except Exception as e:
+            logger.error(f"序列化失败: {e}")
+            return {
+                'metadata': {},
+                'configuration': {},
+                'results': {'error': str(e)}
+            }
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'AdaptationResult':
