@@ -63,8 +63,8 @@ class AdaptationPipeline:
         """获取模块类"""
         module_map = {
             "direct_apply": DirectApplyModule,
-            "ast_parser": ASTParserModule,
-            "fuzzy_matcher": FuzzyMatcherModule,
+            # "ast_parser": ASTParserModule,
+            # "fuzzy_matcher": FuzzyMatcherModule,
             "llm_adapter": LLMAdapterModule,
             "compiler": CompilerModule,
             "patch_adapter": PatchAdapterModule

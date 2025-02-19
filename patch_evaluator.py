@@ -17,8 +17,9 @@ class PatchEvaluator:
         
         :param config: 项目配置对象
         """
+        
         self.config = config
-        self.repo_path = config.repo_path
+        self.repo_path = config['repo_path']
         if not self.repo_path or not self.repo_path.exists():
             raise ValueError(f"Git仓库路径不存在: {self.repo_path}")
         
@@ -27,15 +28,18 @@ class PatchEvaluator:
         logger.info(f"创建临时工作目录: {self.work_dir}")
 
         # 设置patch文件存储路径
-        self.patch_dir = Path(config.patch_dir)
+        self.patch_dir = config['base_dir'] / 'patches'
         self.patch_dir.mkdir(parents=True, exist_ok=True)
+
         
+
         # 评估结果存储路径
-        self.evaluation_dir = Path(config.evaluation_dir)
+        logger.info("hello")
+        self.evaluation_dir = Path(config['results_dir'])
         self.evaluation_dir.mkdir(parents=True, exist_ok=True)
         
         # # 缓存设置
-        self.use_cached_patches = config.use_cached_patches
+        self.use_cached_patches = config['use_cached_patches']
         self.last_apply_success = False
         self.error_count = 0
 

@@ -20,18 +20,18 @@ class TrackingStats:
         return asdict(self)
 
 class TrackingResult:
-    def __init__(self, base_dir: Path):
+    def __init__(self):
         """初始化追踪结果管理器"""
-        if base_dir is None:
-            raise ValueError("base_dir cannot be None")
+        # if base_dir is None:
+        #     raise ValueError("base_dir cannot be None")
         
-        self.base_dir = Path(base_dir)
-        self.results_dir = self.base_dir / "results"
-        self.direct_apply_dir = self.base_dir / "skip_git_am_patchfile"
-        self.stats_file = self.base_dir / "statistics.yaml"
+        # self.base_dir = Path(base_dir)
+        self.results_dir = Path("results")
+        self.direct_apply_dir = Path("skip_git_am_patchfile")
+        self.skip_commits_file = self.direct_apply_dir / "skip_commits.yaml"
         
         # 确保目录存在
-        self.base_dir.mkdir(parents=True, exist_ok=True)
+        # self.base_dir.mkdir(parents=True, exist_ok=True)
         self.results_dir.mkdir(parents=True, exist_ok=True)
         self.direct_apply_dir.mkdir(parents=True, exist_ok=True)
     
@@ -98,26 +98,50 @@ class TrackingResult:
             yaml.safe_dump(stats.to_dict(), f)
         
         return stats
-    
-    def get_commit_status(self, commit_sha: str) -> Dict[str, Any]:
-        """获取某个提交的处理状态"""
-        # 检查是否是直接应用的提交
-        commits_file = self.direct_apply_dir / "commits.yaml"
-        if commits_file.exists():
-            with open(commits_file) as f:
-                direct_results = yaml.safe_load(f) or {}
-                if commit_sha in direct_results:
+
+    def get_commit_status(self, commit_sha):
+        """获取提交状态"""
+        # 首先检查是否在skip列表中
+        if self.skip_commits_file.exists():
+            with open(self.skip_commits_file) as f:
+                skip_commits = yaml.safe_load(f) or {}
+                if commit_sha in skip_commits:
                     return {
                         'type': 'direct_apply',
-                        'result': direct_results[commit_sha]
+                        'result': skip_commits[commit_sha]
                     }
         
-        # 查找适配结果
-        for result_file in self.results_dir.glob(f"{commit_sha}_*.yaml"):
-            with open(result_file) as f:
-                return {
-                    'type': 'adaptation',
-                    'result': yaml.safe_load(f)
-                }
+        # # 检查是否在处理中的项目中
+        # for project_dir in self.root_dir.glob("*_*_*"):
+        #     result_file = project_dir / "results" / f"{commit_sha}.yaml"
+        #     if result_file.exists():
+        #         with open(result_file) as f:
+        #             return {
+        #                 'type': 'adaptation',
+        #                 'result': yaml.safe_load(f)
+        #             }
         
-        return None 
+        return None
+    
+    # def get_commit_status(self, commit_sha: str) -> Dict[str, Any]:
+    #     """获取某个提交的处理状态"""
+    #     # 检查是否是直接应用的提交
+    #     commits_file = self.direct_apply_dir / "commits.yaml"
+    #     if commits_file.exists():
+    #         with open(commits_file) as f:
+    #             direct_results = yaml.safe_load(f) or {}
+    #             if commit_sha in direct_results:
+    #                 return {
+    #                     'type': 'direct_apply',
+    #                     'result': direct_results[commit_sha]
+    #                 }
+        
+    #     # 查找适配结果
+    #     for result_file in self.results_dir.glob(f"{commit_sha}_*.yaml"):
+    #         with open(result_file) as f:
+    #             return {
+    #                 'type': 'adaptation',
+    #                 'result': yaml.safe_load(f)
+    #             }
+        
+    #     return None 

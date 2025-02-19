@@ -27,6 +27,7 @@ class ProjectConfig:
     branch: Optional[str] = None  # mode2
     repo_path: Optional[Path] = None
     reference_url: Optional[str] = None  # mode2
+    commit_sha: Optional[str] = None
     commits_pages_start: int = 1  # 起始页
     commits_pages_end: int = 1    # 结束页
     commits_per_page: int = 100   # 每页数量

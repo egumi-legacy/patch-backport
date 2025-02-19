@@ -15,6 +15,7 @@ class AdaptationPipeline:
         self.results_dir.mkdir(parents=True, exist_ok=True)
         
         # 初始化启用的模块
+        logger.info("in init...")
         self._initialize_modules()
     
     def _initialize_modules(self):
@@ -23,13 +24,22 @@ class AdaptationPipeline:
         for module_name in enabled_modules:
             try:
                 module_config = self.config.get(f"{module_name}_config", {})
+                logger.info(f"{module_config}")
+                # 添加模块特定的配置验证
+                if module_name == "direct_apply":
+                    required_fields = ["repo_path", "target_version"]
+                    missing = [f for f in required_fields if f not in module_config]
+                    if missing:
+                        logger.info("missing.")
+                        raise ValueError(f"Missing required fields for direct_apply: {missing}")
+                logger.info("not missing")
                 module_class = self._get_module_class(module_name)
                 if module_class:
                     self.modules[module_name] = module_class(module_config)
-                else:
-                    logger.warning(f"找不到模块类: {module_name}")
             except Exception as e:
-                logger.error(f"初始化模块 {module_name} 失败: {e}")
+                logger.error(f"初始化模块 {module_name} 失败: {str(e)}")
+                if self.config.get("stop_on_failure", True):
+                    raise
     
     def _get_module_class(self, module_name: str) -> type:
         """获取模块类"""

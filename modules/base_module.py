@@ -1,6 +1,7 @@
 from typing import Dict, Any
 from enum import Enum
 
+
 class ModuleType(Enum):
     DIRECT_APPLY = "direct_apply"
     AST_PARSER = "ast_parser"
@@ -12,8 +13,10 @@ class ModuleType(Enum):
 class BaseModule:
     """模块基类"""
     def __init__(self, config: Dict[str, Any]):
+        
         self.config = config
         self.type = ModuleType.DIRECT_APPLY
+        
         self.name = "base_module"
     
     def execute(self, context: Dict[str, Any]) -> Dict[str, Any]:

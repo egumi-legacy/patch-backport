@@ -12,7 +12,7 @@ from patch_evaluator import PatchEvaluator
 from config_manager import ProjectConfig
 import re
 # from tracking_manager import TrackingManager
-from adaptation_pipeline_bak import AdaptationPipeline
+from core.adaptation_pipeline import AdaptationPipeline
 import yaml
 from datetime import datetime
 import shutil
@@ -26,7 +26,7 @@ class Main:
         self.args = self.parse_arguments()
         with open(_DEFAULT_INPUT_FILE, "r") as file:
             yaml_config = YAML().load(file)
-        
+
         # 初始化配置
         self.config = self.initialize_config(yaml_config)
 
@@ -81,6 +81,65 @@ class Main:
                 config_dict['target_version'] = self.args.target
         
         return ProjectConfig(**config_dict)
+    
+    # def get_commit_status(self, commit_sha):
+    #     """获取某个提交的处理状态"""
+    #     # 检查是否是直接应用的提交
+    #     commits_file = self.direct_apply_dir / "commits.yaml"
+    #     if commits_file.exists():
+    #         with open(commits_file) as f:
+    #             direct_results = yaml.safe_load(f) or {}
+    #             if commit_sha in direct_results:
+    #                 return {
+    #                     'type': 'direct_apply',
+    #                     'result': direct_results[commit_sha]
+    #                 }
+        
+    #     # 查找适配结果
+    #     for result_file in self.results_dir.glob(f"{commit_sha}_*.yaml"):
+    #         with open(result_file) as f:
+    #             return {
+    #                 'type': 'adaptation',
+    #                 'result': yaml.safe_load(f)
+    #             }
+        
+    #     return None 
+
+    def _build_pipeline_config(self):
+        """构建pipeline配置"""
+        print("config1:")
+        pprint.pprint(f"{self.config}")
+        base_config = {
+            "repo_path": self.config.repo_path,
+            "target_version": self.config.target_version,
+            "base_dir": self.config.base_dir
+        }
+        
+        pipeline_config = {
+            "enabled_modules": self.config.pipeline.enabled_modules,
+            "results_dir": self.config.base_dir / "results",
+            "stop_on_failure": self.config.pipeline.stop_on_failure,
+            
+            # 各模块配置
+            "direct_apply_config": {
+                **base_config,  # 基础配置
+                "patch_path": None,  # 将在运行时更新
+            },
+            "llm_adapter_config": {
+                **base_config,
+                **self.config.dict(),  # LLM需要完整配置
+                "prompt_template": self.config.prompt_template_file,
+            },
+            "patch_adapter_config": {
+                **base_config,
+                "patch_dir": self.config.patch_dir,
+            },
+            "compiler_config": {
+                **base_config,
+                "build_command": self.config.extra_config.get("build_command", "make"),
+            }
+        }
+        return pipeline_config
 
     def process_commit_range(self, start_index: int, end_index: int):
         """处理指定范围内的提交
@@ -92,7 +151,7 @@ class Main:
         git_operations = GitOperations(self.config)
         upstream_commits = git_operations.get_upstream_commits()
         
-         # # 加载已知可直接应用的提交记录
+        # # 加载已知可直接应用的提交记录
         # direct_apply_file = Path("skip_git_am_patchfile") / "commits.yaml"
         # direct_apply_file.parent.mkdir(parents=True, exist_ok=True)
         # # 设置基础目录
@@ -117,13 +176,12 @@ class Main:
             # if commit_sha in direct_applicable:
             #     logger.info(f"跳过已知可直接应用的提交: {commit_sha}")
             # 检查是否已处理过
-            tracking = TrackingResult(self.config.base_dir)
-            logger.info(f"基础目录: {self.config.base_dir}")
+            logger.info("base_dir:", self.config.base_dir)
+            tracking = TrackingResult()
             existing_status = tracking.get_commit_status(commit_sha)
             if existing_status:
                 logger.info(f"跳过已处理的提交: {commit_sha}")
                 continue
-            
             try:
                 logger.info(f"处理上游提交: {commit_sha}")
                 
@@ -133,6 +191,11 @@ class Main:
                 
                 # 更新base_dir
                 url_info = git_operations.parse_github_url(commit_details['patch_url'])
+                self.config.update_base_dir(
+                    owner=url_info['owner'],
+                    repo=url_info['repo'],
+                    commit_sha=commit_sha
+                )
 
                 evaluator = PatchEvaluator(self.config)
                 
@@ -147,50 +210,69 @@ class Main:
                     patch_file=patch_path,
                     commit_info=commit
                 )
-                
-                if direct_result['success']:
-                    # # 如果可以直接应用，记录到skip_git_am_patchfile
-                    # logger.info(f"提交 {commit_sha} 可以直接应用")
-                    # direct_applicable[commit_sha] = {
-                    # 保存直接应用结果
-                    tracking.save_direct_apply_result(commit_sha, {
-                        'timestamp': datetime.now().isoformat(),
-                        'patch_url': commit_details['patch_url'],
-                        'target_version': self.config.target_version,
-                        'apply_result': direct_result
-                    # }
+            
+                # if direct_result['success']:
+                #     # # 如果可以直接应用，记录到skip_git_am_patchfile
+                #     # logger.info(f"提交 {commit_sha} 可以直接应用")
+                #     # direct_applicable[commit_sha] = {
+                #     # 保存直接应用结果
+                #     tracking.save_direct_apply_result(commit_sha, {
+                #         'timestamp': datetime.now().isoformat(),
+                #         'patch_url': commit_details['patch_url'],
+                #         'target_version': self.config.target_version,
+                #         'apply_result': direct_result
+                #     # }
                     
-                    # # 将patch文件移动到skip_git_am_patchfile目录
-                    # direct_patch_dir = Path("skip_git_am_patchfile") / f"{url_info['owner']}_{url_info['repo']}_{commit_sha[:6]}"
-                    # direct_patch_dir.mkdir(parents=True, exist_ok=True)
-                    # shutil.copy2(patch_path, direct_patch_dir / "patch.diff")
+                #     # # 将patch文件移动到skip_git_am_patchfile目录
+                #     # direct_patch_dir = Path("skip_git_am_patchfile") / f"{url_info['owner']}_{url_info['repo']}_{commit_sha[:6]}"
+                #     # direct_patch_dir.mkdir(parents=True, exist_ok=True)
+                #     # shutil.copy2(patch_path, direct_patch_dir / "patch.diff")
                     
-                    # # 保存更新后的记录
-                    # with open(direct_apply_file, 'w') as f:
-                    #     yaml.safe_dump(direct_applicable, f)
-                    })
-                    continue
+                #     # # 保存更新后的记录
+                #     # with open(direct_apply_file, 'w') as f:
+                #     #     yaml.safe_dump(direct_applicable, f)
+                #     })
+                #     continue
                 
                 # 如果不能直接应用，使用常规流程处理
-                self.config.update_base_dir(
-                    owner=url_info['owner'],
-                    repo=url_info['repo'],
-                    # commit_sha=commit['upstream_sha']
-                    commit_sha=commit_sha
-                )
+                # self.config.update_base_dir(
+                #     owner=url_info['owner'],
+                #     repo=url_info['repo'],
+                #     # commit_sha=commit['upstream_sha']
+                #     commit_sha=commit_sha
+                # )
                 
                 # # 创建评估器
                 # evaluator = PatchEvaluator(self.inputs['repo_path'], self.inputs)
                 # 创建pipeline配置
-                pipeline_config = {
-                    "enabled_modules": self.config.pipeline.enabled_modules,
-                    "results_dir": self.config.base_dir / "results",
-                    "direct_apply_config": self.config.dict(),
-                    "llm_adapter_config": self.config.dict(),
-                    "patch_adapter_config": self.config.dict(),
-                    "compiler_config": self.config.dict(),
-                    "stop_on_failure": self.config.pipeline.stop_on_failure
-                }
+                # pipeline_config = {
+                #     "enabled_modules": self.config.pipeline.enabled_modules,
+                #     "results_dir": self.config.base_dir / "results",
+                #     "direct_apply_config": self.config.dict(),
+                #     "llm_adapter_config": self.config.dict(),
+                #     "patch_adapter_config": self.config.dict(),
+                #     "compiler_config": self.config.dict(),
+                #     "stop_on_failure": self.config.pipeline.stop_on_failure
+                # }
+                # 创建pipeline配置
+                # pipeline_config = {
+                #     "enabled_modules": self.config.pipeline.enabled_modules,
+                #     "results_dir": self.config.base_dir / "results",
+                #     # 为每个模块创建专门的配置
+                #     "direct_apply_config": {
+                #         "repo_path": str(self.config.repo_path),
+                #         "target_version": self.config.target_version,
+                #         "base_dir": str(self.config.base_dir)
+                #     },
+                #     "llm_adapter_config": self.config.dict(),
+                #     "patch_adapter_config": self.config.dict(),
+                #     "compiler_config": {
+                #         "repo_path": str(self.config.repo_path),
+                #         "target_version": self.config.target_version
+                #     },
+                #     "stop_on_failure": self.config.pipeline.stop_on_failure
+                # }
+                pipeline_config = self._build_pipeline_config()
                 
                 # # 下载patch文件
                 # patch_path = evaluator.download_patch_by_type(self.config.patch_url, 'upstream')
@@ -199,7 +281,7 @@ class Main:
                 #     continue
 
                 # 创建pipeline
-                pipeline = AdaptationPipeline(pipeline_config)
+                
                 
                 
                 # # 首先尝试直接应用上游补丁
@@ -243,6 +325,9 @@ class Main:
                 # # evaluator = PatchEvaluator(self.inputs['repo_path'], self.inputs)
                 # evaluator.save_batch_evaluation_results(batch_results)
                 # 准备patch信息
+                print("pipeline config2:")
+                pprint.pprint(f"{pipeline_config}")
+
                 patch_info = {
                     "commit_sha": commit_sha,
                     "patch_path": patch_path,
@@ -250,6 +335,10 @@ class Main:
                     "repo_path": self.config.repo_path,
                     "downstream_patch_url": commit_details.get('reference_url')
                 }
+                pipeline_config["direct_apply_config"]["patch_path"] = str(patch_path)
+
+
+                pipeline = AdaptationPipeline(pipeline_config)
                 
                 # 执行pipeline
                 result = pipeline.process_patch(patch_info)
@@ -283,9 +372,9 @@ class Main:
                 })
         
         # 生成统计信息
-        stats = tracking.generate_statistics()
-        logger.info(f"处理完成，统计信息: {stats}")
-        return stats
+        # stats = tracking.generate_statistics()
+        # logger.info(f"处理完成，统计信息: {stats}")
+        # return stats
 
     def process_multiple_commits(self):
         """处理模式2：多个提交"""
@@ -370,7 +459,7 @@ class Main:
         pipeline = AdaptationPipeline(pipeline_config)
         # 准备patch信息
         patch_info = {
-            "commit_sha": self.config.commit_sha,
+            # "commit_sha": self.config.commit_sha,
             "patch_path": self.evaluator.download_patch_by_type(self.config.patch_url, 'upstream'),
             "target_version": self.config.target_version,
             "repo_path": self.config.repo_path

@@ -7,9 +7,13 @@ class DirectApplyModule(BaseModule):
     """直接应用补丁模块"""
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
+        
         self.type = ModuleType.DIRECT_APPLY
         self.name = "direct_apply"
+
+        logger.info(f"config3:{config}")
         self.evaluator = PatchEvaluator(config)
+        
         self.last_apply_success = False
         self.error_count = 0
     
