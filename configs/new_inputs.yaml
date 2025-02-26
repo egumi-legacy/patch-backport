@@ -1,0 +1,49 @@
+# 通用配置（必需）
+common:
+  # 模式选择（必需）
+  mode: 2  # 1: 单个提交, 2: 多个提交
+  
+  # LLM 相关配置
+  model: "qwen-plus"  # 使用的模型
+  prompt_template_file: "test_prompts.json"  # 提示模板文件路径
+  prompt_id: "backport"  # 提示ID
+  use_cached_llm_output: true
+  response_file: "response.txt"
+  
+  enabled_modules:  # 启用的管道模块
+    - "direct_apply"
+    # - "llm_adapter"
+    # - "patch_adapter"
+    # - "compiler"
+
+  build_command: "make"  # 构建命令
+  module_configs:  # 各模块的特定配置
+    llm_adapter:
+      temperature: 0.7
+    compiler:
+      extra_flags: "-j4"
+  
+  stop_on_failure: false  # 是否在失败时停止
+  use_cached_patches: true
+  repo_path: "../backport-test/linux"  # 本地仓库路径
+  target_version: "linux-6.12.y"  # 目标版本
+
+# 模式1特定配置
+mode1:
+  patch_url: "https://github.com/owner/repo/commit/abc123.patch"  # 补丁URL
+  # target_version: "v2.0"  # 目标版本
+
+# 模式2特定配置
+mode2:
+  repo_url: 'https://github.com/gregkh/linux'
+  branch: 'linux-6.12.y'
+  
+  # start_index: 0  # 起始提交索引
+  # end_index: 100  # 结束提交索引
+  # Commits 缓存配置
+  use_cached_commits: true  # 是否使用之前缓存过的commits list
+  commits_file: "commits.json"  # 可选，默认为 commits.json
+  # 更改下面两项要把 commits 缓存设为 false
+  commits_pages_start: 1  # 起始页
+  commits_pages_end: 3    # 结束页
+  commits_per_page: 100   # 每页数量，范围为 1-100

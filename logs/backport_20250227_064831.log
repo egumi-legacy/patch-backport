@@ -1,0 +1,36 @@
+2025-02-27 06:48:31.939 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250227_064831.log
+2025-02-27 06:48:31.940 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-02-27 06:48:31.942 | INFO     | __main__:_get_upstream_commits:219 - commits_file:workspace/gregkh/linux/cache/commits.json
+2025-02-27 06:48:31.943 | INFO     | __main__:_get_upstream_commits:220 - use_cached_commits:True
+2025-02-27 06:48:31.943 | INFO     | __main__:_get_upstream_commits:223 - 从缓存文件加载commits信息
+2025-02-27 06:48:31.946 | INFO     | __main__:_process_mode2:171 - 找到 297 个上游提交
+2025-02-27 06:48:31.947 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: direct_apply
+2025-02-27 06:48:31.947 | INFO     | __main__:_process_mode2:182 - 处理提交 1/297: 07137e
+2025-02-27 06:48:31.948 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 07137e925fa951646325762bda6bd2503dfe64c6
+2025-02-27 06:48:31.948 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 06:48:31.948 | INFO     | modules.direct_apply:_download_patch:174 - 补丁文件已存在: workspace/gregkh/linux/07137e/patches/upstream_07137e.patch
+2025-02-27 06:48:32.186 | INFO     | modules.direct_apply:_prepare_test_branch:284 - 创建测试分支: test_patch_linux-6.12.y
+2025-02-27 06:48:32.792 | ERROR    | modules.direct_apply:_apply_patch:224 - 补丁应用失败: fatal: could not open 'workspace/gregkh/linux/07137e/patches/upstream_07137e.patch' for reading: No such file or directory
+
+2025-02-27 06:48:33.098 | INFO     | modules.direct_apply:_cleanup_test_branch:375 - 清理测试分支: test_patch_linux-6.12.y
+2025-02-27 06:48:33.099 | ERROR    | modules.direct_apply:execute:93 - 直接应用过程发生错误: 'Mode2Config' object has no attribute 'use_cache'
+2025-02-27 06:48:33.105 | ERROR    | modules.direct_apply:execute:95 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 85, in execute
+    if context.config.use_cache:
+       ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/site-packages/pydantic/main.py", line 828, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'Mode2Config' object has no attribute 'use_cache'
+
+2025-02-27 06:48:33.106 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/07137e/evaluations/direct_apply/metrics_07137e_20250227_064833.json
+2025-02-27 06:48:33.107 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 1.16秒
+2025-02-27 06:48:33.108 | INFO     | __main__:_save_results:392 - 结果已保存到: results/linux-6.12.y_07137e_20250227_064833/result.json
+2025-02-27 06:48:33.108 | INFO     | __main__:_print_summary:411 - ==================================================
+2025-02-27 06:48:33.109 | INFO     | __main__:_print_summary:412 - 处理摘要 - 提交: 07137e
+2025-02-27 06:48:33.109 | INFO     | __main__:_print_summary:413 - 结果: 处理失败
+2025-02-27 06:48:33.110 | INFO     | __main__:_print_summary:418 - ==================================================
+2025-02-27 06:48:33.110 | INFO     | __main__:_process_mode2:182 - 处理提交 2/297: b0fce5
+2025-02-27 06:48:33.113 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: b0fce54b8c0d8e5f2b4c243c803c5996e73baee8
+2025-02-27 06:48:33.115 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 06:48:33.117 | INFO     | modules.direct_apply:_download_patch:174 - 补丁文件已存在: workspace/gregkh/linux/b0fce5/patches/upstream_b0fce5.patch
+2025-02-27 06:48:33.364 | INFO     | modules.direct_apply:_prepare_test_branch:284 - 创建测试分支: test_patch_linux-6.12.y

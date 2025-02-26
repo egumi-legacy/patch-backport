@@ -1,0 +1,28 @@
+{
+  "commit": {
+    "sha": "07137e925fa951646325762bda6bd2503dfe64c6",
+    "patch_url": "https://github.com/gregkh/linux/commit/07137e925fa951646325762bda6bd2503dfe64c6.patch",
+    "downstream_message": "xfs: don't lose solo dquot update transactions\n\ncommit 07137e925fa951646325762bda6bd2503dfe64c6 upstream.\n\nQuota counter updates are tracked via incore objects which hang off the\nxfs_trans object.  These changes are then turned into dirty log items in\nxfs_trans_apply_dquot_deltas just prior to commiting the log items to\nthe CIL.\n\nHowever, updating the incore deltas do not cause XFS_TRANS_DIRTY to be\nset on the transaction.  In other words, a pure quota counter update\nwill be silently discarded if there are no other dirty log items\nattached to the transaction.\n\nThis is currently not the case anywhere in the filesystem because quota\nupdates always dirty at least one other metadata item, but a subsequent\nbug fix will add dquot log item precommits, so we actually need a dirty\ndquot log item prior to xfs_trans_run_precommits.  Also let's not leave\na logic bomb.\n\nCc: <stable@vger.kernel.org> # v2.6.35\nFixes: 0924378a689ccb (\"xfs: split out iclog writing from xfs_trans_commit()\")\nSigned-off-by: \"Darrick J. Wong\" <djwong@kernel.org>\nReviewed-by: Christoph Hellwig <hch@lst.de>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u5904\u7406\u8fc7\u7a0b\u53d1\u751f\u9519\u8bef",
+      "error": "\u4e0b\u8f7d\u8865\u4e01\u5931\u8d25",
+      "timestamp": "2025-02-27T06:17:05.593760"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": false,
+    "method": "llm_adapted",
+    "timestamp": "2025-02-27T06:17:05.596410"
+  }
+}

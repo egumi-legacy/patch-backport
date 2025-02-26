@@ -6,7 +6,10 @@ from loguru import logger
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from urllib.parse import urlparse
-from config_manager import ProjectConfig
+import re
+import time
+
+# from config_manager import ProjectConfig
 
 # def download_patch_by_type(self, patch_url, patch_type='upstream'):
 #     """
@@ -22,115 +25,133 @@ from config_manager import ProjectConfig
 #     cache_path = self.patch_dir / cache_name
     
 #     return download_patch(patch_url, cache_path, self.use_cached_patches)
+def parse_github_url(url):
+    """处理输入可能是patch_url或repo_url的情况"""
+    # 解析github url，获取owner, repo, commit_sha
+    pattern = r'https://github\.com/([^/]+)/([^/]+)/commit/([^/]+)'
+    match = re.search(pattern, url)
+    if match:
+        owner, repo, commit_sha = match.groups()
+        return {'owner': owner, 'repo': repo, 'commit_sha': commit_sha}
+    else:
+        pattern = r'https://github\.com/([^/]+)/([^/]+)'
+        match = re.match(pattern, url)
+        if not match:
+            raise ValueError("无效的 GitHub 仓库 URL")
+        owner, repo = match.groups()
+        return {'owner': owner, 'repo': repo, 'commit_sha': None}
 
-
-def download_patch(patch_url, output_path, use_cached_patches=False):
+def download_patch(patch_url: str, output_path: Path = None) -> Path:
     """
-    下载patch文件，支持缓存和GitHub API
+    下载补丁文件
     
-    :param patch_url: patch的URL (例如: https://github.com/owner/repo/commit/hash 或 /pull/number)
+    :param patch_url: 补丁URL
     :param output_path: 输出路径
-    :param use_cached_patches: 是否使用缓存
-    :return: patch文件路径
+    :param github_token: GitHub令牌
+    :return: 保存的文件路径
     """
-    if use_cached_patches and output_path.exists():
-        logger.info(f"使用缓存的patch文件: {output_path}")
-        return output_path
+    # 获取GitHub令牌
+    dotenv.load_dotenv()
+    github_token = os.getenv('GITHUB_TOKEN')
+    headers = {
+            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+            'Accept': 'application/json, application/vnd.github+json',
+            'Authorization': f'token {github_token}',
+            'Host': 'api.github.com',
+            'Connection': 'keep-alive'
+        }  
     
-    # 配置重试策略
-    retry_strategy = Retry(
-        total=3,
-        backoff_factor=2,
-        status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["GET", "HEAD"]  # 明确指定允许的方法
-    )
+    # if github_token:
+    #     headers['Authorization'] = f'token {github_token}'
     
-    session = requests.Session()
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    session.mount("http://", adapter)
-    session.mount("https://", adapter)
-
-    try:
-        # 加载GitHub token
-        dotenv.load_dotenv()
-        github_token = os.getenv('GITHUB_TOKEN')
-        if not github_token:
-            raise ValueError("未设置GITHUB_TOKEN环境变量")
-
-        # 解析URL
-        path_parts = urlparse(patch_url).path.strip('/').split('/')
-        
-        # 设置通用headers
-        headers = {
-            'Authorization': f'Bearer {github_token}',
-            'User-Agent': 'GitHub-Patch-Downloader'
-        }
-        
-        # 设置代理
-        proxies = {
-            'http': os.getenv('HTTP_PROXY', 'http://127.0.0.1:7890'),
-            'https': os.getenv('HTTPS_PROXY', 'http://127.0.0.1:7890')
-        }
-
-        # 根据URL类型选择不同的处理方式
-        if 'pull' in path_parts:
-            # 处理 PR URL
-            owner, repo, _, pr_number = path_parts[-4:]
-            api_url = f"https://api.github.com/repos/{owner}/{repo}/pulls/{pr_number}"
-            headers['Accept'] = 'application/vnd.github.v3.patch'
-            logger.info(f"使用Pull Request API下载patch: {api_url}")
-        elif 'commit' in path_parts:
-            # 处理 commit URL
-            owner, repo = path_parts[0:2]
-            commit_hash = path_parts[-1]
-            api_url = f"https://api.github.com/repos/{owner}/{repo}/commits/{commit_hash}"
-            headers['Accept'] = 'application/vnd.github.v3.patch'
-            logger.info(f"使用Commit API下载patch: {api_url}")
-        else:
-            raise ValueError(f"不支持的URL格式: {patch_url}")
-
-        # 发送请求
-        response = session.get(
-            api_url,
-            headers=headers,
-            proxies=proxies,
-            timeout=30
-        )
-        response.raise_for_status()
-
-        # 确保输出目录存在
+    # 确保输出路径存在
+    if output_path:
         output_path.parent.mkdir(parents=True, exist_ok=True)
+    else:
+        # 创建临时文件
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        output_path = Path(f"temp_patch_{timestamp}.patch")
+    
+    # 尝试使用GitHub API下载
+    try:
+        # 解析URL获取owner/repo/commit
+        parts = patch_url.split('/')
+        logger.info(f"parts: {parts}")
+        if len(parts) >= 7 and 'github.com' in patch_url:
+            owner = parts[3]
+            repo = parts[4]
+            commit_sha = parts[6].replace('.patch', '')
+            
+            # 构建API URL (注意：不要在API URL后面加.patch)
+            api_url = f"https://api.github.com/repos/{owner}/{repo}/commits/{commit_sha}"
+            logger.info(f"使用Commit API下载patch: {api_url}")
+            
+            # 获取提交详情
+            response = requests.get(api_url, headers=headers)
+            response.raise_for_status()
+            
+            # 获取补丁内容 - 使用Accept头指定格式
+            patch_headers = headers.copy()
+            patch_headers['Accept'] = 'application/vnd.github.v3.patch'
+            patch_response = requests.get(api_url, headers=patch_headers)
+            patch_response.raise_for_status()
+            
+            # 保存到文件
+            with open(output_path, 'wb') as f:
+                f.write(patch_response.content)
+            
+            logger.info(f"补丁已保存到: {output_path}")
+            return output_path
+    
+    except Exception as e:
+        logger.error(f"下载patch失败: {e}")
+    
+    # 尝试直接下载patch文件
+    try:
+        logger.info("尝试直接下载patch文件...")
         
-        # 保存patch内容
+        # 修正URL，确保没有重复的.patch后缀
+        direct_url = patch_url
+        if direct_url.endswith('.patch.patch'):
+            direct_url = direct_url[:-6]  # 移除重复的.patch
+        
+        response = requests.get(direct_url, headers=headers)
+        response.raise_for_status()
+        
+        # 保存到文件
         with open(output_path, 'wb') as f:
             f.write(response.content)
         
-        logger.info(f"下载patch文件成功: {output_path}")
+        logger.info(f"补丁已保存到: {output_path}")
         return output_path
-
-    except requests.exceptions.RequestException as e:
-        logger.error(f"下载patch失败: {str(e)}")
-        # 如果API方式失败，尝试直接下载
-        try:
-            logger.info("尝试直接下载patch文件...")
-            direct_url = f"{patch_url}.patch"
-            response = session.get(
-                direct_url,
-                headers={'User-Agent': 'GitHub-Patch-Downloader'},
-                proxies=proxies,
-                timeout=30
-            )
-            response.raise_for_status()
-            
-            output_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(output_path, 'wb') as f:
-                f.write(response.content)
-            
-            logger.info(f"直接下载patch文件成功: {output_path}")
-            return output_path
-        except requests.exceptions.RequestException as e:
-            logger.error(f"直接下载patch也失败: {str(e)}")
-            return None
+    
     except Exception as e:
-        logger.error(f"处理过程中出错: {str(e)}")
-        return None
+        logger.error(f"直接下载patch也失败: {e}")
+    
+    # 尝试从torvalds/linux仓库下载（如果是Linux内核补丁）
+    try:
+        if 'linux' in patch_url.lower():
+            # 提取commit SHA
+            parts = patch_url.split('/')
+            if len(parts) >= 7:
+                commit_sha = parts[6].replace('.patch', '')
+                
+                # 尝试从torvalds/linux仓库下载
+                torvalds_url = f"https://github.com/torvalds/linux/commit/{commit_sha}.patch"
+                logger.info(f"尝试从torvalds/linux仓库下载: {torvalds_url}")
+                
+                response = requests.get(torvalds_url, headers=headers)
+                response.raise_for_status()
+                
+                # 保存到文件
+                with open(output_path, 'wb') as f:
+                    f.write(response.content)
+                
+                logger.info(f"补丁已保存到: {output_path}")
+                return output_path
+    
+    except Exception as e:
+        logger.error(f"从torvalds/linux下载也失败: {e}")
+    
+    # 所有尝试都失败
+    raise ValueError(f"无法下载补丁: {patch_url}")

@@ -7,45 +7,39 @@ import difflib
 import json
 from datetime import datetime
 from patch_utils import download_patch
-from config_manager import ProjectConfig
+from core.parameter_manager import Mode1Config, Mode2Config, ModuleContext
+from typing import Union, Dict, Any, Optional
 from adaptation_pipeline_bak import AdaptationPipeline
 
 class PatchEvaluator:
-    def __init__(self, config: ProjectConfig):
+    def __init__(self, repo_path: Path, context: ModuleContext):
         """
         初始化评估器
         
-        :param config: 项目配置对象
+        :param repo_path: 仓库路径
+        :param context: 模块上下文
         """
-        
-        self.config = config
-        
-        # 确保repo_path存在且是Path对象
-        if not isinstance(config.repo_path, Path):
-            self.repo_path = Path(config.repo_path)
-        else:
-            self.repo_path = config.repo_path
+        self.repo_path = Path(repo_path)
+        self.context = context
         
         if not self.repo_path.exists():
             raise ValueError(f"Git仓库路径不存在: {self.repo_path}")
         
-        # 创建临时工作目录
-        self.work_dir = Path(tempfile.mkdtemp())
-        logger.info(f"创建临时工作目录: {self.work_dir}")
+        # 使用上下文的工作目录
+        self.work_dir = context.workspace / "evaluator"
+        self.work_dir.mkdir(parents=True, exist_ok=True)
+        logger.info(f"创建评估工作目录: {self.work_dir}")
 
-        # 设置patch文件存储路径
-        self.patch_dir = config['base_dir'] / 'patches'
+        # 使用上下文的补丁目录
+        self.patch_dir = context.patch_dir
         self.patch_dir.mkdir(parents=True, exist_ok=True)
 
-        
-
         # 评估结果存储路径
-        logger.info("hello")
-        self.evaluation_dir = config.evaluation_dir
+        self.evaluation_dir = context.workspace / "evaluation"
         self.evaluation_dir.mkdir(parents=True, exist_ok=True)
         
-        # 缓存设置
-        self.use_cached_patches = config.use_cached_patches
+        # 缓存设置从上下文获取
+        self.use_cached_patches = context.get_custom_data('use_cached_patches', False)
         self.last_apply_success = False
         self.error_count = 0
 
@@ -53,44 +47,9 @@ class PatchEvaluator:
         """清理临时目录"""
         if hasattr(self, 'work_dir') and self.work_dir.exists():
             shutil.rmtree(self.work_dir)
-            logger.info(f"清理临时工作目录: {self.work_dir}")
+            logger.info(f"清理评估工作目录: {self.work_dir}")
 
-    # def download_patch(self, patch_url, patch_type='upstream'):
-    #     """
-    #     下载patch文件，支持缓存
-        
-    #     :param patch_url: patch的URL
-    #     :param patch_type: patch类型 ('upstream' 或 'downstream')
-    #     :return: patch文件路径
-    #     """
-    #     # 生成缓存文件名
-    #     url_hash = patch_url.split('/')[-1][:6]  # 使用commit hash的前6位
-    #     cache_name = f"{patch_type}_{url_hash}.patch"
-    #     cache_path = self.patch_dir / cache_name
-
-    #     # 如果启用缓存且文件存在，直接返回
-    #     if self.use_cached_patches: 
-    #         if cache_path.exists():
-    #             logger.info(f"使用缓存的patch文件: {cache_path}")
-    #             return cache_path
-    #         else:
-    #             logger.info(f"缓存文件不存在, 下载patch: {cache_path}")
-
-    #     # 下载patch
-    #     patch_url = f"{patch_url}.patch"
-    #     try:
-    #         result = subprocess.run(
-    #             ['curl', '-L', patch_url, '-o', str(cache_path)],
-    #             check=True,
-    #             capture_output=True,
-    #             text=True
-    #         )
-    #         logger.info(f"下载patch文件成功: {cache_path}")
-    #         return cache_path
-    #     except subprocess.CalledProcessError as e:
-    #         logger.error(f"下载patch失败: {e.stderr}")
-    #         return None
-    def download_patch_by_type(self, patch_url, patch_type='upstream'):
+    def download_patch_by_type(self, patch_url: str, patch_type: str = 'upstream') -> Optional[Path]:
         """
         下载patch文件，支持缓存
         
@@ -117,7 +76,7 @@ class PatchEvaluator:
         try:
             # 首先切换回目标版本分支
             subprocess.run(
-                ['git', 'checkout', self.config['target_version']],
+                ['git', 'checkout', self.context['target_version']],
                 cwd=self.repo_path,
                 check=True,
                 capture_output=True,
@@ -144,11 +103,11 @@ class PatchEvaluator:
         
         :return: 创建的分支名称，如果失败则返回None
         """
-        branch_name = f"test_patch_{self.config['target_version']}"
+        branch_name = f"test_patch_{self.context['target_version']}"
         try:
             # 确保在目标版本的基础上创建新分支
             subprocess.run(
-                ['git', 'checkout', self.config['target_version']],
+                ['git', 'checkout', self.context['target_version']],
                 cwd=self.repo_path,
                 check=True,
                 capture_output=True,
@@ -269,7 +228,7 @@ class PatchEvaluator:
             
             # 创建commit
             subprocess.run(['git', 'add', '.'], cwd=self.repo_path, check=True)
-            commit_msg = f"Adapted patch for {self.config['target_version']}"
+            commit_msg = f"Adapted patch for {self.context['target_version']}"
             result = subprocess.run(
                 ['git', 'commit', '-m', commit_msg],
                 cwd=self.repo_path,
@@ -305,7 +264,7 @@ class PatchEvaluator:
             generated_patch.rename(patch_path)
             logger.info(f"生成适配patch文件: {patch_path}")
             # 将生成的patch文件复制到patch_dir
-            patch_dir = Path(self.config['basedir']) / 'patches'
+            patch_dir = Path(self.context['basedir']) / 'patches'
             patch_dir.mkdir(exist_ok=True)
             shutil.copy2(patch_path, patch_dir / patch_path.name)
             return patch_path
@@ -368,7 +327,7 @@ class PatchEvaluator:
                 'upstream_url': commit_info.get('patch_url'),
                 'downstream_url': commit_info.get('reference_url'),
             },
-            'target_version': self.config['target_version'],
+            'target_version': self.context['target_version'],
             'results': {
                 'upstream_patch_apply': {
                     'success': results['upstream_apply']['success'] if results['upstream_apply'] else False,
@@ -435,7 +394,7 @@ class PatchEvaluator:
         保存批量评估结果，包括成功率统计和适配效果分析
         """
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        repo_url = self.config['patch_url']
+        repo_url = self.context['patch_url']
         owner = repo_url.split('/')[3]
         repo = repo_url.split('/')[4]
         save_dir = Path('patchfile') / f"{owner}_{repo}_evaluation"
@@ -458,7 +417,7 @@ class PatchEvaluator:
         # 生成基础评估报告
         evaluation_report = {
             'timestamp': timestamp,
-            'target_version': self.config['target_version'],
+            'target_version': self.context['target_version'],
             'statistics': {
                 'total_patches': total_patches,
                 'direct_apply_success': direct_apply_success,
@@ -602,66 +561,95 @@ class PatchEvaluator:
 
         return analysis
 
-    
-    # def evaluate_patch(self, upstream_patch_url, downstream_patch_url, adapted_dir, commit_info=None):
-    #     """评估patch处理过程"""
-    #     results = {
-    #         'upstream_apply': None,
-    #         'adapted_apply': None,
-    #         'patch_comparison': None
-    #     }
+    def evaluate_patch(self, upstream_patch_url: str, downstream_patch_url: Optional[str],
+                      adapted_dir: Path, commit_info: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        评估补丁适配效果
         
-    #     try:
-    #         # 1. 准备测试分支
-    #         branch_name = self.prepare_repo_branch()
-    #         if not branch_name:
-    #             return results
+        :param upstream_patch_url: 上游补丁URL
+        :param downstream_patch_url: 下游补丁URL（可选）
+        :param adapted_dir: 适配补丁目录
+        :param commit_info: 提交信息
+        :return: 评估结果
+        """
+        evaluation_result = {
+            'timestamp': datetime.now().isoformat(),
+            'commit_info': commit_info,
+            'upstream_patch': upstream_patch_url,
+            'downstream_patch': downstream_patch_url,
+            'results': []
+        }
 
-    #         # 2. 下载上下游patch，并尝试应用上游patch
-    #         upstream_patch = self.download_patch_by_type(upstream_patch_url, 'upstream')
-    #         logger.info("starting downloading downstream patch:")
-    #         downstream_patch = self.download_patch_by_type(downstream_patch_url, 'downstream')
-    #         if upstream_patch:
-    #             results['upstream_apply'] = self.apply_upstream_patch(upstream_patch)
+        try:
+            # 下载补丁
+            upstream_patch = self.download_patch_by_type(upstream_patch_url, 'upstream')
+            if not upstream_patch:
+                raise ValueError("下载上游补丁失败")
 
-    #         # 3. 应用适配后的更改并生成patch
-    #         if adapted_dir:
-    #             adapted_result = self.apply_adapted_changes(adapted_dir)
-    #             if adapted_result:
-    #                 adapted_patch = self.generate_adapted_patch()
-    #                 if adapted_patch:
-    #                     # 4. 重置工作区，以便测试patch应用
-    #                     subprocess.run(['git', 'reset', '--hard', 'HEAD^'], 
-    #                         cwd=self.repo_path, capture_output=True)
-    #                     # 5. 尝试应用适配后的patch
-    #                     results['adapted_apply'] = self.apply_adapted_patch(adapted_patch)
-                        
-    #                     # 6. 开始比较
-    #                     if downstream_patch:
-    #                         results['patch_comparison'] = self.compare_patches(downstream_patch)
-    #                     else:
-    #                         logger.error("the downstreaming patch raises error.")
-    #                         raise Exception("the downstreaming patch raises error.")
+            downstream_patch = None
+            if downstream_patch_url:
+                downstream_patch = self.download_patch_by_type(downstream_patch_url, 'downstream')
 
-    #         # 6. 保存评估结果
-    #         if commit_info:
-    #             self.save_evaluation_results(commit_info, results)
+            # 准备测试分支
+            test_branch = self.prepare_repo_branch()
+            if not test_branch:
+                raise ValueError("准备测试分支失败")
 
-    #     except Exception as e:
-    #         logger.error(f"评估过程发生错误: {str(e)}")
-    #     finally:
-    #         # 清理：切回原分支并删除测试分支
-    #         subprocess.run(['git', 'checkout', self.config['target_version']], 
-    #                      cwd=self.repo_path)
-    #         subprocess.run(['git', 'branch', '-D', branch_name], 
-    #                      cwd=self.repo_path)
+            try:
+                # 评估原始补丁
+                original_result = self.apply_upstream_patch(upstream_patch)
+                evaluation_result['original_apply'] = original_result
 
-    #     return results
+                # 评估适配补丁
+                adapted_results = []
+                for adapted_patch in adapted_dir.glob('*.patch'):
+                    # 重置到干净状态
+                    self.cleanup_test_branch(test_branch)
+                    test_branch = self.prepare_repo_branch()
+
+                    # 应用适配补丁
+                    result = self.apply_upstream_patch(adapted_patch)
+                    adapted_results.append({
+                        'patch_file': str(adapted_patch.name),
+                        'apply_result': result
+                    })
+
+                evaluation_result['adapted_apply'] = adapted_results
+
+                # 如果有下游补丁，进行比较
+                if downstream_patch:
+                    comparison = self.compare_patches(downstream_patch)
+                    evaluation_result['comparison'] = comparison
+
+            finally:
+                # 清理测试分支
+                self.cleanup_test_branch(test_branch)
+
+        except Exception as e:
+            logger.error(f"评估过程发生错误: {e}")
+            import traceback
+            logger.error(f"错误堆栈: {traceback.format_exc()}")
+            evaluation_result['error'] = str(e)
+
+        # 保存评估结果
+        self._save_evaluation_result(evaluation_result)
+        return evaluation_result
+
+    def _save_evaluation_result(self, result: Dict[str, Any]):
+        """保存评估结果"""
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        result_file = self.evaluation_dir / f"evaluation_{timestamp}.json"
+        
+        with open(result_file, 'w') as f:
+            json.dump(result, f, indent=2)
+        
+        logger.info(f"评估结果已保存: {result_file}")
+
     def try_direct_apply(self, patch_file, commit_info=None):
         """
         尝试直接应用上游补丁
         
-        :param upstream_patch_url: 上游补丁URL
+        :param patch_file: 补丁文件路径
         :param commit_info: 提交信息
         :return: 评估结果字典
         """
@@ -671,15 +659,14 @@ class PatchEvaluator:
             'patch_comparison': None
         }
         
+        branch_name = None
         try:
             # 1. 准备测试分支
             branch_name = self.prepare_repo_branch()
             if not branch_name:
                 return results
 
-            # 2. 下载并尝试应用上游patch
-            # upstream_patch = self.download_patch_by_type(upstream_patch_url, 'upstream')
-            # if upstream_patch:
+            # 2. 尝试应用patch
             results['upstream_apply'] = self.apply_upstream_patch(patch_file)
 
         except Exception as e:
@@ -687,51 +674,10 @@ class PatchEvaluator:
             results['upstream_apply'] = {'success': False, 'error': str(e)}
         finally:
             # 清理工作
-            self.cleanup_test_branch(branch_name)
+            if branch_name:  # 只有在branch_name存在时才清理
+                self.cleanup_test_branch(branch_name)
         
         return results
-
-    
-
-    # def apply_single_file_patch(self, patch_file):
-    #     """
-    #     应用单个文件的patch
-        
-    #     :param patch_file: patch文件路径
-    #     :return: 应用结果
-    #     """
-    #     try:
-    #         result = subprocess.run(
-    #             ['git', 'apply', '--check', str(patch_file)],
-    #             cwd=self.repo_path,
-    #             capture_output=True,
-    #             text=True
-    #         )
-            
-    #         if result.returncode == 0:
-    #             # 如果检查通过，实际应用patch
-    #             apply_result = subprocess.run(
-    #                 ['git', 'apply', str(patch_file)],
-    #                 cwd=self.repo_path,
-    #                 capture_output=True,
-    #                 text=True
-    #             )
-    #             success = apply_result.returncode == 0
-    #             return {
-    #                 'success': success,
-    #                 'output': apply_result.stdout,
-    #                 'error': apply_result.stderr if not success else None
-    #             }
-    #         else:
-    #             return {
-    #                 'success': False,
-    #                 'error': result.stderr
-    #             }
-    #     except Exception as e:
-    #         return {
-    #             'success': False,
-    #             'error': str(e)
-    #         }
 
     def try_compile(self, adapted_dir=None):
         """
@@ -873,50 +819,17 @@ class PatchEvaluator:
             'compilation': None
         }
         
-    #     try:
-    #     # 1. 准备测试分支
-    #     branch_name = self.prepare_repo_branch()
-    #     if not branch_name:
-    #         return results
-
-    #     # 2. 应用适配后的更改并生成patch
-    #     if adapted_dir:
-    #         adapted_result = self.apply_adapted_changes(adapted_dir)
-    #         if adapted_result:
-    #             adapted_patch = self.generate_adapted_patch()
-    #             if adapted_patch:
-    #                 # 3. 重置工作区，测试patch应用
-    #                 subprocess.run(['git', 'reset', '--hard', 'HEAD^'], 
-    #                     cwd=self.repo_path, capture_output=True)
-    #                 # 4. 尝试应用适配后的patch
-    #                 results['adapted_apply'] = self.apply_adapted_patch(adapted_patch)
-                    
-    #                 # 5. 如果patch应用成功，进行编译测试
-    #                 if results['adapted_apply']['success']:
-    #                     results['compilation'] = self.try_compile(adapted_dir)
-                    
-    #                 # 6. 如果提供了下游patch，进行比较
-    #                 if downstream_patch_url:
-    #                     downstream_patch = self.download_patch_by_type(
-    #                         downstream_patch_url, 'downstream')
-    #                     if downstream_patch:
-    #                         results['patch_comparison'] = self.compare_patches(downstream_patch)
-
-    # except Exception as e:
-    #     logger.error(f"评估适配patch过程中出错: {str(e)}")
-    #     results['adapted_apply'] = {'success': False, 'error': str(e)}
-    # finally:
-    #     # 清理：切回原分支并删除测试分支
-    #     subprocess.run(['git', 'checkout', self.config['target_version']], 
-    #                     cwd=self.repo_path)
-    #     subprocess.run(['git', 'branch', '-D', branch_name], 
-    #                     cwd=self.repo_path)
         # 使用pipeline处理
         pipeline_config = {
             "enabled_modules": ["patch_adapter", "compiler"],
-            "results_dir": self.config.base_dir / "results",
-            "patch_adapter_config": self.config.dict(),
-            "compiler_config": self.config.dict()
+            "results_dir": str(self.context.workspace / "results"),  # 使用 workspace 属性
+            "patch_adapter_config": {
+                "target_version": self.context.config.target_version,  # 使用正确的属性访问
+                "model": self.context.config.base_config.model
+            },
+            "compiler_config": {
+                "target_version": self.context.config.target_version
+            }
         }
         
         pipeline = AdaptationPipeline(pipeline_config)
