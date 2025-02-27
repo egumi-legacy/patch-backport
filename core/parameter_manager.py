@@ -31,6 +31,7 @@ class BaseConfig(BaseModel):
     
     build_command: str = "make"
     module_configs: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
+    retry_with_feedback: bool = False
     stop_on_failure: bool = False
     
     use_cached_patches: bool = False # 是否使用已缓存的patches直接应用

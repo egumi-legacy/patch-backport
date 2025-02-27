@@ -1,0 +1,85 @@
+2025-02-27 15:55:18.573 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250227_155518.log
+2025-02-27 15:55:18.574 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-02-27 15:55:18.574 | INFO     | __main__:_get_upstream_commits:225 - commits_file:workspace/gregkh/linux/cache/commits.json
+2025-02-27 15:55:18.575 | INFO     | __main__:_get_upstream_commits:226 - use_cached_commits:True
+2025-02-27 15:55:18.578 | INFO     | __main__:_get_upstream_commits:229 - 从缓存文件加载commits信息
+2025-02-27 15:55:18.581 | INFO     | __main__:_process_mode2:171 - 找到 297 个上游提交
+2025-02-27 15:55:18.582 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: direct_apply
+2025-02-27 15:55:18.583 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: llm_adapter
+2025-02-27 15:55:18.583 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: patch_adapter
+2025-02-27 15:55:18.584 | INFO     | __main__:_process_mode2:186 - 处理提交 1/1: 07137e92
+2025-02-27 15:55:18.584 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 07137e925fa951646325762bda6bd2503dfe64c6
+2025-02-27 15:55:18.585 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 15:55:18.586 | INFO     | modules.direct_apply:_download_patch:208 - 补丁文件已存在: workspace/gregkh/linux/07137e/patches/upstream_07137e.patch
+2025-02-27 15:55:19.327 | INFO     | modules.direct_apply:_prepare_test_branch:322 - 创建测试分支: test_patch_linux-6.12.y
+2025-02-27 15:55:20.300 | ERROR    | modules.direct_apply:_apply_patch:262 - 补丁应用失败: error: patch failed: fs/xfs/xfs_trans.c:866
+error: fs/xfs/xfs_trans.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-02-27 15:55:21.034 | INFO     | modules.direct_apply:_cleanup_test_branch:413 - 清理测试分支: test_patch_linux-6.12.y
+2025-02-27 15:55:21.035 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/07137e/evaluations/direct_apply/metrics_07137e_20250227_155521.json
+2025-02-27 15:55:21.035 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-02-27 15:55:21.086 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-02-27 15:55:21.087 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/gregkh/linux/07137e/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 15:55:21.089 | INFO     | llm_assistant:run:282 - 使用缓存的响应
+2025-02-27 15:55:21.090 | INFO     | modules.llm_adapter:_call_llm:305 - llm.run() result:{'openai_responses': ["diff --git a/fs/xfs/xfs_quota.h b/fs/xfs/xfs_quota.h\nindex fa1317cc396c9..d7565462af3dc 100644\n--- a/fs/xfs/xfs_quota.h\n+++ b/fs/xfs/xfs_quota.h\n@@ -101,7 +101,8 @@ extern void xfs_trans_free_dqinfo(struct xfs_trans *);\n extern void xfs_trans_mod_dquot_byino(struct xfs_trans *, struct xfs_inode *,\n \t\tuint, int64_t);\n extern void xfs_trans_apply_dquot_deltas(struct xfs_trans *);\n-extern void xfs_trans_unreserve_and_mod_dquots(struct xfs_trans *);\n+void xfs_trans_unreserve_and_mod_dquots(struct xfs_trans *tp,\n+\t\tbool already_locked);\n int xfs_trans_reserve_quota_nblks(struct xfs_trans *tp, struct xfs_inode *ip,\n \t\tint64_t dblocks, int64_t rblocks, bool force);\n extern int xfs_trans_reserve_quota_bydquots(struct xfs_trans *,\n@@ -173,7 +174,7 @@ static inline void xfs_trans_mod_dquot_byino(struct xfs_trans *tp,\n {\n }\n #define xfs_trans_apply_dquot_deltas(tp)\n-#define xfs_trans_unreserve_and_mod_dquots(tp)\n+#define xfs_trans_unreserve_and_mod_dquots(tp, a)\n static inline int xfs_trans_reserve_quota_nblks(struct xfs_trans *tp,\n \t\tstruct xfs_inode *ip, int64_t dblocks, int64_t rblocks,\n \t\tbool force)\ndiff --git a/fs/xfs/xfs_trans.c b/fs/xfs/xfs_trans.c\nindex 427a8ba0ab99e..4cd25717c9d13 100644\n--- a/fs/xfs/xfs_trans.c\n+++ b/fs/xfs/xfs_trans.c\n@@ -866,6 +866,7 @@ __xfs_trans_commit(\n \t */\n \tif (tp->t_flags & XFS_TRANS_SB_DIRTY)\n \t\txfs_trans_apply_sb_deltas(tp);\n+\txfs_trans_apply_dquot_deltas(tp);\n \n \terror = xfs_trans_run_precommits(tp);\n \tif (error)\n@@ -894,11 +895,6 @@ __xfs_trans_commit(\n \n \tASSERT(tp->t_ticket != NULL);\n \n-\t/*\n-\t * If we need to update the superblock, then do it now.\n-\t */\n-\txfs_trans_apply_dquot_deltas(tp);\n-\n \txlog_cil_commit(log, tp, &commit_seq, regrant);\n \n \txfs_trans_free(tp);\n@@ -924,7 +920,7 @@ __xfs_trans_commit(\n \t * the dqinfo portion to be.  All that means is that we have some\n \t * (non-persistent) quota reservations that need to be unreserved.\n \t */\n-\txfs_trans_unreserve_and_mod_dquots(tp);\n+\txfs_trans_unreserve_and_mod_dquots(tp, true);\n \tif (tp->t_ticket) {\n \t\tif (regrant && !xlog_is_shutdown(log))\n \t\t\txfs_log_ticket_regrant(log, tp->t_ticket);\n@@ -1018,7 +1014,7 @@ xfs_trans_cancel(\n \t}\n #endif\n \txfs_trans_unreserve_and_mod_sb(tp);\n-\txfs_trans_unreserve_and_mod_dquots(tp);\n+\txfs_trans_unreserve_and_mod_dquots(tp, false);\n \n \tif (tp->t_ticket) {\n \t\txfs_log_ticket_ungrant(log, tp->t_ticket);\ndiff --git a/fs/xfs/xfs_trans_dquot.c b/fs/xfs/xfs_trans_dquot.c\nindex 481ba3dc9f190..713b6d243e563 100644\n--- a/fs/xfs/xfs_trans_dquot.c\n+++ b/fs/xfs/xfs_trans_dquot.c\n@@ -606,6 +606,24 @@ xfs_trans_apply_dquot_deltas(\n \t\t\tASSERT(dqp->q_blk.reserved >= dqp->q_blk.count);\n \t\t\tASSERT(dqp->q_ino.reserved >= dqp->q_ino.count);\n \t\t\tASSERT(dqp->q_rtb.reserved >= dqp->q_rtb.count);\n+\n+\t\t\t/*\n+\t\t\t * We've applied the count changes and given back\n+\t\t\t * whatever reservation we didn't use.  Zero out the\n+\t\t\t * dqtrx fields.\n+\t\t\t */\n+\t\t\tqtrx->qt_blk_res = 0;\n+\t\t\tqtrx->qt_bcount_delta = 0;\n+\t\t\tqtrx->qt_delbcnt_delta = 0;\n+\n+\t\t\tqtrx->qt_rtblk_res = 0;\n+\t\t\tqtrx->qt_rtblk_res_used = 0;\n+\t\t\tqtrx->qt_rtbcount_delta = 0;\n+\t\t\tqtrx->qt_delrtb_delta = 0;\n+\n+\t\t\tqtrx->qt_ino_res = 0;\n+\t\t\tqtrx->qt_ino_res_used = 0;\n+\t\t\tqtrx->qt_icount_delta = 0;\n \t\t}\n \t}\n }\n@@ -642,7 +660,8 @@ xfs_trans_unreserve_and_mod_dquots_hook(\n  */\n void\n xfs_trans_unreserve_and_mod_dquots(\n-\tstruct xfs_trans\t*tp)\n+\tstruct xfs_trans\t*tp,\n+\tbool\t\t\talready_locked)\n {\n \tint\t\t\ti, j;\n \tstruct xfs_dquot\t*dqp;\n@@ -671,10 +690,12 @@ xfs_trans_unreserve_and_mod_dquots(\n \t\t\t * about the number of blocks used field, or deltas.\n \t\t\t * Also we don't bother to zero the fields.\n \t\t\t */\n-\t\t\tlocked = false;\n+\t\t\tlocked = already_locked;\n \t\t\tif (qtrx->qt_blk_res) {\n-\t\t\t\txfs_dqlock(dqp);\n-\t\t\t\tlocked = true;\n+\t\t\t\tif (!locked) {\n+\t\t\t\t\txfs_dqlock(dqp);\n+\t\t\t\t\tlocked = true;\n+\t\t\t\t}\n \t\t\t\tdqp->q_blk.reserved -=\n \t\t\t\t\t(xfs_qcnt_t)qtrx->qt_blk_res;\n \t\t\t}\n@@ -695,7 +716,7 @@ xfs_trans_unreserve_and_mod_dquots(\n \t\t\t\tdqp->q_rtb.reserved -=\n \t\t\t\t\t(xfs_qcnt_t)qtrx->qt_rtblk_res;\n \t\t\t}\n-\t\t\tif (locked)\n+\t\t\tif (locked && !already_locked)\n \t\t\t\txfs_dqunlock(dqp);\n \n \t\t}"], 'request_tokens': [0], 'response_tokens': [0]}
+2025-02-27 15:55:21.093 | INFO     | modules.llm_adapter:_save_llm_response:422 - LLM响应已保存到: workspace/gregkh/linux/07137e/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 15:55:21.093 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/07137e/evaluations/llm_adapter/metrics_07137e_20250227_155521.json
+2025-02-27 15:55:21.094 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: patch_adapter
+2025-02-27 15:55:21.095 | INFO     | modules.patch_adapter:_save_raw_patch:188 - 原始补丁已保存到: workspace/gregkh/linux/07137e/adapted_patches/raw_patch_20250227_155521.patch
+2025-02-27 15:55:21.302 | INFO     | modules.patch_adapter:_prepare_test_branch:356 - 创建测试分支: test_adapt_linux-6.12.y_20250227_155521
+2025-02-27 15:55:21.303 | WARNING  | modules.patch_adapter:_adapt_and_apply_patches:420 - 目标文件不存在: ../backport-test/linux/b/fs/xfs/xfs_quota.h
+2025-02-27 15:55:21.303 | WARNING  | modules.patch_adapter:_adapt_and_apply_patches:420 - 目标文件不存在: ../backport-test/linux/b/fs/xfs/xfs_trans.c
+2025-02-27 15:55:21.304 | WARNING  | modules.patch_adapter:_adapt_and_apply_patches:420 - 目标文件不存在: ../backport-test/linux/b/fs/xfs/xfs_trans_dquot.c
+2025-02-27 15:55:21.312 | INFO     | modules.patch_adapter:_cleanup_test_branch:375 - 清理测试分支: test_adapt_linux-6.12.y_20250227_155521
+2025-02-27 15:55:33.093 | ERROR    | modules.patch_adapter:execute:137 - 补丁适配过程发生错误: "ModuleContext" object has no field "patch_adapter_result"
+2025-02-27 15:55:33.096 | ERROR    | modules.patch_adapter:execute:138 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 111, in execute
+    context.patch_adapter_result = {
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/site-packages/pydantic/main.py", line 856, in __setattr__
+    raise ValueError(f'"{self.__class__.__name__}" object has no field "{name}"')
+ValueError: "ModuleContext" object has no field "patch_adapter_result"
+
+2025-02-27 15:55:33.097 | ERROR    | core.adaptation_pipeline:process_patch:87 - 模块 patch_adapter 执行异常: "ModuleContext" object has no field "patch_adapter_result"
+2025-02-27 15:55:33.100 | ERROR    | core.adaptation_pipeline:process_patch:89 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 111, in execute
+    context.patch_adapter_result = {
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/site-packages/pydantic/main.py", line 856, in __setattr__
+    raise ValueError(f'"{self.__class__.__name__}" object has no field "{name}"')
+ValueError: "ModuleContext" object has no field "patch_adapter_result"
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/core/adaptation_pipeline.py", line 79, in process_patch
+    context = module.execute(context)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 142, in execute
+    context.patch_adapter_result = {
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/site-packages/pydantic/main.py", line 856, in __setattr__
+    raise ValueError(f'"{self.__class__.__name__}" object has no field "{name}"')
+ValueError: "ModuleContext" object has no field "patch_adapter_result"
+
+2025-02-27 15:55:33.100 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 14.52秒
+2025-02-27 15:55:33.106 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_07137e_20250227_155533/result.json
+2025-02-27 15:55:33.106 | INFO     | __main__:_print_summary:417 - ==================================================
+2025-02-27 15:55:33.107 | INFO     | __main__:_print_summary:418 - 处理摘要 - 提交: 07137e
+2025-02-27 15:55:33.107 | INFO     | __main__:_print_summary:419 - 结果: 处理失败
+2025-02-27 15:55:33.108 | INFO     | __main__:_print_summary:422 - 最后错误: "ModuleContext" object has no field "patch_adapter_result"
+2025-02-27 15:55:33.108 | INFO     | __main__:_print_summary:424 - ==================================================
+2025-02-27 15:55:33.109 | INFO     | __main__:_print_mode2_statistics:430 - ============================================================
+2025-02-27 15:55:33.109 | INFO     | __main__:_print_mode2_statistics:431 - 模式2处理统计
+2025-02-27 15:55:33.110 | INFO     | __main__:_print_mode2_statistics:432 - ============================================================
+2025-02-27 15:55:33.110 | INFO     | __main__:_print_mode2_statistics:433 - 总提交数: 1
+2025-02-27 15:55:33.111 | INFO     | __main__:_print_mode2_statistics:434 - 成功处理: 0
+2025-02-27 15:55:33.111 | INFO     | __main__:_print_mode2_statistics:435 - 失败处理: 1
+2025-02-27 15:55:33.112 | INFO     | __main__:_print_mode2_statistics:436 - 成功率: 0.00%
+2025-02-27 15:55:33.112 | INFO     | __main__:_print_mode2_statistics:439 - 
+失败的提交:
+2025-02-27 15:55:33.112 | INFO     | __main__:_print_mode2_statistics:441 -   - 07137e: "ModuleContext" object has no field "patch_adapter_result"
+2025-02-27 15:55:33.113 | INFO     | __main__:_print_mode2_statistics:443 - ============================================================
+2025-02-27 15:55:33.115 | INFO     | __main__:_print_mode2_statistics:465 - 统计结果已保存到: statistics/mode2_stats_linux-6.12.y_20250227_155533.json
+2025-02-27 15:55:33.116 | INFO     | __main__:run:122 - 处理完成

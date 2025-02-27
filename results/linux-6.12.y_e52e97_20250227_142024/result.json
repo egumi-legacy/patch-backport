@@ -1,0 +1,30 @@
+{
+  "commit": {
+    "sha": "e52e97f09fb66fd868260d05bd6b74a9a3db39ee",
+    "patch_url": "https://github.com/gregkh/linux/commit/e52e97f09fb66fd868260d05bd6b74a9a3db39ee.patch",
+    "downstream_message": "statmount: let unset strings be empty\n\ncommit e52e97f09fb66fd868260d05bd6b74a9a3db39ee upstream.\n\nJust like it's normal for unset values to be zero, unset strings should be\nempty instead of containing random values.\n\nIt seems to be a typical mistake that the mask returned by statmount is not\nchecked, which can result in various bugs.\n\nWith this fix, these bugs are prevented, since it is highly likely that\nuserspace would just want to turn the missing mask case into an empty\nstring anyway (most of the recently found cases are of this type).\n\nLink: https://lore.kernel.org/all/CAJfpegsVCPfCn2DpM8iiYSS5DpMsLB8QBUCHecoj6s0Vxf4jzg@mail.gmail.com/\nFixes: 68385d77c05b (\"statmount: simplify string option retrieval\")\nFixes: 46eae99ef733 (\"add statmount(2) syscall\")\nCc: stable@vger.kernel.org # v6.8\nSigned-off-by: Miklos Szeredi <mszeredi@redhat.com>\nLink: https://lore.kernel.org/r/20250130121500.113446-1-mszeredi@redhat.com\nReviewed-by: Jeff Layton <jlayton@kernel.org>\nSigned-off-by: Christian Brauner <brauner@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": "error: patch failed: fs/namespace.c:5191\nerror: fs/namespace.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/e52e97/patches/upstream_e52e97.patch",
+      "success": false,
+      "timestamp": "2025-02-27T07:00:53.860427"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": false,
+    "method": "llm_adapted",
+    "timestamp": "2025-02-27T14:20:24.496123"
+  }
+}

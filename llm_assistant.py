@@ -9,17 +9,18 @@ from textwrap import indent
 from pprint import pformat
 from chevron import render
 import html
-from config_manager import ProjectConfig
+from core.parameter_manager import ModuleContext
 
 class LLMAssistant:
-    def __init__(self, config: ProjectConfig):
+    def __init__(self, context: ModuleContext):
         """
         初始化LLM助手
         
-        :param config: 项目配置对象
+        :param context: 项目配置对象
         """
         dotenv.load_dotenv()
-        self.config = config
+        self.context = context
+        config = context.config
         
         # 从环境变量获取API密钥和基础URL
         _api_key = os.environ.get("OPENAI_API_KEY")
@@ -36,25 +37,33 @@ class LLMAssistant:
         self.response_file = config.response_file
         self.prompt_template_file = config.prompt_template_file
         self.prompt_id = config.prompt_id
-        print(f"config in LLM:{config}")
+        # print(f"config in LLM:{config}")
         
         self.prompt_values = config.extra_config.get("prompt_values")
-        print(f"self.prompt_values:{self.prompt_values}")
+        # print(f"self.prompt_values:{self.prompt_values}")
         self.prompt_value_file = config.prompt_value_file
-        # self.prompts = self.preprocess_prompts().get("prompts")
-        self._prompts = None
+        self.prompts = self.preprocess_prompts().get("prompts")
+        # self._prompts = None
         self.partitions = config.extra_config.get("partitions", [])
-        self.use_cache = config.use_cache
-        self.cache_path = config.extra_config.get("cache_path")
+        self.use_cached_llm_output = config.use_cached_llm_output
+        llm_dir = context.base_dir / "llm_output"
+        llm_dir.mkdir(parents=True, exist_ok=True)
+        if context.config.retry_with_feedback:
+            retry_suffix = f"_retry{context.retry_count}" if context.retry_count > 0 else ""
+            filename = f"output_{context.config.target_version}_{context.config.model}_{retry_suffix}.patch"
+        else:
+            filename = f"output_{context.config.target_version}_{context.config.model}.patch"
+        self.cache_path = llm_dir / filename
+        # self.cache_path = context.commit.patch_path
         # self.cache_path = config.base_dir / 
 
-    @property
-    def prompts(self):
-        """延迟加载prompts"""
-        if self._prompts is None:
-            processed = self.preprocess_prompts()
-            self._prompts = processed.get("prompts")
-        return self._prompts
+    # @property
+    # def prompts(self):
+    #     """延迟加载prompts"""
+    #     if self._prompts is None:
+    #         processed = self.preprocess_prompts()
+    #         self._prompts = processed.get("prompts")
+    #     return self._prompts
 
     def get_prompt_template_from_file(self, prompt_template_file, prompt_id):
         """从文件中获取prompt模板"""
@@ -266,7 +275,8 @@ class LLMAssistant:
 
 
     def run(self):
-        if self.use_cache:
+        logger.info(f"+++++++++++++++++++++++++++++++++++")
+        if self.use_cached_llm_output:
             cached_responses = self.get_cached_response()
             if cached_responses:
                 logger.info("使用缓存的响应")
@@ -278,7 +288,7 @@ class LLMAssistant:
         prompts = self.prompts
         # print(f"prompts in run: {prompts}")
         responses = self.call_llm(prompts)
-
+        logger.info(f"---responses in run: {responses}")
         openai_responses = []
         request_tokens = []
         response_tokens = []

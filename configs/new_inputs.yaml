@@ -5,18 +5,19 @@ common:
   
   # LLM 相关配置
   model: "qwen-plus"  # 使用的模型
-  prompt_template_file: "test_prompts.json"  # 提示模板文件路径
+  prompt_template_file: "configs/test_prompts.json"  # 提示模板文件路径
   prompt_id: "backport"  # 提示ID
   use_cached_llm_output: true
   response_file: "response.txt"
   
   enabled_modules:  # 启用的管道模块
     - "direct_apply"
-    # - "llm_adapter"
-    # - "patch_adapter"
+    - "llm_adapter"
+    - "patch_adapter"
     # - "compiler"
 
   build_command: "make"  # 构建命令
+  retry_with_feedback: false
   module_configs:  # 各模块的特定配置
     llm_adapter:
       temperature: 0.7
@@ -24,7 +25,7 @@ common:
       extra_flags: "-j4"
   
   stop_on_failure: false  # 是否在失败时停止
-  use_cached_patches: true
+  use_cached_patches: false
   repo_path: "../backport-test/linux"  # 本地仓库路径
   target_version: "linux-6.12.y"  # 目标版本
 

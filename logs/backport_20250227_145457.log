@@ -1,0 +1,22 @@
+2025-02-27 14:54:57.926 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250227_145457.log
+2025-02-27 14:54:57.927 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-02-27 14:54:57.927 | INFO     | __main__:_get_upstream_commits:225 - commits_file:workspace/gregkh/linux/cache/commits.json
+2025-02-27 14:54:57.928 | INFO     | __main__:_get_upstream_commits:226 - use_cached_commits:True
+2025-02-27 14:54:57.928 | INFO     | __main__:_get_upstream_commits:229 - 从缓存文件加载commits信息
+2025-02-27 14:54:57.931 | INFO     | __main__:_process_mode2:171 - 找到 297 个上游提交
+2025-02-27 14:54:57.932 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: direct_apply
+2025-02-27 14:54:57.932 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: llm_adapter
+2025-02-27 14:54:57.933 | INFO     | __main__:_process_mode2:186 - 处理提交 1/1: 07137e92
+2025-02-27 14:54:57.934 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 07137e925fa951646325762bda6bd2503dfe64c6
+2025-02-27 14:54:57.934 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 14:54:57.934 | INFO     | modules.direct_apply:_download_patch:208 - 补丁文件已存在: workspace/gregkh/linux/07137e/patches/upstream_07137e.patch
+2025-02-27 14:54:58.359 | INFO     | modules.direct_apply:_prepare_test_branch:322 - 创建测试分支: test_patch_linux-6.12.y
+2025-02-27 14:54:59.098 | ERROR    | modules.direct_apply:_apply_patch:262 - 补丁应用失败: error: patch failed: fs/xfs/xfs_trans.c:866
+error: fs/xfs/xfs_trans.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-02-27 14:54:59.644 | INFO     | modules.direct_apply:_cleanup_test_branch:413 - 清理测试分支: test_patch_linux-6.12.y
+2025-02-27 14:54:59.645 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/07137e/evaluations/direct_apply/metrics_07137e_20250227_145459.json
+2025-02-27 14:54:59.646 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-02-27 14:54:59.646 | ERROR    | modules.llm_adapter:_get_context_diff:205 - 获取上下文差异失败: 'Mode2Config' object has no attribute 'url'
+2025-02-27 14:54:59.702 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++

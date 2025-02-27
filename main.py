@@ -172,29 +172,20 @@ class PatchBackportTool:
         
         # 创建处理流水线
         pipeline = AdaptationPipeline(self.config)
+        
+        # 统计变量
         start = 0
-        end = 5
+        end = 1
+        total_commits = len(upstream_commits[start:end])
+        successful_commits = 0
+        failed_commits = []
+        
+        # 处理每个提交
         for idx, commit_info in enumerate(upstream_commits[start:end], start+1):
             upstream_sha = commit_info['upstream_sha']
-            downstream_sha = commit_info['downstream_sha']
-            downstream_message = commit_info['downstream_message']
-            
-            logger.info(f"处理提交 {idx}/{len(upstream_commits)}: {upstream_sha[:6]}")
-            
-            # 构建补丁URL
-            patch_url = f"https://github.com/torvalds/linux/commit/{upstream_sha}.patch"
+            logger.info(f"处理提交 {idx}/{total_commits}: {upstream_sha[:8]}")
             
             # 创建提交上下文
-            # commit_context = CommitContext(
-            #     commit_sha=upstream_sha,
-            #     patch_url=patch_url,
-            #     repo_owner="torvalds",
-            #     repo_name="linux",
-            #     base_dir=Path("workspace") / f"linux_{self.config.target_version}" / upstream_sha[:6],
-            #     repo_path=Path(self.config.repo_path) if hasattr(self.config, 'repo_path') else Path.cwd(),
-            #     downstream_sha=downstream_sha,
-            #     downstream_message=downstream_message
-            # )
             commit_context = CommitContext.create_for_mode2(self.config, commit_info)
             
             # 创建模块上下文
@@ -211,6 +202,21 @@ class PatchBackportTool:
             
             # 打印摘要
             self._print_summary(context)
+            
+            # 更新统计
+            direct_success = bool(context.direct_apply_result and context.direct_apply_result.get('success'))
+            llm_success = bool(context.adapted_patches)
+            
+            if direct_success or llm_success:
+                successful_commits += 1
+            else:
+                failed_commits.append({
+                    'sha': upstream_sha[:6],
+                    'error': context.last_error
+                })
+        
+        # 打印总体统计
+        self._print_mode2_statistics(total_commits, successful_commits, failed_commits)
     
     def _get_upstream_commits(self) -> List[Dict[str, str]]:
         """获取上游提交信息"""
@@ -416,6 +422,47 @@ class PatchBackportTool:
             logger.info(f"最后错误: {context.last_error}")
         
         logger.info("=" * 50)
+
+    def _print_mode2_statistics(self, total, successful, failed_commits):
+        """打印模式2的统计信息"""
+        success_rate = (successful / total) * 100 if total > 0 else 0
+        
+        logger.info("=" * 60)
+        logger.info(f"模式2处理统计")
+        logger.info("=" * 60)
+        logger.info(f"总提交数: {total}")
+        logger.info(f"成功处理: {successful}")
+        logger.info(f"失败处理: {total - successful}")
+        logger.info(f"成功率: {success_rate:.2f}%")
+        
+        if failed_commits:
+            logger.info("\n失败的提交:")
+            for commit in failed_commits:
+                logger.info(f"  - {commit['sha']}: {commit['error'] or '未知错误'}")
+        
+        logger.info("=" * 60)
+        
+        # 保存统计结果到文件
+        stats_dir = Path("statistics")
+        stats_dir.mkdir(exist_ok=True)
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        stats_file = stats_dir / f"mode2_stats_{self.config.target_version}_{timestamp}.json"
+        
+        stats_data = {
+            'timestamp': datetime.now().isoformat(),
+            'target_version': self.config.target_version,
+            'total_commits': total,
+            'successful_commits': successful,
+            'failed_commits': total - successful,
+            'success_rate': success_rate,
+            'failed_details': failed_commits
+        }
+        
+        with open(stats_file, 'w') as f:
+            json.dump(stats_data, f, indent=2)
+        
+        logger.info(f"统计结果已保存到: {stats_file}")
 
 
 def main():

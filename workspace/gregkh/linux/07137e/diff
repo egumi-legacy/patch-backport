@@ -1,0 +1,316 @@
+modified file: fs/xfs/xfs_quota.h
+--- workspace/gregkh/linux/07137e/newer/fs/xfs/xfs_quota.h
++++ workspace/gregkh/linux/07137e/linux-6.12.y/fs/xfs/xfs_quota.h
+@@ -28,11 +28,6 @@
+  	((XFS_IS_UQUOTA_ON(mp) && (ip)->i_udquot == NULL) || \
+  	 (XFS_IS_GQUOTA_ON(mp) && (ip)->i_gdquot == NULL) || \
+  	 (XFS_IS_PQUOTA_ON(mp) && (ip)->i_pdquot == NULL))
+ -
+ -#define XFS_IS_DQDETACHED(ip) \
+ -	((ip)->i_udquot == NULL && \
+ -	 (ip)->i_gdquot == NULL && \
+ -	 (ip)->i_pdquot == NULL)
+  
+  #define XFS_QM_NEED_QUOTACHECK(mp) \
+  	((XFS_IS_UQUOTA_ON(mp) && \
+@@ -125,12 +120,10 @@
+  extern void xfs_qm_dqrele(struct xfs_dquot *);
+  extern void xfs_qm_statvfs(struct xfs_inode *, struct kstatfs *);
+  extern int xfs_qm_newmount(struct xfs_mount *, uint *, uint *);
+ -void xfs_qm_resume_quotaon(struct xfs_mount *mp);
+  extern void xfs_qm_mount_quotas(struct xfs_mount *);
+  extern void xfs_qm_unmount(struct xfs_mount *);
+  extern void xfs_qm_unmount_quotas(struct xfs_mount *);
+  bool xfs_inode_near_dquot_enforcement(struct xfs_inode *ip, xfs_dqtype_t type);
+ -int xfs_quota_reserve_blkres(struct xfs_inode *ip, int64_t blocks);
+  
+  # ifdef CONFIG_XFS_LIVE_HOOKS
+  void xfs_trans_mod_ino_dquot(struct xfs_trans *tp, struct xfs_inode *ip,
+@@ -204,17 +197,11 @@
+  #define xfs_qm_dqrele(d)			do { (d) = (d); } while(0)
+  #define xfs_qm_statvfs(ip, s)			do { } while(0)
+  #define xfs_qm_newmount(mp, a, b)					(0)
+ -#define xfs_qm_resume_quotaon(mp)		((void)0)
+  #define xfs_qm_mount_quotas(mp)
+  #define xfs_qm_unmount(mp)
+  #define xfs_qm_unmount_quotas(mp)
+  #define xfs_inode_near_dquot_enforcement(ip, type)			(false)
+  
+ -static inline int xfs_quota_reserve_blkres(struct xfs_inode *ip, int64_t blocks)
+ -{
+ -	return 0;
+ -}
+ -
+  # ifdef CONFIG_XFS_LIVE_HOOKS
+  #  define xfs_dqtrx_hook_enable()		((void)0)
+  #  define xfs_dqtrx_hook_disable()		((void)0)
+@@ -222,6 +209,12 @@
+  
+  #endif /* CONFIG_XFS_QUOTA */
+  
+ +static inline int
+ +xfs_quota_reserve_blkres(struct xfs_inode *ip, int64_t blocks)
+ +{
+ +	return xfs_trans_reserve_quota_nblks(NULL, ip, blocks, 0, false);
+ +}
+ +
+  static inline void
+  xfs_quota_unreserve_blkres(struct xfs_inode *ip, uint64_t blocks)
+  {
+
+""""""
+modified file: fs/xfs/xfs_trans.c
+--- workspace/gregkh/linux/07137e/newer/fs/xfs/xfs_trans.c
++++ workspace/gregkh/linux/07137e/linux-6.12.y/fs/xfs/xfs_trans.c
+@@ -25,8 +25,6 @@
+  #include "xfs_dquot.h"
+  #include "xfs_icache.h"
+  #include "xfs_rtbitmap.h"
+ -#include "xfs_rtgroup.h"
+ -#include "xfs_sb.h"
+  
+  struct kmem_cache	*xfs_trans_cache;
+  
+@@ -69,7 +67,7 @@
+  	struct xfs_trans	*tp)
+  {
+  	xfs_extent_busy_sort(&tp->t_busy);
+ -	xfs_extent_busy_clear(&tp->t_busy, false);
+ +	xfs_extent_busy_clear(tp->t_mountp, &tp->t_busy, false);
+  
+  	trace_xfs_trans_free(tp, _RET_IP_);
+  	xfs_trans_clear_context(tp);
+@@ -422,8 +420,6 @@
+  			ASSERT(tp->t_rtx_res_used <= tp->t_rtx_res);
+  		}
+  		tp->t_frextents_delta += delta;
+ -		if (xfs_has_rtgroups(mp))
+ -			flags &= ~XFS_TRANS_SB_DIRTY;
+  		break;
+  	case XFS_TRANS_SB_RES_FREXTENTS:
+  		ASSERT(delta < 0);
+  		tp->t_res_frextents_delta += delta;
+ -		if (xfs_has_rtgroups(mp))
+ -			flags &= ~XFS_TRANS_SB_DIRTY;
+  		break;
+  	case XFS_TRANS_SB_DBLOCKS:
+  		tp->t_dblocks_delta += delta;
+@@ -461,10 +455,6 @@
+  	case XFS_TRANS_SB_REXTSLOG:
+  		tp->t_rextslog_delta += delta;
+  		break;
+ -	case XFS_TRANS_SB_RGCOUNT:
+ -		ASSERT(delta > 0);
+ -		tp->t_rgcount_delta += delta;
+ -		break;
+  	default:
+  		ASSERT(0);
+  		return;
+@@ -507,22 +497,20 @@
+  	}
+  
+ -	if ((tp->t_frextents_delta || tp->t_res_frextents_delta) &&
+ -	    !xfs_has_rtgroups(tp->t_mountp)) {
+ +	 *
+ +	 * Don't touch m_frextents because it includes incore reservations,
+ +	 * and those are handled by the unreserve function.
+ +	 */
+ +	if (tp->t_frextents_delta || tp->t_res_frextents_delta) {
+  		struct xfs_mount	*mp = tp->t_mountp;
+  		int64_t			rtxdelta;
+  
+@@ -548,18 +536,6 @@
+  	}
+  	if (tp->t_rextsize_delta) {
+  		be32_add_cpu(&sbp->sb_rextsize, tp->t_rextsize_delta);
+ -
+ -		/*
+ -		 * Because the ondisk sb records rtgroup size in units of rt
+ -		 * extents, any time we update the rt extent size we have to
+ -		 * recompute the ondisk rtgroup block log.  The incore values
+ -		 * will be recomputed in xfs_trans_unreserve_and_mod_sb.
+ -		 */
+ -		if (xfs_has_rtgroups(tp->t_mountp)) {
+ -			sbp->sb_rgblklog = xfs_compute_rgblklog(
+ -						be32_to_cpu(sbp->sb_rgextents),
+ -						be32_to_cpu(sbp->sb_rextsize));
+ -		}
+  		whole = 1;
+  	}
+  	if (tp->t_rbmblocks_delta) {
+@@ -576,10 +552,6 @@
+  	}
+  	if (tp->t_rextslog_delta) {
+  		sbp->sb_rextslog += tp->t_rextslog_delta;
+ -		whole = 1;
+ -	}
+ -	if (tp->t_rgcount_delta) {
+ -		be32_add_cpu(&sbp->sb_rgcount, tp->t_rgcount_delta);
+  		whole = 1;
+  	}
+  
+@@ -646,7 +618,7 @@
+  	}
+  
+  	ASSERT(tp->t_rtx_res || tp->t_frextents_delta >= 0);
+ -	if (xfs_has_rtgroups(mp) || (tp->t_flags & XFS_TRANS_SB_DIRTY)) {
+ +	if (tp->t_flags & XFS_TRANS_SB_DIRTY) {
+  		rtxdelta += tp->t_frextents_delta;
+  		ASSERT(rtxdelta >= 0);
+  	}
+@@ -679,21 +651,23 @@
+  	mp->m_sb.sb_icount += idelta;
+  	mp->m_sb.sb_ifree += ifreedelta;
+  	mp->m_sb.sb_dblocks += tp->t_dblocks_delta;
+  	mp->m_sb.sb_agcount += tp->t_agcount_delta;
+  	mp->m_sb.sb_imax_pct += tp->t_imaxpct_delta;
+ -	if (tp->t_rextsize_delta)
+ -		xfs_mount_sb_set_rextsize(mp, &mp->m_sb,
+ -				mp->m_sb.sb_rextsize + tp->t_rextsize_delta);
+ +	mp->m_sb.sb_rextsize += tp->t_rextsize_delta;
+ +	if (tp->t_rextsize_delta) {
+ +		mp->m_rtxblklog = log2_if_power2(mp->m_sb.sb_rextsize);
+ +		mp->m_rtxblkmask = mask64_if_power2(mp->m_sb.sb_rextsize);
+ +	}
+  	mp->m_sb.sb_rbmblocks += tp->t_rbmblocks_delta;
+  	mp->m_sb.sb_rblocks += tp->t_rblocks_delta;
+  	mp->m_sb.sb_rextents += tp->t_rextents_delta;
+  	mp->m_sb.sb_rextslog += tp->t_rextslog_delta;
+ -	mp->m_sb.sb_rgcount += tp->t_rgcount_delta;
+  	spin_unlock(&mp->m_sb_lock);
+  
+ -	if (tp->t_flags & XFS_TRANS_SB_DIRTY)
+ -		xfs_trans_apply_sb_deltas(tp);
+ +	 * Finish deferred items on final commit. Only permanent transactions
+ +	 * should ever have deferred ops.
+ +	 */
+ +	WARN_ON_ONCE(!list_empty(&tp->t_dfops) &&
+ +		     !(tp->t_flags & XFS_TRANS_PERM_LOG_RES));
+ +	if (!regrant && (tp->t_flags & XFS_TRANS_PERM_LOG_RES)) {
+ +		error = xfs_defer_finish_noroll(&tp);
+ +		if (error)
+ +			goto out_unreserve;
+ +	}
+  
+  	error = xfs_trans_run_precommits(tp);
+  	if (error)
+@@ -897,6 +876,8 @@
+ +	if (tp->t_flags & XFS_TRANS_SB_DIRTY)
+ +		xfs_trans_apply_sb_deltas(tp);
+  	xfs_trans_apply_dquot_deltas(tp);
+  
+  	xlog_cil_commit(log, tp, &commit_seq, regrant);
+@@ -943,20 +924,6 @@
+  xfs_trans_commit(
+  	struct xfs_trans	*tp)
+  {
+ -	/*
+ -	 * Finish deferred items on final commit. Only permanent transactions
+ -	 * should ever have deferred ops.
+ -	 */
+ -	WARN_ON_ONCE(!list_empty(&tp->t_dfops) &&
+ -		     !(tp->t_flags & XFS_TRANS_PERM_LOG_RES));
+ -	if (tp->t_flags & XFS_TRANS_PERM_LOG_RES) {
+ -		int error = xfs_defer_finish_noroll(&tp);
+ -		if (error) {
+ -			xfs_trans_cancel(tp);
+ -			return error;
+ -		}
+ -	}
+ -
+  	return __xfs_trans_commit(tp, false);
+  }
+  
+@@ -1287,25 +1254,10 @@
+  	gdqp = (new_gdqp != ip->i_gdquot) ? new_gdqp : NULL;
+  	pdqp = (new_pdqp != ip->i_pdquot) ? new_pdqp : NULL;
+  	if (udqp || gdqp || pdqp) {
+ -		xfs_filblks_t	dblocks, rblocks;
+  		unsigned int	qflags = XFS_QMOPT_RES_REGBLKS;
+ -		bool		isrt = XFS_IS_REALTIME_INODE(ip);
+  
+  		if (force)
+  			qflags |= XFS_QMOPT_FORCE_RES;
+ -
+ -		if (isrt) {
+ -			error = xfs_iread_extents(tp, ip, XFS_DATA_FORK);
+ -			if (error)
+ -				goto out_cancel;
+ -		}
+ -
+ -		xfs_inode_count_blocks(tp, ip, &dblocks, &rblocks);
+ -
+ -		if (isrt)
+ -			rblocks += ip->i_delayed_blks;
+ -		else
+ -			dblocks += ip->i_delayed_blks;
+  
+  		error = xfs_trans_reserve_quota_bydquots(tp, mp, udqp, gdqp,
+ -				pdqp, dblocks, 1, qflags);
+ -		if ((error == -EDQUOT || error == -ENOSPC) && !retried) {
+ -			xfs_trans_cancel(tp);
+ -			xfs_blockgc_free_dquots(mp, udqp, gdqp, pdqp, 0);
+ -			retried = true;
+ -			goto retry;
+ -		}
+ -		if (error)
+ -			goto out_cancel;
+ -
+ -		/* Do the same for realtime. */
+ -		qflags = XFS_QMOPT_RES_RTBLKS | (qflags & XFS_QMOPT_FORCE_RES);
+ -		error = xfs_trans_reserve_quota_bydquots(tp, mp, udqp, gdqp,
+ -				pdqp, rblocks, 0, qflags);
+ +				pdqp, ip->i_nblocks + ip->i_delayed_blks,
+ +				1, qflags);
+  		if ((error == -EDQUOT || error == -ENOSPC) && !retried) {
+  			xfs_trans_cancel(tp);
+  			xfs_blockgc_free_dquots(mp, udqp, gdqp, pdqp, 0);
+
+""""""
+modified file: fs/xfs/xfs_trans_dquot.c
+--- workspace/gregkh/linux/07137e/newer/fs/xfs/xfs_trans_dquot.c
++++ workspace/gregkh/linux/07137e/linux-6.12.y/fs/xfs/xfs_trans_dquot.c
+@@ -156,8 +156,6 @@
+  	unsigned int			field,
+  	int64_t				delta)
+  {
+ -	ASSERT(!xfs_is_metadir_inode(ip) || XFS_IS_DQDETACHED(ip));
+ -
+  	xfs_trans_mod_dquot(tp, dqp, field, delta);
+  
+  	if (xfs_hooks_switched_on(&xfs_dqtrx_hooks_switch)) {
+@@ -248,8 +246,6 @@
+  	if (!XFS_IS_QUOTA_ON(mp) ||
+  	    xfs_is_quota_inode(&mp->m_sb, ip->i_ino))
+  		return;
+ -
+ -	ASSERT(!xfs_is_metadir_inode(ip) || XFS_IS_DQDETACHED(ip));
+  
+  	if (XFS_IS_UQUOTA_ON(mp) && ip->i_udquot)
+  		xfs_trans_mod_ino_dquot(tp, ip, ip->i_udquot, field, delta);
+@@ -966,8 +962,6 @@
+  
+  	if (!XFS_IS_QUOTA_ON(mp))
+  		return 0;
+ -	if (xfs_is_metadir_inode(ip))
+ -		return 0;
+  
+  	ASSERT(!xfs_is_quota_inode(&mp->m_sb, ip->i_ino));
+  	xfs_assert_ilocked(ip, XFS_ILOCK_EXCL);
+@@ -1031,14 +1025,3 @@
+  	kmem_cache_free(xfs_dqtrx_cache, tp->t_dqinfo);
+  	tp->t_dqinfo = NULL;
+  }
+ -
+ -int
+ -xfs_quota_reserve_blkres(
+ -	struct xfs_inode	*ip,
+ -	int64_t			blocks)
+ -{
+ -	if (XFS_IS_REALTIME_INODE(ip))
+ -		return xfs_trans_reserve_quota_nblks(NULL, ip, 0, blocks,
+ -				false);
+ -	return xfs_trans_reserve_quota_nblks(NULL, ip, blocks, 0, false);
+ -}
+
+""""""

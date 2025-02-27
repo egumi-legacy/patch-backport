@@ -1,0 +1,143 @@
+2025-02-27 14:09:49.882 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250227_140949.log
+2025-02-27 14:09:49.883 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-02-27 14:09:49.883 | INFO     | __main__:_get_upstream_commits:225 - commits_file:workspace/gregkh/linux/cache/commits.json
+2025-02-27 14:09:49.883 | INFO     | __main__:_get_upstream_commits:226 - use_cached_commits:True
+2025-02-27 14:09:49.884 | INFO     | __main__:_get_upstream_commits:229 - 从缓存文件加载commits信息
+2025-02-27 14:09:49.887 | INFO     | __main__:_process_mode2:171 - 找到 297 个上游提交
+2025-02-27 14:09:49.888 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: direct_apply
+2025-02-27 14:09:49.889 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: llm_adapter
+2025-02-27 14:09:49.889 | INFO     | __main__:_process_mode2:186 - 处理提交 1/5: 07137e92
+2025-02-27 14:09:49.890 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 07137e925fa951646325762bda6bd2503dfe64c6
+2025-02-27 14:09:49.890 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 14:09:49.895 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: patch failed: fs/xfs/xfs_trans.c:866\nerror: fs/xfs/xfs_trans.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/07137e/patches/upstream_07137e.patch', 'success': False, 'timestamp': '2025-02-27T07:00:46.725478'}
+2025-02-27 14:09:49.896 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-02-27 14:09:50.171 | INFO     | llm_assistant:get_cached_response:262 - 成功读取缓存响应: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/07137e/patches/upstream_07137e.patch
+2025-02-27 14:09:50.172 | INFO     | llm_assistant:run:273 - 使用缓存的响应
+2025-02-27 14:09:50.173 | ERROR    | modules.llm_adapter:execute:80 - LLM处理过程发生错误: 'ModuleContext' object has no attribute 'workspace'
+2025-02-27 14:09:50.177 | ERROR    | modules.llm_adapter:execute:81 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 61, in execute
+    response_path = self._save_llm_response(context, parsed_response)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 427, in _save_llm_response
+    llm_dir = context.workspace / "llm_output"
+              ^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/site-packages/pydantic/main.py", line 828, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'ModuleContext' object has no attribute 'workspace'
+
+2025-02-27 14:09:50.178 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/07137e/evaluations/llm_adapter/metrics_07137e_20250227_140950.json
+2025-02-27 14:09:50.178 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 0.29秒
+2025-02-27 14:09:50.179 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_07137e_20250227_140950/result.json
+2025-02-27 14:09:50.180 | INFO     | __main__:_print_summary:417 - ==================================================
+2025-02-27 14:09:50.180 | INFO     | __main__:_print_summary:418 - 处理摘要 - 提交: 07137e
+2025-02-27 14:09:50.180 | INFO     | __main__:_print_summary:419 - 结果: 处理失败
+2025-02-27 14:09:50.181 | INFO     | __main__:_print_summary:422 - 最后错误: 'ModuleContext' object has no attribute 'workspace'
+2025-02-27 14:09:50.181 | INFO     | __main__:_print_summary:424 - ==================================================
+2025-02-27 14:09:50.181 | INFO     | __main__:_process_mode2:186 - 处理提交 2/5: b0fce54b
+2025-02-27 14:09:50.182 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: b0fce54b8c0d8e5f2b4c243c803c5996e73baee8
+2025-02-27 14:09:50.182 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 14:09:50.189 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': None, 'message': '补丁直接应用成功', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/b0fce5/patches/upstream_b0fce5.patch', 'success': True, 'timestamp': '2025-02-27T07:00:48.135854'}
+2025-02-27 14:09:50.189 | INFO     | modules.base_module:_should_run:53 - 直接应用成功，跳过LLM处理
+2025-02-27 14:09:50.190 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 0.01秒
+2025-02-27 14:09:50.191 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_b0fce5_20250227_140950/result.json
+2025-02-27 14:09:50.191 | INFO     | __main__:_print_summary:417 - ==================================================
+2025-02-27 14:09:50.192 | INFO     | __main__:_print_summary:418 - 处理摘要 - 提交: b0fce5
+2025-02-27 14:09:50.192 | INFO     | __main__:_print_summary:419 - 结果: 直接应用成功
+2025-02-27 14:09:50.192 | INFO     | __main__:_print_summary:424 - ==================================================
+2025-02-27 14:09:50.193 | INFO     | __main__:_process_mode2:186 - 处理提交 3/5: 8b9c1275
+2025-02-27 14:09:50.193 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 8b9c12757f919157752646faf3821abf2b7d2a64
+2025-02-27 14:09:50.193 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 14:09:50.198 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: arch/arm64/boot/dts/rockchip/rk356x-base.dtsi: does not exist in index\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/8b9c12/patches/upstream_8b9c12.patch', 'success': False, 'timestamp': '2025-02-27T07:00:50.978408'}
+2025-02-27 14:09:50.199 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-02-27 14:09:50.422 | INFO     | llm_assistant:get_cached_response:262 - 成功读取缓存响应: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/8b9c12/patches/upstream_8b9c12.patch
+2025-02-27 14:09:50.423 | INFO     | llm_assistant:run:273 - 使用缓存的响应
+2025-02-27 14:09:50.423 | ERROR    | modules.llm_adapter:execute:80 - LLM处理过程发生错误: 'ModuleContext' object has no attribute 'workspace'
+2025-02-27 14:09:50.427 | ERROR    | modules.llm_adapter:execute:81 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 61, in execute
+    response_path = self._save_llm_response(context, parsed_response)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 427, in _save_llm_response
+    llm_dir = context.workspace / "llm_output"
+              ^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/site-packages/pydantic/main.py", line 828, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'ModuleContext' object has no attribute 'workspace'
+
+2025-02-27 14:09:50.430 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/8b9c12/evaluations/llm_adapter/metrics_8b9c12_20250227_140950.json
+2025-02-27 14:09:50.431 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 0.24秒
+2025-02-27 14:09:50.433 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_8b9c12_20250227_140950/result.json
+2025-02-27 14:09:50.434 | INFO     | __main__:_print_summary:417 - ==================================================
+2025-02-27 14:09:50.434 | INFO     | __main__:_print_summary:418 - 处理摘要 - 提交: 8b9c12
+2025-02-27 14:09:50.435 | INFO     | __main__:_print_summary:419 - 结果: 处理失败
+2025-02-27 14:09:50.435 | INFO     | __main__:_print_summary:422 - 最后错误: 'ModuleContext' object has no attribute 'workspace'
+2025-02-27 14:09:50.436 | INFO     | __main__:_print_summary:424 - ==================================================
+2025-02-27 14:09:50.436 | INFO     | __main__:_process_mode2:186 - 处理提交 4/5: e52e97f0
+2025-02-27 14:09:50.437 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: e52e97f09fb66fd868260d05bd6b74a9a3db39ee
+2025-02-27 14:09:50.437 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 14:09:50.443 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: patch failed: fs/namespace.c:5191\nerror: fs/namespace.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/e52e97/patches/upstream_e52e97.patch', 'success': False, 'timestamp': '2025-02-27T07:00:53.860427'}
+2025-02-27 14:09:50.444 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-02-27 14:09:50.716 | INFO     | llm_assistant:get_cached_response:262 - 成功读取缓存响应: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/e52e97/patches/upstream_e52e97.patch
+2025-02-27 14:09:50.716 | INFO     | llm_assistant:run:273 - 使用缓存的响应
+2025-02-27 14:09:50.717 | ERROR    | modules.llm_adapter:execute:80 - LLM处理过程发生错误: 'ModuleContext' object has no attribute 'workspace'
+2025-02-27 14:09:50.721 | ERROR    | modules.llm_adapter:execute:81 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 61, in execute
+    response_path = self._save_llm_response(context, parsed_response)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 427, in _save_llm_response
+    llm_dir = context.workspace / "llm_output"
+              ^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/site-packages/pydantic/main.py", line 828, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'ModuleContext' object has no attribute 'workspace'
+
+2025-02-27 14:09:50.722 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/e52e97/evaluations/llm_adapter/metrics_e52e97_20250227_140950.json
+2025-02-27 14:09:50.722 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 0.29秒
+2025-02-27 14:09:50.723 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_e52e97_20250227_140950/result.json
+2025-02-27 14:09:50.724 | INFO     | __main__:_print_summary:417 - ==================================================
+2025-02-27 14:09:50.724 | INFO     | __main__:_print_summary:418 - 处理摘要 - 提交: e52e97
+2025-02-27 14:09:50.724 | INFO     | __main__:_print_summary:419 - 结果: 处理失败
+2025-02-27 14:09:50.724 | INFO     | __main__:_print_summary:422 - 最后错误: 'ModuleContext' object has no attribute 'workspace'
+2025-02-27 14:09:50.725 | INFO     | __main__:_print_summary:424 - ==================================================
+2025-02-27 14:09:50.725 | INFO     | __main__:_process_mode2:186 - 处理提交 5/5: 5eb98710
+2025-02-27 14:09:50.725 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 5eb987105357cb7cfa7cf3b1e2f66d5c0977e412
+2025-02-27 14:09:50.726 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 14:09:50.730 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: patch failed: fs/namespace.c:5087\nerror: fs/namespace.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/5eb987/patches/upstream_5eb987.patch', 'success': False, 'timestamp': '2025-02-27T07:00:56.953851'}
+2025-02-27 14:09:50.731 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-02-27 14:09:50.979 | INFO     | llm_assistant:get_cached_response:262 - 成功读取缓存响应: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/5eb987/patches/upstream_5eb987.patch
+2025-02-27 14:09:50.979 | INFO     | llm_assistant:run:273 - 使用缓存的响应
+2025-02-27 14:09:50.980 | ERROR    | modules.llm_adapter:execute:80 - LLM处理过程发生错误: 'ModuleContext' object has no attribute 'workspace'
+2025-02-27 14:09:50.984 | ERROR    | modules.llm_adapter:execute:81 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 61, in execute
+    response_path = self._save_llm_response(context, parsed_response)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 427, in _save_llm_response
+    llm_dir = context.workspace / "llm_output"
+              ^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/site-packages/pydantic/main.py", line 828, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'ModuleContext' object has no attribute 'workspace'
+
+2025-02-27 14:09:50.986 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/5eb987/evaluations/llm_adapter/metrics_5eb987_20250227_140950.json
+2025-02-27 14:09:50.986 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 0.26秒
+2025-02-27 14:09:50.988 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_5eb987_20250227_140950/result.json
+2025-02-27 14:09:50.989 | INFO     | __main__:_print_summary:417 - ==================================================
+2025-02-27 14:09:50.989 | INFO     | __main__:_print_summary:418 - 处理摘要 - 提交: 5eb987
+2025-02-27 14:09:50.989 | INFO     | __main__:_print_summary:419 - 结果: 处理失败
+2025-02-27 14:09:50.990 | INFO     | __main__:_print_summary:422 - 最后错误: 'ModuleContext' object has no attribute 'workspace'
+2025-02-27 14:09:50.990 | INFO     | __main__:_print_summary:424 - ==================================================
+2025-02-27 14:09:50.990 | INFO     | __main__:_print_mode2_statistics:430 - ============================================================
+2025-02-27 14:09:50.991 | INFO     | __main__:_print_mode2_statistics:431 - 模式2处理统计
+2025-02-27 14:09:50.991 | INFO     | __main__:_print_mode2_statistics:432 - ============================================================
+2025-02-27 14:09:50.991 | INFO     | __main__:_print_mode2_statistics:433 - 总提交数: 5
+2025-02-27 14:09:50.992 | INFO     | __main__:_print_mode2_statistics:434 - 成功处理: 1
+2025-02-27 14:09:50.992 | INFO     | __main__:_print_mode2_statistics:435 - 失败处理: 4
+2025-02-27 14:09:50.992 | INFO     | __main__:_print_mode2_statistics:436 - 成功率: 20.00%
+2025-02-27 14:09:50.993 | INFO     | __main__:_print_mode2_statistics:439 - 
+失败的提交:
+2025-02-27 14:09:50.993 | INFO     | __main__:_print_mode2_statistics:441 -   - 07137e: 'ModuleContext' object has no attribute 'workspace'
+2025-02-27 14:09:50.993 | INFO     | __main__:_print_mode2_statistics:441 -   - 8b9c12: 'ModuleContext' object has no attribute 'workspace'
+2025-02-27 14:09:50.994 | INFO     | __main__:_print_mode2_statistics:441 -   - e52e97: 'ModuleContext' object has no attribute 'workspace'
+2025-02-27 14:09:50.994 | INFO     | __main__:_print_mode2_statistics:441 -   - 5eb987: 'ModuleContext' object has no attribute 'workspace'
+2025-02-27 14:09:50.995 | INFO     | __main__:_print_mode2_statistics:443 - ============================================================
+2025-02-27 14:09:50.996 | INFO     | __main__:_print_mode2_statistics:465 - 统计结果已保存到: statistics/mode2_stats_linux-6.12.y_20250227_140950.json
+2025-02-27 14:09:50.996 | INFO     | __main__:run:122 - 处理完成

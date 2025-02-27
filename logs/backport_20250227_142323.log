@@ -1,0 +1,209 @@
+2025-02-27 14:23:23.814 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250227_142323.log
+2025-02-27 14:23:23.815 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-02-27 14:23:23.815 | INFO     | __main__:_get_upstream_commits:225 - commits_file:workspace/gregkh/linux/cache/commits.json
+2025-02-27 14:23:23.815 | INFO     | __main__:_get_upstream_commits:226 - use_cached_commits:True
+2025-02-27 14:23:23.816 | INFO     | __main__:_get_upstream_commits:229 - 从缓存文件加载commits信息
+2025-02-27 14:23:23.818 | INFO     | __main__:_process_mode2:171 - 找到 297 个上游提交
+2025-02-27 14:23:23.819 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: direct_apply
+2025-02-27 14:23:23.820 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: llm_adapter
+2025-02-27 14:23:23.820 | INFO     | __main__:_process_mode2:186 - 处理提交 1/5: 07137e92
+2025-02-27 14:23:23.821 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 07137e925fa951646325762bda6bd2503dfe64c6
+2025-02-27 14:23:23.822 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 14:23:23.823 | INFO     | modules.direct_apply:_download_patch:213 - 下载补丁: https://github.com/gregkh/linux/commit/07137e925fa951646325762bda6bd2503dfe64c6.patch
+2025-02-27 14:23:23.824 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '07137e925fa951646325762bda6bd2503dfe64c6.patch']
+2025-02-27 14:23:23.824 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/07137e925fa951646325762bda6bd2503dfe64c6
+2025-02-27 14:23:25.182 | INFO     | patch_utils:download_patch:103 - 补丁已保存到: workspace/gregkh/linux/07137e/patches/upstream_07137e.patch
+2025-02-27 14:23:25.185 | INFO     | modules.direct_apply:_download_patch:217 - 补丁下载成功: workspace/gregkh/linux/07137e/patches/upstream_07137e.patch
+2025-02-27 14:23:25.390 | INFO     | modules.direct_apply:_prepare_test_branch:322 - 创建测试分支: test_patch_linux-6.12.y
+2025-02-27 14:23:29.479 | ERROR    | modules.direct_apply:_apply_patch:262 - 补丁应用失败: error: patch failed: fs/xfs/xfs_trans.c:866
+error: fs/xfs/xfs_trans.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-02-27 14:23:29.998 | INFO     | modules.direct_apply:_cleanup_test_branch:413 - 清理测试分支: test_patch_linux-6.12.y
+2025-02-27 14:23:29.999 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/07137e/evaluations/direct_apply/metrics_07137e_20250227_142329.json
+2025-02-27 14:23:30.000 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-02-27 14:23:30.263 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-02-27 14:23:30.265 | ERROR    | modules.llm_adapter:_call_llm:336 - LLM调用失败: 缓存文件不存在: workspace/gregkh/linux/07137e/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:30.265 | ERROR    | modules.llm_adapter:execute:80 - LLM处理过程发生错误: 缓存文件不存在: workspace/gregkh/linux/07137e/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:30.267 | ERROR    | modules.llm_adapter:execute:81 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 55, in execute
+    llm_response = self._call_llm(prompt_data, context)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 326, in _call_llm
+    result = llm.run()
+             ^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/llm_assistant.py", line 280, in run
+    cached_responses = self.get_cached_response()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/llm_assistant.py", line 265, in get_cached_response
+    raise ValueError(f"缓存文件不存在: {cache_path}")
+ValueError: 缓存文件不存在: workspace/gregkh/linux/07137e/llm_output/output_linux-6.12.y_qwen-plus.patch
+
+2025-02-27 14:23:30.268 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/07137e/evaluations/llm_adapter/metrics_07137e_20250227_142330.json
+2025-02-27 14:23:30.269 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 6.45秒
+2025-02-27 14:23:30.271 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_07137e_20250227_142330/result.json
+2025-02-27 14:23:30.271 | INFO     | __main__:_print_summary:417 - ==================================================
+2025-02-27 14:23:30.272 | INFO     | __main__:_print_summary:418 - 处理摘要 - 提交: 07137e
+2025-02-27 14:23:30.272 | INFO     | __main__:_print_summary:419 - 结果: 处理失败
+2025-02-27 14:23:30.272 | INFO     | __main__:_print_summary:422 - 最后错误: 缓存文件不存在: workspace/gregkh/linux/07137e/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:30.273 | INFO     | __main__:_print_summary:424 - ==================================================
+2025-02-27 14:23:30.273 | INFO     | __main__:_process_mode2:186 - 处理提交 2/5: b0fce54b
+2025-02-27 14:23:30.274 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: b0fce54b8c0d8e5f2b4c243c803c5996e73baee8
+2025-02-27 14:23:30.274 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 14:23:30.276 | INFO     | modules.direct_apply:_download_patch:213 - 下载补丁: https://github.com/gregkh/linux/commit/b0fce54b8c0d8e5f2b4c243c803c5996e73baee8.patch
+2025-02-27 14:23:30.278 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', 'b0fce54b8c0d8e5f2b4c243c803c5996e73baee8.patch']
+2025-02-27 14:23:30.278 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/b0fce54b8c0d8e5f2b4c243c803c5996e73baee8
+2025-02-27 14:23:31.601 | INFO     | patch_utils:download_patch:103 - 补丁已保存到: workspace/gregkh/linux/b0fce5/patches/upstream_b0fce5.patch
+2025-02-27 14:23:31.604 | INFO     | modules.direct_apply:_download_patch:217 - 补丁下载成功: workspace/gregkh/linux/b0fce5/patches/upstream_b0fce5.patch
+2025-02-27 14:23:31.785 | INFO     | modules.direct_apply:_prepare_test_branch:322 - 创建测试分支: test_patch_linux-6.12.y
+2025-02-27 14:23:32.531 | INFO     | modules.direct_apply:_apply_patch:257 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/b0fce5/patches/upstream_b0fce5.patch
+2025-02-27 14:23:32.584 | INFO     | modules.direct_apply:_move_to_cache:125 - 源目录: workspace/gregkh/linux/b0fce5
+2025-02-27 14:23:32.585 | INFO     | modules.direct_apply:_move_to_cache:133 - 目标目录: workspace/gregkh/linux/cache
+2025-02-27 14:23:32.585 | ERROR    | modules.direct_apply:_move_to_cache:147 - 移动到缓存目录失败: Destination path 'workspace/gregkh/linux/cache/b0fce5' already exists
+2025-02-27 14:23:32.771 | INFO     | modules.direct_apply:_cleanup_test_branch:413 - 清理测试分支: test_patch_linux-6.12.y
+2025-02-27 14:23:32.774 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/b0fce5/evaluations/direct_apply/metrics_b0fce5_20250227_142332.json
+2025-02-27 14:23:32.774 | INFO     | modules.base_module:_should_run:53 - 直接应用成功，跳过LLM处理
+2025-02-27 14:23:32.774 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 2.50秒
+2025-02-27 14:23:32.776 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_b0fce5_20250227_142332/result.json
+2025-02-27 14:23:32.777 | INFO     | __main__:_print_summary:417 - ==================================================
+2025-02-27 14:23:32.777 | INFO     | __main__:_print_summary:418 - 处理摘要 - 提交: b0fce5
+2025-02-27 14:23:32.777 | INFO     | __main__:_print_summary:419 - 结果: 直接应用成功
+2025-02-27 14:23:32.778 | INFO     | __main__:_print_summary:424 - ==================================================
+2025-02-27 14:23:32.778 | INFO     | __main__:_process_mode2:186 - 处理提交 3/5: 8b9c1275
+2025-02-27 14:23:32.779 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 8b9c12757f919157752646faf3821abf2b7d2a64
+2025-02-27 14:23:32.780 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 14:23:32.782 | INFO     | modules.direct_apply:_download_patch:213 - 下载补丁: https://github.com/gregkh/linux/commit/8b9c12757f919157752646faf3821abf2b7d2a64.patch
+2025-02-27 14:23:32.783 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '8b9c12757f919157752646faf3821abf2b7d2a64.patch']
+2025-02-27 14:23:32.783 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/8b9c12757f919157752646faf3821abf2b7d2a64
+2025-02-27 14:23:34.182 | INFO     | patch_utils:download_patch:103 - 补丁已保存到: workspace/gregkh/linux/8b9c12/patches/upstream_8b9c12.patch
+2025-02-27 14:23:34.185 | INFO     | modules.direct_apply:_download_patch:217 - 补丁下载成功: workspace/gregkh/linux/8b9c12/patches/upstream_8b9c12.patch
+2025-02-27 14:23:34.359 | INFO     | modules.direct_apply:_prepare_test_branch:322 - 创建测试分支: test_patch_linux-6.12.y
+2025-02-27 14:23:34.955 | ERROR    | modules.direct_apply:_apply_patch:262 - 补丁应用失败: error: arch/arm64/boot/dts/rockchip/rk356x-base.dtsi: does not exist in index
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-02-27 14:23:35.521 | INFO     | modules.direct_apply:_cleanup_test_branch:413 - 清理测试分支: test_patch_linux-6.12.y
+2025-02-27 14:23:35.522 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/8b9c12/evaluations/direct_apply/metrics_8b9c12_20250227_142335.json
+2025-02-27 14:23:35.522 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-02-27 14:23:35.751 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-02-27 14:23:35.751 | ERROR    | modules.llm_adapter:_call_llm:336 - LLM调用失败: 缓存文件不存在: workspace/gregkh/linux/8b9c12/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:35.751 | ERROR    | modules.llm_adapter:execute:80 - LLM处理过程发生错误: 缓存文件不存在: workspace/gregkh/linux/8b9c12/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:35.752 | ERROR    | modules.llm_adapter:execute:81 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 55, in execute
+    llm_response = self._call_llm(prompt_data, context)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 326, in _call_llm
+    result = llm.run()
+             ^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/llm_assistant.py", line 280, in run
+    cached_responses = self.get_cached_response()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/llm_assistant.py", line 265, in get_cached_response
+    raise ValueError(f"缓存文件不存在: {cache_path}")
+ValueError: 缓存文件不存在: workspace/gregkh/linux/8b9c12/llm_output/output_linux-6.12.y_qwen-plus.patch
+
+2025-02-27 14:23:35.753 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/8b9c12/evaluations/llm_adapter/metrics_8b9c12_20250227_142335.json
+2025-02-27 14:23:35.753 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 2.97秒
+2025-02-27 14:23:35.756 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_8b9c12_20250227_142335/result.json
+2025-02-27 14:23:35.756 | INFO     | __main__:_print_summary:417 - ==================================================
+2025-02-27 14:23:35.757 | INFO     | __main__:_print_summary:418 - 处理摘要 - 提交: 8b9c12
+2025-02-27 14:23:35.757 | INFO     | __main__:_print_summary:419 - 结果: 处理失败
+2025-02-27 14:23:35.757 | INFO     | __main__:_print_summary:422 - 最后错误: 缓存文件不存在: workspace/gregkh/linux/8b9c12/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:35.758 | INFO     | __main__:_print_summary:424 - ==================================================
+2025-02-27 14:23:35.758 | INFO     | __main__:_process_mode2:186 - 处理提交 4/5: e52e97f0
+2025-02-27 14:23:35.759 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: e52e97f09fb66fd868260d05bd6b74a9a3db39ee
+2025-02-27 14:23:35.759 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 14:23:35.759 | INFO     | modules.direct_apply:_download_patch:213 - 下载补丁: https://github.com/gregkh/linux/commit/e52e97f09fb66fd868260d05bd6b74a9a3db39ee.patch
+2025-02-27 14:23:35.760 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', 'e52e97f09fb66fd868260d05bd6b74a9a3db39ee.patch']
+2025-02-27 14:23:35.760 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/e52e97f09fb66fd868260d05bd6b74a9a3db39ee
+2025-02-27 14:23:37.086 | INFO     | patch_utils:download_patch:103 - 补丁已保存到: workspace/gregkh/linux/e52e97/patches/upstream_e52e97.patch
+2025-02-27 14:23:37.089 | INFO     | modules.direct_apply:_download_patch:217 - 补丁下载成功: workspace/gregkh/linux/e52e97/patches/upstream_e52e97.patch
+2025-02-27 14:23:37.296 | INFO     | modules.direct_apply:_prepare_test_branch:322 - 创建测试分支: test_patch_linux-6.12.y
+2025-02-27 14:23:37.956 | ERROR    | modules.direct_apply:_apply_patch:262 - 补丁应用失败: error: patch failed: fs/namespace.c:5191
+error: fs/namespace.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-02-27 14:23:38.483 | INFO     | modules.direct_apply:_cleanup_test_branch:413 - 清理测试分支: test_patch_linux-6.12.y
+2025-02-27 14:23:38.484 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/e52e97/evaluations/direct_apply/metrics_e52e97_20250227_142338.json
+2025-02-27 14:23:38.485 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-02-27 14:23:38.712 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-02-27 14:23:38.713 | ERROR    | modules.llm_adapter:_call_llm:336 - LLM调用失败: 缓存文件不存在: workspace/gregkh/linux/e52e97/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:38.713 | ERROR    | modules.llm_adapter:execute:80 - LLM处理过程发生错误: 缓存文件不存在: workspace/gregkh/linux/e52e97/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:38.714 | ERROR    | modules.llm_adapter:execute:81 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 55, in execute
+    llm_response = self._call_llm(prompt_data, context)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 326, in _call_llm
+    result = llm.run()
+             ^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/llm_assistant.py", line 280, in run
+    cached_responses = self.get_cached_response()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/llm_assistant.py", line 265, in get_cached_response
+    raise ValueError(f"缓存文件不存在: {cache_path}")
+ValueError: 缓存文件不存在: workspace/gregkh/linux/e52e97/llm_output/output_linux-6.12.y_qwen-plus.patch
+
+2025-02-27 14:23:38.714 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/e52e97/evaluations/llm_adapter/metrics_e52e97_20250227_142338.json
+2025-02-27 14:23:38.715 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 2.96秒
+2025-02-27 14:23:38.717 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_e52e97_20250227_142338/result.json
+2025-02-27 14:23:38.717 | INFO     | __main__:_print_summary:417 - ==================================================
+2025-02-27 14:23:38.717 | INFO     | __main__:_print_summary:418 - 处理摘要 - 提交: e52e97
+2025-02-27 14:23:38.718 | INFO     | __main__:_print_summary:419 - 结果: 处理失败
+2025-02-27 14:23:38.718 | INFO     | __main__:_print_summary:422 - 最后错误: 缓存文件不存在: workspace/gregkh/linux/e52e97/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:38.719 | INFO     | __main__:_print_summary:424 - ==================================================
+2025-02-27 14:23:38.719 | INFO     | __main__:_process_mode2:186 - 处理提交 5/5: 5eb98710
+2025-02-27 14:23:38.719 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 5eb987105357cb7cfa7cf3b1e2f66d5c0977e412
+2025-02-27 14:23:38.720 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-02-27 14:23:38.720 | INFO     | modules.direct_apply:_download_patch:213 - 下载补丁: https://github.com/gregkh/linux/commit/5eb987105357cb7cfa7cf3b1e2f66d5c0977e412.patch
+2025-02-27 14:23:38.721 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '5eb987105357cb7cfa7cf3b1e2f66d5c0977e412.patch']
+2025-02-27 14:23:38.721 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/5eb987105357cb7cfa7cf3b1e2f66d5c0977e412
+2025-02-27 14:23:40.047 | INFO     | patch_utils:download_patch:103 - 补丁已保存到: workspace/gregkh/linux/5eb987/patches/upstream_5eb987.patch
+2025-02-27 14:23:40.050 | INFO     | modules.direct_apply:_download_patch:217 - 补丁下载成功: workspace/gregkh/linux/5eb987/patches/upstream_5eb987.patch
+2025-02-27 14:23:40.229 | INFO     | modules.direct_apply:_prepare_test_branch:322 - 创建测试分支: test_patch_linux-6.12.y
+2025-02-27 14:23:40.791 | ERROR    | modules.direct_apply:_apply_patch:262 - 补丁应用失败: error: patch failed: fs/namespace.c:5087
+error: fs/namespace.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-02-27 14:23:41.295 | INFO     | modules.direct_apply:_cleanup_test_branch:413 - 清理测试分支: test_patch_linux-6.12.y
+2025-02-27 14:23:41.296 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/5eb987/evaluations/direct_apply/metrics_5eb987_20250227_142341.json
+2025-02-27 14:23:41.297 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-02-27 14:23:41.555 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-02-27 14:23:41.556 | ERROR    | modules.llm_adapter:_call_llm:336 - LLM调用失败: 缓存文件不存在: workspace/gregkh/linux/5eb987/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:41.556 | ERROR    | modules.llm_adapter:execute:80 - LLM处理过程发生错误: 缓存文件不存在: workspace/gregkh/linux/5eb987/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:41.557 | ERROR    | modules.llm_adapter:execute:81 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 55, in execute
+    llm_response = self._call_llm(prompt_data, context)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 326, in _call_llm
+    result = llm.run()
+             ^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/llm_assistant.py", line 280, in run
+    cached_responses = self.get_cached_response()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/llm_assistant.py", line 265, in get_cached_response
+    raise ValueError(f"缓存文件不存在: {cache_path}")
+ValueError: 缓存文件不存在: workspace/gregkh/linux/5eb987/llm_output/output_linux-6.12.y_qwen-plus.patch
+
+2025-02-27 14:23:41.558 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/5eb987/evaluations/llm_adapter/metrics_5eb987_20250227_142341.json
+2025-02-27 14:23:41.559 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 2.84秒
+2025-02-27 14:23:41.561 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_5eb987_20250227_142341/result.json
+2025-02-27 14:23:41.561 | INFO     | __main__:_print_summary:417 - ==================================================
+2025-02-27 14:23:41.562 | INFO     | __main__:_print_summary:418 - 处理摘要 - 提交: 5eb987
+2025-02-27 14:23:41.562 | INFO     | __main__:_print_summary:419 - 结果: 处理失败
+2025-02-27 14:23:41.563 | INFO     | __main__:_print_summary:422 - 最后错误: 缓存文件不存在: workspace/gregkh/linux/5eb987/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:41.563 | INFO     | __main__:_print_summary:424 - ==================================================
+2025-02-27 14:23:41.564 | INFO     | __main__:_print_mode2_statistics:430 - ============================================================
+2025-02-27 14:23:41.564 | INFO     | __main__:_print_mode2_statistics:431 - 模式2处理统计
+2025-02-27 14:23:41.565 | INFO     | __main__:_print_mode2_statistics:432 - ============================================================
+2025-02-27 14:23:41.565 | INFO     | __main__:_print_mode2_statistics:433 - 总提交数: 5
+2025-02-27 14:23:41.565 | INFO     | __main__:_print_mode2_statistics:434 - 成功处理: 1
+2025-02-27 14:23:41.566 | INFO     | __main__:_print_mode2_statistics:435 - 失败处理: 4
+2025-02-27 14:23:41.567 | INFO     | __main__:_print_mode2_statistics:436 - 成功率: 20.00%
+2025-02-27 14:23:41.568 | INFO     | __main__:_print_mode2_statistics:439 - 
+失败的提交:
+2025-02-27 14:23:41.569 | INFO     | __main__:_print_mode2_statistics:441 -   - 07137e: 缓存文件不存在: workspace/gregkh/linux/07137e/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:41.569 | INFO     | __main__:_print_mode2_statistics:441 -   - 8b9c12: 缓存文件不存在: workspace/gregkh/linux/8b9c12/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:41.570 | INFO     | __main__:_print_mode2_statistics:441 -   - e52e97: 缓存文件不存在: workspace/gregkh/linux/e52e97/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:41.570 | INFO     | __main__:_print_mode2_statistics:441 -   - 5eb987: 缓存文件不存在: workspace/gregkh/linux/5eb987/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-02-27 14:23:41.571 | INFO     | __main__:_print_mode2_statistics:443 - ============================================================
+2025-02-27 14:23:41.572 | INFO     | __main__:_print_mode2_statistics:465 - 统计结果已保存到: statistics/mode2_stats_linux-6.12.y_20250227_142341.json
+2025-02-27 14:23:41.572 | INFO     | __main__:run:122 - 处理完成

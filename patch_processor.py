@@ -14,18 +14,31 @@ from patch_adapter import PatchAdapter
 from git_operations import GitOperations
 from patch_utils import download_patch
 import html
-from config_manager import ProjectConfig
-
+from core.parameter_manager import ModuleContext
+from patch_utils import parse_github_url
 
 class PatchProcessor:
-    def __init__(self, config: ProjectConfig):
+    def __init__(self, context: ModuleContext):
         """
-        初始化处理器
+        初始化补丁处理器
         
-        :param config: 项目配置对象
+        Args:
+            context: 模块上下文对象
         """
-        self.config = config
-        self.git_operations = GitOperations(config)
+        self.context = context
+        self.config = context.config  # 向后兼容
+        self.url = context.commit.patch_url
+        self.target_version = context.config.target_version
+        self.base_dir = context.commit.base_dir
+        self.model = context.config.model
+        
+        # 初始化Git操作，传递上下文
+        self.git_operations = GitOperations(context)
+        
+        # 设置patch相关路径
+        self.patch_dir = context.commit.patch_dir
+        
+        # 设置其他参数
         dotenv.load_dotenv()
         self.github_token = os.getenv('GITHUB_TOKEN')
         self.headers = {
@@ -35,43 +48,37 @@ class PatchProcessor:
             'Host': 'api.github.com',
             'Connection': 'keep-alive'
         }
-        self.url = config['patch_url']
-        self.target_version = config['target_version']
-        self.git_operations = GitOperations(config)
-        # self.allowed_ref_fields = ['commit_sha', 'tag', 'branch']
-        self.commit_info = self.git_operations.parse_github_url(self.url)
+        
+        # 从url解析仓库信息
+        self.commit_info = parse_github_url(self.url)
         self.owner = self.commit_info['owner']
         self.repo = self.commit_info['repo']
         if self.commit_info['commit_sha']:
             self.patch_commit_sha = self.commit_info['commit_sha']
-        self.base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
-        # 设置patch文件存储路径
-        self.patch_dir = self.base_dir / 'patches'
-        # self.patch_dir.mkdir(exist_ok=True)
         
-        # # 评估结果存储路径
-        # self.evaluation_dir = self.base_dir / 'evaluations'
-        # self.evaluation_dir.mkdir(exist_ok=True)
-        config.update(basedir = self.base_dir)
-
         # 缓存设置
-        self.use_cached_patches = config.use_cached_patches
+        self.use_cached_patches = getattr(context.config, 'use_cached_patches', False)
 
-
-    def download_patch_by_type(self, patch_url, patch_type='upstream'):
+    def download_patch_by_type(self, url, patch_type):
         """
-        下载patch文件，支持缓存
+        根据类型下载补丁
         
-        :param patch_url: patch的URL
-        :param patch_type: patch类型 ('upstream' 或 'downstream')
-        :return: patch文件路径
+        Args:
+            url: 补丁URL
+            patch_type: 补丁类型 ('upstream' 或 'downstream')
+        
+        Returns:
+            Path: 补丁文件路径
         """
-        # 生成缓存文件名
-        url_hash = patch_url.split('/')[-1][:6]  # 使用commit hash的前6位
-        cache_name = f"{patch_type}_{url_hash}.patch"
-        cache_path = self.patch_dir / cache_name
+        # 确保补丁目录存在
+        patch_dir = self.base_dir / 'patch'
+        patch_dir.mkdir(parents=True, exist_ok=True)
         
-        return download_patch(patch_url, cache_path, self.use_cached_patches)
+        # 生成输出路径
+        output_file = patch_dir / f"{patch_type}_patch.txt"
+        
+        # 调用download_patch函数，只传入两个参数
+        return download_patch(url, output_file)
         
 
     def parse_patch(self, patch_content):
@@ -145,10 +152,8 @@ class PatchProcessor:
         print(f"差异已保存到 {output_file}")
 
     def write_file_contents(self, file_contents, folder_name):
-        # 在patchfile目录下创建一个文件夹，命名为owner_repo_sha[:6]，如果存在则跳过
-        base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
-        if not base_dir.exists():
-            base_dir.mkdir(parents=True)
+        # 使用context中的base_dir，而不是硬编码路径
+        base_dir = self.base_dir
 
         for file_content in file_contents:
             file_path = base_dir / folder_name / file_content['filename']
@@ -159,7 +164,7 @@ class PatchProcessor:
 
     def get_response_path(self):
         """获取响应文件的路径"""
-        output_file_name = f"output_{self.config['target_version']}_{self.config['model']}"
+        output_file_name = f"output_{self.target_version}_{self.model}"
         return self.base_dir / output_file_name
 
     def save_response_to_project(self, response):
@@ -187,25 +192,38 @@ class PatchProcessor:
         
 
     def run(self):
-        # 1. 获取commit信息
-        commit_info = self.git_operations.parse_github_url(self.url)
-        commit_content = self.git_operations.get_commit_content(commit_info)
+        # 1. 使用已有的commit_info，不需要重新解析URL
+        # commit_info已经在初始化时通过parse_github_url设置了
+        commit_content = self.git_operations.get_commit_content(self.commit_info)
         file_list = self.git_operations.get_commit_file_list(commit_content)
 
-        # patch_commit_sha只截取前面6位
-        base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
+        # 使用context.commit.base_dir而不是硬编码路径
+        base_dir = self.base_dir
         
         # 2. 解析commit信息
         if not (base_dir / 'newer').exists() or not list((base_dir / 'newer').iterdir()):
-            # bug: 如果commit之前的commit没有file_list中的文件，则无法获取到文件内容
-            newer_file_contents = self.git_operations.get_file_before_commit(commit_info)
+            # 获取commit前的文件内容
+            newer_file_contents = self.git_operations.get_file_before_commit(self.commit_info)
             self.write_file_contents(newer_file_contents, 'newer')
 
         if not (base_dir / self.target_version).exists() or not list((base_dir / self.target_version).iterdir()):
-            # target_file_contents = self.get_file_contents_from_ref(file_list, self.make_commit_info(tag=self.target_version))
-            # TODO 这里要判断传进去的到底是branch还是tag
-            target_file_contents = self.git_operations.get_file_contents_from_ref(file_list, self.git_operations.make_commit_info(branch=self.target_version),
-                                                                                  True, self.config['repo_path'])
+            # 创建target_info字典，适应新的参数系统
+            target_info = {
+                'owner': self.owner,
+                'repo': self.repo,
+                'branch': self.target_version
+            }
+            
+            # 直接从context获取repo_path，不再使用字典访问
+            repo_path = self.context.config.repo_path
+            
+            # 获取目标版本的文件内容
+            target_file_contents = self.git_operations.get_file_contents_from_ref(
+                file_list, 
+                target_info,
+                True, 
+                repo_path
+            )
             self.write_file_contents(target_file_contents, self.target_version)
 
         # 3. 获取两个版本文件的diff并保存
@@ -225,11 +243,11 @@ class PatchProcessor:
         #     subprocess.run(['curl', '-L', patch_url, '-o', output_file])
         patch_path = self.download_patch_by_type(self.url, 'upstream')
         
-        patch_values = [{"patchCode": html.unescape(Path(patch_path).read_text()), "diffCode": html.unescape((base_dir / 'diff').read_text())}]
+        # 创建返回值
+        patch_values = [{"patchCode": html.unescape(Path(patch_path).read_text()), 
+                         "diffCode": html.unescape((base_dir / 'diff').read_text())}]
 
-        # self.config.extra_config.update(prompt_values = patch_values)
-
-        return dict(prompt_values = patch_values)
+        return dict(prompt_values=patch_values)
         
         
 

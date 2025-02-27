@@ -55,7 +55,7 @@ class BaseModule(ABC):
         
         elif self.type == ModuleType.PATCH_ADAPTER:
             # 如果没有LLM响应，跳过补丁适配
-            if not context.llm_response:
+            if not context.llm_output:
                 logger.info("没有LLM响应，跳过补丁适配")
                 return False
         

@@ -8,6 +8,7 @@ from core.parameter_manager import ModuleContext
 from patch_evaluator import PatchEvaluator
 # from config_manager import ProjectConfig
 import subprocess
+import shutil
 
 class DirectApplyModule(BaseModule):
     """直接应用补丁模块"""
@@ -73,6 +74,10 @@ class DirectApplyModule(BaseModule):
                     'patch_path': str(patch_path),
                     'timestamp': datetime.now().isoformat()
                 }
+
+                # 如果应用成功，移动到缓存目录
+                if apply_result['success']:
+                    self._move_to_cache(context)
                 
                 # 更新指标
                 self._update_metrics(
@@ -111,6 +116,35 @@ class DirectApplyModule(BaseModule):
         self._save_metrics(context)
         
         return context
+
+    def _move_to_cache(self, context: ModuleContext):
+        """将成功的commit文件夹移动到缓存目录"""
+        try:
+            # 源目录：当前commit的工作目录
+            source_dir = context.commit.base_dir
+            logger.info(f"源目录: {source_dir}")
+            if not source_dir.exists():
+                logger.warning(f"源目录不存在: {source_dir}")
+                return
+
+            # 目标目录：缓存目录下的commit目录
+            commit_sha = context.commit.commit_sha[:6]
+            target_dir = context.cache_dir
+            logger.info(f"目标目录: {target_dir}")
+
+            # 确保目标目录存在
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+            # # 如果目标目录已存在，先删除
+            # if target_dir.exists():
+            #     shutil.rmtree(target_dir)
+
+            # 移动目录
+            shutil.move(str(source_dir), str(target_dir))
+            logger.info(f"已将成功的commit文件夹移动到缓存: {target_dir}")
+
+        except Exception as e:
+            logger.error(f"移动到缓存目录失败: {e}")
     
     def _check_cache(self, context: ModuleContext) -> Optional[Dict[str, Any]]:
         """检查缓存"""

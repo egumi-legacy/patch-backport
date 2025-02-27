@@ -9,50 +9,63 @@ import dotenv
 import json
 # from patch_evaluator import PatchEvaluator
 from patch_utils import download_patch
-from config_manager import ProjectConfig
+from core.parameter_manager import ModuleContext
+from typing import Optional, Dict, Any, List
 
 _DEFAULT_COMMITS_FILE = Path(__file__).parent / "commits.json"
 
 class GitOperations:
-    def __init__(self, config: ProjectConfig):
-        """初始化 Git 操作类"""
-        dotenv.load_dotenv()
-        self.github_token = os.getenv('GITHUB_TOKEN')
-        self.headers = {
-            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
-            'Accept': 'application/json, application/vnd.github+json',
-            'Authorization': f'token {self.github_token}',
-            'Host': 'api.github.com',
-            'Connection': 'keep-alive'
-        }
-        self.config = config
-        self.use_cached_commits = config.use_cached_commits
-        self.commits_file = config.commits_file
-        self.branch = config.branch
-        # 可能是模式1的 patch_url，也可能是模式2的 repo_url
-        self.url = config.repo_url if config.repo_url else config.patch_url
-        self.allowed_ref_fields = ['commit_sha', 'tag', 'branch']
-        self.commit_info = self.parse_github_url(self.url)
-        self.owner = self.commit_info['owner']
-        self.repo = self.commit_info['repo']
-
-        self.commits_pages_start = config.commits_pages_start
-        self.commits_pages_end = config.commits_pages_end
-        self.commits_per_page = config.commits_per_page
+    def __init__(self, context: Optional[ModuleContext] = None):
+        """
+        初始化Git操作工具
         
-        if self.commit_info['commit_sha']:
+        Args:
+            context: 可选的模块上下文对象
+        """
+        dotenv.load_dotenv()
+        self.context = context
+        # 根据需要从上下文中获取必要的信息
+        if context:
+            self.repo_path = context.config.repo_path
+            self.github_token = os.getenv('GITHUB_TOKEN')
+            self.headers = {
+                'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+                'Accept': 'application/json, application/vnd.github+json',
+                'Authorization': f'Bearer {self.github_token}',
+                'Host': 'api.github.com',
+                'Connection': 'keep-alive'
+            }
+        else:
+            # 如果没有提供上下文，使用最小化的配置
+            self.github_token = os.getenv('GITHUB_TOKEN')
+            self.headers = {
+                'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+                'Accept': 'application/json, application/vnd.github+json',
+                'Authorization': f'Bearer {self.github_token}',
+                'Host': 'api.github.com',
+                'Connection': 'keep-alive'
+            }
+            self.repo_path = None
+
+        self.use_cached_commits = context.config.use_cached_commits if context else False
+        self.commits_file = context.config.commits_file if context else _DEFAULT_COMMITS_FILE
+        self.branch = context.config.branch if context else None
+        # 可能是模式1的 patch_url，也可能是模式2的 repo_url
+        self.url = context.config.repo_url if context.config.repo_url else context.config.patch_url if context else None
+        self.allowed_ref_fields = ['commit_sha', 'tag', 'branch']
+        self.commit_info = self.parse_github_url(self.url) if self.url else None
+        self.owner = self.commit_info['owner'] if self.commit_info else None
+        self.repo = self.commit_info['repo'] if self.commit_info else None
+
+        self.commits_pages_start = context.config.commits_pages_start if context else None
+        self.commits_pages_end = context.config.commits_pages_end if context else None
+        self.commits_per_page = context.config.commits_per_page if context else None
+        
+        if self.commit_info and self.commit_info['commit_sha']:
             self.patch_commit_sha = self.commit_info['commit_sha']
             # 设置base_dir
             self.base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
-            self.config.update(basedir = self.base_dir)
-
-        
-
-        # # 设置patch文件存储路径
-        # self.patch_dir = Path(inputs['basedir']) / 'patches'
-        # self.patch_dir.mkdir(exist_ok=True)
-        
-
+            context.config.update(basedir = self.base_dir)
 
     def make_commit_info(self, owner = None, repo = None, **kwargs):
         """构建提交信息字典，根据传入的可变参数动态设置键值对"""
@@ -90,15 +103,22 @@ class GitOperations:
             return {'owner': owner, 'repo': repo, 'commit_sha': None}
         
 
-    def get_commit_content(self, commit_info):
-        owner = commit_info['owner']
-        repo = commit_info['repo']
-        commit_sha = commit_info['commit_sha']
-        url = f"https://api.github.com/repos/{owner}/{repo}/commits/{commit_sha}"
-        response = requests.get(url, headers=self.headers)
-        if response.status_code != 200:
-            raise Exception(f"Failed to get commit info: {response.status_code} {response.text}")
-        return response.json()
+    def get_commit_content(self, commit_info: Dict[str, str]) -> Dict[str, Any]:
+        """获取提交内容"""
+        url = f"https://api.github.com/repos/{commit_info['owner']}/{commit_info['repo']}/commits/{commit_info['commit_sha']}"
+        
+        try:
+            response = requests.get(url, headers=self.headers)
+            response.raise_for_status()
+            commit_content = response.json()
+            return commit_content
+        except requests.exceptions.HTTPError as e:
+            logger.error(f"获取提交内容失败: {e.response.status_code}, {e.response.text}")
+            # 返回一个带有空files列表的字典，防止KeyError
+            return {"files": []}
+        except Exception as e:
+            logger.error(f"获取提交内容失败: {e}")
+            return {"files": []}
 
     def get_commit_file_list(self, commit_content):
         # 获取commit中的文件列表
@@ -106,23 +126,22 @@ class GitOperations:
         file_list = [file['filename'] for file in files]
         return file_list
 
-    def get_file_contents_from_ref(self, file_path_list, ref, use_local=False, repo_path=None):
-        """
-        获取指定引用（tag/commit/branch）下的文件内容
+    def get_file_contents_from_ref(self, file_list: List[str], ref_info: Dict[str, str], local_first: bool = False, local_repo_path: Optional[str] = None) -> List[Dict[str, str]]:
+        """获取特定版本的文件内容"""
+        results = []
         
-        Args:
-            file_path_list: 需要获取的文件路径列表
-            ref: 包含引用信息的字典
-            use_local: 是否使用本地仓库获取文件内容
-            repo_path: 本地仓库路径，当use_local=True时必须提供
-        """
-        logger.info(f"获取内容中：{file_path_list}")
-        if use_local:
-            if not repo_path:
-                raise ValueError("使用本地模式时必须提供repo_path参数")
-            return self._get_file_contents_local(file_path_list, ref, repo_path)
+        # 如果指定了本地仓库路径且优先使用本地仓库
+        if local_first and local_repo_path:
+            repo_path = local_repo_path
         else:
-            return self._get_file_contents_remote(file_path_list, ref)
+            # 使用上下文中的仓库路径（如果有）
+            repo_path = self.repo_path if self.repo_path else local_repo_path
+        
+        logger.info(f"获取内容中：{file_list}")
+        if repo_path:
+            return self._get_file_contents_local(file_list, ref_info, repo_path)
+        else:
+            return self._get_file_contents_remote(file_list, ref_info)
 
     def _get_file_contents_local(self, file_path_list, ref, repo_path):
         """使用本地git仓库获取文件内容"""
