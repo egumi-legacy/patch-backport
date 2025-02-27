@@ -10,7 +10,7 @@ from llm_assistant import LLMAssistant
 from loguru import logger
 import difflib
 from difflib import SequenceMatcher
-from patch_adapter import PatchAdapter
+from patch_adapter_utils import PatchAdapterUtils
 from git_operations import GitOperations
 from patch_utils import download_patch
 import html
@@ -184,7 +184,7 @@ class PatchProcessor:
         source_dir = base_dir / f'{self.target_version}'
         output_dir = base_dir / f"adapted_{self.target_version}"
 
-        adapter = PatchAdapter()
+        adapter = PatchAdapterUtils()
         adapter.generate_adapted_file(llm_response_path, source_dir, output_dir)
         
 

@@ -210,6 +210,7 @@ class ModuleContext(BaseModel):
     llm_output: Optional[Dict[str, Any]] = None
     adapted_patches: List[Dict[str, Any]] = Field(default_factory=list)
     compilation_result: List[Dict[str, Any]] = Field(default_factory=list)
+    adapted_patch_result: List[Dict[str, Any]] = Field(default_factory=list)
 
     # 反馈数据
     retry_count: int = 0

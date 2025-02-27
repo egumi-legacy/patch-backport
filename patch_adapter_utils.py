@@ -13,7 +13,7 @@ from difflib import SequenceMatcher
 from typing import List
 import html
 
-class PatchAdapter:
+class PatchAdapterUtils:
     def __init__(self, similarity_threshold=0.7):
         self.similarity_threshold = similarity_threshold
         # self.base_dir = input["basedir"]
