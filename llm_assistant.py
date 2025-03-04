@@ -277,14 +277,21 @@ class LLMAssistant:
     def run(self):
         logger.info(f"+++++++++++++++++++++++++++++++++++")
         if self.use_cached_llm_output:
-            cached_responses = self.get_cached_response()
-            if cached_responses:
-                logger.info("使用缓存的响应")
-                return dict(
-                    openai_responses=cached_responses,
-                    request_tokens=[0],
-                    response_tokens=[0]
-                )
+            try:
+                cached_responses = self.get_cached_response()
+                if cached_responses:
+                    logger.info("使用缓存的响应")
+                    return dict(
+                        openai_responses=cached_responses,
+                        request_tokens=[0],
+                        response_tokens=[0]
+                    )
+            except ValueError as e:
+                logger.warning(f"无法获取缓存响应: {e}，将使用LLM生成输出")
+            except Exception as e:
+                logger.warning(f"读取缓存时出错: {e}，将使用LLM生成输出")
+                
+        # 如果缓存不可用或未启用缓存，则正常调用LLM
         prompts = self.prompts
         # print(f"prompts in run: {prompts}")
         responses = self.call_llm(prompts)

@@ -102,7 +102,6 @@ class Mode2Config(BaseConfig):
     # 模式2特定的可选参数
     # commits_range: tuple[int, int] = Field(default=(0, 100))
     use_cached_commits: bool = False
-    commits_file: str = "commits.json"
     commits_pages_start: int = 1
     commits_pages_end: int = 3
     commits_per_page: int = 100
@@ -118,6 +117,10 @@ class Mode2Config(BaseConfig):
             return {**data, "repo_name": repo_name, "repo_owner": repo_owner}
         
         return data
+    
+    @property
+    def commits_file(self) -> str:
+        return f"branch_{self.branch}_commits.json"
     
     @property
     def cached_commits_file_path(self) -> Path:
@@ -140,6 +143,7 @@ class CommitContext(BaseModel):
     repo_owner: str
     reference_url: Optional[str] = None
     downstream_message: Optional[str] = None
+    downstream_sha: Optional[str] = None
     author: Optional[str] = None
     timestamp: Optional[str] = None
     patch_path: Optional[Path] = None
@@ -210,7 +214,7 @@ class ModuleContext(BaseModel):
     llm_output: Optional[Dict[str, Any]] = None
     adapted_patches: List[Dict[str, Any]] = Field(default_factory=list)
     compilation_result: List[Dict[str, Any]] = Field(default_factory=list)
-    adapted_patch_result: List[Dict[str, Any]] = Field(default_factory=list)
+    patch_adapter_result: List[Dict[str, Any]] = Field(default_factory=list)
 
     # 反馈数据
     retry_count: int = 0

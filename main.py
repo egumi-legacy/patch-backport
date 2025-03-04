@@ -166,24 +166,24 @@ class PatchBackportTool:
     
     def _process_mode2(self):
         """处理模式2: 多个补丁"""
-        # 获取上游提交列表
-        upstream_commits = self._get_upstream_commits()
-        logger.info(f"找到 {len(upstream_commits)} 个上游提交")
+        # 获取 commits 提交列表（包含上下游提交）
+        commits_list = self._get_commits_list()
+        logger.info(f"找到 {len(commits_list)} 个上游提交")
         
         # 创建处理流水线
         pipeline = AdaptationPipeline(self.config)
         
         # 统计变量
-        start = 0
-        end = 1
-        total_commits = len(upstream_commits[start:end])
+        start = 10
+        end = 13
+        total_commits = len(commits_list[start:end])
         successful_commits = 0
         failed_commits = []
         
         # 处理每个提交
-        for idx, commit_info in enumerate(upstream_commits[start:end], start+1):
+        for idx, commit_info in enumerate(commits_list[start:end], start+1):
             upstream_sha = commit_info['upstream_sha']
-            logger.info(f"处理提交 {idx}/{total_commits}: {upstream_sha[:8]}")
+            logger.info(f"处理提交 {idx}/{total_commits}: {upstream_sha[:6]}")
             
             # 创建提交上下文
             commit_context = CommitContext.create_for_mode2(self.config, commit_info)
@@ -218,7 +218,7 @@ class PatchBackportTool:
         # 打印总体统计
         self._print_mode2_statistics(total_commits, successful_commits, failed_commits)
     
-    def _get_upstream_commits(self) -> List[Dict[str, str]]:
+    def _get_commits_list(self) -> List[Dict[str, str]]:
         """获取上游提交信息"""
         # 检查是否有缓存文件
         commits_file = self.config.cached_commits_file_path

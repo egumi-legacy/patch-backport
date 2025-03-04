@@ -20,6 +20,7 @@ class PatchAdapterModule(BaseModule):
         super().__init__(config)
         self.type = ModuleType.PATCH_ADAPTER
         self.name = "patch_adapter"
+        # self.verbose = config.get('verbose', False)
         self.metrics = {
             'total_attempts': 0,
             'successful_executions': 0,
@@ -43,11 +44,12 @@ class PatchAdapterModule(BaseModule):
         try:
             # 获取LLM生成的补丁路径
             llm_response_path = self._get_llm_response_path(context)
+            logger.info(f"LLM响应文件路径: {llm_response_path}")
             if not llm_response_path or not Path(llm_response_path).exists():
                 raise ValueError(f"LLM响应文件不存在: {llm_response_path}")
                 
-            # 保存原始补丁
-            raw_patch_path = self._save_raw_patch(context, Path(llm_response_path).read_text())
+            # # 保存原始补丁
+            # raw_patch_path = self._save_raw_patch(context, Path(llm_response_path).read_text())
             
             # 创建适配目录
             adapted_dir = self._create_adapted_dir(context)
@@ -58,30 +60,29 @@ class PatchAdapterModule(BaseModule):
             try:
                 # 应用补丁
                 source_dir = context.commit.base_dir / context.config.target_version
-                output_dir = context.commit.base_dir / f"adapted_{context.config.target_version}"
+                output_dir = adapted_dir
                 
                 # 调用PatchAdapterUtils的generate_adapted_file方法
                 self.adapter_utils.generate_adapted_file(llm_response_path, source_dir, output_dir)
                 
-                # 测试补丁应用
-                apply_result = self._test_patch_apply(context, branch_name)
+                # 创建适配后的补丁文件
+                patch_path = self._generate_adapted_patch(context)
+                if not patch_path:
+                    raise ValueError("生成适配补丁失败")
                 
-                # 生成适配后的补丁文件
-                if apply_result.get('success', False):
-                    patch_path = self._generate_adapted_patch(context)
-                    if patch_path:
-                        apply_result['adapted_patch_path'] = str(patch_path)
+                # 测试补丁应用
+                apply_result = self._test_apply_patch(context, patch_path)
                 
                 # 更新上下文和指标
                 context.patch_adapter_result = {
                     'success': True,
-                    'adapted_patch_path': str(raw_patch_path),
+                    'adapted_patch_path': str(patch_path),
                     'apply_result': apply_result
                 }
                 
                 self._update_metrics(True, apply_success=apply_result.get('success', False),
-                                   apply_error=apply_result.get('error'), 
-                                   execution_time=(datetime.now() - start_time).total_seconds())
+                       apply_error=apply_result.get('error'), 
+                       execution_time=(datetime.now() - start_time).total_seconds())
                 
             finally:
                 # 清理测试分支
@@ -92,8 +93,9 @@ class PatchAdapterModule(BaseModule):
             
         except Exception as e:
             logger.error(f"补丁适配过程发生错误: {str(e)}")
-            if self.verbose:
-                logger.error(f"错误堆栈: {traceback.format_exc()}")
+            # if self.verbose:
+            import traceback
+            logger.error(traceback.format_exc())
             
             # 更新上下文和指标
             error_type = type(e).__name__
@@ -125,20 +127,20 @@ class PatchAdapterModule(BaseModule):
                 
         raise ValueError("找不到LLM响应文件")
     
-    def _save_raw_patch(self, context: ModuleContext, patch_content: str) -> Path:
-        """保存原始补丁"""
-        # 创建适配补丁目录
-        patch_dir = context.commit.base_dir / "adapted_patches"
-        patch_dir.mkdir(parents=True, exist_ok=True)
+    # def _save_raw_patch(self, context: ModuleContext, patch_content: str) -> Path:
+    #     """保存原始补丁"""
+    #     # 创建适配补丁目录
+    #     patch_dir = context.commit.base_dir / "adapted_patches"
+    #     patch_dir.mkdir(parents=True, exist_ok=True)
         
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        patch_path = patch_dir / f"raw_patch_{timestamp}.patch"
+    #     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    #     patch_path = patch_dir / f"raw_patch_{timestamp}.patch"
         
-        with open(patch_path, 'w') as f:
-            f.write(patch_content)
+    #     with open(patch_path, 'w') as f:
+    #         f.write(patch_content)
         
-        logger.info(f"原始补丁已保存到: {patch_path}")
-        return patch_path
+    #     logger.info(f"原始补丁已保存到: {patch_path}")
+    #     return patch_path
     
     def _create_adapted_dir(self, context: ModuleContext) -> Path:
         """创建适配目录"""
@@ -161,7 +163,7 @@ class PatchAdapterModule(BaseModule):
         # 确保我们从目标版本创建分支
         subprocess.run(
             ['git', 'checkout', context.config.target_version],
-            cwd=context.commit.base_dir,
+            cwd=context.config.repo_path,
             capture_output=True,
             check=True
         )
@@ -169,7 +171,7 @@ class PatchAdapterModule(BaseModule):
         # 创建测试分支
         subprocess.run(
             ['git', 'checkout', '-b', branch_name],
-            cwd=context.commit.base_dir,
+            cwd=context.config.repo_path,
             capture_output=True,
             check=True
         )
@@ -177,14 +179,14 @@ class PatchAdapterModule(BaseModule):
         # 清理工作区
         subprocess.run(
             ['git', 'reset', '--hard', 'HEAD'],
-            cwd=context.commit.base_dir,
+            cwd=context.config.repo_path,
             capture_output=True,
             check=True
         )
         
         subprocess.run(
             ['git', 'clean', '-fd'],
-            cwd=context.commit.base_dir,
+            cwd=context.config.repo_path,
             capture_output=True,
             check=True
         )
@@ -199,7 +201,7 @@ class PatchAdapterModule(BaseModule):
             # 切换回目标版本分支
             subprocess.run(
                 ['git', 'checkout', context.config.target_version],
-                cwd=context.commit.base_dir,
+                cwd=context.config.repo_path,
                 capture_output=True,
                 check=False
             )
@@ -207,72 +209,110 @@ class PatchAdapterModule(BaseModule):
             # 删除测试分支
             subprocess.run(
                 ['git', 'branch', '-D', branch_name],
-                cwd=context.commit.base_dir,
+                cwd=context.config.repo_path,
                 capture_output=True,
                 check=False
             )
         except Exception as e:
             logger.warning(f"清理测试分支时出错: {str(e)}")
     
-    def _test_patch_apply(self, context: ModuleContext, patch_path: Path) -> Dict[str, Any]:
-        """测试补丁是否可应用"""
+    
+    def _generate_adapted_patch(self, context: ModuleContext) -> Optional[Path]:
+        """从适配后的文件创建提交并生成补丁"""
         result = {
             'success': False,
             'error': None,
-            'error_type': None,
-            'output': None,
+            'modified_files': []
         }
         
-        # 创建测试分支名
-        branch_name = f"test_apply_{context.config.target_version}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        
         try:
-            # 明确使用repo_path而不是当前目录
+            # 获取路径
             repo_path = context.config.repo_path
+            adapted_dir = context.commit.base_dir / f"adapted_{context.config.target_version}"
+            
+            # 创建测试分支
+            branch_name = f"adapt_{context.config.target_version}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             
             # 准备测试分支
-            branches = subprocess.run(
-                ['git', 'branch'],
-                cwd=repo_path,  # 明确使用repo_path
-                check=True,
-                capture_output=True,
-                text=True
-            ).stdout
-            
-            # 如果分支已存在，先删除
-            if branch_name in branches:
-                subprocess.run(
-                    ['git', 'branch', '-D', branch_name],
-                    cwd=repo_path,  # 明确使用repo_path
-                    check=False,
-                    capture_output=True,
-                    text=True
-                )
-            
-            # 创建新分支
-            checkout_result = subprocess.run(
+            branch_result = subprocess.run(
                 ['git', 'checkout', '-b', branch_name, context.config.target_version],
-                cwd=repo_path,  # 明确使用repo_path
+                cwd=repo_path,
                 capture_output=True,
                 text=True
             )
-    
-    def _generate_adapted_patch(self, context: ModuleContext) -> Optional[Path]:
-        """生成适配后的patch文件"""
-        patch_dir = context.commit.base_dir / "patches"
-        patch_dir.mkdir(exist_ok=True)
-        
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        patch_path = patch_dir / f"adapted_{context.config.target_version}_{timestamp}.patch"
-        
-        try:
+            
+            if branch_result.returncode != 0:
+                logger.error(f"创建分支失败: {branch_result.stderr}")
+                return None
+            
+            # 复制适配后的文件到仓库
+            files_changed = False
+            modified_files = []
+            
+            for file_path in adapted_dir.rglob('*'):
+                if file_path.is_file():
+                    rel_path = file_path.relative_to(adapted_dir)
+                    target_path = Path(repo_path) / rel_path
+                    
+                    # 检查目标文件是否存在
+                    if target_path.exists():
+                        # 比较文件内容是否有变化
+                        with open(file_path, 'rb') as f1, open(target_path, 'rb') as f2:
+                            source_content = f1.read()
+                            target_content = f2.read()
+                            
+                            if source_content != target_content:
+                                # 只有文件内容有变化时才复制
+                                logger.info(f"文件已修改: {rel_path}")
+                                target_path.parent.mkdir(parents=True, exist_ok=True)
+                                shutil.copy2(file_path, target_path)
+                                files_changed = True
+                                modified_files.append(str(rel_path))
+                    else:
+                        # 新增文件
+                        logger.info(f"新增文件: {rel_path}")
+                        target_path.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(file_path, target_path)
+                        files_changed = True
+                        modified_files.append(str(rel_path))
+            
+            if not files_changed:
+                logger.warning("没有发现需要更改的文件")
+                return None
+            
+            # 提交更改
+            add_result = subprocess.run(
+                ['git', 'add', '.'],
+                cwd=repo_path,
+                capture_output=True,
+                text=True
+            )
+            
+            commit_result = subprocess.run(
+                ['git', 'commit', '-m', f"Applied adapted patch for {context.config.target_version}"],
+                cwd=repo_path,
+                capture_output=True,
+                text=True
+            )
+            
+            if commit_result.returncode != 0:
+                logger.error(f"创建提交失败: {commit_result.stderr}")
+                return None
+            
+            # 生成补丁文件
+            patch_dir = context.commit.patch_dir
+            # patch_dir.mkdir(exist_ok=True)
+            
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            patch_path = patch_dir / f"adapted_{context.config.target_version}_{timestamp}.patch"
+            
             # 使用git format-patch生成补丁
-            result = subprocess.run(
+            format_result = subprocess.run(
                 ['git', 'format-patch', '-1', 'HEAD', '-o', str(patch_dir)],
-                cwd=context.commit.base_dir,
+                cwd=repo_path,
                 capture_output=True,
                 check=True,
-                encoding='utf-8'
+                text=True
             )
             
             # 找到生成的补丁文件
@@ -288,11 +328,11 @@ class PatchAdapterModule(BaseModule):
             logger.info(f"已生成适配后的补丁文件: {patch_path}")
             return patch_path
             
-        except subprocess.CalledProcessError as e:
-            logger.error(f"生成补丁文件失败: {e.stderr}")
-            return None
         except Exception as e:
-            logger.error(f"生成补丁文件时发生错误: {str(e)}")
+            logger.error(f"生成适配补丁时发生错误: {str(e)}")
+            # if self.verbose:
+            import traceback
+            logger.error(traceback.format_exc())
             return None
     
     def _compare_patches(self, context: ModuleContext, adapted_patch: Path, reference_patch: Optional[Path] = None) -> Dict[str, Any]:
@@ -354,3 +394,99 @@ class PatchAdapterModule(BaseModule):
             json.dump(self.metrics, f, indent=2)
         
         logger.info(f"补丁适配指标已保存到: {metrics_file}")
+
+    def _test_apply_patch(self, context: ModuleContext, patch_path: Path) -> Dict[str, Any]:
+        """测试补丁是否可应用 (使用git am)"""
+        result = {
+            'success': False,
+            'error': None,
+            'error_type': None,
+            'output': None,
+        }
+
+        try:
+            # 创建测试分支
+            branch_name = f"test_am_{context.config.target_version}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            repo_path = context.config.repo_path
+            
+            # 切换到目标版本并创建测试分支
+            checkout_result = subprocess.run(
+                ['git', 'checkout', '-b', branch_name, context.config.target_version],
+                cwd=repo_path,
+                capture_output=True,
+                text=True
+            )
+            
+            if checkout_result.returncode != 0:
+                result['error'] = f"创建测试分支失败: {checkout_result.stderr}"
+                result['error_type'] = 'branch_creation_failed'
+                return result
+            
+            # 确保使用绝对路径
+            absolute_patch_path = patch_path.absolute()
+            
+            # 验证文件存在
+            if not absolute_patch_path.exists():
+                logger.error(f"补丁文件不存在: {absolute_patch_path}")
+                result['error'] = f"补丁文件不存在: {absolute_patch_path}"
+                result['error_type'] = 'file_not_found'
+                return result
+            
+            # 应用补丁
+            apply_process = subprocess.run(
+                ['git', 'am', str(absolute_patch_path)],
+                cwd=repo_path,
+                capture_output=True,
+                text=True
+            )
+            
+            if apply_process.returncode == 0:
+                result['success'] = True
+                result['output'] = apply_process.stdout
+                logger.info(f"补丁应用成功: {patch_path}")
+            else:
+                result['error'] = apply_process.stderr
+                result['error_type'] = self._categorize_error(apply_process.stderr)
+                logger.error(f"补丁应用失败: {result['error']}")
+            
+            return result
+        except Exception as e:
+            result['error'] = str(e)
+            result['error_type'] = 'exception'
+            logger.error(f"应用补丁时发生错误: {e}")
+            return result
+        finally:
+            # 无论成功与否，都清理git am状态
+            subprocess.run(['git', 'am', '--abort'], 
+                          cwd=repo_path, 
+                          capture_output=True,
+                          text=True)
+            
+            # 切换回目标版本分支
+            subprocess.run(
+                ['git', 'checkout', context.config.target_version],
+                cwd=repo_path,
+                capture_output=True,
+                check=False
+            )
+            
+            # 删除测试分支
+            subprocess.run(
+                ['git', 'branch', '-D', branch_name],
+                cwd=repo_path,
+                capture_output=True,
+                check=False
+            )
+
+    def _categorize_error(self, error_message: str) -> str:
+        """分类git错误类型"""
+        if "patch does not apply" in error_message:
+            return "patch_not_apply"
+        elif "already exists" in error_message:
+            return "file_exists"
+        elif "hunks failed" in error_message:
+            return "hunk_failed"
+        elif "not found" in error_message:
+            return "file_not_found"
+        else:
+            return "unknown"

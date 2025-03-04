@@ -172,7 +172,8 @@ class GitOperations:
             except subprocess.CalledProcessError as e:
                 logger.warning(f"无法获取文件 {file_path} 在 {ref_value} 的内容: {e.stderr}")
                 continue
-        
+
+        logger.info(f"本地获取文件内容为: {file_contents}")
         return file_contents
 
     def _get_file_contents_remote(self, file_path_list, ref):

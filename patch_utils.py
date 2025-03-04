@@ -121,9 +121,13 @@ def download_patch(patch_url: str, output_path: Path = None) -> Path:
         # 保存到文件
         with open(output_path, 'wb') as f:
             f.write(response.content)
-        
-        logger.info(f"补丁已保存到: {output_path}")
-        return output_path
+
+        if output_path.exists():
+            logger.info(f"补丁已保存到: {output_path}")
+            return output_path
+        else:
+            logger.error(f"补丁保存失败: {output_path}")
+            raise ValueError(f"补丁保存失败: {output_path}")
     
     except Exception as e:
         logger.error(f"直接下载patch也失败: {e}")
@@ -155,3 +159,12 @@ def download_patch(patch_url: str, output_path: Path = None) -> Path:
     
     # 所有尝试都失败
     raise ValueError(f"无法下载补丁: {patch_url}")
+
+
+# def download_patch_by_commit_info(repo_owner: str = None, repo_name: str = None, 
+#                   commit_sha: str = None, output_path: Path = None, resource_type: str = 'github') -> Path:
+#     if resource_type == 'github':
+#         patch_url = f"https://github.com/{repo_owner}/{repo_name}/commit/{commit_sha}.patch"
+#         return download_patch(patch_url, output_path)
+#     else:
+#         raise ValueError(f"不支持的资源类型: {resource_type}")

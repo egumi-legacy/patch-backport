@@ -1,0 +1,97 @@
+2025-03-03 22:11:40.086 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250303_221140.log
+2025-03-03 22:11:40.087 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-03 22:11:40.087 | INFO     | __main__:_get_commits_list:225 - commits_file:workspace/gregkh/linux/cache/commits.json
+2025-03-03 22:11:40.088 | INFO     | __main__:_get_commits_list:226 - use_cached_commits:True
+2025-03-03 22:11:40.088 | INFO     | __main__:_get_commits_list:229 - 从缓存文件加载commits信息
+2025-03-03 22:11:40.091 | INFO     | __main__:_process_mode2:171 - 找到 297 个上游提交
+2025-03-03 22:11:40.092 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: direct_apply
+2025-03-03 22:11:40.093 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: llm_adapter
+2025-03-03 22:11:40.093 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: patch_adapter
+2025-03-03 22:11:40.093 | INFO     | __main__:_process_mode2:186 - 处理提交 11/1: 62c552
+2025-03-03 22:11:40.095 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 62c552070a980363d55a6082b432ebd1cade7a6e
+2025-03-03 22:11:40.095 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-03-03 22:11:40.096 | INFO     | modules.direct_apply:_download_patch:211 - 下游补丁文件不存在: workspace/gregkh/linux/62c552/patches/downstream_4c4250.patch
+2025-03-03 22:11:40.097 | INFO     | modules.direct_apply:_download_patch:212 - 下载补丁: workspace/gregkh/linux/62c552/patches/downstream_4c4250.patch
+2025-03-03 22:11:40.099 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '4c42502e905107da13396ee4bc4b94979059bf2f.patch']
+2025-03-03 22:11:40.099 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/4c42502e905107da13396ee4bc4b94979059bf2f
+2025-03-03 22:11:41.543 | INFO     | patch_utils:download_patch:103 - 补丁已保存到: workspace/gregkh/linux/62c552/patches/downstream_4c4250.patch
+2025-03-03 22:11:41.546 | INFO     | modules.direct_apply:_download_patch:216 - 下游补丁下载成功: workspace/gregkh/linux/62c552/patches/downstream_4c4250.patch
+2025-03-03 22:11:41.547 | INFO     | modules.direct_apply:_download_patch:222 - 上游补丁文件已存在: workspace/gregkh/linux/62c552/patches/upstream_62c552.patch
+2025-03-03 22:11:42.075 | INFO     | modules.direct_apply:_prepare_test_branch:335 - 创建测试分支: test_patch_linux-6.12.y
+2025-03-03 22:11:43.030 | ERROR    | modules.direct_apply:_apply_patch:275 - 补丁应用失败: error: drivers/md/md-linear.c: does not exist in index
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-03-03 22:11:43.559 | INFO     | modules.direct_apply:_cleanup_test_branch:426 - 清理测试分支: test_patch_linux-6.12.y
+2025-03-03 22:11:43.560 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/62c552/evaluations/direct_apply/metrics_62c552_20250303_221143.json
+2025-03-03 22:11:43.560 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-03-03 22:11:43.596 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-03-03 22:11:43.596 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/gregkh/linux/62c552/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-03 22:11:43.596 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-03-03 22:11:43.597 | INFO     | modules.llm_adapter:_call_llm:305 - llm.run() result:{'openai_responses': ['diff --git a/drivers/md/md-linear.c b/drivers/md/md-linear.c\nindex 53bc3fda9edb2..a382929ce7bab 100644\n--- a/drivers/md/md-linear.c\n+++ b/drivers/md/md-linear.c\n@@ -204,8 +204,8 @@ static int linear_add(struct mddev *mddev, struct md_rdev *rdev)\n \trdev->saved_raid_disk = -1;\n \n \tnewconf = linear_conf(mddev, mddev->raid_disks + 1);\n-\tif (!newconf)\n-\t\treturn -ENOMEM;\n+\tif (IS_ERR(newconf))\n+\t\treturn PTR_ERR(newconf);\n \n \t/* newconf->raid_disks already keeps a copy of * the increased\n \t * value of mddev->raid_disks, WARN_ONCE() is just used to make'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-03-03 22:11:43.597 | INFO     | modules.llm_adapter:_parse_llm_response:387 - 原始LLM响应(前100字符): diff --git a/drivers/md/md-linear.c b/drivers/md/md-linear.c
+index 53bc3fda9edb2..a382929ce7bab 1006...
+2025-03-03 22:11:43.598 | INFO     | modules.llm_adapter:_parse_llm_response:410 - 找到diff --git格式，内容前100字符: diff --git a/drivers/md/md-linear.c b/drivers/md/md-linear.c
+index 53bc3fda9edb2..a382929ce7bab 1006...
+2025-03-03 22:11:43.610 | INFO     | modules.llm_adapter:_save_llm_response:440 - LLM响应已保存到: workspace/gregkh/linux/62c552/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-03 22:11:43.610 | INFO     | modules.llm_adapter:_save_llm_response:441 - 原始LLM响应已保存到: workspace/gregkh/linux/62c552/llm_output/raw_output_linux-6.12.y_qwen-plus.patch
+2025-03-03 22:11:43.611 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/62c552/evaluations/llm_adapter/metrics_62c552_20250303_221143.json
+2025-03-03 22:11:43.611 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: patch_adapter
+2025-03-03 22:11:43.611 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/gregkh/linux/62c552/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-03 22:11:43.613 | INFO     | modules.patch_adapter:_prepare_test_branch:161 - 创建测试分支: test_adapt_linux-6.12.y_20250303_221143
+2025-03-03 22:11:44.377 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/drivers/md/md-linear.c b/drivers/md/md-linear.c
+index 53bc3fda9edb2..a382929ce7bab 100644
+--- a/drivers/md/md-linear.c
++++ b/drivers/md/md-linear.c
+@@ -204,8 +204,8 @@ static int linear_add(struct mddev *mddev, struct md_rdev *rdev)
+ 	rdev->saved_raid_disk = -1;
+ 
+ 	newconf = linear_conf(mddev, mddev->raid_disks + 1);
+-	if (!newconf)
+-		return -ENOMEM;
++	if (IS_ERR(newconf))
++		return PTR_ERR(newconf);
+ 
+ 	/* newconf->raid_disks already keeps a copy of * the increased
+ 	 * value of mddev->raid_disks, WARN_ONCE() is just used to make
+2025-03-03 22:11:44.377 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -204,8 +204,8 @@ static int linear_add(struct mddev *mddev, struct md_rdev *rdev)
+ 	rdev->saved_raid_disk = -1;
+ 
+ 	newconf = linear_conf(mddev, mddev->raid_disks + 1);
+-	if (!newconf)
+-		return -ENOMEM;
++	if (IS_ERR(newconf))
++		return PTR_ERR(newconf);
+ 
+ 	/* newconf->raid_disks already keeps a copy of * the increased
+ 	 * value of mddev->raid_disks, WARN_ONCE() is just used to make
+2025-03-03 22:11:44.378 | ERROR    | patch_adapter_utils:generate_adapted_file:873 - 源文件不存在: workspace/gregkh/linux/62c552/linux-6.12.y/drivers/md/md-linear.c, 已跳过
+2025-03-03 22:11:44.561 | WARNING  | modules.patch_adapter:_generate_adapted_patch:369 - 没有发现需要更改的文件
+2025-03-03 22:11:44.561 | INFO     | modules.patch_adapter:_cleanup_test_branch:198 - 清理测试分支: test_adapt_linux-6.12.y_20250303_221143
+2025-03-03 22:11:44.731 | ERROR    | modules.patch_adapter:execute:95 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-03-03 22:11:44.732 | ERROR    | modules.patch_adapter:execute:98 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-03-03 22:11:44.733 | INFO     | modules.patch_adapter:_save_metrics:485 - 补丁适配指标已保存到: workspace/gregkh/linux/62c552/metrics/patch_adapter_metrics.json
+2025-03-03 22:11:44.734 | INFO     | core.adaptation_pipeline:process_patch:98 - 补丁处理完成，耗时: 4.64秒
+2025-03-03 22:11:44.735 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_62c552_20250303_221144/result.json
+2025-03-03 22:11:44.736 | INFO     | __main__:_print_summary:417 - ==================================================
+2025-03-03 22:11:44.736 | INFO     | __main__:_print_summary:418 - 处理摘要 - 提交: 62c552
+2025-03-03 22:11:44.736 | INFO     | __main__:_print_summary:419 - 结果: 处理失败
+2025-03-03 22:11:44.737 | INFO     | __main__:_print_summary:424 - ==================================================
+2025-03-03 22:11:44.737 | INFO     | __main__:_print_mode2_statistics:430 - ============================================================
+2025-03-03 22:11:44.737 | INFO     | __main__:_print_mode2_statistics:431 - 模式2处理统计
+2025-03-03 22:11:44.738 | INFO     | __main__:_print_mode2_statistics:432 - ============================================================
+2025-03-03 22:11:44.738 | INFO     | __main__:_print_mode2_statistics:433 - 总提交数: 1
+2025-03-03 22:11:44.738 | INFO     | __main__:_print_mode2_statistics:434 - 成功处理: 0
+2025-03-03 22:11:44.739 | INFO     | __main__:_print_mode2_statistics:435 - 失败处理: 1
+2025-03-03 22:11:44.739 | INFO     | __main__:_print_mode2_statistics:436 - 成功率: 0.00%
+2025-03-03 22:11:44.739 | INFO     | __main__:_print_mode2_statistics:439 - 
+失败的提交:
+2025-03-03 22:11:44.739 | INFO     | __main__:_print_mode2_statistics:441 -   - 62c552: 未知错误
+2025-03-03 22:11:44.740 | INFO     | __main__:_print_mode2_statistics:443 - ============================================================
+2025-03-03 22:11:44.741 | INFO     | __main__:_print_mode2_statistics:465 - 统计结果已保存到: statistics/mode2_stats_linux-6.12.y_20250303_221144.json
+2025-03-03 22:11:44.741 | INFO     | __main__:run:122 - 处理完成

@@ -1,0 +1,46 @@
+2025-03-03 22:01:34.106 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250303_220134.log
+2025-03-03 22:01:34.107 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-03 22:01:34.107 | INFO     | __main__:_get_commits_list:225 - commits_file:workspace/gregkh/linux/cache/commits.json
+2025-03-03 22:01:34.108 | INFO     | __main__:_get_commits_list:226 - use_cached_commits:True
+2025-03-03 22:01:34.108 | INFO     | __main__:_get_commits_list:229 - 从缓存文件加载commits信息
+2025-03-03 22:01:34.111 | INFO     | __main__:_process_mode2:171 - 找到 297 个上游提交
+2025-03-03 22:01:34.111 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: direct_apply
+2025-03-03 22:01:34.112 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: llm_adapter
+2025-03-03 22:01:34.112 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: patch_adapter
+2025-03-03 22:01:34.112 | INFO     | __main__:_process_mode2:186 - 处理提交 11/1: 62c552
+2025-03-03 22:01:34.113 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 62c552070a980363d55a6082b432ebd1cade7a6e
+2025-03-03 22:01:34.113 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-03-03 22:01:34.114 | INFO     | modules.direct_apply:_download_patch:211 - 下游补丁文件不存在: workspace/gregkh/linux/62c552/patches/downstream_4c4250.patch
+2025-03-03 22:01:34.114 | INFO     | modules.direct_apply:_download_patch:212 - 下载补丁: workspace/gregkh/linux/62c552/patches/downstream_4c4250.patch
+2025-03-03 22:01:34.129 | ERROR    | modules.direct_apply:execute:98 - 直接应用过程发生错误: maximum recursion depth exceeded
+2025-03-03 22:01:34.171 | ERROR    | modules.direct_apply:execute:100 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 56, in execute
+    patch_path = self._download_patch(context)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 213, in _download_patch
+    success = download_patch(context.commit.repo_owner, context.commit.repo_name,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/patch_utils.py", line 164, in download_patch
+    return download_patch(patch_url, output_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/patch_utils.py", line 164, in download_patch
+    return download_patch(patch_url, output_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/patch_utils.py", line 164, in download_patch
+    return download_patch(patch_url, output_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [Previous line repeated 990 more times]
+RecursionError: maximum recursion depth exceeded
+
+2025-03-03 22:01:34.172 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/62c552/evaluations/direct_apply/metrics_62c552_20250303_220134.json
+2025-03-03 22:01:34.173 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-03-03 22:01:34.174 | ERROR    | modules.llm_adapter:execute:87 - LLM处理过程发生错误: 没有找到补丁文件路径
+2025-03-03 22:01:34.175 | ERROR    | modules.llm_adapter:execute:88 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 48, in execute
+    raise ValueError("没有找到补丁文件路径")
+ValueError: 没有找到补丁文件路径
+
+2025-03-03 22:01:34.178 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/62c552/evaluations/llm_adapter/metrics_62c552_20250303_220134.json
+2025-03-03 22:01:34.178 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: patch_adapter
+2025-03-03 22:01:34.179 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/gregkh/linux/62c552/llm_output/raw_output_linux-6.12.y_qwen-plus.patch
+2025-03-03 22:01:34.183 | INFO     | modules.patch_adapter:_prepare_test_branch:161 - 创建测试分支: test_adapt_linux-6.12.y_20250303_220134
