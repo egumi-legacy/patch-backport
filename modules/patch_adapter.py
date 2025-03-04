@@ -66,17 +66,15 @@ class PatchAdapterModule(BaseModule):
                 self.adapter_utils.generate_adapted_file(llm_response_path, source_dir, output_dir)
                 
                 # 创建适配后的补丁文件
-                patch_path = self._generate_adapted_patch(context)
-                if not patch_path:
+                adapted_patch_path = self._generate_adapted_patch(context, branch_name)
+                if not adapted_patch_path:
                     raise ValueError("生成适配补丁失败")
-                
                 # 测试补丁应用
-                apply_result = self._test_apply_patch(context, patch_path)
-                
+                apply_result = self._test_apply_patch(context, adapted_patch_path)
                 # 更新上下文和指标
                 context.patch_adapter_result = {
-                    'success': True,
-                    'adapted_patch_path': str(patch_path),
+                    'success': apply_result.get('success', False),
+                    'adapted_patch_path': str(adapted_patch_path),
                     'apply_result': apply_result
                 }
                 
@@ -217,7 +215,7 @@ class PatchAdapterModule(BaseModule):
             logger.warning(f"清理测试分支时出错: {str(e)}")
     
     
-    def _generate_adapted_patch(self, context: ModuleContext) -> Optional[Path]:
+    def _generate_adapted_patch(self, context: ModuleContext, branch_name: str) -> Optional[Path]:
         """从适配后的文件创建提交并生成补丁"""
         result = {
             'success': False,
@@ -230,20 +228,17 @@ class PatchAdapterModule(BaseModule):
             repo_path = context.config.repo_path
             adapted_dir = context.commit.base_dir / f"adapted_{context.config.target_version}"
             
-            # 创建测试分支
-            branch_name = f"adapt_{context.config.target_version}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            # # 准备测试分支
+            # branch_result = subprocess.run(
+            #     ['git', 'checkout', '-b', branch_name, context.config.target_version],
+            #     cwd=repo_path,
+            #     capture_output=True,
+            #     text=True
+            # )
             
-            # 准备测试分支
-            branch_result = subprocess.run(
-                ['git', 'checkout', '-b', branch_name, context.config.target_version],
-                cwd=repo_path,
-                capture_output=True,
-                text=True
-            )
-            
-            if branch_result.returncode != 0:
-                logger.error(f"创建分支失败: {branch_result.stderr}")
-                return None
+            # if branch_result.returncode != 0:
+            #     logger.error(f"创建分支失败: {branch_result.stderr}")
+            #     return None
             
             # 复制适配后的文件到仓库
             files_changed = False
@@ -253,7 +248,7 @@ class PatchAdapterModule(BaseModule):
                 if file_path.is_file():
                     rel_path = file_path.relative_to(adapted_dir)
                     target_path = Path(repo_path) / rel_path
-                    
+                    logger.info(f"target_path: {target_path.resolve()}")
                     # 检查目标文件是否存在
                     if target_path.exists():
                         # 比较文件内容是否有变化
@@ -263,11 +258,14 @@ class PatchAdapterModule(BaseModule):
                             
                             if source_content != target_content:
                                 # 只有文件内容有变化时才复制
-                                logger.info(f"文件已修改: {rel_path}")
+                                logger.info(f"文件内容变化，执行复制: {rel_path}")
                                 target_path.parent.mkdir(parents=True, exist_ok=True)
                                 shutil.copy2(file_path, target_path)
+                                logger.info(f"将文件从{file_path.resolve()}复制到{target_path.resolve()}")
                                 files_changed = True
                                 modified_files.append(str(rel_path))
+                            else:
+                                logger.info(f"文件未修改: {rel_path}")
                     else:
                         # 新增文件
                         logger.info(f"新增文件: {rel_path}")
@@ -300,33 +298,49 @@ class PatchAdapterModule(BaseModule):
                 return None
             
             # 生成补丁文件
-            patch_dir = context.commit.patch_dir
+            absolute_patch_dir = context.commit.patch_dir.resolve()
             # patch_dir.mkdir(exist_ok=True)
             
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            patch_path = patch_dir / f"adapted_{context.config.target_version}_{timestamp}.patch"
+            adapted_patch_path = absolute_patch_dir / f"adapted_{context.config.target_version}_{timestamp}.patch"
             
             # 使用git format-patch生成补丁
             format_result = subprocess.run(
-                ['git', 'format-patch', '-1', 'HEAD', '-o', str(patch_dir)],
+                ['git', 'format-patch', '-1', '-o', str(absolute_patch_dir)],
                 cwd=repo_path,
                 capture_output=True,
                 check=True,
                 text=True
             )
-            
-            # 找到生成的补丁文件
-            generated_patches = list(patch_dir.glob('*.patch'))
-            if not generated_patches:
-                logger.error("未能生成补丁文件")
+            if format_result.returncode != 0:
+                logger.error(f"生成补丁失败: {format_result.stderr}")
                 return None
+            else:
+                logger.info(f"生成补丁成功: {format_result.stdout}")
+                files = os.listdir(absolute_patch_dir)
+                logger.info(f"patch_dir所含文件: {files}")
+            # 找到生成的补丁文件
+            # 找到git format-patch生成的补丁文件 (通常以00-开头)
+            generated_patches = list(absolute_patch_dir.glob('00*.patch'))
+            if not generated_patches:
+                logger.error("未能找到git format-patch生成的补丁文件")
+                return None
+
+            # 确保只重命名新生成的补丁文件
+            format_patch = generated_patches[0]
+            format_patch.rename(adapted_patch_path)
+            logger.info(f"已重命名补丁文件: 从 {format_patch} 到 {adapted_patch_path}")
+            # if not generated_patches:
+            #     logger.error("未能生成补丁文件")
+            #     return None
                 
             # 重命名最新生成的补丁文件
-            latest_patch = max(generated_patches, key=lambda p: p.stat().st_mtime)
-            shutil.move(latest_patch, patch_path)
+            # latest_patch = max(generated_patches, key=lambda p: p.stat().st_mtime)
+            # logger.info(f"latest_patch: {latest_patch.resolve()}")
+            # shutil.copy2(generated_patches, adapted_patch_path)
             
-            logger.info(f"已生成适配后的补丁文件: {patch_path}")
-            return patch_path
+            logger.info(f"已生成适配后的补丁文件: {adapted_patch_path}")
+            return adapted_patch_path
             
         except Exception as e:
             logger.error(f"生成适配补丁时发生错误: {str(e)}")
@@ -334,6 +348,21 @@ class PatchAdapterModule(BaseModule):
             import traceback
             logger.error(traceback.format_exc())
             return None
+        
+        # finally:
+        #     # 删除测试分支并切换回目标版本分支
+        #     subprocess.run(
+        #         ['git', 'branch', '-D', branch_name],
+        #         cwd=repo_path,
+        #         capture_output=True,
+        #         check=False
+        #     )
+        #     subprocess.run(
+        #         ['git', 'checkout', context.config.target_version],
+        #         cwd=repo_path,
+        #         capture_output=True,
+        #         check=False
+        #     )
     
     def _compare_patches(self, context: ModuleContext, adapted_patch: Path, reference_patch: Optional[Path] = None) -> Dict[str, Any]:
         """比较适配补丁和参考补丁（如果有）"""

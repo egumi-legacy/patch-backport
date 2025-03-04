@@ -133,9 +133,12 @@ class GitOperations:
         # 如果指定了本地仓库路径且优先使用本地仓库
         if local_first and local_repo_path:
             repo_path = local_repo_path
-        else:
+        elif local_first and not local_repo_path:
             # 使用上下文中的仓库路径（如果有）
-            repo_path = self.repo_path if self.repo_path else local_repo_path
+            repo_path = self.repo_path
+        else:
+            repo_path = None
+            
         
         logger.info(f"获取内容中：{file_list}")
         if repo_path:

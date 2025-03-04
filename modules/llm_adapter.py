@@ -43,11 +43,11 @@ class LLMAdapterModule(BaseModule):
             is_retry = context.config.retry_with_feedback and context.retry_count > 0 and context.feedback_data
             
             # 获取补丁文件路径
-            patch_path = context.direct_apply_result.get('patch_path') if context.direct_apply_result else None
-            if not patch_path:
+            patch_path = context.commit.patch_path
+            if not patch_path.exists():
                 raise ValueError("没有找到补丁文件路径")
 
-            context.commit.patch_path = patch_path
+            # context.commit.patch_path = patch_path
             # 准备LLM输入内容
             prompt_data = self._prepare_prompt_data(context, is_retry)
             # logger.info(f"prompt_data:{prompt_data}")

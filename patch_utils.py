@@ -67,10 +67,10 @@ def download_patch(patch_url: str, output_path: Path = None) -> Path:
     # 确保输出路径存在
     if output_path:
         output_path.parent.mkdir(parents=True, exist_ok=True)
-    else:
-        # 创建临时文件
-        timestamp = time.strftime("%Y%m%d_%H%M%S")
-        output_path = Path(f"temp_patch_{timestamp}.patch")
+    # else:
+    #     # 创建临时文件
+    #     timestamp = time.strftime("%Y%m%d_%H%M%S")
+    #     output_path = Path(f"temp_patch_{timestamp}.patch")
     
     # 尝试使用GitHub API下载
     try:
@@ -100,7 +100,8 @@ def download_patch(patch_url: str, output_path: Path = None) -> Path:
             with open(output_path, 'wb') as f:
                 f.write(patch_response.content)
             
-            logger.info(f"补丁已保存到: {output_path}")
+            if output_path.exists():
+                logger.info(f"下载补丁成功，补丁已保存到: {output_path}")
             return output_path
     
     except Exception as e:
@@ -131,32 +132,7 @@ def download_patch(patch_url: str, output_path: Path = None) -> Path:
     
     except Exception as e:
         logger.error(f"直接下载patch也失败: {e}")
-    
-    # 尝试从torvalds/linux仓库下载（如果是Linux内核补丁）
-    try:
-        if 'linux' in patch_url.lower():
-            # 提取commit SHA
-            parts = patch_url.split('/')
-            if len(parts) >= 7:
-                commit_sha = parts[6].replace('.patch', '')
-                
-                # 尝试从torvalds/linux仓库下载
-                torvalds_url = f"https://github.com/torvalds/linux/commit/{commit_sha}.patch"
-                logger.info(f"尝试从torvalds/linux仓库下载: {torvalds_url}")
-                
-                response = requests.get(torvalds_url, headers=headers)
-                response.raise_for_status()
-                
-                # 保存到文件
-                with open(output_path, 'wb') as f:
-                    f.write(response.content)
-                
-                logger.info(f"补丁已保存到: {output_path}")
-                return output_path
-    
-    except Exception as e:
-        logger.error(f"从torvalds/linux下载也失败: {e}")
-    
+     
     # 所有尝试都失败
     raise ValueError(f"无法下载补丁: {patch_url}")
 

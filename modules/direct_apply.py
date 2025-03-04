@@ -54,8 +54,12 @@ class DirectApplyModule(BaseModule):
             
             # 下载补丁文件
             patch_path = self._download_patch(context)
-            if not patch_path:
+            if not patch_path.exists():
                 raise ValueError("下载补丁失败")
+            else:
+                context.commit.patch_path = patch_path
+                # logger.info(f"此时upstream_patch_path存在状态: {True if context.commit.patch_path.exists() else False}")
+                logger.info(f"下载补丁成功: {patch_path}")
             
             # 准备测试分支
             branch_name = self._prepare_test_branch(context)
@@ -208,10 +212,10 @@ class DirectApplyModule(BaseModule):
         if downstream_patch_path.exists():
             logger.info(f"下游补丁文件已存在: {downstream_patch_path}")
         else:
-            logger.info(f"下游补丁文件不存在: {downstream_patch_path}")
-            logger.info(f"下载补丁: {downstream_patch_path}")
+            logger.info(f"下游补丁文件不存在，下载补丁: {downstream_patch_path}")
+            # logger.info(f": {downstream_patch_path}")
             download_patch_url = f"https://github.com/{context.commit.repo_owner}/{context.commit.repo_name}/commit/{context.commit.downstream_sha}.patch"
-            success = download_patch(download_patch_url, downstream_patch_path)
+            success = download_patch(download_patch_url, downstream_patch_path).exists()
             if success:
                 logger.info(f"下游补丁下载成功: {downstream_patch_path}")
             else:
@@ -222,17 +226,18 @@ class DirectApplyModule(BaseModule):
             logger.info(f"上游补丁文件已存在: {patch_path}")
             # 确保返回绝对路径
             return patch_path.absolute()
-            
-        logger.info(f"下载补丁: {context.commit.patch_url}")
-        success = download_patch(context.commit.patch_url, patch_path)
-        
-        if success:
-            logger.info(f"补丁下载成功: {patch_path}")
-            # 确保返回绝对路径
-            return patch_path.absolute()
         else:
-            logger.error(f"补丁下载失败: {context.commit.patch_url}")
-            return None
+            logger.info(f"上游补丁文件不存在，下载补丁: {downstream_patch_path}")
+            success = download_patch(context.commit.patch_url, patch_path).exists()
+            
+            if success:
+                logger.info(f"上游补丁下载成功: {patch_path}")
+                # self.context.commit.patch_path = patch_path
+                # 确保返回绝对路径
+                return patch_path.absolute()
+            else:
+                logger.error(f"补丁下载失败: {context.commit.patch_url}")
+                return None
         
 
     def _apply_patch(self, context: ModuleContext, patch_path: Path, branch_name: str):

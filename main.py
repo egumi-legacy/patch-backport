@@ -174,7 +174,7 @@ class PatchBackportTool:
         pipeline = AdaptationPipeline(self.config)
         
         # 统计变量
-        start = 10
+        start = 12
         end = 13
         total_commits = len(commits_list[start:end])
         successful_commits = 0
@@ -404,19 +404,28 @@ class PatchBackportTool:
         
         # 确定处理结果
         direct_success = bool(context.direct_apply_result and context.direct_apply_result.get('success'))
-        llm_success = bool(context.adapted_patches)
+        llm_success = bool(context.llm_output and context.llm_output.get('success'))
+        logger.info(f"context.patch_adapter_result: {context.patch_adapter_result}")
+        patch_adapter_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
+        
         
         if direct_success:
             result = "直接应用成功"
+            method = "direct_apply"
         elif llm_success:
             result = "LLM适配成功"
+            method = "llm_adapter"
+        elif patch_adapter_success:
+            result = "补丁适配成功"
+            method = "patch_adapter"
         else:
             result = "处理失败"
+            method = "failed"
         
         # 打印摘要
         logger.info("=" * 50)
         logger.info(f"处理摘要 - 提交: {commit_sha}")
-        logger.info(f"结果: {result}")
+        logger.info(f"结果: {result} (方法: {method})")
         
         if context.last_error:
             logger.info(f"最后错误: {context.last_error}")
@@ -427,18 +436,55 @@ class PatchBackportTool:
         """打印模式2的统计信息"""
         success_rate = (successful / total) * 100 if total > 0 else 0
         
+        # 从上下文中提取处理方法信息 (不使用不存在的self.processed_commits属性)
+        direct_apply_count = 0
+        patch_adapter_count = 0
+        llm_adapter_count = 0
+        failed_count = len(failed_commits)
+        
+        # 从result.json文件中获取详细信息
+        results_dir = Path("results")
+        if results_dir.exists():
+            # 遍历results目录下的所有结果文件
+            for result_dir in results_dir.iterdir():
+                if not result_dir.is_dir() or not (result_dir / "result.json").exists():
+                    continue
+                    
+                with open(result_dir / "result.json", "r") as f:
+                    result_data = json.load(f)
+                    
+                # 检查处理方法
+                if "summary" in result_data and "method" in result_data["summary"]:
+                    method = result_data["summary"]["method"]
+                    if method == "direct_apply":
+                        direct_apply_count += 1
+                    elif method == "patch_adapter":
+                        patch_adapter_count += 1
+                    elif method == "llm_adapter":
+                        llm_adapter_count += 1
+        
+        # 计算适配成功率（排除直接应用成功的情况）
+        adapt_required = total - direct_apply_count
+        adapt_successful = patch_adapter_count + llm_adapter_count
+        adapt_success_rate = (adapt_successful / adapt_required) * 100 if adapt_required > 0 else 0
+        
         logger.info("=" * 60)
         logger.info(f"模式2处理统计")
         logger.info("=" * 60)
         logger.info(f"总提交数: {total}")
-        logger.info(f"成功处理: {successful}")
-        logger.info(f"失败处理: {total - successful}")
-        logger.info(f"成功率: {success_rate:.2f}%")
+        logger.info(f"直接应用成功: {direct_apply_count}")
+        logger.info(f"需要适配数量: {adapt_required}")
+        logger.info(f"适配成功数量: {adapt_successful}")
+        logger.info(f"- 补丁适配成功: {patch_adapter_count}")
+        logger.info(f"- LLM适配成功: {llm_adapter_count}")
+        logger.info(f"适配失败数量: {failed_count}")
+        logger.info(f"总体成功率: {success_rate:.2f}%")
+        logger.info(f"适配成功率: {adapt_success_rate:.2f}%")
         
         if failed_commits:
             logger.info("\n失败的提交:")
             for commit in failed_commits:
-                logger.info(f"  - {commit['sha']}: {commit['error'] or '未知错误'}")
+                logger.info(f"  - {commit['sha']}: {commit.get('error', '未知错误')}")
         
         logger.info("=" * 60)
         
@@ -453,9 +499,14 @@ class PatchBackportTool:
             'timestamp': datetime.now().isoformat(),
             'target_version': self.config.target_version,
             'total_commits': total,
-            'successful_commits': successful,
-            'failed_commits': total - successful,
-            'success_rate': success_rate,
+            'direct_apply_success': direct_apply_count,
+            'adaptation_required': adapt_required,
+            'adaptation_successful': adapt_successful,
+            'patch_adapter_success': patch_adapter_count,
+            'llm_adapter_success': llm_adapter_count,
+            'failed_commits': failed_count,
+            'overall_success_rate': success_rate,
+            'adaptation_success_rate': adapt_success_rate,
             'failed_details': failed_commits
         }
         

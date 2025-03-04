@@ -241,7 +241,8 @@ class PatchProcessor:
         #     output_file = str(base_dir / 'patch' / f'patch.txt')
         #     # print(f"output_file: {output_file}")
         #     subprocess.run(['curl', '-L', patch_url, '-o', output_file])
-        patch_path = self.download_patch_by_type(self.url, 'upstream')
+        # patch_path = self.download_patch_by_type(self.url, 'upstream')
+        patch_path = self.context.commit.patch_path
         
         # 创建返回值
         patch_values = [{"patchCode": html.unescape(Path(patch_path).read_text()), 
