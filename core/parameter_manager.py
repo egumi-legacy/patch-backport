@@ -40,6 +40,11 @@ class BaseConfig(BaseModel):
 
     target_version: str 
 
+    module_configs: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
+
+    # 内核编译器配置
+    kernel_compiler: Dict[str, Any] = Field(default_factory=dict)
+
     @field_validator("enabled_modules")
     def validate_enabled_modules(cls, v):
         valid_modules = {"direct_apply", "llm_adapter", "patch_adapter", "compiler"}
@@ -222,6 +227,9 @@ class ModuleContext(BaseModel):
     # adapted_patches: List[Dict[str, Any]] = Field(default_factory=list)
     compilation_result: List[Dict[str, Any]] = Field(default_factory=list)
     patch_adapter_result: List[Dict[str, Any]] = Field(default_factory=list)
+
+    # 内核编译器配置
+    docker_image_built: bool = False
 
     # 反馈数据
     retry_count: int = 0

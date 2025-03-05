@@ -23,6 +23,11 @@ common:
       temperature: 0.7
     compiler:
       extra_flags: "-j4"
+    kernel_compiler:
+      enabled: true
+      use_docker: true
+      docker_image: "kernel-compiler:latest"
+      ccache_dir: "~/.ccache"
   
   stop_on_failure: false  # 是否在失败时停止
   use_cached_patches: false

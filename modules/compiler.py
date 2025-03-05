@@ -10,7 +10,7 @@ from datetime import datetime
 import shutil
 from .base_module import BaseModule, ModuleType
 from core.parameter_manager import ModuleContext
-
+from .kernel_compiler import KernelCompiler
 class CompilerModule(BaseModule):
     """编译模块 - 对适配后的文件进行单文件编译测试"""
 
@@ -52,58 +52,99 @@ class CompilerModule(BaseModule):
                 self._update_metrics(False, error_type="AdapterFailed")
                 self._save_metrics(context)
                 return context
-
-            # 创建编译目录
-            compile_dir = context.commit.compilation_dir
             
-            # 获取需要编译的文件列表
-            files_to_compile = self._get_modified_files(context)
-            logger.info(f"需要编译的文件列表: {files_to_compile}")
-            if not files_to_compile:
-                logger.warning("没有找到需要编译的文件")
-                self._update_metrics(True, compiled_success=True)
-                self._save_metrics(context)
+            # 调用内核编译模块
+            kernel_compiler = KernelCompiler(
+                repo_path=context.config.repo_path,
+                output_dir=context.commit.compilation_dir,
+                config_path=context.commit.base_dir / ".config"
+            )
+            # 首次运行时构建Docker镜像
+            if context.config.kernel_compiler.get('use_docker', True) and not context.docker_image_built:
+                logger.info("开始构建Docker镜像")
+                if not kernel_compiler.build_docker_image():
+                    logger.error("Docker镜像构建失败，无法继续编译验证")
+                    context.compilation_result = {
+                        'success': False,
+                        'error': "Docker镜像构建失败"
+                    }
+                    return context
+                logger.info("Docker镜像构建完成")
+                context.docker_image_built = True
+            
+            # 获取修改的文件
+            modified_files = self._get_modified_files(context)
+            
+            # 执行编译验证
+            compilation_ok = kernel_compiler.compile_files(modified_files)
+            
+            if not compilation_ok:
+                logger.error("补丁导致编译错误")
+                context.compilation_result = {
+                    'success': False,
+                    'error': "编译失败，请检查日志了解详情"
+                }
                 return context
-            
-            # 编译每个文件并收集结果
-            compilation_results = []
-            overall_success = True
-            
-            for file_path in files_to_compile:
-                result = self._compile_file(context, file_path)
-                compilation_results.append(result)
                 
-                if not result['success']:
-                    overall_success = False
-                    
-                    # 如果配置了失败重试，则进行重试
-                    if context.config.retry_with_feedback and not result.get('retried', False):
-                        retry_result = self._retry_with_feedback(context, result)
-                        if retry_result:
-                            # 替换原来的结果
-                            compilation_results[-1] = retry_result
-                            if retry_result['success']:
-                                # 如果重试成功，重新评估整体成功状态
-                                overall_success = all(r['success'] for r in compilation_results)
-                
-                # 如果配置了失败停止，则中断
-                if not result['success'] and context.config.stop_on_failure:
-                    logger.info("编译失败，且配置为停止于失败，中断编译")
-                    break
-            
-            # 更新上下文和指标
+            logger.info("补丁编译验证通过")
             context.compilation_result = {
-                'success': overall_success,
-                'results': compilation_results,
-                'compile_dir': str(compile_dir)
+                'success': True,
+                'results': compilation_ok,
+                'compile_dir': str(context.commit.compilation_dir)
             }
+            return context
+
+            # # 创建编译目录
+            # compile_dir = context.commit.compilation_dir
             
-            self._update_metrics(True, 
-                              compiled_success=overall_success,
-                              compilation_results=compilation_results,
-                              execution_time=(datetime.now() - start_time).total_seconds())
+            # # 获取需要编译的文件列表
+            # files_to_compile = self._get_modified_files(context)
+            # logger.info(f"需要编译的文件列表: {files_to_compile}")
+            # if not files_to_compile:
+            #     logger.warning("没有找到需要编译的文件")
+            #     self._update_metrics(True, compiled_success=True)
+            #     self._save_metrics(context)
+            #     return context
             
-            self._save_metrics(context)
+            # # 编译每个文件并收集结果
+            # compilation_results = []
+            # overall_success = True
+            
+            # for file_path in files_to_compile:
+            #     result = self._compile_file(context, file_path)
+            #     compilation_results.append(result)
+                
+            #     if not result['success']:
+            #         overall_success = False
+                    
+            #         # 如果配置了失败重试，则进行重试
+            #         if context.config.retry_with_feedback and not result.get('retried', False):
+            #             retry_result = self._retry_with_feedback(context, result)
+            #             if retry_result:
+            #                 # 替换原来的结果
+            #                 compilation_results[-1] = retry_result
+            #                 if retry_result['success']:
+            #                     # 如果重试成功，重新评估整体成功状态
+            #                     overall_success = all(r['success'] for r in compilation_results)
+                
+            #     # 如果配置了失败停止，则中断
+            #     if not result['success'] and context.config.stop_on_failure:
+            #         logger.info("编译失败，且配置为停止于失败，中断编译")
+            #         break
+            
+            # # 更新上下文和指标
+            # context.compilation_result = {
+            #     'success': overall_success,
+            #     'results': compilation_results,
+            #     'compile_dir': str(compile_dir)
+            # }
+            
+            # self._update_metrics(True, 
+            #                   compiled_success=overall_success,
+            #                   compilation_results=compilation_results,
+            #                   execution_time=(datetime.now() - start_time).total_seconds())
+            
+            # self._save_metrics(context)
             return context
             
         except Exception as e:
