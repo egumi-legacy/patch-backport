@@ -54,10 +54,11 @@ class CompilerModule(BaseModule):
                 return context
 
             # 创建编译目录
-            compile_dir = self._create_compile_dir(context)
+            compile_dir = context.commit.compilation_dir
             
             # 获取需要编译的文件列表
             files_to_compile = self._get_modified_files(context)
+            logger.info(f"需要编译的文件列表: {files_to_compile}")
             if not files_to_compile:
                 logger.warning("没有找到需要编译的文件")
                 self._update_metrics(True, compiled_success=True)
@@ -170,6 +171,7 @@ class CompilerModule(BaseModule):
                 except Exception as e:
                     logger.warning(f"从patch文件获取修改列表失败: {str(e)}")
         
+        
         return modified_files
     
     def _compile_file(self, context: ModuleContext, file_path: Path) -> Dict[str, Any]:
@@ -187,9 +189,8 @@ class CompilerModule(BaseModule):
         if not build_command:
             result['error'] = f"无法确定文件的编译命令: {file_path}"
             return result
-        
         # 确定编译目录
-        compile_dir = context.commit.base_dir
+        compile_dir = context.commit.compilation_dir
         
         # 执行编译
         logger.info(f"编译文件: {file_path}, 命令: {build_command}")

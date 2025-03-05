@@ -61,8 +61,8 @@ class BaseModule(ABC):
         
         elif self.type == ModuleType.COMPILER:
             # 如果没有适配补丁，跳过编译
-            if not context.adapted_patches:
-                logger.info("没有适配补丁，跳过编译")
+            if not context.patch_adapter_result['success']:
+                logger.info("适配补丁失败，跳过编译")
                 return False
         
         return True

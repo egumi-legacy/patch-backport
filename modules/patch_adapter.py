@@ -69,6 +69,9 @@ class PatchAdapterModule(BaseModule):
                 adapted_patch_path = self._generate_adapted_patch(context, branch_name)
                 if not adapted_patch_path:
                     raise ValueError("生成适配补丁失败")
+                else:
+                    logger.info(f"生成适配补丁成功: {adapted_patch_path}")
+                    # context.adapted_patches.append(adapted_patch_path)
                 # 测试补丁应用
                 apply_result = self._test_apply_patch(context, adapted_patch_path)
                 # 更新上下文和指标
@@ -301,9 +304,9 @@ class PatchAdapterModule(BaseModule):
             absolute_patch_dir = context.commit.patch_dir.resolve()
             # patch_dir.mkdir(exist_ok=True)
             
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            adapted_patch_path = absolute_patch_dir / f"adapted_{context.config.target_version}_{timestamp}.patch"
-            
+            # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            # adapted_patch_path = absolute_patch_dir / f"adapted_{context.config.target_version}_{timestamp}.patch"
+            adapted_patch_path = absolute_patch_dir / f"adapted_{context.config.target_version}.patch"
             # 使用git format-patch生成补丁
             format_result = subprocess.run(
                 ['git', 'format-patch', '-1', '-o', str(absolute_patch_dir)],

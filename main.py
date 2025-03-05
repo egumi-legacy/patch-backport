@@ -205,7 +205,7 @@ class PatchBackportTool:
             
             # 更新统计
             direct_success = bool(context.direct_apply_result and context.direct_apply_result.get('success'))
-            llm_success = bool(context.adapted_patches)
+            llm_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
             
             if direct_success or llm_success:
                 successful_commits += 1
@@ -372,7 +372,7 @@ class PatchBackportTool:
             },
             'summary': {
                 'success': bool(context.direct_apply_result and context.direct_apply_result.get('success')) or
-                          bool(context.adapted_patches),
+                          bool(context.patch_adapter_result and context.patch_adapter_result.get('success')),
                 'method': 'direct_apply' if (context.direct_apply_result and 
                                            context.direct_apply_result.get('success')) else 'llm_adapted',
                 'timestamp': datetime.now().isoformat()
@@ -384,11 +384,11 @@ class PatchBackportTool:
         with open(result_file, 'w') as f:
             json.dump(result, f, indent=2)
         
-        # 复制关键文件
-        if context.direct_apply_result and context.direct_apply_result.get('patch_path'):
-            patch_path = Path(context.direct_apply_result.get('patch_path'))
-            if patch_path.exists():
-                shutil.copy(patch_path, result_dir / "original.patch")
+        # # 复制关键文件
+        # if context.direct_apply_result and context.direct_apply_result.get('patch_path'):
+        #     patch_path = Path(context.direct_apply_result.get('patch_path'))
+        #     if patch_path.exists():
+        #         shutil.copy(patch_path, result_dir / "original.patch")
         
         # if context.llm_response and context.llm_response.get('response_path'):
         #     response_path = Path(context.llm_response.get('response_path'))

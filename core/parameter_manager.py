@@ -170,6 +170,13 @@ class CommitContext(BaseModel):
         path.mkdir(parents=True, exist_ok=True)
         return path
     
+    @property
+    def compilation_dir(self) -> Path:
+        """获取编译目录"""
+        path = self.base_dir / 'compilation'
+        path.mkdir(parents=True, exist_ok=True)
+        return path
+    
     @classmethod
     def create_for_mode1(cls, config: Mode1Config) -> 'CommitContext':
         """创建模式1的提交上下文"""
@@ -212,7 +219,7 @@ class ModuleContext(BaseModel):
     # start_time: datetime = field(default_factory=datetime.now)
     direct_apply_result: Optional[Dict[str, Any]] = None
     llm_output: Optional[Dict[str, Any]] = None
-    adapted_patches: List[Dict[str, Any]] = Field(default_factory=list)
+    # adapted_patches: List[Dict[str, Any]] = Field(default_factory=list)
     compilation_result: List[Dict[str, Any]] = Field(default_factory=list)
     patch_adapter_result: List[Dict[str, Any]] = Field(default_factory=list)
 
@@ -257,7 +264,7 @@ class ModuleContext(BaseModel):
     @property
     def evaluation_dir(self) -> Path:
         return self.commit.evaluation_dir
-
+    
     @classmethod
     def create_from_patch_info(cls, **patch_info):
         """从补丁信息创建上下文"""

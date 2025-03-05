@@ -9,7 +9,7 @@ from datetime import datetime
 from patch_utils import download_patch
 from core.parameter_manager import Mode1Config, Mode2Config, ModuleContext
 from typing import Union, Dict, Any, Optional
-from adaptation_pipeline_bak import AdaptationPipeline
+# from adaptation_pipeline_bak import AdaptationPipeline
 
 class PatchEvaluator:
     def __init__(self, repo_path: Path, context: ModuleContext):
@@ -819,27 +819,27 @@ class PatchEvaluator:
             'compilation': None
         }
         
-        # 使用pipeline处理
-        pipeline_config = {
-            "enabled_modules": ["patch_adapter", "compiler"],
-            "results_dir": str(self.context.workspace / "results"),  # 使用 workspace 属性
-            "patch_adapter_config": {
-                "target_version": self.context.config.target_version,  # 使用正确的属性访问
-                "model": self.context.config.base_config.model
-            },
-            "compiler_config": {
-                "target_version": self.context.config.target_version
-            }
-        }
+        # # 使用pipeline处理
+        # pipeline_config = {
+        #     "enabled_modules": ["patch_adapter", "compiler"],
+        #     "results_dir": str(self.context.workspace / "results"),  # 使用 workspace 属性
+        #     "patch_adapter_config": {
+        #         "target_version": self.context.config.target_version,  # 使用正确的属性访问
+        #         "model": self.context.config.base_config.model
+        #     },
+        #     "compiler_config": {
+        #         "target_version": self.context.config.target_version
+        #     }
+        # }
         
-        pipeline = AdaptationPipeline(pipeline_config)
-        result = pipeline.process_patch({
-            "adapted_dir": adapted_dir,
-            "downstream_patch_url": downstream_patch_url
-        })
+        # pipeline = AdaptationPipeline(pipeline_config)
+        # result = pipeline.process_patch({
+        #     "adapted_dir": adapted_dir,
+        #     "downstream_patch_url": downstream_patch_url
+        # })
         
-        # 转换结果格式以保持兼容性
-        results.update(self._convert_pipeline_result(result))
+        # # 转换结果格式以保持兼容性
+        # results.update(self._convert_pipeline_result(result))
         return results
 
     def _convert_pipeline_result(self, result):
