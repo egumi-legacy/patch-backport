@@ -58,9 +58,30 @@ class KernelCompiler:
 
     def _create_default_config(self) -> None:
         """创建默认的内核配置文件"""
-        config_cmd = self._prepare_command("defconfig")
-        self._run_command(config_cmd)
-        logger.info(f"已创建默认内核配置: {self.output_dir / '.config'}")
+        try:
+            # 先检查Docker镜像是否存在
+            if self.use_docker:
+                check_image = subprocess.run(
+                    ["docker", "image", "inspect", self.docker_image],
+                    capture_output=True
+                )
+                
+                if check_image.returncode != 0:
+                    logger.error(f"Docker镜像 {self.docker_image} 不存在，无法创建配置")
+                    return
+            
+            # 准备创建配置命令
+            config_cmd = self._prepare_command("defconfig")
+            returncode, stdout, stderr = self._run_command(config_cmd)
+            
+            if returncode != 0:
+                logger.error(f"创建配置失败: {stderr}")
+            else:
+                logger.info(f"已创建默认内核配置: {self.output_dir / '.config'}")
+        except Exception as e:
+            import traceback
+            logger.info(traceback.format_exc())
+            logger.error(f"创建配置失败: {str(e)}")
 
     def _prepare_command(self, target: str = "") -> List[str]:
         """准备命令行参数"""
@@ -108,32 +129,41 @@ class KernelCompiler:
             with tempfile.NamedTemporaryFile(mode='w+') as stdout_file, \
                  tempfile.NamedTemporaryFile(mode='w+') as stderr_file:
                 
+                # 确保Docker镜像存在
+                try:
+                    self.docker_client.images.get(self.docker_image)
+                except docker.errors.ImageNotFound:
+                    return -1, "", f"Docker镜像 {self.docker_image} 不存在"
+                
                 # 运行容器
-                container = self.docker_client.containers.run(
-                    self.docker_image,
-                    command=f"bash -c 'cd {work_dir} && {' '.join(cmd)} > {stdout_file.name} 2> {stderr_file.name}; echo $? > /tmp/exit_code'",
-                    volumes={
-                        str(self.repo_path): {'bind': '/kernel', 'mode': 'rw'},
-                        str(self.ccache_dir): {'bind': '/ccache', 'mode': 'rw'},
-                        stdout_file.name: {'bind': stdout_file.name, 'mode': 'rw'},
-                        stderr_file.name: {'bind': stderr_file.name, 'mode': 'rw'}
-                    },
-                    working_dir="/kernel",
-                    detach=True,
-                    remove=True
-                )
-                
-                # 等待容器完成
-                result = container.wait()
-                exit_code = result['StatusCode']
-                
-                # 读取输出
-                stdout_file.seek(0)
-                stderr_file.seek(0)
-                stdout = stdout_file.read()
-                stderr = stderr_file.read()
-                
-                return exit_code, stdout, stderr
+                try:
+                    container = self.docker_client.containers.run(
+                        self.docker_image,
+                        command=f"bash -c 'cd {work_dir} && {' '.join(cmd)} > {stdout_file.name} 2> {stderr_file.name}; echo $? > /tmp/exit_code'",
+                        volumes={
+                            str(self.repo_path): {'bind': '/kernel', 'mode': 'rw'},
+                            str(self.ccache_dir): {'bind': '/ccache', 'mode': 'rw'},
+                            stdout_file.name: {'bind': stdout_file.name, 'mode': 'rw'},
+                            stderr_file.name: {'bind': stderr_file.name, 'mode': 'rw'}
+                        },
+                        working_dir="/kernel",
+                        detach=True,
+                        remove=True
+                    )
+                    
+                    # 等待容器完成
+                    result = container.wait()
+                    exit_code = result['StatusCode']
+                    
+                    # 读取输出
+                    stdout_file.seek(0)
+                    stderr_file.seek(0)
+                    stdout = stdout_file.read()
+                    stderr = stderr_file.read()
+                    
+                    return exit_code, stdout, stderr
+                except Exception as e:
+                    return -1, "", f"Docker容器执行错误: {str(e)}"
                 
         except Exception as e:
             logger.error(f"Docker执行失败: {str(e)}")
@@ -142,6 +172,8 @@ class KernelCompiler:
     def compile_files(self, files: List[Path]) -> bool:
         """编译指定的文件列表"""
         try:
+            logger.info(f"开始编译文件: {[str(f) for f in files]}")
+            
             # 准备编译环境
             if not self._prepare_build_env():
                 logger.error("准备编译环境失败")
@@ -168,30 +200,47 @@ class KernelCompiler:
             logger.info(f"编译目标: {build_targets}")
             
             # 执行编译
-            compile_cmd = self._build_compile_command(build_targets)
-            logger.info(f"编译命令: {' '.join(compile_cmd) if isinstance(compile_cmd, list) else compile_cmd}")
-            
-            # 执行编译命令
-            process = subprocess.run(
-                compile_cmd,
-                cwd=self.repo_path,
-                capture_output=True,
-                text=True
-            )
-            
-            # 检查编译结果
-            if process.returncode != 0:
-                logger.error(f"编译失败: {process.stderr}")
-                return False
+            for target in build_targets:
+                compile_cmd = self._prepare_command(target)
+                logger.info(f"执行编译命令: {' '.join(compile_cmd)}")
                 
-            logger.info("编译成功完成")
+                returncode, stdout, stderr = self._run_command(compile_cmd)
+                
+                if returncode != 0:
+                    logger.error(f"编译目标 {target} 失败: {stderr}")
+                    return False
+                
+                logger.info(f"目标 {target} 编译成功")
+            
+            logger.info("所有文件编译成功")
             return True
             
         except Exception as e:
             logger.error(f"编译过程出错: {str(e)}")
             return False
+            
+    def _prepare_build_env(self) -> bool:
+        """准备编译环境"""
+        try:
+            # 检查配置文件是否存在
+            config_file = self.output_dir / ".config"
+            logger.info(f"检查配置文件: {config_file.resolve()}")
+            if not config_file.exists():
+                logger.info("未找到配置文件，创建默认配置")
+                self._create_default_config()
+                
+                # 再次检查
+                if not config_file.exists():
+                    logger.error("无法创建配置文件")
+                    return False
+            
+            logger.info("编译环境已准备")
+            return True
+        except Exception as e:
+            logger.error(f"准备环境出错: {str(e)}")
+            return False
 
-    def _get_build_targets(self, files: List[Path]) -> List[str]:
+    def _get_build_targets(self, files: List[str]) -> List[str]:
         """
         将文件路径转换为内核构建目标
         
@@ -201,26 +250,25 @@ class KernelCompiler:
         targets = set()
         
         for file_path in files:
-            # 获取相对路径
-            try:
-                rel_path = file_path.relative_to(self.repo_path)
-            except ValueError:
-                logger.warning(f"文件不在仓库目录内: {file_path}")
-                continue
-                
-            if rel_path.suffix == '.c':
+            file_path = Path(file_path)
+            
+            if file_path.suffix == '.c':
                 # C文件转换为.o目标
-                obj_target = str(rel_path.with_suffix('.o'))
+                obj_target = str(file_path.with_suffix('.o'))
                 targets.add(obj_target)
-            elif rel_path.suffix == '.h':
+            elif file_path.suffix == '.h':
                 # 头文件 - 尝试找到包含该头文件的模块
-                module_path = self._find_module_for_header(rel_path)
+                module_path = self._find_module_for_header(file_path)
                 if module_path:
                     targets.add(module_path)
-            elif rel_path.name in ('Makefile', 'Kconfig', 'Kbuild'):
+            elif file_path.name in ('Makefile', 'Kconfig', 'Kbuild'):
                 # 构建整个目录
-                targets.add(f"M={rel_path.parent}")
+                targets.add(f"M={file_path.parent}")
         
+        # 如果没有特定目标，尝试构建全部
+        if not targets:
+            targets.add("all")
+            
         return list(targets)
 
     def _find_module_for_header(self, header_path: Path) -> Optional[str]:
@@ -233,6 +281,123 @@ class KernelCompiler:
         """
         # 简化实现 - 构建头文件所在目录
         return f"M={header_path.parent}"
+
+    def build_docker_image(self) -> bool:
+        """构建Docker镜像或使用现有镜像"""
+        if not self.use_docker:
+            return True
+            
+        try:
+            # 首先检查镜像是否已存在
+            image_check = subprocess.run(
+                ["docker", "image", "inspect", self.docker_image],
+                capture_output=True
+            )
+            
+            if image_check.returncode == 0:
+                logger.info(f"使用已存在的Docker镜像: {self.docker_image}")
+                return True
+            
+            # 检查基础镜像
+            alpine_check = subprocess.run(
+                ["docker", "image", "inspect", "alpine/git:latest"],
+                capture_output=True
+            )
+            
+            if alpine_check.returncode == 0:
+                # 使用本地已有的alpine/git镜像创建编译镜像
+                logger.info("使用alpine/git创建内核编译镜像")
+                
+                # 创建临时容器安装编译工具
+                container_id = subprocess.run(
+                    ["docker", "run", "-d", "alpine/git:latest", "tail", "-f", "/dev/null"],
+                    capture_output=True, text=True
+                ).stdout.strip()
+                
+                try:
+                    # 在容器内安装构建工具
+                    install_result = subprocess.run(
+                        ["docker", "exec", container_id, "sh", "-c", 
+                         "apk add --no-cache build-base gcc g++ make flex bison elfutils-dev "
+                         "openssl-dev perl bash ncurses-dev python3 bc kmod"],
+                        capture_output=True, text=True
+                    )
+                    
+                    if install_result.returncode != 0:
+                        logger.error(f"安装编译工具失败: {install_result.stderr}")
+                        return False
+                    
+                    # 提交为新镜像
+                    commit_result = subprocess.run(
+                        ["docker", "commit", container_id, self.docker_image],
+                        capture_output=True, text=True
+                    )
+                    
+                    if commit_result.returncode != 0:
+                        logger.error(f"创建镜像失败: {commit_result.stderr}")
+                        return False
+                    
+                    logger.info(f"成功创建编译镜像: {self.docker_image}")
+                    return True
+                    
+                finally:
+                    # 清理临时容器
+                    subprocess.run(["docker", "rm", "-f", container_id], 
+                                  capture_output=True)
+            
+            # 如果没有合适的基础镜像，尝试从Dockerfile构建
+            logger.warning("未找到可用基础镜像，尝试从Dockerfile构建")
+            
+            # 创建构建目录
+            docker_dir = self.output_dir / "docker"
+            docker_dir.mkdir(exist_ok=True)
+            
+            # 创建适用本地环境的Dockerfile
+            dockerfile_content = """FROM alpine/git:latest
+
+RUN apk add --no-cache \\
+    build-base \\
+    gcc \\
+    g++ \\
+    make \\
+    flex \\
+    bison \\
+    elfutils-dev \\
+    openssl-dev \\
+    perl \\
+    bash \\
+    ncurses-dev \\
+    python3 \\
+    bc \\
+    kmod
+
+WORKDIR /kernel
+"""
+            
+            # 写入Dockerfile
+            dockerfile_path = docker_dir / "Dockerfile"
+            with open(dockerfile_path, 'w') as f:
+                f.write(dockerfile_content)
+                
+            # 构建镜像
+            logger.info(f"开始构建Docker镜像: {self.docker_image}")
+            build_result = subprocess.run(
+                ["docker", "build", "-t", self.docker_image, "."],
+                cwd=docker_dir,
+                capture_output=True,
+                text=True
+            )
+            
+            if build_result.returncode != 0:
+                logger.error(f"Docker镜像构建失败: {build_result.stderr}")
+                return False
+                
+            logger.info(f"Docker镜像 {self.docker_image} 构建成功")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Docker镜像构建过程发生错误: {str(e)}")
+            return False
 
     def clean(self, all: bool = False) -> bool:
         """
@@ -251,96 +416,6 @@ class KernelCompiler:
             
         logger.info(f"成功完成{target}清理")
         return True
-
-    def build_docker_image(self) -> bool:
-        """
-        构建Docker镜像
-        
-        :return: 构建是否成功
-        """
-        if not self.use_docker:
-            return True
-            
-        try:
-            # 创建Dockerfile
-#             dockerfile_content = """FROM ubuntu:22.04
-
-# # ENV DEBIAN_FRONTEND=noninteractive
-
-# RUN apt-get update && apt-get install -y \\
-#     build-essential \\
-#     flex \\
-#     bison \\
-#     libssl-dev \\
-#     libelf-dev \\
-#     bc \\
-#     ccache \\
-#     git \\
-#     kmod \\
-#     python3 \\
-#     ncurses-dev \\
-#     rsync \\
-#     --no-install-recommends \\
-#     && apt-get clean \\
-#     && rm -rf /var/lib/apt/lists/*
-
-# RUN mkdir -p /ccache && chmod 777 /ccache
-# WORKDIR /kernel
-# ENV PATH="/usr/lib/ccache:${PATH}" CCACHE_DIR=/ccache CCACHE_MAXSIZE=10G
-# ENTRYPOINT ["/bin/bash"]
-# """
-            dockerfile_content = """FROM alpine/git:latest
-
-
-RUN apk add --no-cache \
-    build-base \
-    gcc \
-    g++ \
-    make \
-    flex \
-    bison \
-    elfutils-dev \
-    openssl-dev \
-    perl \
-    bash \
-    ncurses-dev \
-    python3 \
-    bc \
-    git \
-    kmod
-
-
-WORKDIR /kernel
-"""
-            # 创建构建目录
-            docker_dir = self.output_dir / "docker"
-            docker_dir.mkdir(exist_ok=True)
-            logger.info(f"构建目录: {docker_dir.resolve()}")
-            
-            # 写入Dockerfile
-            dockerfile_path = docker_dir / "Dockerfile"
-            with open(dockerfile_path, 'w') as f:
-                f.write(dockerfile_content)
-                
-            # 构建镜像
-            logger.info(f"开始构建Docker镜像: {self.docker_image}")
-            process = subprocess.run(
-                ["docker", "build", "-t", self.docker_image, "."],
-                cwd=docker_dir,
-                capture_output=True,
-                text=True
-            )
-            
-            if process.returncode != 0:
-                logger.error(f"Docker镜像构建失败: {process.stderr}")
-                return False
-                
-            logger.info(f"Docker镜像 {self.docker_image} 构建成功")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Docker镜像构建过程发生错误: {str(e)}")
-            return False
 
     def verify_patch(self, patch_path: Path) -> bool:
         """
@@ -443,4 +518,6 @@ WORKDIR /kernel
             return True
         except Exception as e:
             logger.error(f"创建配置失败: {str(e)}")
+            import traceback
+            logger.info(traceback.format_exc())
             return False

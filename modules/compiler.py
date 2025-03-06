@@ -11,6 +11,7 @@ import shutil
 from .base_module import BaseModule, ModuleType
 from core.parameter_manager import ModuleContext
 from .kernel_compiler import KernelCompiler
+
 class CompilerModule(BaseModule):
     """编译模块 - 对适配后的文件进行单文件编译测试"""
 
@@ -31,10 +32,12 @@ class CompilerModule(BaseModule):
         }
     
     def execute(self, context: ModuleContext) -> ModuleContext:
-        """执行编译测试"""
-        if not self._should_run(context):
-            return context
-            
+        """
+        执行编译验证
+        
+        :param context: 模块上下文
+        :return: 更新后的上下文（始终返回上下文对象，不返回布尔值）
+        """
         start_time = datetime.now()
         self.metrics['total_attempts'] += 1
         
@@ -57,8 +60,11 @@ class CompilerModule(BaseModule):
             kernel_compiler = KernelCompiler(
                 repo_path=context.config.repo_path,
                 output_dir=context.commit.compilation_dir,
-                config_path=context.commit.base_dir / ".config"
+                use_docker=context.config.kernel_compiler.get('use_docker', True),
+                docker_image=context.config.kernel_compiler.get('docker_image', 'kernel-compiler:latest'),
+                ccache_dir=Path(os.path.expanduser(context.config.kernel_compiler.get('ccache_dir', '~/.ccache')))
             )
+            
             # 首次运行时构建Docker镜像
             if context.config.kernel_compiler.get('use_docker', True) and not context.docker_image_built:
                 logger.info("开始构建Docker镜像")
@@ -66,103 +72,71 @@ class CompilerModule(BaseModule):
                     logger.error("Docker镜像构建失败，无法继续编译验证")
                     context.compilation_result = {
                         'success': False,
-                        'error': "Docker镜像构建失败"
+                        'error': 'Docker镜像构建失败'
                     }
+                    # 重要：返回上下文，不返回布尔值
                     return context
                 logger.info("Docker镜像构建完成")
                 context.docker_image_built = True
             
-            # 获取修改的文件
+            # 修改的文件路径列表
             modified_files = self._get_modified_files(context)
+            if not modified_files:
+                logger.warning("未找到修改的文件，跳过编译验证")
+                context.compilation_result = {
+                    'success': True,
+                    'warning': '未找到修改的文件'
+                }
+                # 重要：返回上下文，不返回布尔值
+                return context
             
             # 执行编译验证
             compilation_ok = kernel_compiler.compile_files(modified_files)
             
+            # 更新编译结果
             if not compilation_ok:
                 logger.error("补丁导致编译错误")
                 context.compilation_result = {
                     'success': False,
-                    'error': "编译失败，请检查日志了解详情"
+                    'error': '编译失败，请查看日志了解详情'
                 }
+                self.metrics['compilation_failures'] += 1
+                self._update_metrics(False)
+                # 重要：返回上下文，不返回布尔值
                 return context
-                
+            
             logger.info("补丁编译验证通过")
             context.compilation_result = {
                 'success': True,
-                'results': compilation_ok,
-                'compile_dir': str(context.commit.compilation_dir)
+                'files': [str(f.relative_to(context.repo_path)) for f in modified_files]
             }
-            return context
-
-            # # 创建编译目录
-            # compile_dir = context.commit.compilation_dir
+            self.metrics['compilation_success'] += 1
+            self._update_metrics(True)
             
-            # # 获取需要编译的文件列表
-            # files_to_compile = self._get_modified_files(context)
-            # logger.info(f"需要编译的文件列表: {files_to_compile}")
-            # if not files_to_compile:
-            #     logger.warning("没有找到需要编译的文件")
-            #     self._update_metrics(True, compiled_success=True)
-            #     self._save_metrics(context)
-            #     return context
-            
-            # # 编译每个文件并收集结果
-            # compilation_results = []
-            # overall_success = True
-            
-            # for file_path in files_to_compile:
-            #     result = self._compile_file(context, file_path)
-            #     compilation_results.append(result)
-                
-            #     if not result['success']:
-            #         overall_success = False
-                    
-            #         # 如果配置了失败重试，则进行重试
-            #         if context.config.retry_with_feedback and not result.get('retried', False):
-            #             retry_result = self._retry_with_feedback(context, result)
-            #             if retry_result:
-            #                 # 替换原来的结果
-            #                 compilation_results[-1] = retry_result
-            #                 if retry_result['success']:
-            #                     # 如果重试成功，重新评估整体成功状态
-            #                     overall_success = all(r['success'] for r in compilation_results)
-                
-            #     # 如果配置了失败停止，则中断
-            #     if not result['success'] and context.config.stop_on_failure:
-            #         logger.info("编译失败，且配置为停止于失败，中断编译")
-            #         break
-            
-            # # 更新上下文和指标
-            # context.compilation_result = {
-            #     'success': overall_success,
-            #     'results': compilation_results,
-            #     'compile_dir': str(compile_dir)
-            # }
-            
-            # self._update_metrics(True, 
-            #                   compiled_success=overall_success,
-            #                   compilation_results=compilation_results,
-            #                   execution_time=(datetime.now() - start_time).total_seconds())
-            
-            # self._save_metrics(context)
+            # 重要：返回上下文，不返回布尔值
             return context
             
         except Exception as e:
             logger.error(f"编译测试过程发生错误: {str(e)}")
-            if self.verbose:
-                logger.error(f"错误堆栈: {traceback.format_exc()}")
+            # 使用hasattr检查verbose属性
+            if hasattr(self, 'verbose') and self.verbose:
+                logger.error(f"详细错误信息: {traceback.format_exc()}")
             
             # 更新上下文和指标
-            error_type = type(e).__name__
-            self._update_metrics(False, error_type=error_type, 
-                               execution_time=(datetime.now() - start_time).total_seconds())
-            
-            context.compilation_result = {
+            context.compiler_result = {
                 'success': False,
                 'error': str(e)
             }
             
-            self._save_metrics(context)
+            error_type = type(e).__name__
+            if error_type in self.metrics['error_types']:
+                self.metrics['error_types'][error_type] += 1
+            else:
+                self.metrics['error_types'][error_type] = 1
+                
+            self._update_metrics(False)
+            
+            # 重要：返回上下文，不返回布尔值
             return context
     
     def _create_compile_dir(self, context: ModuleContext) -> Path:
@@ -187,33 +161,37 @@ class CompilerModule(BaseModule):
                     if source_file.exists():
                         modified_files.append(rel_path)
         
-        # 也可以从patch文件中获取修改的文件列表
-        if context.patch_adapter_result.get('adapted_patch_path'):
-            patch_path = Path(context.patch_adapter_result['adapted_patch_path'])
-            if patch_path.exists():
-                try:
-                    with open(patch_path, 'r') as f:
-                        patch_content = f.read()
-                    
-                    # 从patch内容中提取文件路径
-                    file_paths = set()
-                    for line in patch_content.splitlines():
-                        if line.startswith('diff --git'):
-                            parts = line.split()
-                            if len(parts) >= 4:
-                                a_file = parts[2][2:]  # 去掉a/
-                                file_paths.add(a_file)
-                    
-                    # 添加到修改文件列表
-                    for file_path in file_paths:
-                        path = Path(file_path)
-                        if path not in modified_files:
-                            modified_files.append(path)
-                except Exception as e:
-                    logger.warning(f"从patch文件获取修改列表失败: {str(e)}")
-        
-        
+        logger.info(f"已修改的文件列表: {modified_files}")
         return modified_files
+        # # 也可以从patch文件中获取修改的文件列表
+        # if context.patch_adapter_result.get('adapted_patch_path'):
+        #     patch_path = Path(context.patch_adapter_result['adapted_patch_path'])
+        #     if patch_path.exists():
+        #         try:
+        #             # 从context获取修改的文件
+        #             if hasattr(context, 'modified_files') and context.modified_files:
+        #                 return [context.repo_path / f for f in context.modified_files]
+                    
+        #             # 或者从git获取
+        #             result = subprocess.run(
+        #                 ["git", "diff", "--name-only", "HEAD^"],
+        #                 cwd=context.config.repo_path,
+        #                 capture_output=True,
+        #                 text=True
+        #             )
+            
+        #             if result.returncode != 0:
+        #                 logger.warning(f"获取修改文件失败: {result.stderr}")
+        #                 return []
+        #             logger.info(f"获取修改文件成功: {result.stdout}")
+        #             return [
+        #                 context.config.repo_path / f.strip()
+        #                 for f in result.stdout.splitlines()
+        #                 if f.strip()
+        #             ]
+        #         except Exception as e:
+        #             logger.error(f"获取修改文件列表时出错: {str(e)}")
+        #             return []
     
     def _compile_file(self, context: ModuleContext, file_path: Path) -> Dict[str, Any]:
         """编译单个文件"""
@@ -360,26 +338,12 @@ class CompilerModule(BaseModule):
             logger.error(f"重试准备过程中出错: {str(e)}")
             return None
     
-    def _update_metrics(self, success: bool, error_type: str = None, compiled_success: bool = False,
-                       compilation_results: List[Dict] = None, execution_time: float = 0) -> None:
-        """更新指标"""
-        self.metrics['execution_time'] = execution_time
-        
+    def _update_metrics(self, success: bool) -> None:
+        """更新模块指标"""
         if success:
             self.metrics['successful_executions'] += 1
-            
-            if compiled_success:
-                self.metrics['compilation_success'] += 1
-            else:
-                self.metrics['compilation_failures'] += 1
-                
-            if compilation_results:
-                successful_files = [r['file'] for r in compilation_results if r['success']]
-                self.metrics['compiled_files'].extend(successful_files)
         else:
             self.metrics['failed_executions'] += 1
-            if error_type:
-                self.metrics['error_types'][error_type] = self.metrics['error_types'].get(error_type, 0) + 1
     
     def _save_metrics(self, context: ModuleContext):
         """保存指标"""
