@@ -1,0 +1,52 @@
+2025-03-06 18:02:37.350 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250306_180237.log
+2025-03-06 18:02:37.351 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-06 18:02:37.351 | INFO     | __main__:_get_commits_list:225 - commits_file:workspace/gregkh/linux/cache/branch_linux-6.12.y_commits.json
+2025-03-06 18:02:37.351 | INFO     | __main__:_get_commits_list:226 - use_cached_commits:True
+2025-03-06 18:02:37.352 | INFO     | __main__:_get_commits_list:229 - 从缓存文件加载commits信息
+2025-03-06 18:02:37.354 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-03-06 18:02:37.354 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: direct_apply
+2025-03-06 18:02:37.354 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: llm_adapter
+2025-03-06 18:02:37.355 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: patch_adapter
+2025-03-06 18:02:37.355 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: compiler
+2025-03-06 18:02:37.355 | INFO     | __main__:_process_mode2:186 - 处理提交 21/5: 56d5f3
+2025-03-06 18:02:37.356 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 56d5f3eba3f5de0efdd556de4ef381e109b973a9
+2025-03-06 18:02:37.356 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-03-06 18:02:37.358 | INFO     | modules.direct_apply:_download_patch:215 - 下游补丁文件不存在，下载补丁: workspace/gregkh/linux/56d5f3/patches/downstream_5a59ce.patch
+2025-03-06 18:02:37.359 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '5a59ced8ffc71973d42c82484a719c8f6ac8f7f7.patch']
+2025-03-06 18:02:37.359 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/5a59ced8ffc71973d42c82484a719c8f6ac8f7f7
+2025-03-06 18:02:38.834 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/gregkh/linux/56d5f3/patches/downstream_5a59ce.patch
+2025-03-06 18:02:38.837 | INFO     | modules.direct_apply:_download_patch:220 - 下游补丁下载成功: workspace/gregkh/linux/56d5f3/patches/downstream_5a59ce.patch
+2025-03-06 18:02:38.837 | INFO     | modules.direct_apply:_download_patch:230 - 上游补丁文件不存在，下载补丁: workspace/gregkh/linux/56d5f3/patches/downstream_5a59ce.patch
+2025-03-06 18:02:38.838 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '56d5f3eba3f5de0efdd556de4ef381e109b973a9.patch']
+2025-03-06 18:02:38.838 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/56d5f3eba3f5de0efdd556de4ef381e109b973a9
+2025-03-06 18:02:40.371 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/gregkh/linux/56d5f3/patches/upstream_56d5f3.patch
+2025-03-06 18:02:40.374 | INFO     | modules.direct_apply:_download_patch:234 - 上游补丁下载成功: workspace/gregkh/linux/56d5f3/patches/upstream_56d5f3.patch
+2025-03-06 18:02:40.374 | INFO     | modules.direct_apply:execute:62 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/56d5f3/patches/upstream_56d5f3.patch
+2025-03-06 18:02:40.551 | INFO     | modules.direct_apply:_prepare_test_branch:340 - 创建测试分支: test_patch_linux-6.12.y
+2025-03-06 18:02:41.311 | INFO     | modules.direct_apply:_apply_patch:275 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/56d5f3/patches/upstream_56d5f3.patch
+2025-03-06 18:02:41.363 | INFO     | modules.direct_apply:_move_to_cache:129 - 源目录: workspace/gregkh/linux/56d5f3
+2025-03-06 18:02:41.364 | INFO     | modules.direct_apply:_move_to_cache:137 - 目标目录: workspace/gregkh/linux/cache
+2025-03-06 18:02:41.364 | INFO     | modules.direct_apply:_move_to_cache:148 - 已将成功的commit文件夹移动到缓存: workspace/gregkh/linux/cache
+2025-03-06 18:02:41.548 | INFO     | modules.direct_apply:_cleanup_test_branch:431 - 清理测试分支: test_patch_linux-6.12.y
+2025-03-06 18:02:41.549 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/56d5f3/evaluations/direct_apply/metrics_56d5f3_20250306_180241.json
+2025-03-06 18:02:41.550 | INFO     | core.adaptation_pipeline:process_patch:81 - 此时upstream_patch_path存在状态: False
+2025-03-06 18:02:41.550 | INFO     | modules.base_module:_should_run:53 - 直接应用成功，跳过LLM处理
+2025-03-06 18:02:41.550 | INFO     | modules.base_module:_should_run:59 - 没有LLM响应，跳过补丁适配
+2025-03-06 18:02:41.550 | ERROR    | __main__:run:125 - 执行过程发生错误: list indices must be integers or slices, not str
+2025-03-06 18:02:41.552 | ERROR    | __main__:run:126 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 120, in run
+    self._process_mode2()
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 198, in _process_mode2
+    context = pipeline.process_patch(context)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/core/adaptation_pipeline.py", line 73, in process_patch
+    if not self._should_run(module, context):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/core/adaptation_pipeline.py", line 63, in _should_run
+    return module._should_run(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/base_module.py", line 64, in _should_run
+    if not context.patch_adapter_result['success']:
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+TypeError: list indices must be integers or slices, not str
+

@@ -1,0 +1,426 @@
+2025-03-06 17:45:21.959 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250306_174521.log
+2025-03-06 17:45:21.960 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-06 17:45:21.960 | INFO     | __main__:_get_commits_list:225 - commits_file:workspace/gregkh/linux/cache/branch_linux-6.12.y_commits.json
+2025-03-06 17:45:21.960 | INFO     | __main__:_get_commits_list:226 - use_cached_commits:True
+2025-03-06 17:45:21.961 | INFO     | __main__:_get_commits_list:229 - 从缓存文件加载commits信息
+2025-03-06 17:45:21.963 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-03-06 17:45:21.964 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: direct_apply
+2025-03-06 17:45:21.964 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: llm_adapter
+2025-03-06 17:45:21.965 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: patch_adapter
+2025-03-06 17:45:21.965 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: compiler
+2025-03-06 17:45:21.966 | INFO     | __main__:_process_mode2:186 - 处理提交 13/1: 4cb777
+2025-03-06 17:45:21.966 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 4cb77793842a351b39a030f77caebace3524840e
+2025-03-06 17:45:21.967 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: direct_apply
+2025-03-06 17:45:21.967 | INFO     | modules.direct_apply:_download_patch:213 - 下游补丁文件已存在: workspace/gregkh/linux/4cb777/patches/downstream_ada54b.patch
+2025-03-06 17:45:21.967 | INFO     | modules.direct_apply:_download_patch:226 - 上游补丁文件已存在: workspace/gregkh/linux/4cb777/patches/upstream_4cb777.patch
+2025-03-06 17:45:21.968 | INFO     | modules.direct_apply:execute:62 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4cb777/patches/upstream_4cb777.patch
+2025-03-06 17:45:22.157 | INFO     | modules.direct_apply:_prepare_test_branch:340 - 创建测试分支: test_patch_linux-6.12.y
+2025-03-06 17:45:22.781 | ERROR    | modules.direct_apply:_apply_patch:280 - 补丁应用失败: error: patch failed: drivers/irqchip/irq-gic-v3.c:163
+error: drivers/irqchip/irq-gic-v3.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-03-06 17:45:23.294 | INFO     | modules.direct_apply:_cleanup_test_branch:431 - 清理测试分支: test_patch_linux-6.12.y
+2025-03-06 17:45:23.295 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/4cb777/evaluations/direct_apply/metrics_4cb777_20250306_174523.json
+2025-03-06 17:45:23.295 | INFO     | core.adaptation_pipeline:process_patch:81 - 此时upstream_patch_path存在状态: True
+2025-03-06 17:45:23.296 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: llm_adapter
+2025-03-06 17:45:23.328 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-03-06 17:45:23.329 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/gregkh/linux/4cb777/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-06 17:45:23.329 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-03-06 17:45:23.329 | INFO     | modules.llm_adapter:_call_llm:305 - llm.run() result:{'openai_responses': ['diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c\nindex 76dce0aac2465..270d7a4d85a6d 100644\n--- a/drivers/irqchip/irq-gic-v3.c\n+++ b/drivers/irqchip/irq-gic-v3.c\n@@ -44,6 +44,7 @@ static u8 dist_prio_nmi __ro_after_init = GICV3_PRIO_NMI;\n #define FLAGS_WORKAROUND_GICR_WAKER_MSM8996\t(1ULL << 0)\n #define FLAGS_WORKAROUND_CAVIUM_ERRATUM_38539\t(1ULL << 1)\n #define FLAGS_WORKAROUND_ASR_ERRATUM_8601001\t(1ULL << 2)\n+#define FLAGS_WORKAROUND_INSECURE\t\t(1ULL << 3)\n \n #define GIC_IRQ_TYPE_PARTITION\t(GIC_IRQ_TYPE_LPI + 1)\n \n@@ -83,6 +84,8 @@ static DEFINE_STATIC_KEY_TRUE(supports_deactivate_key);\n #define GIC_LINE_NR\tmin(GICD_TYPER_SPIS(gic_data.rdists.gicd_typer), 1020U)\n #define GIC_ESPI_NR\tGICD_TYPER_ESPIS(gic_data.rdists.gicd_typer)\n \n+static bool nmi_support_forbidden;\n+\n /*\n  * There are 16 SGIs, though we only actually use 8 in Linux. The other 8 SGIs\n  * are potentially stolen by the secure side. Some code, especially code dealing\n@@ -163,21 +166,27 @@ static void __init gic_prio_init(void)\n {\n \tbool ds;\n \n-\tds = gic_dist_security_disabled();\n-\tif (!ds) {\n-\t\tu32 val;\n-\n-\t\tval = readl_relaxed(gic_data.dist_base + GICD_CTLR);\n-\t\tval |= GICD_CTLR_DS;\n-\t\twritel_relaxed(val, gic_data.dist_base + GICD_CTLR);\n+\tcpus_have_group0 = gic_has_group0();\n \n-\t\tds = gic_dist_security_disabled();\n-\t\tif (ds)\n-\t\t\tpr_warn("Broken GIC integration, security disabled");\n+\tds = gic_dist_security_disabled();\n+\tif ((gic_data.flags & FLAGS_WORKAROUND_INSECURE) && !ds) {\n+\t\tif (cpus_have_group0) {\n+\t\t\tu32 val;\n+\n+\t\t\tval = readl_relaxed(gic_data.dist_base + GICD_CTLR);\n+\t\t\tval |= GICD_CTLR_DS;\n+\t\t\twritel_relaxed(val, gic_data.dist_base + GICD_CTLR);\n+\n+\t\t\tds = gic_dist_security_disabled();\n+\t\t\tif (ds)\n+\t\t\t\tpr_warn("Broken GIC integration, security disabled\\n");\n+\t\t} else {\n+\t\t\tpr_warn("Broken GIC integration, pNMI forbidden\\n");\n+\t\t\tnmi_support_forbidden = true;\n+\t\t}\n \t}\n \n \tcpus_have_security_disabled = ds;\n-\tcpus_have_group0 = gic_has_group0();\n \n \t/*\n \t * How priority values are used by the GIC depends on two things:\n@@ -209,7 +218,7 @@ static void __init gic_prio_init(void)\n \t * be in the non-secure range, we program the non-secure values into\n \t * the distributor to match the PMR values we want.\n \t */\n-\tif (cpus_have_group0 & !cpus_have_security_disabled) {\n+\tif (cpus_have_group0 && !cpus_have_security_disabled) {\n \t\tdist_prio_irq = __gicv3_prio_to_ns(dist_prio_irq);\n \t\tdist_prio_nmi = __gicv3_prio_to_ns(dist_prio_nmi);\n \t}\n@@ -1922,6 +1931,18 @@ static bool gic_enable_quirk_arm64_2941627(void *data)\n \treturn true;\n }\n \n+static bool gic_enable_quirk_rk3399(void *data)\n+{\n+\tstruct gic_chip_data *d = data;\n+\n+\tif (of_machine_is_compatible("rockchip,rk3399")) {\n+\t\td->flags |= FLAGS_WORKAROUND_INSECURE;\n+\t\treturn true;\n+\t}\n+\n+\treturn false;\n+}\n+\n static bool rd_set_non_coherent(void *data)\n {\n \tstruct gic_chip_data *d = data;\n@@ -1996,6 +2017,12 @@ static const struct gic_quirk gic_quirks[] = {\n \t\t.property = "dma-noncoherent",\n \t\t.init   = rd_set_non_coherent,\n \t},\n+\t{\n+\t\t.desc\t= "GICv3: Insecure RK3399 integration",\n+\t\t.iidr\t= 0x0000043b,\n+\t\t.mask\t= 0xff000fff,\n+\t\t.init\t= gic_enable_quirk_rk3399,\n+\t},\n \t{\n \t}\n };\n@@ -2004,7 +2031,7 @@ static void gic_enable_nmi_support(void)\n {\n \tint i;\n \n-\tif (!gic_prio_masking_enabled())\n+\tif (!gic_prio_masking_enabled() || nmi_support_forbidden)\n \t\treturn;\n \n \trdist_nmi_refs = kcalloc(gic_data.ppi_nr + SGI_NR,'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-03-06 17:45:23.330 | INFO     | modules.llm_adapter:_parse_llm_response:387 - 原始LLM响应(前100字符): diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 76dce0aac2465..270d7a...
+2025-03-06 17:45:23.331 | INFO     | modules.llm_adapter:_parse_llm_response:410 - 找到diff --git格式，内容前100字符: diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 76dce0aac2465..270d7a...
+2025-03-06 17:45:23.331 | INFO     | modules.llm_adapter:_save_llm_response:440 - LLM响应已保存到: workspace/gregkh/linux/4cb777/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-06 17:45:23.332 | INFO     | modules.llm_adapter:_save_llm_response:441 - 原始LLM响应已保存到: workspace/gregkh/linux/4cb777/llm_output/raw_output_linux-6.12.y_qwen-plus.patch
+2025-03-06 17:45:23.332 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/4cb777/evaluations/llm_adapter/metrics_4cb777_20250306_174523.json
+2025-03-06 17:45:23.333 | INFO     | core.adaptation_pipeline:process_patch:81 - 此时upstream_patch_path存在状态: True
+2025-03-06 17:45:23.333 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: patch_adapter
+2025-03-06 17:45:23.333 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/gregkh/linux/4cb777/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-06 17:45:23.334 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_linux-6.12.y_20250306_174523
+2025-03-06 17:45:23.956 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 76dce0aac2465..270d7a4d85a6d 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -44,6 +44,7 @@ static u8 dist_prio_nmi __ro_after_init = GICV3_PRIO_NMI;
+ #define FLAGS_WORKAROUND_GICR_WAKER_MSM8996	(1ULL << 0)
+ #define FLAGS_WORKAROUND_CAVIUM_ERRATUM_38539	(1ULL << 1)
+ #define FLAGS_WORKAROUND_ASR_ERRATUM_8601001	(1ULL << 2)
++#define FLAGS_WORKAROUND_INSECURE		(1ULL << 3)
+ 
+ #define GIC_IRQ_TYPE_PARTITION	(GIC_IRQ_TYPE_LPI + 1)
+ 
+@@ -83,6 +84,8 @@ static DEFINE_STATIC_KEY_TRUE(supports_deactivate_key);
+ #define GIC_LINE_NR	min(GICD_TYPER_SPIS(gic_data.rdists.gicd_typer), 1020U)
+ #define GIC_ESPI_NR	GICD_TYPER_ESPIS(gic_data.rdists.gicd_typer)
+ 
++static bool nmi_support_forbidden;
++
+ /*
+  * There are 16 SGIs, though we only actually use 8 in Linux. The other 8 SGIs
+  * are potentially stolen by the secure side. Some code, especially code dealing
+@@ -163,21 +166,27 @@ static void __init gic_prio_init(void)
+ {
+ 	bool ds;
+ 
+-	ds = gic_dist_security_disabled();
+-	if (!ds) {
+-		u32 val;
+-
+-		val = readl_relaxed(gic_data.dist_base + GICD_CTLR);
+-		val |= GICD_CTLR_DS;
+-		writel_relaxed(val, gic_data.dist_base + GICD_CTLR);
++	cpus_have_group0 = gic_has_group0();
+ 
+-		ds = gic_dist_security_disabled();
+-		if (ds)
+-			pr_warn("Broken GIC integration, security disabled");
++	ds = gic_dist_security_disabled();
++	if ((gic_data.flags & FLAGS_WORKAROUND_INSECURE) && !ds) {
++		if (cpus_have_group0) {
++			u32 val;
++
++			val = readl_relaxed(gic_data.dist_base + GICD_CTLR);
++			val |= GICD_CTLR_DS;
++			writel_relaxed(val, gic_data.dist_base + GICD_CTLR);
++
++			ds = gic_dist_security_disabled();
++			if (ds)
++				pr_warn("Broken GIC integration, security disabled\n");
++		} else {
++			pr_warn("Broken GIC integration, pNMI forbidden\n");
++			nmi_support_forbidden = true;
++		}
+ 	}
+ 
+ 	cpus_have_security_disabled = ds;
+-	cpus_have_group0 = gic_has_group0();
+ 
+ 	/*
+ 	 * How priority values are used by the GIC depends on two things:
+@@ -209,7 +218,7 @@ static void __init gic_prio_init(void)
+ 	 * be in the non-secure range, we program the non-secure values into
+ 	 * the distributor to match the PMR values we want.
+ 	 */
+-	if (cpus_have_group0 & !cpus_have_security_disabled) {
++	if (cpus_have_group0 && !cpus_have_security_disabled) {
+ 		dist_prio_irq = __gicv3_prio_to_ns(dist_prio_irq);
+ 		dist_prio_nmi = __gicv3_prio_to_ns(dist_prio_nmi);
+ 	}
+@@ -1922,6 +1931,18 @@ static bool gic_enable_quirk_arm64_2941627(void *data)
+ 	return true;
+ }
+ 
++static bool gic_enable_quirk_rk3399(void *data)
++{
++	struct gic_chip_data *d = data;
++
++	if (of_machine_is_compatible("rockchip,rk3399")) {
++		d->flags |= FLAGS_WORKAROUND_INSECURE;
++		return true;
++	}
++
++	return false;
++}
++
+ static bool rd_set_non_coherent(void *data)
+ {
+ 	struct gic_chip_data *d = data;
+@@ -1996,6 +2017,12 @@ static const struct gic_quirk gic_quirks[] = {
+ 		.property = "dma-noncoherent",
+ 		.init   = rd_set_non_coherent,
+ 	},
++	{
++		.desc	= "GICv3: Insecure RK3399 integration",
++		.iidr	= 0x0000043b,
++		.mask	= 0xff000fff,
++		.init	= gic_enable_quirk_rk3399,
++	},
+ 	{
+ 	}
+ };
+@@ -2004,7 +2031,7 @@ static void gic_enable_nmi_support(void)
+ {
+ 	int i;
+ 
+-	if (!gic_prio_masking_enabled())
++	if (!gic_prio_masking_enabled() || nmi_support_forbidden)
+ 		return;
+ 
+ 	rdist_nmi_refs = kcalloc(gic_data.ppi_nr + SGI_NR,
+2025-03-06 17:45:23.956 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -44,6 +44,7 @@ static u8 dist_prio_nmi __ro_after_init = GICV3_PRIO_NMI;
+ #define FLAGS_WORKAROUND_GICR_WAKER_MSM8996	(1ULL << 0)
+ #define FLAGS_WORKAROUND_CAVIUM_ERRATUM_38539	(1ULL << 1)
+ #define FLAGS_WORKAROUND_ASR_ERRATUM_8601001	(1ULL << 2)
++#define FLAGS_WORKAROUND_INSECURE		(1ULL << 3)
+ 
+ #define GIC_IRQ_TYPE_PARTITION	(GIC_IRQ_TYPE_LPI + 1)
+ 
+@@ -83,6 +84,8 @@ static DEFINE_STATIC_KEY_TRUE(supports_deactivate_key);
+ #define GIC_LINE_NR	min(GICD_TYPER_SPIS(gic_data.rdists.gicd_typer), 1020U)
+ #define GIC_ESPI_NR	GICD_TYPER_ESPIS(gic_data.rdists.gicd_typer)
+ 
++static bool nmi_support_forbidden;
++
+ /*
+  * There are 16 SGIs, though we only actually use 8 in Linux. The other 8 SGIs
+  * are potentially stolen by the secure side. Some code, especially code dealing
+@@ -163,21 +166,27 @@ static void __init gic_prio_init(void)
+ {
+ 	bool ds;
+ 
+-	ds = gic_dist_security_disabled();
+-	if (!ds) {
+-		u32 val;
+-
+-		val = readl_relaxed(gic_data.dist_base + GICD_CTLR);
+-		val |= GICD_CTLR_DS;
+-		writel_relaxed(val, gic_data.dist_base + GICD_CTLR);
++	cpus_have_group0 = gic_has_group0();
+ 
+-		ds = gic_dist_security_disabled();
+-		if (ds)
+-			pr_warn("Broken GIC integration, security disabled");
++	ds = gic_dist_security_disabled();
++	if ((gic_data.flags & FLAGS_WORKAROUND_INSECURE) && !ds) {
++		if (cpus_have_group0) {
++			u32 val;
++
++			val = readl_relaxed(gic_data.dist_base + GICD_CTLR);
++			val |= GICD_CTLR_DS;
++			writel_relaxed(val, gic_data.dist_base + GICD_CTLR);
++
++			ds = gic_dist_security_disabled();
++			if (ds)
++				pr_warn("Broken GIC integration, security disabled\n");
++		} else {
++			pr_warn("Broken GIC integration, pNMI forbidden\n");
++			nmi_support_forbidden = true;
++		}
+ 	}
+ 
+ 	cpus_have_security_disabled = ds;
+-	cpus_have_group0 = gic_has_group0();
+ 
+ 	/*
+ 	 * How priority values are used by the GIC depends on two things:
+@@ -209,7 +218,7 @@ static void __init gic_prio_init(void)
+ 	 * be in the non-secure range, we program the non-secure values into
+ 	 * the distributor to match the PMR values we want.
+ 	 */
+-	if (cpus_have_group0 & !cpus_have_security_disabled) {
++	if (cpus_have_group0 && !cpus_have_security_disabled) {
+ 		dist_prio_irq = __gicv3_prio_to_ns(dist_prio_irq);
+ 		dist_prio_nmi = __gicv3_prio_to_ns(dist_prio_nmi);
+ 	}
+@@ -1922,6 +1931,18 @@ static bool gic_enable_quirk_arm64_2941627(void *data)
+ 	return true;
+ }
+ 
++static bool gic_enable_quirk_rk3399(void *data)
++{
++	struct gic_chip_data *d = data;
++
++	if (of_machine_is_compatible("rockchip,rk3399")) {
++		d->flags |= FLAGS_WORKAROUND_INSECURE;
++		return true;
++	}
++
++	return false;
++}
++
+ static bool rd_set_non_coherent(void *data)
+ {
+ 	struct gic_chip_data *d = data;
+@@ -1996,6 +2017,12 @@ static const struct gic_quirk gic_quirks[] = {
+ 		.property = "dma-noncoherent",
+ 		.init   = rd_set_non_coherent,
+ 	},
++	{
++		.desc	= "GICv3: Insecure RK3399 integration",
++		.iidr	= 0x0000043b,
++		.mask	= 0xff000fff,
++		.init	= gic_enable_quirk_rk3399,
++	},
+ 	{
+ 	}
+ };
+@@ -2004,7 +2031,7 @@ static void gic_enable_nmi_support(void)
+ {
+ 	int i;
+ 
+-	if (!gic_prio_masking_enabled())
++	if (!gic_prio_masking_enabled() || nmi_support_forbidden)
+ 		return;
+ 
+ 	rdist_nmi_refs = kcalloc(gic_data.ppi_nr + SGI_NR,
+2025-03-06 17:45:23.968 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -44,6 +44,7 @@ static u8 dist_prio_nmi __ro_after_init = GICV3_PRIO_NMI;
+ #define FLAGS_WORKAROUND_GICR_WAKER_MSM8996	(1ULL << 0)
+ #define FLAGS_WORKAROUND_CAVIUM_ERRATUM_38539	(1ULL << 1)
+ #define FLAGS_WORKAROUND_ASR_ERRATUM_8601001	(1ULL << 2)
++#define FLAGS_WORKAROUND_INSECURE		(1ULL << 3)
+ 
+ #define GIC_IRQ_TYPE_PARTITION	(GIC_IRQ_TYPE_LPI + 1)
+ 
+
+2025-03-06 17:45:23.969 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 44, 'old_count': 6, 'new_start': 44, 'new_count': 7}, 'lines': [('context', '#define FLAGS_WORKAROUND_GICR_WAKER_MSM8996\t(1ULL << 0)'), ('context', '#define FLAGS_WORKAROUND_CAVIUM_ERRATUM_38539\t(1ULL << 1)'), ('context', '#define FLAGS_WORKAROUND_ASR_ERRATUM_8601001\t(1ULL << 2)'), ('add', '#define FLAGS_WORKAROUND_INSECURE\t\t(1ULL << 3)'), ('context', ''), ('context', '#define GIC_IRQ_TYPE_PARTITION\t(GIC_IRQ_TYPE_LPI + 1)'), ('context', '')]}
+2025-03-06 17:45:23.974 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 43
+2025-03-06 17:45:23.974 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -83,6 +84,8 @@ static DEFINE_STATIC_KEY_TRUE(supports_deactivate_key);
+ #define GIC_LINE_NR	min(GICD_TYPER_SPIS(gic_data.rdists.gicd_typer), 1020U)
+ #define GIC_ESPI_NR	GICD_TYPER_ESPIS(gic_data.rdists.gicd_typer)
+ 
++static bool nmi_support_forbidden;
++
+ /*
+  * There are 16 SGIs, though we only actually use 8 in Linux. The other 8 SGIs
+  * are potentially stolen by the secure side. Some code, especially code dealing
+
+2025-03-06 17:45:23.974 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 83, 'old_count': 6, 'new_start': 84, 'new_count': 8}, 'lines': [('context', '#define GIC_LINE_NR\tmin(GICD_TYPER_SPIS(gic_data.rdists.gicd_typer), 1020U)'), ('context', '#define GIC_ESPI_NR\tGICD_TYPER_ESPIS(gic_data.rdists.gicd_typer)'), ('context', ''), ('add', 'static bool nmi_support_forbidden;'), ('add', ''), ('context', '/*'), ('context', ' * There are 16 SGIs, though we only actually use 8 in Linux. The other 8 SGIs'), ('context', ' * are potentially stolen by the secure side. Some code, especially code dealing')]}
+2025-03-06 17:45:23.979 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 83
+2025-03-06 17:45:23.979 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -163,21 +166,27 @@ static void __init gic_prio_init(void)
+ {
+ 	bool ds;
+ 
+-	ds = gic_dist_security_disabled();
+-	if (!ds) {
+-		u32 val;
+-
+-		val = readl_relaxed(gic_data.dist_base + GICD_CTLR);
+-		val |= GICD_CTLR_DS;
+-		writel_relaxed(val, gic_data.dist_base + GICD_CTLR);
++	cpus_have_group0 = gic_has_group0();
+ 
+-		ds = gic_dist_security_disabled();
+-		if (ds)
+-			pr_warn("Broken GIC integration, security disabled");
++	ds = gic_dist_security_disabled();
++	if ((gic_data.flags & FLAGS_WORKAROUND_INSECURE) && !ds) {
++		if (cpus_have_group0) {
++			u32 val;
++
++			val = readl_relaxed(gic_data.dist_base + GICD_CTLR);
++			val |= GICD_CTLR_DS;
++			writel_relaxed(val, gic_data.dist_base + GICD_CTLR);
++
++			ds = gic_dist_security_disabled();
++			if (ds)
++				pr_warn("Broken GIC integration, security disabled\n");
++		} else {
++			pr_warn("Broken GIC integration, pNMI forbidden\n");
++			nmi_support_forbidden = true;
++		}
+ 	}
+ 
+ 	cpus_have_security_disabled = ds;
+-	cpus_have_group0 = gic_has_group0();
+ 
+ 	/*
+ 	 * How priority values are used by the GIC depends on two things:
+
+2025-03-06 17:45:23.980 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 163, 'old_count': 21, 'new_start': 166, 'new_count': 27}, 'lines': [('context', '{'), ('context', '\tbool ds;'), ('context', ''), ('remove', '\tds = gic_dist_security_disabled();'), ('remove', '\tif (!ds) {'), ('remove', '\t\tu32 val;'), ('remove', ''), ('remove', '\t\tval = readl_relaxed(gic_data.dist_base + GICD_CTLR);'), ('remove', '\t\tval |= GICD_CTLR_DS;'), ('remove', '\t\twritel_relaxed(val, gic_data.dist_base + GICD_CTLR);'), ('add', '\tcpus_have_group0 = gic_has_group0();'), ('context', ''), ('remove', '\t\tds = gic_dist_security_disabled();'), ('remove', '\t\tif (ds)'), ('remove', '\t\t\tpr_warn("Broken GIC integration, security disabled");'), ('add', '\tds = gic_dist_security_disabled();'), ('add', '\tif ((gic_data.flags & FLAGS_WORKAROUND_INSECURE) && !ds) {'), ('add', '\t\tif (cpus_have_group0) {'), ('add', '\t\t\tu32 val;'), ('add', ''), ('add', '\t\t\tval = readl_relaxed(gic_data.dist_base + GICD_CTLR);'), ('add', '\t\t\tval |= GICD_CTLR_DS;'), ('add', '\t\t\twritel_relaxed(val, gic_data.dist_base + GICD_CTLR);'), ('add', ''), ('add', '\t\t\tds = gic_dist_security_disabled();'), ('add', '\t\t\tif (ds)'), ('add', '\t\t\t\tpr_warn("Broken GIC integration, security disabled\\n");'), ('add', '\t\t} else {'), ('add', '\t\t\tpr_warn("Broken GIC integration, pNMI forbidden\\n");'), ('add', '\t\t\tnmi_support_forbidden = true;'), ('add', '\t\t}'), ('context', '\t}'), ('context', ''), ('context', '\tcpus_have_security_disabled = ds;'), ('remove', '\tcpus_have_group0 = gic_has_group0();'), ('context', ''), ('context', '\t/*'), ('context', '\t * How priority values are used by the GIC depends on two things:')]}
+2025-03-06 17:45:23.994 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-03-06 17:45:23.994 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 163, 'old_count': 21, 'new_start': 166, 'new_count': 27}, 'lines': [('context', '{'), ('context', '\tbool ds;'), ('context', ''), ('remove', '\tds = gic_dist_security_disabled();'), ('remove', '\tif (!ds) {'), ('remove', '\t\tu32 val;'), ('remove', ''), ('remove', '\t\tval = readl_relaxed(gic_data.dist_base + GICD_CTLR);'), ('remove', '\t\tval |= GICD_CTLR_DS;'), ('remove', '\t\twritel_relaxed(val, gic_data.dist_base + GICD_CTLR);'), ('add', '\tcpus_have_group0 = gic_has_group0();'), ('context', ''), ('remove', '\t\tds = gic_dist_security_disabled();'), ('remove', '\t\tif (ds)'), ('remove', '\t\t\tpr_warn("Broken GIC integration, security disabled");'), ('add', '\tds = gic_dist_security_disabled();'), ('add', '\tif ((gic_data.flags & FLAGS_WORKAROUND_INSECURE) && !ds) {'), ('add', '\t\tif (cpus_have_group0) {'), ('add', '\t\t\tu32 val;'), ('add', ''), ('add', '\t\t\tval = readl_relaxed(gic_data.dist_base + GICD_CTLR);'), ('add', '\t\t\tval |= GICD_CTLR_DS;'), ('add', '\t\t\twritel_relaxed(val, gic_data.dist_base + GICD_CTLR);'), ('add', ''), ('add', '\t\t\tds = gic_dist_security_disabled();'), ('add', '\t\t\tif (ds)'), ('add', '\t\t\t\tpr_warn("Broken GIC integration, security disabled\\n");'), ('add', '\t\t} else {'), ('add', '\t\t\tpr_warn("Broken GIC integration, pNMI forbidden\\n");'), ('add', '\t\t\tnmi_support_forbidden = true;'), ('add', '\t\t}'), ('context', '\t}'), ('context', ''), ('context', '\tcpus_have_security_disabled = ds;'), ('remove', '\tcpus_have_group0 = gic_has_group0();'), ('context', ''), ('context', '\t/*'), ('context', '\t * How priority values are used by the GIC depends on two things:')]}
+2025-03-06 17:45:23.995 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -209,7 +218,7 @@ static void __init gic_prio_init(void)
+ 	 * be in the non-secure range, we program the non-secure values into
+ 	 * the distributor to match the PMR values we want.
+ 	 */
+-	if (cpus_have_group0 & !cpus_have_security_disabled) {
++	if (cpus_have_group0 && !cpus_have_security_disabled) {
+ 		dist_prio_irq = __gicv3_prio_to_ns(dist_prio_irq);
+ 		dist_prio_nmi = __gicv3_prio_to_ns(dist_prio_nmi);
+ 	}
+
+2025-03-06 17:45:23.995 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 209, 'old_count': 7, 'new_start': 218, 'new_count': 7}, 'lines': [('context', '\t * be in the non-secure range, we program the non-secure values into'), ('context', '\t * the distributor to match the PMR values we want.'), ('context', '\t */'), ('remove', '\tif (cpus_have_group0 & !cpus_have_security_disabled) {'), ('add', '\tif (cpus_have_group0 && !cpus_have_security_disabled) {'), ('context', '\t\tdist_prio_irq = __gicv3_prio_to_ns(dist_prio_irq);'), ('context', '\t\tdist_prio_nmi = __gicv3_prio_to_ns(dist_prio_nmi);'), ('context', '\t}')]}
+2025-03-06 17:45:24.000 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 196
+2025-03-06 17:45:24.001 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -1922,6 +1931,18 @@ static bool gic_enable_quirk_arm64_2941627(void *data)
+ 	return true;
+ }
+ 
++static bool gic_enable_quirk_rk3399(void *data)
++{
++	struct gic_chip_data *d = data;
++
++	if (of_machine_is_compatible("rockchip,rk3399")) {
++		d->flags |= FLAGS_WORKAROUND_INSECURE;
++		return true;
++	}
++
++	return false;
++}
++
+ static bool rd_set_non_coherent(void *data)
+ {
+ 	struct gic_chip_data *d = data;
+
+2025-03-06 17:45:24.001 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 1922, 'old_count': 6, 'new_start': 1931, 'new_count': 18}, 'lines': [('context', '\treturn true;'), ('context', '}'), ('context', ''), ('add', 'static bool gic_enable_quirk_rk3399(void *data)'), ('add', '{'), ('add', '\tstruct gic_chip_data *d = data;'), ('add', ''), ('add', '\tif (of_machine_is_compatible("rockchip,rk3399")) {'), ('add', '\t\td->flags |= FLAGS_WORKAROUND_INSECURE;'), ('add', '\t\treturn true;'), ('add', '\t}'), ('add', ''), ('add', '\treturn false;'), ('add', '}'), ('add', ''), ('context', 'static bool rd_set_non_coherent(void *data)'), ('context', '{'), ('context', '\tstruct gic_chip_data *d = data;')]}
+2025-03-06 17:45:24.007 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 1909
+2025-03-06 17:45:24.007 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -1996,6 +2017,12 @@ static const struct gic_quirk gic_quirks[] = {
+ 		.property = "dma-noncoherent",
+ 		.init   = rd_set_non_coherent,
+ 	},
++	{
++		.desc	= "GICv3: Insecure RK3399 integration",
++		.iidr	= 0x0000043b,
++		.mask	= 0xff000fff,
++		.init	= gic_enable_quirk_rk3399,
++	},
+ 	{
+ 	}
+ };
+
+2025-03-06 17:45:24.008 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 1996, 'old_count': 6, 'new_start': 2017, 'new_count': 12}, 'lines': [('context', '\t\t.property = "dma-noncoherent",'), ('context', '\t\t.init   = rd_set_non_coherent,'), ('context', '\t},'), ('add', '\t{'), ('add', '\t\t.desc\t= "GICv3: Insecure RK3399 integration",'), ('add', '\t\t.iidr\t= 0x0000043b,'), ('add', '\t\t.mask\t= 0xff000fff,'), ('add', '\t\t.init\t= gic_enable_quirk_rk3399,'), ('add', '\t},'), ('context', '\t{'), ('context', '\t}'), ('context', '};')]}
+2025-03-06 17:45:24.012 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 1995
+2025-03-06 17:45:24.012 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -2004,7 +2031,7 @@ static void gic_enable_nmi_support(void)
+ {
+ 	int i;
+ 
+-	if (!gic_prio_masking_enabled())
++	if (!gic_prio_masking_enabled() || nmi_support_forbidden)
+ 		return;
+ 
+ 	rdist_nmi_refs = kcalloc(gic_data.ppi_nr + SGI_NR,
+2025-03-06 17:45:24.012 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 2004, 'old_count': 7, 'new_start': 2031, 'new_count': 7}, 'lines': [('context', '{'), ('context', '\tint i;'), ('context', ''), ('remove', '\tif (!gic_prio_masking_enabled())'), ('add', '\tif (!gic_prio_masking_enabled() || nmi_support_forbidden)'), ('context', '\t\treturn;'), ('context', ''), ('context', '\trdist_nmi_refs = kcalloc(gic_data.ppi_nr + SGI_NR,')]}
+2025-03-06 17:45:24.018 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 2009
+2025-03-06 17:45:24.019 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: drivers/irqchip/irq-gic-v3.c
+2025-03-06 17:45:24.020 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/workspace/sow/backport-test/linux/drivers/irqchip/irq-gic-v3.c
+2025-03-06 17:45:24.020 | INFO     | modules.patch_adapter:_generate_adapted_patch:264 - 文件内容变化，执行复制: drivers/irqchip/irq-gic-v3.c
+2025-03-06 17:45:24.021 | INFO     | modules.patch_adapter:_generate_adapted_patch:267 - 将文件从/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4cb777/adapted_linux-6.12.y/drivers/irqchip/irq-gic-v3.c复制到/home/elpsy/workspace/sow/backport-test/linux/drivers/irqchip/irq-gic-v3.c
+2025-03-06 17:45:24.414 | INFO     | modules.patch_adapter:_generate_adapted_patch:322 - 生成补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4cb777/patches/0001-Applied-adapted-patch-for-linux-6.12.y.patch
+
+2025-03-06 17:45:24.414 | INFO     | modules.patch_adapter:_generate_adapted_patch:324 - patch_dir所含文件: ['upstream_4cb777.patch', 'adapted_linux-6.12.y.patch', 'downstream_ada54b.patch', '0001-Applied-adapted-patch-for-linux-6.12.y.patch']
+2025-03-06 17:45:24.415 | INFO     | modules.patch_adapter:_generate_adapted_patch:335 - 已重命名补丁文件: 从 /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4cb777/patches/0001-Applied-adapted-patch-for-linux-6.12.y.patch 到 /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4cb777/patches/adapted_linux-6.12.y.patch
+2025-03-06 17:45:24.415 | INFO     | modules.patch_adapter:_generate_adapted_patch:345 - 已生成适配后的补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4cb777/patches/adapted_linux-6.12.y.patch
+2025-03-06 17:45:24.415 | INFO     | modules.patch_adapter:execute:73 - 生成适配补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4cb777/patches/adapted_linux-6.12.y.patch
+2025-03-06 17:45:24.886 | INFO     | modules.patch_adapter:_test_apply_patch:478 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4cb777/patches/adapted_linux-6.12.y.patch
+2025-03-06 17:45:25.126 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_linux-6.12.y_20250306_174523
+2025-03-06 17:45:25.324 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/gregkh/linux/4cb777/metrics/patch_adapter_metrics.json
+2025-03-06 17:45:25.324 | INFO     | core.adaptation_pipeline:process_patch:81 - 此时upstream_patch_path存在状态: True
+2025-03-06 17:45:25.324 | INFO     | core.adaptation_pipeline:process_patch:76 - 执行模块: compiler
+2025-03-06 17:45:25.353 | INFO     | modules.compiler:_get_modified_files:164 - 已修改的文件列表: [PosixPath('drivers/irqchip/irq-gic-v3.c')]
+2025-03-06 17:45:26.241 | INFO     | modules.compiler:execute:108 - 补丁编译验证通过
+2025-03-06 17:45:26.242 | INFO     | core.adaptation_pipeline:process_patch:81 - 此时upstream_patch_path存在状态: True
+2025-03-06 17:45:26.243 | INFO     | core.adaptation_pipeline:process_patch:99 - 补丁处理完成，耗时: 4.28秒
+2025-03-06 17:45:26.244 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_4cb777_20250306_174526/result.json
+2025-03-06 17:45:26.244 | INFO     | __main__:_print_summary:408 - context.patch_adapter_result: {'success': True, 'adapted_patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4cb777/patches/adapted_linux-6.12.y.patch', 'apply_result': {'success': True, 'error': None, 'error_type': None, 'output': 'Applying: Applied adapted patch for linux-6.12.y\n'}}
+2025-03-06 17:45:26.245 | INFO     | __main__:_print_summary:426 - ==================================================
+2025-03-06 17:45:26.245 | INFO     | __main__:_print_summary:427 - 处理摘要 - 提交: 4cb777
+2025-03-06 17:45:26.245 | INFO     | __main__:_print_summary:428 - 结果: 补丁适配成功 (方法: patch_adapter)
+2025-03-06 17:45:26.246 | INFO     | __main__:_print_summary:433 - ==================================================
+2025-03-06 17:45:26.248 | INFO     | __main__:_print_mode2_statistics:471 - ============================================================
+2025-03-06 17:45:26.249 | INFO     | __main__:_print_mode2_statistics:472 - 模式2处理统计
+2025-03-06 17:45:26.249 | INFO     | __main__:_print_mode2_statistics:473 - ============================================================
+2025-03-06 17:45:26.250 | INFO     | __main__:_print_mode2_statistics:474 - 总提交数: 1
+2025-03-06 17:45:26.250 | INFO     | __main__:_print_mode2_statistics:475 - 直接应用成功: 0
+2025-03-06 17:45:26.250 | INFO     | __main__:_print_mode2_statistics:476 - 需要适配数量: 1
+2025-03-06 17:45:26.251 | INFO     | __main__:_print_mode2_statistics:477 - 适配成功数量: 0
+2025-03-06 17:45:26.251 | INFO     | __main__:_print_mode2_statistics:478 - - 补丁适配成功: 0
+2025-03-06 17:45:26.252 | INFO     | __main__:_print_mode2_statistics:479 - - LLM适配成功: 0
+2025-03-06 17:45:26.253 | INFO     | __main__:_print_mode2_statistics:480 - 适配失败数量: 0
+2025-03-06 17:45:26.254 | INFO     | __main__:_print_mode2_statistics:481 - 总体成功率: 100.00%
+2025-03-06 17:45:26.254 | INFO     | __main__:_print_mode2_statistics:482 - 适配成功率: 0.00%
+2025-03-06 17:45:26.255 | INFO     | __main__:_print_mode2_statistics:489 - ============================================================
+2025-03-06 17:45:26.256 | INFO     | __main__:_print_mode2_statistics:516 - 统计结果已保存到: statistics/mode2_stats_linux-6.12.y_20250306_174526.json
+2025-03-06 17:45:26.257 | INFO     | __main__:run:122 - 处理完成

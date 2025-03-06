@@ -1,0 +1,185 @@
+2025-03-06 18:13:37.133 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250306_181337.log
+2025-03-06 18:13:37.134 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-06 18:13:37.134 | INFO     | __main__:_get_commits_list:225 - commits_file:workspace/gregkh/linux/cache/branch_linux-6.12.y_commits.json
+2025-03-06 18:13:37.134 | INFO     | __main__:_get_commits_list:226 - use_cached_commits:True
+2025-03-06 18:13:37.135 | INFO     | __main__:_get_commits_list:229 - 从缓存文件加载commits信息
+2025-03-06 18:13:37.139 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-03-06 18:13:37.139 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: direct_apply
+2025-03-06 18:13:37.140 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: llm_adapter
+2025-03-06 18:13:37.141 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: patch_adapter
+2025-03-06 18:13:37.141 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: compiler
+2025-03-06 18:13:37.141 | INFO     | __main__:_process_mode2:186 - 处理提交 36/5: 5c8f9a
+2025-03-06 18:13:37.142 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 5c8f9a05336cf5cadbd57ad461621b386aadb762
+2025-03-06 18:13:37.142 | INFO     | core.adaptation_pipeline:process_patch:82 - 执行模块: direct_apply
+2025-03-06 18:13:37.143 | INFO     | modules.direct_apply:_download_patch:215 - 下游补丁文件不存在，下载补丁: workspace/gregkh/linux/5c8f9a/patches/downstream_60e4e8.patch
+2025-03-06 18:13:37.144 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '60e4e8bdf9c17d0c4ba5b5ec577124d8112008be.patch']
+2025-03-06 18:13:37.144 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/60e4e8bdf9c17d0c4ba5b5ec577124d8112008be
+2025-03-06 18:13:38.621 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/gregkh/linux/5c8f9a/patches/downstream_60e4e8.patch
+2025-03-06 18:13:38.624 | INFO     | modules.direct_apply:_download_patch:220 - 下游补丁下载成功: workspace/gregkh/linux/5c8f9a/patches/downstream_60e4e8.patch
+2025-03-06 18:13:38.626 | INFO     | modules.direct_apply:_download_patch:230 - 上游补丁文件不存在，下载补丁: workspace/gregkh/linux/5c8f9a/patches/downstream_60e4e8.patch
+2025-03-06 18:13:38.627 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '5c8f9a05336cf5cadbd57ad461621b386aadb762.patch']
+2025-03-06 18:13:38.627 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/5c8f9a05336cf5cadbd57ad461621b386aadb762
+2025-03-06 18:13:40.131 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/gregkh/linux/5c8f9a/patches/upstream_5c8f9a.patch
+2025-03-06 18:13:40.133 | INFO     | modules.direct_apply:_download_patch:234 - 上游补丁下载成功: workspace/gregkh/linux/5c8f9a/patches/upstream_5c8f9a.patch
+2025-03-06 18:13:40.134 | INFO     | modules.direct_apply:execute:62 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/5c8f9a/patches/upstream_5c8f9a.patch
+2025-03-06 18:13:40.317 | INFO     | modules.direct_apply:_prepare_test_branch:340 - 创建测试分支: test_patch_linux-6.12.y
+2025-03-06 18:13:41.013 | INFO     | modules.direct_apply:_apply_patch:275 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/5c8f9a/patches/upstream_5c8f9a.patch
+2025-03-06 18:13:41.071 | INFO     | modules.direct_apply:_move_to_cache:129 - 源目录: workspace/gregkh/linux/5c8f9a
+2025-03-06 18:13:41.072 | INFO     | modules.direct_apply:_move_to_cache:137 - 目标目录: workspace/gregkh/linux/cache
+2025-03-06 18:13:41.072 | INFO     | modules.direct_apply:_move_to_cache:148 - 已将成功的commit文件夹移动到缓存: workspace/gregkh/linux/cache
+2025-03-06 18:13:41.242 | INFO     | modules.direct_apply:_cleanup_test_branch:431 - 清理测试分支: test_patch_linux-6.12.y
+2025-03-06 18:13:41.244 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/5c8f9a/evaluations/direct_apply/metrics_5c8f9a_20250306_181341.json
+2025-03-06 18:13:41.244 | INFO     | core.adaptation_pipeline:process_patch:87 - 此时upstream_patch_path存在状态: False
+2025-03-06 18:13:41.244 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-03-06 18:13:41.245 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-03-06 18:13:41.245 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: CompilerModule
+2025-03-06 18:13:41.245 | INFO     | core.adaptation_pipeline:process_patch:105 - 补丁处理完成，耗时: 4.10秒
+2025-03-06 18:13:41.246 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_5c8f9a_20250306_181341/result.json
+2025-03-06 18:13:41.247 | INFO     | __main__:_print_summary:408 - context.patch_adapter_result: []
+2025-03-06 18:13:41.247 | INFO     | __main__:_print_summary:426 - ==================================================
+2025-03-06 18:13:41.247 | INFO     | __main__:_print_summary:427 - 处理摘要 - 提交: 5c8f9a
+2025-03-06 18:13:41.247 | INFO     | __main__:_print_summary:428 - 结果: 直接应用成功 (方法: direct_apply)
+2025-03-06 18:13:41.248 | INFO     | __main__:_print_summary:433 - ==================================================
+2025-03-06 18:13:41.248 | INFO     | __main__:_process_mode2:186 - 处理提交 37/5: 41cddf
+2025-03-06 18:13:41.249 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 41cddf83d8b00f29fd105e7a0777366edc69a5cf
+2025-03-06 18:13:41.249 | INFO     | core.adaptation_pipeline:process_patch:82 - 执行模块: direct_apply
+2025-03-06 18:13:41.250 | INFO     | modules.direct_apply:_download_patch:215 - 下游补丁文件不存在，下载补丁: workspace/gregkh/linux/41cddf/patches/downstream_3f9240.patch
+2025-03-06 18:13:41.251 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '3f9240d59e9a95d19f06120bfd1d0e681c6c0ac7.patch']
+2025-03-06 18:13:41.251 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/3f9240d59e9a95d19f06120bfd1d0e681c6c0ac7
+2025-03-06 18:13:42.766 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/gregkh/linux/41cddf/patches/downstream_3f9240.patch
+2025-03-06 18:13:42.768 | INFO     | modules.direct_apply:_download_patch:220 - 下游补丁下载成功: workspace/gregkh/linux/41cddf/patches/downstream_3f9240.patch
+2025-03-06 18:13:42.769 | INFO     | modules.direct_apply:_download_patch:230 - 上游补丁文件不存在，下载补丁: workspace/gregkh/linux/41cddf/patches/downstream_3f9240.patch
+2025-03-06 18:13:42.770 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '41cddf83d8b00f29fd105e7a0777366edc69a5cf.patch']
+2025-03-06 18:13:42.770 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/41cddf83d8b00f29fd105e7a0777366edc69a5cf
+2025-03-06 18:13:44.242 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/gregkh/linux/41cddf/patches/upstream_41cddf.patch
+2025-03-06 18:13:44.244 | INFO     | modules.direct_apply:_download_patch:234 - 上游补丁下载成功: workspace/gregkh/linux/41cddf/patches/upstream_41cddf.patch
+2025-03-06 18:13:44.245 | INFO     | modules.direct_apply:execute:62 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/41cddf/patches/upstream_41cddf.patch
+2025-03-06 18:13:44.419 | INFO     | modules.direct_apply:_prepare_test_branch:340 - 创建测试分支: test_patch_linux-6.12.y
+2025-03-06 18:13:45.099 | INFO     | modules.direct_apply:_apply_patch:275 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/41cddf/patches/upstream_41cddf.patch
+2025-03-06 18:13:45.151 | INFO     | modules.direct_apply:_move_to_cache:129 - 源目录: workspace/gregkh/linux/41cddf
+2025-03-06 18:13:45.151 | INFO     | modules.direct_apply:_move_to_cache:137 - 目标目录: workspace/gregkh/linux/cache
+2025-03-06 18:13:45.152 | INFO     | modules.direct_apply:_move_to_cache:148 - 已将成功的commit文件夹移动到缓存: workspace/gregkh/linux/cache
+2025-03-06 18:13:45.336 | INFO     | modules.direct_apply:_cleanup_test_branch:431 - 清理测试分支: test_patch_linux-6.12.y
+2025-03-06 18:13:45.337 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/41cddf/evaluations/direct_apply/metrics_41cddf_20250306_181345.json
+2025-03-06 18:13:45.337 | INFO     | core.adaptation_pipeline:process_patch:87 - 此时upstream_patch_path存在状态: False
+2025-03-06 18:13:45.338 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-03-06 18:13:45.338 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-03-06 18:13:45.338 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: CompilerModule
+2025-03-06 18:13:45.339 | INFO     | core.adaptation_pipeline:process_patch:105 - 补丁处理完成，耗时: 4.09秒
+2025-03-06 18:13:45.340 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_41cddf_20250306_181345/result.json
+2025-03-06 18:13:45.341 | INFO     | __main__:_print_summary:408 - context.patch_adapter_result: []
+2025-03-06 18:13:45.341 | INFO     | __main__:_print_summary:426 - ==================================================
+2025-03-06 18:13:45.341 | INFO     | __main__:_print_summary:427 - 处理摘要 - 提交: 41cddf
+2025-03-06 18:13:45.342 | INFO     | __main__:_print_summary:428 - 结果: 直接应用成功 (方法: direct_apply)
+2025-03-06 18:13:45.342 | INFO     | __main__:_print_summary:433 - ==================================================
+2025-03-06 18:13:45.342 | INFO     | __main__:_process_mode2:186 - 处理提交 38/5: 07b598
+2025-03-06 18:13:45.342 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 07b598c0e6f06a0f254c88dafb4ad50f8a8c6eea
+2025-03-06 18:13:45.343 | INFO     | core.adaptation_pipeline:process_patch:82 - 执行模块: direct_apply
+2025-03-06 18:13:45.353 | INFO     | modules.direct_apply:_download_patch:215 - 下游补丁文件不存在，下载补丁: workspace/gregkh/linux/07b598/patches/downstream_b7859e.patch
+2025-03-06 18:13:45.354 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', 'b7859e8643e75619b2705b4fcac93ffd94d72b4a.patch']
+2025-03-06 18:13:45.354 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/b7859e8643e75619b2705b4fcac93ffd94d72b4a
+2025-03-06 18:13:46.825 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/gregkh/linux/07b598/patches/downstream_b7859e.patch
+2025-03-06 18:13:46.827 | INFO     | modules.direct_apply:_download_patch:220 - 下游补丁下载成功: workspace/gregkh/linux/07b598/patches/downstream_b7859e.patch
+2025-03-06 18:13:46.828 | INFO     | modules.direct_apply:_download_patch:230 - 上游补丁文件不存在，下载补丁: workspace/gregkh/linux/07b598/patches/downstream_b7859e.patch
+2025-03-06 18:13:46.829 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '07b598c0e6f06a0f254c88dafb4ad50f8a8c6eea.patch']
+2025-03-06 18:13:46.829 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/07b598c0e6f06a0f254c88dafb4ad50f8a8c6eea
+2025-03-06 18:13:48.279 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/gregkh/linux/07b598/patches/upstream_07b598.patch
+2025-03-06 18:13:48.283 | INFO     | modules.direct_apply:_download_patch:234 - 上游补丁下载成功: workspace/gregkh/linux/07b598/patches/upstream_07b598.patch
+2025-03-06 18:13:48.284 | INFO     | modules.direct_apply:execute:62 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/07b598/patches/upstream_07b598.patch
+2025-03-06 18:13:48.481 | INFO     | modules.direct_apply:_prepare_test_branch:340 - 创建测试分支: test_patch_linux-6.12.y
+2025-03-06 18:13:49.468 | INFO     | modules.direct_apply:_apply_patch:275 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/07b598/patches/upstream_07b598.patch
+2025-03-06 18:13:49.539 | INFO     | modules.direct_apply:_move_to_cache:129 - 源目录: workspace/gregkh/linux/07b598
+2025-03-06 18:13:49.539 | INFO     | modules.direct_apply:_move_to_cache:137 - 目标目录: workspace/gregkh/linux/cache
+2025-03-06 18:13:49.540 | INFO     | modules.direct_apply:_move_to_cache:148 - 已将成功的commit文件夹移动到缓存: workspace/gregkh/linux/cache
+2025-03-06 18:13:49.728 | INFO     | modules.direct_apply:_cleanup_test_branch:431 - 清理测试分支: test_patch_linux-6.12.y
+2025-03-06 18:13:49.729 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/07b598/evaluations/direct_apply/metrics_07b598_20250306_181349.json
+2025-03-06 18:13:49.730 | INFO     | core.adaptation_pipeline:process_patch:87 - 此时upstream_patch_path存在状态: False
+2025-03-06 18:13:49.730 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-03-06 18:13:49.730 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-03-06 18:13:49.730 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: CompilerModule
+2025-03-06 18:13:49.731 | INFO     | core.adaptation_pipeline:process_patch:105 - 补丁处理完成，耗时: 4.39秒
+2025-03-06 18:13:49.732 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_07b598_20250306_181349/result.json
+2025-03-06 18:13:49.732 | INFO     | __main__:_print_summary:408 - context.patch_adapter_result: []
+2025-03-06 18:13:49.732 | INFO     | __main__:_print_summary:426 - ==================================================
+2025-03-06 18:13:49.732 | INFO     | __main__:_print_summary:427 - 处理摘要 - 提交: 07b598
+2025-03-06 18:13:49.733 | INFO     | __main__:_print_summary:428 - 结果: 直接应用成功 (方法: direct_apply)
+2025-03-06 18:13:49.733 | INFO     | __main__:_print_summary:433 - ==================================================
+2025-03-06 18:13:49.733 | INFO     | __main__:_process_mode2:186 - 处理提交 39/5: 70b0d6
+2025-03-06 18:13:49.734 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 70b0d6b0a199c5a3ee6c72f5e61681ed6f759612
+2025-03-06 18:13:49.734 | INFO     | core.adaptation_pipeline:process_patch:82 - 执行模块: direct_apply
+2025-03-06 18:13:49.735 | INFO     | modules.direct_apply:_download_patch:215 - 下游补丁文件不存在，下载补丁: workspace/gregkh/linux/70b0d6/patches/downstream_fd9d2d.patch
+2025-03-06 18:13:49.735 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', 'fd9d2d6124c293e40797a080adf8a9c237efd8b8.patch']
+2025-03-06 18:13:49.735 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/fd9d2d6124c293e40797a080adf8a9c237efd8b8
+2025-03-06 18:13:51.227 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/gregkh/linux/70b0d6/patches/downstream_fd9d2d.patch
+2025-03-06 18:13:51.230 | INFO     | modules.direct_apply:_download_patch:220 - 下游补丁下载成功: workspace/gregkh/linux/70b0d6/patches/downstream_fd9d2d.patch
+2025-03-06 18:13:51.232 | INFO     | modules.direct_apply:_download_patch:230 - 上游补丁文件不存在，下载补丁: workspace/gregkh/linux/70b0d6/patches/downstream_fd9d2d.patch
+2025-03-06 18:13:51.234 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '70b0d6b0a199c5a3ee6c72f5e61681ed6f759612.patch']
+2025-03-06 18:13:51.235 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/70b0d6b0a199c5a3ee6c72f5e61681ed6f759612
+2025-03-06 18:13:52.564 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/gregkh/linux/70b0d6/patches/upstream_70b0d6.patch
+2025-03-06 18:13:52.567 | INFO     | modules.direct_apply:_download_patch:234 - 上游补丁下载成功: workspace/gregkh/linux/70b0d6/patches/upstream_70b0d6.patch
+2025-03-06 18:13:52.568 | INFO     | modules.direct_apply:execute:62 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/70b0d6/patches/upstream_70b0d6.patch
+2025-03-06 18:13:52.773 | INFO     | modules.direct_apply:_prepare_test_branch:340 - 创建测试分支: test_patch_linux-6.12.y
+2025-03-06 18:13:53.496 | INFO     | modules.direct_apply:_apply_patch:275 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/70b0d6/patches/upstream_70b0d6.patch
+2025-03-06 18:13:53.555 | INFO     | modules.direct_apply:_move_to_cache:129 - 源目录: workspace/gregkh/linux/70b0d6
+2025-03-06 18:13:53.555 | INFO     | modules.direct_apply:_move_to_cache:137 - 目标目录: workspace/gregkh/linux/cache
+2025-03-06 18:13:53.556 | INFO     | modules.direct_apply:_move_to_cache:148 - 已将成功的commit文件夹移动到缓存: workspace/gregkh/linux/cache
+2025-03-06 18:13:53.737 | INFO     | modules.direct_apply:_cleanup_test_branch:431 - 清理测试分支: test_patch_linux-6.12.y
+2025-03-06 18:13:53.739 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/70b0d6/evaluations/direct_apply/metrics_70b0d6_20250306_181353.json
+2025-03-06 18:13:53.739 | INFO     | core.adaptation_pipeline:process_patch:87 - 此时upstream_patch_path存在状态: False
+2025-03-06 18:13:53.739 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-03-06 18:13:53.740 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-03-06 18:13:53.740 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: CompilerModule
+2025-03-06 18:13:53.740 | INFO     | core.adaptation_pipeline:process_patch:105 - 补丁处理完成，耗时: 4.01秒
+2025-03-06 18:13:53.751 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_70b0d6_20250306_181353/result.json
+2025-03-06 18:13:53.752 | INFO     | __main__:_print_summary:408 - context.patch_adapter_result: []
+2025-03-06 18:13:53.752 | INFO     | __main__:_print_summary:426 - ==================================================
+2025-03-06 18:13:53.752 | INFO     | __main__:_print_summary:427 - 处理摘要 - 提交: 70b0d6
+2025-03-06 18:13:53.752 | INFO     | __main__:_print_summary:428 - 结果: 直接应用成功 (方法: direct_apply)
+2025-03-06 18:13:53.753 | INFO     | __main__:_print_summary:433 - ==================================================
+2025-03-06 18:13:53.753 | INFO     | __main__:_process_mode2:186 - 处理提交 40/5: 81570d
+2025-03-06 18:13:53.753 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 81570d6a7ad37033c7895811551a5a9023706eda
+2025-03-06 18:13:53.754 | INFO     | core.adaptation_pipeline:process_patch:82 - 执行模块: direct_apply
+2025-03-06 18:13:53.754 | INFO     | modules.direct_apply:_download_patch:215 - 下游补丁文件不存在，下载补丁: workspace/gregkh/linux/81570d/patches/downstream_6f3edf.patch
+2025-03-06 18:13:53.755 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '6f3edf2d50c93c58b3be6838f3d7cccb3aa8c43e.patch']
+2025-03-06 18:13:53.756 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/6f3edf2d50c93c58b3be6838f3d7cccb3aa8c43e
+2025-03-06 18:13:55.143 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/gregkh/linux/81570d/patches/downstream_6f3edf.patch
+2025-03-06 18:13:55.146 | INFO     | modules.direct_apply:_download_patch:220 - 下游补丁下载成功: workspace/gregkh/linux/81570d/patches/downstream_6f3edf.patch
+2025-03-06 18:13:55.146 | INFO     | modules.direct_apply:_download_patch:230 - 上游补丁文件不存在，下载补丁: workspace/gregkh/linux/81570d/patches/downstream_6f3edf.patch
+2025-03-06 18:13:55.147 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', '81570d6a7ad37033c7895811551a5a9023706eda.patch']
+2025-03-06 18:13:55.147 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/81570d6a7ad37033c7895811551a5a9023706eda
+2025-03-06 18:13:56.588 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/gregkh/linux/81570d/patches/upstream_81570d.patch
+2025-03-06 18:13:56.590 | INFO     | modules.direct_apply:_download_patch:234 - 上游补丁下载成功: workspace/gregkh/linux/81570d/patches/upstream_81570d.patch
+2025-03-06 18:13:56.591 | INFO     | modules.direct_apply:execute:62 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/81570d/patches/upstream_81570d.patch
+2025-03-06 18:13:56.760 | INFO     | modules.direct_apply:_prepare_test_branch:340 - 创建测试分支: test_patch_linux-6.12.y
+2025-03-06 18:13:57.595 | INFO     | modules.direct_apply:_apply_patch:275 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/81570d/patches/upstream_81570d.patch
+2025-03-06 18:13:57.651 | INFO     | modules.direct_apply:_move_to_cache:129 - 源目录: workspace/gregkh/linux/81570d
+2025-03-06 18:13:57.651 | INFO     | modules.direct_apply:_move_to_cache:137 - 目标目录: workspace/gregkh/linux/cache
+2025-03-06 18:13:57.652 | INFO     | modules.direct_apply:_move_to_cache:148 - 已将成功的commit文件夹移动到缓存: workspace/gregkh/linux/cache
+2025-03-06 18:13:57.830 | INFO     | modules.direct_apply:_cleanup_test_branch:431 - 清理测试分支: test_patch_linux-6.12.y
+2025-03-06 18:13:57.831 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/81570d/evaluations/direct_apply/metrics_81570d_20250306_181357.json
+2025-03-06 18:13:57.831 | INFO     | core.adaptation_pipeline:process_patch:87 - 此时upstream_patch_path存在状态: False
+2025-03-06 18:13:57.832 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-03-06 18:13:57.832 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-03-06 18:13:57.832 | INFO     | core.adaptation_pipeline:process_patch:76 - 直接应用成功，跳过模块: CompilerModule
+2025-03-06 18:13:57.833 | INFO     | core.adaptation_pipeline:process_patch:105 - 补丁处理完成，耗时: 4.08秒
+2025-03-06 18:13:57.833 | INFO     | __main__:_save_results:398 - 结果已保存到: results/linux-6.12.y_81570d_20250306_181357/result.json
+2025-03-06 18:13:57.834 | INFO     | __main__:_print_summary:408 - context.patch_adapter_result: []
+2025-03-06 18:13:57.834 | INFO     | __main__:_print_summary:426 - ==================================================
+2025-03-06 18:13:57.834 | INFO     | __main__:_print_summary:427 - 处理摘要 - 提交: 81570d
+2025-03-06 18:13:57.834 | INFO     | __main__:_print_summary:428 - 结果: 直接应用成功 (方法: direct_apply)
+2025-03-06 18:13:57.835 | INFO     | __main__:_print_summary:433 - ==================================================
+2025-03-06 18:13:57.840 | INFO     | __main__:_print_mode2_statistics:471 - ============================================================
+2025-03-06 18:13:57.841 | INFO     | __main__:_print_mode2_statistics:472 - 模式2处理统计
+2025-03-06 18:13:57.841 | INFO     | __main__:_print_mode2_statistics:473 - ============================================================
+2025-03-06 18:13:57.841 | INFO     | __main__:_print_mode2_statistics:474 - 总提交数: 5
+2025-03-06 18:13:57.841 | INFO     | __main__:_print_mode2_statistics:475 - 直接应用成功: 18
+2025-03-06 18:13:57.842 | INFO     | __main__:_print_mode2_statistics:476 - 需要适配数量: -13
+2025-03-06 18:13:57.842 | INFO     | __main__:_print_mode2_statistics:477 - 适配成功数量: 0
+2025-03-06 18:13:57.842 | INFO     | __main__:_print_mode2_statistics:478 - - 补丁适配成功: 0
+2025-03-06 18:13:57.842 | INFO     | __main__:_print_mode2_statistics:479 - - LLM适配成功: 0
+2025-03-06 18:13:57.843 | INFO     | __main__:_print_mode2_statistics:480 - 适配失败数量: 0
+2025-03-06 18:13:57.843 | INFO     | __main__:_print_mode2_statistics:481 - 总体成功率: 100.00%
+2025-03-06 18:13:57.843 | INFO     | __main__:_print_mode2_statistics:482 - 适配成功率: 0.00%
+2025-03-06 18:13:57.843 | INFO     | __main__:_print_mode2_statistics:489 - ============================================================
+2025-03-06 18:13:57.844 | INFO     | __main__:_print_mode2_statistics:516 - 统计结果已保存到: statistics/mode2_stats_linux-6.12.y_20250306_181357.json
+2025-03-06 18:13:57.844 | INFO     | __main__:run:122 - 处理完成

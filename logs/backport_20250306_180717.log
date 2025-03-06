@@ -1,0 +1,24 @@
+2025-03-06 18:07:17.053 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250306_180717.log
+2025-03-06 18:07:17.053 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-06 18:07:17.054 | INFO     | __main__:_get_commits_list:225 - commits_file:workspace/gregkh/linux/cache/branch_linux-6.12.y_commits.json
+2025-03-06 18:07:17.055 | INFO     | __main__:_get_commits_list:226 - use_cached_commits:True
+2025-03-06 18:07:17.055 | INFO     | __main__:_get_commits_list:229 - 从缓存文件加载commits信息
+2025-03-06 18:07:17.059 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-03-06 18:07:17.059 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: direct_apply
+2025-03-06 18:07:17.060 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: llm_adapter
+2025-03-06 18:07:17.060 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: patch_adapter
+2025-03-06 18:07:17.060 | INFO     | core.adaptation_pipeline:_load_modules:55 - 已加载模块: compiler
+2025-03-06 18:07:17.061 | INFO     | __main__:_process_mode2:186 - 处理提交 21/5: 56d5f3
+2025-03-06 18:07:17.061 | INFO     | core.adaptation_pipeline:process_patch:67 - 开始处理补丁: 56d5f3eba3f5de0efdd556de4ef381e109b973a9
+2025-03-06 18:07:17.061 | ERROR    | __main__:run:125 - 执行过程发生错误: 'NoneType' object has no attribute 'get'
+2025-03-06 18:07:17.062 | ERROR    | __main__:run:126 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 120, in run
+    self._process_mode2()
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 198, in _process_mode2
+    context = pipeline.process_patch(context)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/core/adaptation_pipeline.py", line 74, in process_patch
+    if hasattr(context, 'direct_apply_result') and context.direct_apply_result.get('success', False):
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+
