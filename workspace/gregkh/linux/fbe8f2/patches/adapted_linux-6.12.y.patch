@@ -1,0 +1,62 @@
+From fe09b5b8ec49ad356a99a783d0516bf0502c1c5a Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Thu, 6 Mar 2025 18:19:54 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/md/raid0.c  | 4 +---
+ drivers/md/raid1.c  | 4 +---
+ drivers/md/raid10.c | 4 +---
+ 3 files changed, 3 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/md/raid0.c b/drivers/md/raid0.c
+index 32d587524778..31bea72bcb01 100644
+--- a/drivers/md/raid0.c
++++ b/drivers/md/raid0.c
+@@ -385,10 +385,8 @@ static int raid0_set_limits(struct mddev *mddev)
+ 	lim.io_min = mddev->chunk_sectors << 9;
+ 	lim.io_opt = lim.io_min * mddev->raid_disks;
+ 	err = mddev_stack_rdev_limits(mddev, &lim, MDDEV_STACK_INTEGRITY);
+-	if (err) {
+-		queue_limits_cancel_update(mddev->gendisk->queue);
++	if (err)
+ 		return err;
+-	}
+ 	return queue_limits_set(mddev->gendisk->queue, &lim);
+ }
+ 
+diff --git a/drivers/md/raid1.c b/drivers/md/raid1.c
+index 6c9d24203f39..a1e3f554738d 100644
+--- a/drivers/md/raid1.c
++++ b/drivers/md/raid1.c
+@@ -3193,10 +3193,8 @@ static int raid1_set_limits(struct mddev *mddev)
+ 	md_init_stacking_limits(&lim);
+ 	lim.max_write_zeroes_sectors = 0;
+ 	err = mddev_stack_rdev_limits(mddev, &lim, MDDEV_STACK_INTEGRITY);
+-	if (err) {
+-		queue_limits_cancel_update(mddev->gendisk->queue);
++	if (err)
+ 		return err;
+-	}
+ 	return queue_limits_set(mddev->gendisk->queue, &lim);
+ }
+ 
+diff --git a/drivers/md/raid10.c b/drivers/md/raid10.c
+index 862b1fb71d86..e1f394c7358c 100644
+--- a/drivers/md/raid10.c
++++ b/drivers/md/raid10.c
+@@ -3985,10 +3985,8 @@ static int raid10_set_queue_limits(struct mddev *mddev)
+ 	lim.io_min = mddev->chunk_sectors << 9;
+ 	lim.io_opt = lim.io_min * raid10_nr_stripes(conf);
+ 	err = mddev_stack_rdev_limits(mddev, &lim, MDDEV_STACK_INTEGRITY);
+-	if (err) {
+-		queue_limits_cancel_update(mddev->gendisk->queue);
++	if (err)
+ 		return err;
+-	}
+ 	return queue_limits_set(mddev->gendisk->queue, &lim);
+ }
+ 
+-- 
+2.25.1
+

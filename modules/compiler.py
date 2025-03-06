@@ -1,5 +1,6 @@
 from typing import Dict, Any, Optional, List, Tuple
 from pathlib import Path
+import sys
 from loguru import logger
 import json
 import os
@@ -61,7 +62,7 @@ class CompilerModule(BaseModule):
                 repo_path=context.config.repo_path,
                 output_dir=context.commit.compilation_dir,
                 use_docker=context.config.kernel_compiler.get('use_docker', True),
-                docker_image=context.config.kernel_compiler.get('docker_image', 'kernel-compiler:latest'),
+                docker_image=context.config.kernel_compiler.get('docker_image', 'kernel-builder:arm64'),
                 ccache_dir=Path(os.path.expanduser(context.config.kernel_compiler.get('ccache_dir', '~/.ccache')))
             )
             
@@ -91,8 +92,12 @@ class CompilerModule(BaseModule):
                 return context
             
             # 执行编译验证
+            logger.info(f"开始编译文件: {modified_files}")
             compilation_ok = kernel_compiler.compile_files(modified_files)
-            
+            # kernel_compiler.compile_files(modified_files)
+            # logger.info(f"编译函数返回结果: {compilation_ok}")
+            # compilation_ok = kernel_compiler.compile_files(modified_files)
+            # logger.info(f"编译函数返回结果2222: {compilation_ok}")
             # 更新编译结果
             if not compilation_ok:
                 logger.error("补丁导致编译错误")
@@ -104,14 +109,17 @@ class CompilerModule(BaseModule):
                 self._update_metrics(False)
                 # 重要：返回上下文，不返回布尔值
                 return context
+            if compilation_ok:
+                logger.info("补丁编译验证通过")
+                context.compilation_result = {
+                    'success': True,
+                    # 'files': [str(f.relative_to(context.config.repo_path)) for f in modified_files]
+                }
+                self.metrics['compilation_success'] += 1
+                self._update_metrics(True)
+            else:
+                logger.info("补丁编译验证未通过")
             
-            logger.info("补丁编译验证通过")
-            context.compilation_result = {
-                'success': True,
-                'files': [str(f.relative_to(context.repo_path)) for f in modified_files]
-            }
-            self.metrics['compilation_success'] += 1
-            self._update_metrics(True)
             
             # 重要：返回上下文，不返回布尔值
             return context

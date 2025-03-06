@@ -174,8 +174,8 @@ class PatchBackportTool:
         pipeline = AdaptationPipeline(self.config)
         
         # 统计变量
-        start = 12
-        end = 13
+        start = 60
+        end = 65
         total_commits = len(commits_list[start:end])
         successful_commits = 0
         failed_commits = []

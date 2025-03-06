@@ -1,0 +1,33 @@
+{
+  "commit": {
+    "sha": "822b7ec657e99b44b874e052d8540d8b54fe8569",
+    "patch_url": "https://github.com/gregkh/linux/commit/822b7ec657e99b44b874e052d8540d8b54fe8569.patch",
+    "downstream_sha": "cb2b6244e50c0c72f1b748554ece482b3bc8ac36",
+    "downstream_message": "ALSA: hda: Add error check for snd_ctl_rename_id() in snd_hda_create_dig_out_ctls()\n\ncommit 822b7ec657e99b44b874e052d8540d8b54fe8569 upstream.\n\nCheck the return value of snd_ctl_rename_id() in\nsnd_hda_create_dig_out_ctls(). Ensure that failures\nare properly handled.\n\n[ Note: the error cannot happen practically because the only error\n  condition in snd_ctl_rename_id() is the missing ID, but this is a\n  rename, hence it must be present.  But for the code consistency,\n  it's safer to have always the proper return check -- tiwai ]\n\nFixes: 5c219a340850 (\"ALSA: hda: Fix kctl->id initialization\")\nCc: stable@vger.kernel.org # 6.4+\nSigned-off-by: Wentao Liang <vulab@iscas.ac.cn>\nLink: https://patch.msgid.link/20250213074543.1620-1-vulab@iscas.ac.cn\nSigned-off-by: Takashi Iwai <tiwai@suse.de>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/822b7e/patches/upstream_822b7e.patch",
+      "timestamp": "2025-03-06T18:08:25.592305"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-06T18:08:25.802413"
+  }
+}

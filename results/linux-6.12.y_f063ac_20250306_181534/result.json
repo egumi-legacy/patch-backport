@@ -1,0 +1,33 @@
+{
+  "commit": {
+    "sha": "f063ac6b55df03ed25996bdc84d9e1c50147cfa1",
+    "patch_url": "https://github.com/gregkh/linux/commit/f063ac6b55df03ed25996bdc84d9e1c50147cfa1.patch",
+    "downstream_sha": "040f8f99ad4fb54812c248a702f80aedf55c63e2",
+    "downstream_message": "drm/msm/dpu: Disable dither in phys encoder cleanup\n\ncommit f063ac6b55df03ed25996bdc84d9e1c50147cfa1 upstream.\n\nDisable pingpong dither in dpu_encoder_helper_phys_cleanup().\n\nThis avoids the issue where an encoder unknowingly uses dither after\nreserving a pingpong block that was previously bound to an encoder that\nhad enabled dither.\n\nCc: stable@vger.kernel.org\nReported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>\nCloses: https://lore.kernel.org/all/jr7zbj5w7iq4apg3gofuvcwf4r2swzqjk7sshwcdjll4mn6ctt@l2n3qfpujg3q/\nSigned-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>\nReviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>\nReviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>\nFixes: 3c128638a07d (\"drm/msm/dpu: add support for dither block in display\")\nPatchwork: https://patchwork.freedesktop.org/patch/636517/\nLink: https://lore.kernel.org/r/20250211-dither-disable-v1-1-ac2cb455f6b9@quicinc.com\nSigned-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/f063ac/patches/upstream_f063ac.patch",
+      "timestamp": "2025-03-06T18:15:34.061158"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-06T18:15:34.242816"
+  }
+}

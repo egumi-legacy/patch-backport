@@ -1,14 +1,16 @@
 import subprocess
 import os
 import shutil
-import logging
+# import logging
+
 import re
 import tempfile
 import docker
 from pathlib import Path
 from typing import List, Dict, Optional, Union, Tuple
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from loguru import logger
 
 class KernelCompiler:
     def __init__(self, 
@@ -16,7 +18,7 @@ class KernelCompiler:
                  output_dir: Optional[Path] = None,
                  config_path: Optional[Path] = None,
                  use_docker: bool = True,
-                 docker_image: str = "kernel-compiler:latest",
+                 docker_image: str = "kernel-compiler:arm64",
                  ccache_dir: Optional[Path] = None):
         """
         Linux内核编译验证器
@@ -45,7 +47,7 @@ class KernelCompiler:
         self.docker_client = docker.from_env() if use_docker else None
         
         # 创建默认配置
-        if not self.config_path and not (self.output_dir / ".config").exists():
+        if not self.config_path and not (self.repo_path / ".config").exists():
             self._create_default_config()
 
     def _detect_cpu_cores(self) -> int:
@@ -172,7 +174,7 @@ class KernelCompiler:
     def compile_files(self, files: List[Path]) -> bool:
         """编译指定的文件列表"""
         try:
-            logger.info(f"开始编译文件: {[str(f) for f in files]}")
+            logger.info(f"开始编译文件1111: {[str(f) for f in files]}")
             
             # 准备编译环境
             if not self._prepare_build_env():
@@ -223,7 +225,7 @@ class KernelCompiler:
         """准备编译环境"""
         try:
             # 检查配置文件是否存在
-            config_file = self.output_dir / ".config"
+            config_file = self.repo_path / ".config"
             logger.info(f"检查配置文件: {config_file.resolve()}")
             if not config_file.exists():
                 logger.info("未找到配置文件，创建默认配置")

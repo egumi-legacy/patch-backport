@@ -1,0 +1,13 @@
+modified file: drivers/firmware/imx/Kconfig
+--- workspace/gregkh/linux/be6686/newer/drivers/firmware/imx/Kconfig
++++ workspace/gregkh/linux/be6686/linux-6.12.y/drivers/firmware/imx/Kconfig
+@@ -25,6 +25,7 @@
+  
+  config IMX_SCMI_MISC_DRV
+  	tristate "IMX SCMI MISC Protocol driver"
+ +	depends on IMX_SCMI_MISC_EXT || COMPILE_TEST
+  	default y if ARCH_MXC
+  	help
+  	  The System Controller Management Interface firmware (SCMI FW) is
+
+""""""

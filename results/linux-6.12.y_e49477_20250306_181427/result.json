@@ -1,0 +1,33 @@
+{
+  "commit": {
+    "sha": "e49477f7f78598295551d486ecc7f020d796432e",
+    "patch_url": "https://github.com/gregkh/linux/commit/e49477f7f78598295551d486ecc7f020d796432e.patch",
+    "downstream_sha": "2bf1f4c129db7a10920655b000f0292f1ee509c2",
+    "downstream_message": "drm/i915/gt: Use spin_lock_irqsave() in interruptible context\n\ncommit e49477f7f78598295551d486ecc7f020d796432e upstream.\n\nspin_lock/unlock() functions used in interrupt contexts could\nresult in a deadlock, as seen in GitLab issue #13399,\nwhich occurs when interrupt comes in while holding a lock.\n\nTry to remedy the problem by saving irq state before spin lock\nacquisition.\n\nv2: add irqs' state save/restore calls to all locks/unlocks in\n signal_irq_work() execution (Maciej)\n\nv3: use with spin_lock_irqsave() in guc_lrc_desc_unpin() instead\n of other lock/unlock calls and add Fixes and Cc tags (Tvrtko);\n change title and commit message\n\nFixes: 2f2cc53b5fe7 (\"drm/i915/guc: Close deregister-context race against CT-loss\")\nCloses: https://gitlab.freedesktop.org/drm/i915/kernel/-/issues/13399\nSigned-off-by: Krzysztof Karas <krzysztof.karas@intel.com>\nCc: <stable@vger.kernel.org> # v6.9+\nReviewed-by: Maciej Patelczyk <maciej.patelczyk@intel.com>\nReviewed-by: Andi Shyti <andi.shyti@linux.intel.com>\nSigned-off-by: Andi Shyti <andi.shyti@linux.intel.com>\nLink: https://patchwork.freedesktop.org/patch/msgid/pusppq5ybyszau2oocboj3mtj5x574gwij323jlclm5zxvimmu@mnfg6odxbpsv\n(cherry picked from commit c088387ddd6482b40f21ccf23db1125e8fa4af7e)\nSigned-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/e49477/patches/upstream_e49477.patch",
+      "timestamp": "2025-03-06T18:14:27.622680"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-06T18:14:27.861330"
+  }
+}

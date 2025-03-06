@@ -1,0 +1,33 @@
+{
+  "commit": {
+    "sha": "654292a0b264e9b8c51b98394146218a21612aa1",
+    "patch_url": "https://github.com/gregkh/linux/commit/654292a0b264e9b8c51b98394146218a21612aa1.patch",
+    "downstream_sha": "a1b5ed0a6144c17fd11e369a0f070bb2e881a2c5",
+    "downstream_message": "smb: client: fix chmod(2) regression with ATTR_READONLY\n\ncommit 654292a0b264e9b8c51b98394146218a21612aa1 upstream.\n\nWhen the user sets a file or directory as read-only (e.g. ~S_IWUGO),\nthe client will set the ATTR_READONLY attribute by sending an\nSMB2_SET_INFO request to the server in cifs_setattr_{,nounix}(), but\ncifsInodeInfo::cifsAttrs will be left unchanged as the client will\nonly update the new file attributes in the next call to\n{smb311_posix,cifs}_get_inode_info() with the new metadata filled in\n@data parameter.\n\nCommit a18280e7fdea (\"smb: cilent: set reparse mount points as\nautomounts\") mistakenly removed the @data NULL check when calling\nis_inode_cache_good(), which broke the above case as the new\nATTR_READONLY attribute would end up not being updated on files with a\nread lease.\n\nFix this by updating the inode whenever we have cached metadata in\n@data parameter.\n\nReported-by: Horst Reiterer <horst.reiterer@fabasoft.com>\nCloses: https://lore.kernel.org/r/85a16504e09147a195ac0aac1c801280@fabasoft.com\nFixes: a18280e7fdea (\"smb: cilent: set reparse mount points as automounts\")\nCc: stable@vger.kernel.org\nSigned-off-by: Paulo Alcantara (Red Hat) <pc@manguebit.com>\nSigned-off-by: Steve French <stfrench@microsoft.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/654292/patches/upstream_654292.patch",
+      "timestamp": "2025-03-06T18:10:23.027584"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-06T18:10:23.322907"
+  }
+}

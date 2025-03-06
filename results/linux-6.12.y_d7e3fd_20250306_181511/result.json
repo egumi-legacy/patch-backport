@@ -1,0 +1,33 @@
+{
+  "commit": {
+    "sha": "d7e3fd658248f257006227285095d190e70ee73a",
+    "patch_url": "https://github.com/gregkh/linux/commit/d7e3fd658248f257006227285095d190e70ee73a.patch",
+    "downstream_sha": "97621151f4a61879645b36ca8fbd9a4decb29182",
+    "downstream_message": "irqchip/jcore-aic, clocksource/drivers/jcore: Fix jcore-pit interrupt request\n\n[ Upstream commit d7e3fd658248f257006227285095d190e70ee73a ]\n\nThe jcore-aic irqchip does not have separate interrupt numbers reserved for\ncpu-local vs global interrupts. Therefore the device drivers need to\nrequest the given interrupt as per CPU interrupt.\n\n69a9dcbd2d65 (\"clocksource/drivers/jcore: Use request_percpu_irq()\")\nconverted the clocksource driver over to request_percpu_irq(), but failed\nto do add all the required changes, resulting in a failure to register PIT\ninterrupts.\n\nFix this by:\n\n 1) Explicitly mark the interrupt via irq_set_percpu_devid() in\n    jcore_pit_init().\n\n 2) Enable and disable the per CPU interrupt in the CPU hotplug callbacks.\n\n 3) Pass the correct per-cpu cookie to the irq handler by using\n    handle_percpu_devid_irq() instead of handle_percpu_irq() in\n    handle_jcore_irq().\n\n[ tglx: Massage change log ]\n\nFixes: 69a9dcbd2d65 (\"clocksource/drivers/jcore: Use request_percpu_irq()\")\nSigned-off-by: Artur Rojek <contact@artur-rojek.eu>\nSigned-off-by: Thomas Gleixner <tglx@linutronix.de>\nAcked-by: Uros Bizjak <ubizjak@gmail.com>\nLink: https://lore.kernel.org/all/20250216175545.35079-3-contact@artur-rojek.eu\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/d7e3fd/patches/upstream_d7e3fd.patch",
+      "timestamp": "2025-03-06T18:15:11.438698"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-06T18:15:11.623463"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "commit": {
+    "sha": "46c7b901e2a03536df5a3cb40b3b26e2be505df6",
+    "patch_url": "https://github.com/gregkh/linux/commit/46c7b901e2a03536df5a3cb40b3b26e2be505df6.patch",
+    "downstream_sha": "e8b4eb50000fd432ea95be7e307ecf06587168c4",
+    "downstream_message": "ASoC: SOF: pcm: Clear the susbstream pointer to NULL on close\n\ncommit 46c7b901e2a03536df5a3cb40b3b26e2be505df6 upstream.\n\nThe spcm->stream[substream->stream].substream is set during open and was\nleft untouched. After the first PCM stream it will never be NULL and we\nhave code which checks for substream NULLity as indication if the stream is\nactive or not.\nFor the compressed cstream pointer the same has been done, this change will\ncorrect the handling of PCM streams.\n\nFixes: 090349a9feba (\"ASoC: SOF: Add support for compress API for stream data/offset\")\nCc: stable@vger.kernel.org\nReported-by: Curtis Malainey <cujomalainey@chromium.org>\nCloses: https://github.com/thesofproject/linux/pull/5214\nSigned-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>\nReviewed-by: Daniel Baluta <daniel.baluta@nxp.com>\nReviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>\nReviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>\nReviewed-by: Curtis Malainey <cujomalainey@chromium.org>\nLink: https://patch.msgid.link/20250205135232.19762-3-peter.ujfalusi@linux.intel.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/46c7b9/patches/upstream_46c7b9.patch",
+      "timestamp": "2025-03-06T18:08:17.292192"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-06T18:08:17.465017"
+  }
+}

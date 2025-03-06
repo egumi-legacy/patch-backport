@@ -70,8 +70,14 @@ class AdaptationPipeline:
         
         # 执行模块
         for module in self.modules:
+            # 直接应用成功后应该跳过后续所有模块（除了编译模块）
+            if hasattr(context, 'direct_apply_result') and context.direct_apply_result and context.direct_apply_result.get('success', False):
+                # if not isinstance(module, CompilerModule):
+                logger.info(f"直接应用成功，跳过模块: {module.__class__.__name__}")
+                continue
             if not self._should_run(module, context):
                 continue
+            
                 
             logger.info(f"执行模块: {module.name}")
             

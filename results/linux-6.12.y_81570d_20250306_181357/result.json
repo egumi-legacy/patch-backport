@@ -1,0 +1,33 @@
+{
+  "commit": {
+    "sha": "81570d6a7ad37033c7895811551a5a9023706eda",
+    "patch_url": "https://github.com/gregkh/linux/commit/81570d6a7ad37033c7895811551a5a9023706eda.patch",
+    "downstream_sha": "6f3edf2d50c93c58b3be6838f3d7cccb3aa8c43e",
+    "downstream_message": "gpiolib: protect gpio_chip with SRCU in array_info paths in multi get/set\n\ncommit 81570d6a7ad37033c7895811551a5a9023706eda upstream.\n\nDuring the locking rework in GPIOLIB, we omitted one important use-case,\nnamely: setting and getting values for GPIO descriptor arrays with\narray_info present.\n\nThis patch does two things: first it makes struct gpio_array store the\naddress of the underlying GPIO device and not chip. Next: it protects\nthe chip with SRCU from removal in gpiod_get_array_value_complex() and\ngpiod_set_array_value_complex().\n\nCc: stable@vger.kernel.org\nLink: https://lore.kernel.org/r/20250215095655.23152-1-brgl@bgdev.pl\nSigned-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/81570d/patches/upstream_81570d.patch",
+      "timestamp": "2025-03-06T18:13:57.651116"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-06T18:13:57.833468"
+  }
+}

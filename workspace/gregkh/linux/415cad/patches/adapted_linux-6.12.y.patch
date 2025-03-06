@@ -1,0 +1,57 @@
+From 083cd224526a4f6606a391534b1a4b6a8de54806 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Thu, 6 Mar 2025 18:10:11 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/net/ethernet/google/gve/gve.h      | 10 ++++++++++
+ drivers/net/ethernet/google/gve/gve_main.c |  5 +++++
+ 2 files changed, 15 insertions(+)
+
+diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+index 301fa1ea4f51..adc2b9a3d93b 100644
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@ -1110,6 +1110,16 @@ static inline u32 gve_xdp_tx_start_queue_id(struct gve_priv *priv)
+ 	return gve_xdp_tx_queue_id(priv, 0);
+ }
+ 
++static inline bool gve_supports_xdp_xmit(struct gve_priv *priv)
++{
++	switch (priv->queue_format) {
++	case GVE_GQI_QPL_FORMAT:
++		return true;
++	default:
++		return false;
++	}
++}
++
+ /* gqi napi handler defined in gve_main.c */
+ int gve_napi_poll(struct napi_struct *napi, int budget);
+ 
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index 661566db68c8..0ce0852abf98 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -1889,6 +1889,8 @@ static void gve_turndown(struct gve_priv *priv)
+ 	/* Stop tx queues */
+ 	netif_tx_disable(priv->dev);
+ 
++	xdp_features_clear_redirect_target(priv->dev);
++
+ 	gve_clear_napi_enabled(priv);
+ 	gve_clear_report_stats(priv);
+ }
+@@ -1946,6 +1948,9 @@ static void gve_turnup(struct gve_priv *priv)
+ 		napi_schedule(&block->napi);
+ 	}
+ 
++	if (priv->num_xdp_queues && gve_supports_xdp_xmit(priv))
++		xdp_features_set_redirect_target(priv->dev, false);
++
+ 	gve_set_napi_enabled(priv);
+ }
+ 
+-- 
+2.25.1
+

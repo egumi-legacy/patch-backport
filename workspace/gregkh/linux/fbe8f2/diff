@@ -1,0 +1,479 @@
+modified file: drivers/md/raid0.c
+--- workspace/gregkh/linux/fbe8f2/newer/drivers/md/raid0.c
++++ workspace/gregkh/linux/fbe8f2/linux-6.12.y/drivers/md/raid0.c
+@@ -384,7 +384,6 @@
+  	lim.max_write_zeroes_sectors = mddev->chunk_sectors;
+  	lim.io_min = mddev->chunk_sectors << 9;
+  	lim.io_opt = lim.io_min * mddev->raid_disks;
+ -	lim.features |= BLK_FEAT_ATOMIC_WRITES;
+  	err = mddev_stack_rdev_limits(mddev, &lim, MDDEV_STACK_INTEGRITY);
+  	if (err) {
+  		queue_limits_cancel_update(mddev->gendisk->queue);
+@@ -467,12 +466,6 @@
+  		struct bio *split = bio_split(bio,
+  			zone->zone_end - bio->bi_iter.bi_sector, GFP_NOIO,
+  			&mddev->bio_set);
+ -
+ -		if (IS_ERR(split)) {
+ -			bio->bi_status = errno_to_blk_status(PTR_ERR(split));
+ -			bio_endio(bio);
+ -			return;
+ -		}
+  		bio_chain(split, bio);
+  		submit_bio_noacct(bio);
+  		bio = split;
+@@ -615,12 +608,6 @@
+  	if (sectors < bio_sectors(bio)) {
+  		struct bio *split = bio_split(bio, sectors, GFP_NOIO,
+  					      &mddev->bio_set);
+ -
+ -		if (IS_ERR(split)) {
+ -			bio->bi_status = errno_to_blk_status(PTR_ERR(split));
+ -			bio_endio(bio);
+ -			return true;
+ -		}
+  		bio_chain(split, bio);
+  		raid0_map_submit_bio(mddev, bio);
+  		bio = split;
+
+""""""
+modified file: drivers/md/raid1.c
+--- workspace/gregkh/linux/fbe8f2/newer/drivers/md/raid1.c
++++ workspace/gregkh/linux/fbe8f2/linux-6.12.y/drivers/md/raid1.c
+@@ -420,8 +420,10 @@
+  		r1_bio->behind_master_bio = NULL;
+  	}
+  
+ -	if (test_bit(R1BIO_BehindIO, &r1_bio->state))
+ -		mddev->bitmap_ops->end_behind_write(mddev);
+ +	/* clear the bitmap if all writes complete successfully */
+ +	mddev->bitmap_ops->endwrite(mddev, r1_bio->sector, r1_bio->sectors,
+ +				    !test_bit(R1BIO_Degraded, &r1_bio->state),
+ +				    test_bit(R1BIO_BehindIO, &r1_bio->state));
+  	md_write_end(mddev);
+  }
+  
+@@ -478,6 +480,8 @@
+  		if (!test_bit(Faulty, &rdev->flags))
+  			set_bit(R1BIO_WriteError, &r1_bio->state);
+  		else {
+ +			/* Fail the request */
+ +			set_bit(R1BIO_Degraded, &r1_bio->state);
+  			r1_bio->bios[mirror] = NULL;
+  			to_put = bio;
+@@ -1318,7 +1322,7 @@
+  	const enum req_op op = bio_op(bio);
+  	const blk_opf_t do_sync = bio->bi_opf & REQ_SYNC;
+  	int max_sectors;
+ -	int rdisk, error;
+ +	int rdisk;
+  	bool r1bio_existed = !!r1_bio;
+  
+ -		if (test_bit(WriteErrorSeen, &rdev->flags) &&
+ -		    rdev_has_badblock(rdev, bio->bi_iter.bi_sector,
+ -				      bio_sectors(bio)) < 0)
+ -			set_bit(BlockedBadBlocks, &rdev->flags);
+ -
+ -		if (rdev_blocked(rdev)) {
+ -			if (bio->bi_opf & REQ_NOWAIT)
+ -				return false;
+ -
+ -			mddev_add_trace_msg(rdev->mddev, "raid1 wait rdev %d blocked",
+ -					    rdev->raid_disk);
+ -			atomic_inc(&rdev->nr_pending);
+ -			md_wait_for_blocked_rdev(rdev, rdev->mddev);
+ -			goto retry;
+ -		}
+ -	}
+ -
+ -	return true;
+  }
+  
+  static void raid1_write_request(struct mddev *mddev, struct bio *bio,
+@@ -1459,8 +1417,9 @@
+  {
+  	struct r1conf *conf = mddev->private;
+  	struct r1bio *r1_bio;
+ -	int i, disks, k, error;
+ +	int i, disks;
+  	unsigned long flags;
+ +	struct md_rdev *blocked_rdev;
+  	int first_clone;
+  	int max_sectors;
+  	bool write_behind = false;
+@@ -1498,11 +1457,7 @@
+  		return;
+  	}
+  
+ -	if (!wait_blocked_rdev(mddev, bio)) {
+ -		bio_wouldblock_error(bio);
+ -		return;
+ -	}
+ -
+ + retry_write:
+  	r1_bio = alloc_r1bio(mddev, bio);
+  	r1_bio->sectors = max_write_sectors;
+  
+@@ -1518,6 +1473,7 @@
+  	 */
+  
+  	disks = conf->raid_disks * 2;
+ +	blocked_rdev = NULL;
+  	max_sectors = r1_bio->sectors;
+  	for (i = 0;  i < disks; i++) {
+  		struct md_rdev *rdev = conf->mirrors[i].rdev;
+@@ -1530,9 +1486,17 @@
+  		if (!is_discard && rdev && test_bit(WriteMostly, &rdev->flags))
+  			write_behind = true;
+  
+ +		if (rdev && unlikely(test_bit(Blocked, &rdev->flags))) {
+ +			atomic_inc(&rdev->nr_pending);
+ +			blocked_rdev = rdev;
+ +			break;
+ +		}
+  		r1_bio->bios[i] = NULL;
+ -		if (!rdev || test_bit(Faulty, &rdev->flags))
+ +		if (!rdev || test_bit(Faulty, &rdev->flags)) {
+ +			if (i < conf->raid_disks)
+ +				set_bit(R1BIO_Degraded, &r1_bio->state);
+  			continue;
+ +		}
+  
+  		atomic_inc(&rdev->nr_pending);
+  		if (test_bit(WriteErrorSeen, &rdev->flags)) {
+@@ -1542,6 +1506,13 @@
+  
+  			is_bad = is_badblock(rdev, r1_bio->sector, max_sectors,
+  					     &first_bad, &bad_sectors);
+ +			if (is_bad < 0) {
+ +				/* mustn't write here until the bad block is
+ +				 * acknowledged*/
+ +				set_bit(BlockedBadBlocks, &rdev->flags);
+ +				blocked_rdev = rdev;
+ +				break;
+ +			}
+  			if (is_bad && first_bad <= r1_bio->sector) {
+  				bad_sectors -= (r1_bio->sector - first_bad);
+@@ -1551,29 +1522,46 @@
+  					 */
+  					max_sectors = bad_sectors;
+  				rdev_dec_pending(rdev, mddev);
+ +				/* We don't set R1BIO_Degraded as that
+ +				 * only applies if the disk is
+ +				 * missing, so it might be re-added,
+ +				 * and we want to know to recover this
+ +				 * chunk.
+ +				 * In this case the device is here,
+ +				 * and the fact that this chunk is not
+ +				 * in-sync is recorded in the bad
+ +				 * block log
+ +				 */
+  				continue;
+  			}
+  			if (is_bad) {
+ -				int good_sectors;
+ -
+ -				/*
+ -				 * We cannot atomically write this, so just
+ -				 * error in that case. It could be possible to
+ -				 * atomically write other mirrors, but the
+ -				 * complexity of supporting that is not worth
+ -				 * the benefit.
+ -				 */
+ -				if (bio->bi_opf & REQ_ATOMIC) {
+ -					error = -EIO;
+ -					goto err_handle;
+ -				}
+ -
+ -				good_sectors = first_bad - r1_bio->sector;
+ +				int good_sectors = first_bad - r1_bio->sector;
+  				if (good_sectors < max_sectors)
+  					max_sectors = good_sectors;
+  			}
+  		}
+  		r1_bio->bios[i] = bio;
+ +	}
+ +
+ +	if (unlikely(blocked_rdev)) {
+ +		/* Wait for this device to become unblocked */
+ +		int j;
+ +
+ +		for (j = 0; j < i; j++)
+ +			if (r1_bio->bios[j])
+ +				rdev_dec_pending(conf->mirrors[j].rdev, mddev);
+ +		mempool_free(r1_bio, &conf->r1bio_pool);
+ +		allow_barrier(conf, bio->bi_iter.bi_sector);
+ +
+ +		if (bio->bi_opf & REQ_NOWAIT) {
+ +			bio_wouldblock_error(bio);
+ +			return;
+ +		}
+ +		mddev_add_trace_msg(mddev, "raid1 wait rdev %d blocked",
+ +				blocked_rdev->raid_disk);
+ +		md_wait_for_blocked_rdev(blocked_rdev, mddev);
+ +		wait_barrier(conf, bio->bi_iter.bi_sector, false);
+ +		goto retry_write;
+  	}
+  
+  	wake_up_barrier(conf);
+ -	return;
+ -err_handle:
+ -	for (k = 0; k < i; k++) {
+ -		if (r1_bio->bios[k]) {
+ -			rdev_dec_pending(conf->mirrors[k].rdev, mddev);
+ -			r1_bio->bios[k] = NULL;
+ -		}
+ -	}
+ -
+ -	bio->bi_status = errno_to_blk_status(error);
+ -	set_bit(R1BIO_Uptodate, &r1_bio->state);
+ -	raid_end_bio_io(r1_bio);
+  }
+  
+  static bool raid1_make_request(struct mddev *mddev, struct bio *bio)
+@@ -2596,10 +2567,12 @@
+  			 * errors.
+  			 */
+  			fail = true;
+ -			if (!narrow_write_error(r1_bio, m))
+ +			if (!narrow_write_error(r1_bio, m)) {
+  				md_error(conf->mddev,
+  					 conf->mirrors[m].rdev);
+ +				set_bit(R1BIO_Degraded, &r1_bio->state);
+ +			}
+  			rdev_dec_pending(conf->mirrors[m].rdev,
+  					 conf->mddev);
+  		}
+@@ -2690,6 +2663,8 @@
+  			list_del(&r1_bio->retry_list);
+  			idx = sector_to_idx(r1_bio->sector);
+  			atomic_dec(&conf->nr_queued[idx]);
+ +			if (mddev->degraded)
+ +				set_bit(R1BIO_Degraded, &r1_bio->state);
+  			if (test_bit(R1BIO_WriteError, &r1_bio->state))
+  				close_write(r1_bio);
+  			raid_end_bio_io(r1_bio);
+@@ -3217,7 +3192,6 @@
+  
+  	md_init_stacking_limits(&lim);
+  	lim.max_write_zeroes_sectors = 0;
+ -	lim.features |= BLK_FEAT_ATOMIC_WRITES;
+  	err = mddev_stack_rdev_limits(mddev, &lim, MDDEV_STACK_INTEGRITY);
+  	if (err) {
+  		queue_limits_cancel_update(mddev->gendisk->queue);
+
+""""""
+modified file: drivers/md/raid10.c
+--- workspace/gregkh/linux/fbe8f2/newer/drivers/md/raid10.c
++++ workspace/gregkh/linux/fbe8f2/linux-6.12.y/drivers/md/raid10.c
+@@ -428,6 +428,10 @@
+  {
+  	struct mddev *mddev = r10_bio->mddev;
+  
+ +	/* clear the bitmap if all writes complete successfully */
+ +	mddev->bitmap_ops->endwrite(mddev, r10_bio->sector, r10_bio->sectors,
+ +				    !test_bit(R10BIO_Degraded, &r10_bio->state),
+ +				    false);
+  	md_write_end(mddev);
+  }
+  
+@@ -497,6 +501,7 @@
+  				set_bit(R10BIO_WriteError, &r10_bio->state);
+  			else {
+ +				set_bit(R10BIO_Degraded, &r10_bio->state);
+  				r10_bio->devs[slot].bio = NULL;
+  				to_put = bio;
+  				dec_rdev = 1;
+@@ -1154,7 +1159,6 @@
+  	int slot = r10_bio->read_slot;
+  	struct md_rdev *err_rdev = NULL;
+  	gfp_t gfp = GFP_NOIO;
+ -	int error;
+  
+  	if (slot >= 0 && r10_bio->devs[slot].rdev) {
+ -			if (test_bit(WriteErrorSeen, &rdev->flags) &&
+ -			    r10_bio->sectors &&
+ -			    rdev_has_badblock(rdev, dev_sector,
+ -					      r10_bio->sectors) < 0)
+ +			if (!r10_bio->sectors)
+ +				continue;
+ +
+ +			if (rdev_has_badblock(rdev, dev_sector,
+ +					      r10_bio->sectors) < 0) {
+ +				atomic_inc(&rdev->nr_pending);
+  				set_bit(BlockedBadBlocks, &rdev->flags);
+ -
+ -			if (rdev_blocked(rdev)) {
+  				blocked_rdev = rdev;
+ -				atomic_inc(&rdev->nr_pending);
+  				break;
+  			}
+ -		}
+ -
+ -		rrdev = conf->mirrors[i].replacement;
+ -		if (rrdev && rdev_blocked(rrdev)) {
+ -			atomic_inc(&rrdev->nr_pending);
+ -			blocked_rdev = rrdev;
+ -			break;
+  		}
+  	}
+  
+@@ -1349,10 +1347,9 @@
+  				 struct r10bio *r10_bio)
+  {
+  	struct r10conf *conf = mddev->private;
+ -	int i, k;
+ +	int i;
+  	sector_t sectors;
+  	int max_sectors;
+ -	int error;
+  
+  	if ((mddev_is_clustered(mddev) &&
+  	     md_cluster_ops->area_resyncing(mddev, WRITE,
+@@ -1433,8 +1430,10 @@
+  		r10_bio->devs[i].bio = NULL;
+  		r10_bio->devs[i].repl_bio = NULL;
+  
+ -		if (!rdev && !rrdev)
+ +		if (!rdev && !rrdev) {
+ +			set_bit(R10BIO_Degraded, &r10_bio->state);
+  			continue;
+ +		}
+  		if (rdev && test_bit(WriteErrorSeen, &rdev->flags)) {
+  			sector_t first_bad;
+  			sector_t dev_sector = r10_bio->devs[i].addr;
+@@ -1451,24 +1450,18 @@
+  					 * to other devices yet
+  					 */
+  					max_sectors = bad_sectors;
+ +				/* We don't set R10BIO_Degraded as that
+ +				 * only applies if the disk is missing,
+ +				 * so it might be re-added, and we want to
+ +				 * know to recover this chunk.
+ +				 * In this case the device is here, and the
+ +				 * fact that this chunk is not in-sync is
+ +				 * recorded in the bad block log.
+ +				 */
+  				continue;
+  			}
+  			if (is_bad) {
+ -				int good_sectors;
+ -
+ -				/*
+ -				 * We cannot atomically write this, so just
+ -				 * error in that case. It could be possible to
+ -				 * atomically write other mirrors, but the
+ -				 * complexity of supporting that is not worth
+ -				 * the benefit.
+ -				 */
+ -				if (bio->bi_opf & REQ_ATOMIC) {
+ -					error = -EIO;
+ -					goto err_handle;
+ -				}
+ -
+ -				good_sectors = first_bad - dev_sector;
+ +				int good_sectors = first_bad - dev_sector;
+  				if (good_sectors < max_sectors)
+  					max_sectors = good_sectors;
+  			}
+@@ -1489,10 +1482,6 @@
+  	if (r10_bio->sectors < bio_sectors(bio)) {
+  		struct bio *split = bio_split(bio, r10_bio->sectors,
+  					      GFP_NOIO, &conf->bio_split);
+ -		if (IS_ERR(split)) {
+ -			error = PTR_ERR(split);
+ -			goto err_handle;
+ -		}
+  		bio_chain(split, bio);
+  		allow_barrier(conf);
+  		submit_bio_noacct(bio);
+@@ -1504,6 +1493,8 @@
+  	md_account_bio(mddev, &bio);
+  	r10_bio->master_bio = bio;
+  	atomic_set(&r10_bio->remaining, 1);
+ +	mddev->bitmap_ops->startwrite(mddev, r10_bio->sector, r10_bio->sectors,
+ +				      false);
+  
+  	for (i = 0; i < conf->copies; i++) {
+  		if (r10_bio->devs[i].bio)
+@@ -1512,26 +1503,6 @@
+  			raid10_write_one_disk(mddev, r10_bio, bio, true, i);
+  	}
+  	one_write_done(r10_bio);
+ -	return;
+ -err_handle:
+ -	for (k = 0;  k < i; k++) {
+ -		int d = r10_bio->devs[k].devnum;
+ -		struct md_rdev *rdev = conf->mirrors[d].rdev;
+ -		struct md_rdev *rrdev = conf->mirrors[d].replacement;
+ -
+ -		if (r10_bio->devs[k].bio) {
+ -			rdev_dec_pending(rdev, mddev);
+ -			r10_bio->devs[k].bio = NULL;
+ -		}
+ -		if (r10_bio->devs[k].repl_bio) {
+ -			rdev_dec_pending(rrdev, mddev);
+ -			r10_bio->devs[k].repl_bio = NULL;
+ -		}
+ -	}
+ -
+ -	bio->bi_status = errno_to_blk_status(error);
+ -	set_bit(R10BIO_Uptodate, &r10_bio->state);
+ -	raid_end_bio_io(r10_bio);
+  }
+  
+  static void __make_request(struct mddev *mddev, struct bio *bio, int sectors)
+@@ -1673,11 +1644,6 @@
+  	if (remainder) {
+  		split_size = stripe_size - remainder;
+  		split = bio_split(bio, split_size, GFP_NOIO, &conf->bio_split);
+ -		if (IS_ERR(split)) {
+ -			bio->bi_status = errno_to_blk_status(PTR_ERR(split));
+ -			bio_endio(bio);
+ -			return 0;
+ -		}
+  		bio_chain(split, bio);
+  		allow_barrier(conf);
+@@ -1688,11 +1654,6 @@
+  	if (remainder) {
+  		split_size = bio_sectors(bio) - remainder;
+  		split = bio_split(bio, split_size, GFP_NOIO, &conf->bio_split);
+ -		if (IS_ERR(split)) {
+ -			bio->bi_status = errno_to_blk_status(PTR_ERR(split));
+ -			bio_endio(bio);
+ -			return 0;
+ -		}
+  		bio_chain(split, bio);
+  		allow_barrier(conf);
+@@ -2949,8 +2910,11 @@
+  				rdev_dec_pending(rdev, conf->mddev);
+  			} else if (bio != NULL && bio->bi_status) {
+  				fail = true;
+ -				if (!narrow_write_error(r10_bio, m))
+ +				if (!narrow_write_error(r10_bio, m)) {
+  					md_error(conf->mddev, rdev);
+ +					set_bit(R10BIO_Degraded,
+ +						&r10_bio->state);
+ +				}
+  				rdev_dec_pending(rdev, conf->mddev);
+  			}
+  			bio = r10_bio->devs[m].repl_bio;
+@@ -3009,6 +2973,8 @@
+  			r10_bio = list_first_entry(&tmp, struct r10bio,
+  						   retry_list);
+  			list_del(&r10_bio->retry_list);
+ +			if (mddev->degraded)
+ +				set_bit(R10BIO_Degraded, &r10_bio->state);
+  
+  			if (test_bit(R10BIO_WriteError,
+  				     &r10_bio->state))
+@@ -4018,7 +3984,6 @@
+  	lim.max_write_zeroes_sectors = 0;
+  	lim.io_min = mddev->chunk_sectors << 9;
+  	lim.io_opt = lim.io_min * raid10_nr_stripes(conf);
+ -	lim.features |= BLK_FEAT_ATOMIC_WRITES;
+  	err = mddev_stack_rdev_limits(mddev, &lim, MDDEV_STACK_INTEGRITY);
+  	if (err) {
+  		queue_limits_cancel_update(mddev->gendisk->queue);
+
+""""""

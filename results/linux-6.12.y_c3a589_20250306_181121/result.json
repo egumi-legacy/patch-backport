@@ -1,0 +1,33 @@
+{
+  "commit": {
+    "sha": "c3a589fd9fcbf295a7402a4b188dc9277d505f4f",
+    "patch_url": "https://github.com/gregkh/linux/commit/c3a589fd9fcbf295a7402a4b188dc9277d505f4f.patch",
+    "downstream_sha": "b720facbe096a6bce980c6577ef65e3c87131766",
+    "downstream_message": "s390/boot: Fix ESSA detection\n\ncommit c3a589fd9fcbf295a7402a4b188dc9277d505f4f upstream.\n\nThe cmma_test_essa() inline assembly uses tmp as input and output, however\ntmp is specified as output only, which allows the compiler to optimize the\ninitialization of tmp away.\n\nTherefore the ESSA detection may or may not work depending on previous\ncontents of the register that the compiler selected for tmp.\n\nFix this by using the correct constraint modifier.\n\nFixes: 468a3bc2b7b9 (\"s390/cmma: move parsing of cmma kernel parameter to early boot code\")\nCc: stable@vger.kernel.org\nSigned-off-by: Heiko Carstens <hca@linux.ibm.com>\nReviewed-by: Vasily Gorbik <gor@linux.ibm.com>\nSigned-off-by: Vasily Gorbik <gor@linux.ibm.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/c3a589/patches/upstream_c3a589.patch",
+      "timestamp": "2025-03-06T18:11:21.401616"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-06T18:11:21.604117"
+  }
+}

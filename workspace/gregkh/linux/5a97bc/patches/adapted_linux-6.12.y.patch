@@ -1,0 +1,73 @@
+From 2bc5e07622d3e3174ac180d449bc3585e0bff1cb Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Thu, 6 Mar 2025 18:17:33 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
+index 031446c87dae..6104c6ff0954 100644
+--- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
++++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
+@@ -83,6 +83,9 @@ struct dsi_pll_7nm {
+ 	/* protects REG_DSI_7nm_PHY_CMN_CLK_CFG0 register */
+ 	spinlock_t postdiv_lock;
+ 
++	/* protects REG_DSI_7nm_PHY_CMN_CLK_CFG1 register */
++	spinlock_t pclk_mux_lock;
++
+ 	struct pll_7nm_cached_state cached_state;
+ 
+ 	struct dsi_pll_7nm *slave;
+@@ -377,7 +380,7 @@ static void dsi_pll_disable_global_clk(struct dsi_pll_7nm *pll)
+ 	u32 data;
+ 
+ 	data = readl(pll->phy->base + REG_DSI_7nm_PHY_CMN_CLK_CFG1);
+-	writel(data & ~BIT(5), pll->phy->base + REG_DSI_7nm_PHY_CMN_CLK_CFG1);
++	dsi_pll_cmn_clk_cfg1_update(pll, DSI_7nm_PHY_CMN_CLK_CFG1_CLK_EN, 0);
+ }
+ 
+ static void dsi_pll_enable_global_clk(struct dsi_pll_7nm *pll)
+@@ -565,7 +568,6 @@ static int dsi_7nm_pll_restore_state(struct msm_dsi_phy *phy)
+ {
+ 	struct dsi_pll_7nm *pll_7nm = to_pll_7nm(phy->vco_hw);
+ 	struct pll_7nm_cached_state *cached = &pll_7nm->cached_state;
+-	void __iomem *phy_base = pll_7nm->phy->base;
+ 	u32 val;
+ 	int ret;
+ 
+@@ -576,11 +578,7 @@ static int dsi_7nm_pll_restore_state(struct msm_dsi_phy *phy)
+ 
+ 	writel(cached->bit_clk_div | (cached->pix_clk_div << 4),
+ 	       phy_base + REG_DSI_7nm_PHY_CMN_CLK_CFG0);
+-
+-	val = readl(phy_base + REG_DSI_7nm_PHY_CMN_CLK_CFG1);
+-	val &= ~0x3;
+-	val |= cached->pll_mux;
+-	writel(val, phy_base + REG_DSI_7nm_PHY_CMN_CLK_CFG1);
++	dsi_pll_cmn_clk_cfg1_update(pll_7nm, 0x3, cached->pll_mux);
+ 
+ 	ret = dsi_pll_7nm_vco_set_rate(phy->vco_hw,
+ 			pll_7nm->vco_current_rate,
+@@ -733,7 +731,7 @@ static int pll_7nm_register(struct dsi_pll_7nm *pll_7nm, struct clk_hw **provide
+ 					pll_by_2_bit,
+ 				}), 2, 0, pll_7nm->phy->base +
+ 					REG_DSI_7nm_PHY_CMN_CLK_CFG1,
+-				0, 1, 0, NULL);
++				0, 1, 0, &pll_7nm->pclk_mux_lock);
+ 		if (IS_ERR(hw)) {
+ 			ret = PTR_ERR(hw);
+ 			goto fail;
+@@ -778,6 +776,7 @@ static int dsi_pll_7nm_init(struct msm_dsi_phy *phy)
+ 	pll_7nm_list[phy->id] = pll_7nm;
+ 
+ 	spin_lock_init(&pll_7nm->postdiv_lock);
++	spin_lock_init(&pll_7nm->pclk_mux_lock);
+ 
+ 	pll_7nm->phy = phy;
+ 
+-- 
+2.25.1
+

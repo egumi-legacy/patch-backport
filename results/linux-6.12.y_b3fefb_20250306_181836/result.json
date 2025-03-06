@@ -1,0 +1,33 @@
+{
+  "commit": {
+    "sha": "b3fefbb30a1691533cb905006b69b2a474660744",
+    "patch_url": "https://github.com/gregkh/linux/commit/b3fefbb30a1691533cb905006b69b2a474660744.patch",
+    "downstream_sha": "f5d5e8165aee90761d3991a40a516cd2deed8146",
+    "downstream_message": "nouveau/svm: fix missing folio unlock + put after make_device_exclusive_range()\n\n[ Upstream commit b3fefbb30a1691533cb905006b69b2a474660744 ]\n\nIn case we have to retry the loop, we are missing to unlock+put the\nfolio. In that case, we will keep failing make_device_exclusive_range()\nbecause we cannot grab the folio lock, and even return from the function\nwith the folio locked and referenced, effectively never succeeding the\nmake_device_exclusive_range().\n\nWhile at it, convert the other unlock+put to use a folio as well.\n\nThis was found by code inspection.\n\nFixes: 8f187163eb89 (\"nouveau/svm: implement atomic SVM access\")\nSigned-off-by: David Hildenbrand <david@redhat.com>\nReviewed-by: Alistair Popple <apopple@nvidia.com>\nTested-by: Alistair Popple <apopple@nvidia.com>\nSigned-off-by: Danilo Krummrich <dakr@kernel.org>\nLink: https://patchwork.freedesktop.org/patch/msgid/20250124181524.3584236-2-david@redhat.com\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/b3fefb/patches/upstream_b3fefb.patch",
+      "timestamp": "2025-03-06T18:18:36.561809"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-06T18:18:36.768951"
+  }
+}

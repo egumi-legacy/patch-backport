@@ -229,7 +229,7 @@ class ModuleContext(BaseModel):
     patch_adapter_result: List[Dict[str, Any]] = Field(default_factory=list)
 
     # 内核编译器配置
-    docker_image_built: bool = False
+    docker_image_built: bool = True
 
     # 反馈数据
     retry_count: int = 0

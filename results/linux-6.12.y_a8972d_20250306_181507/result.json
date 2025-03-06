@@ -1,0 +1,33 @@
+{
+  "commit": {
+    "sha": "a8972d5a49b408248294b5ecbdd0a085e4726349",
+    "patch_url": "https://github.com/gregkh/linux/commit/a8972d5a49b408248294b5ecbdd0a085e4726349.patch",
+    "downstream_sha": "d754ae423bbf28748bc1bc49c8005c2ad719935d",
+    "downstream_message": "drm: panel: jd9365da-h3: fix reset signal polarity\n\ncommit a8972d5a49b408248294b5ecbdd0a085e4726349 upstream.\n\nIn jadard_prepare() a reset pulse is generated with the following\nstatements (delays ommited for clarity):\n\n    gpiod_set_value(jadard->reset, 1); --> Deassert reset\n    gpiod_set_value(jadard->reset, 0); --> Assert reset for 10ms\n    gpiod_set_value(jadard->reset, 1); --> Deassert reset\n\nHowever, specifying second argument of \"0\" to gpiod_set_value() means to\ndeassert the GPIO, and \"1\" means to assert it. If the reset signal is\ndefined as GPIO_ACTIVE_LOW in the DTS, the above statements will\nincorrectly generate the reset pulse (inverted) and leave it asserted\n(LOW) at the end of jadard_prepare().\n\nFix reset behavior by inverting gpiod_set_value() second argument\nin jadard_prepare(). Also modify second argument to devm_gpiod_get()\nin jadard_dsi_probe() to assert the reset when probing.\n\nDo not modify it in jadard_unprepare() as it is already properly\nasserted with \"1\", which seems to be the intended behavior.\n\nFixes: 6b818c533dd8 (\"drm: panel: Add Jadard JD9365DA-H3 DSI panel\")\nCc: stable@vger.kernel.org\nSigned-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>\nReviewed-by: Neil Armstrong <neil.armstrong@linaro.org>\nReviewed-by: Linus Walleij <linus.walleij@linaro.org>\nLink: https://lore.kernel.org/r/20240927135306.857617-1-hugo@hugovil.com\nSigned-off-by: Neil Armstrong <neil.armstrong@linaro.org>\nLink: https://patchwork.freedesktop.org/patch/msgid/20240927135306.857617-1-hugo@hugovil.com\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a8972d/patches/upstream_a8972d.patch",
+      "timestamp": "2025-03-06T18:15:07.322053"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-06T18:15:07.592178"
+  }
+}

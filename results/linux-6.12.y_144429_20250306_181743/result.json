@@ -1,0 +1,33 @@
+{
+  "commit": {
+    "sha": "144429831f447223253a0e4376489f84ff37d1a7",
+    "patch_url": "https://github.com/gregkh/linux/commit/144429831f447223253a0e4376489f84ff37d1a7.patch",
+    "downstream_sha": "83fe04708319419e49ac1a36991102f121876866",
+    "downstream_message": "drm/msm/dpu: Don't leak bits_per_component into random DSC_ENC fields\n\n[ Upstream commit 144429831f447223253a0e4376489f84ff37d1a7 ]\n\nWhat used to be the input_10_bits boolean - feeding into the lowest\nbit of DSC_ENC - on MSM downstream turned into an accidental OR with\nthe full bits_per_component number when it was ported to the upstream\nkernel.\n\nOn typical bpc=8 setups we don't notice this because line_buf_depth is\nalways an odd value (it contains bpc+1) and will also set the 4th bit\nafter left-shifting by 3 (hence this |= bits_per_component is a no-op).\n\nNow that guards are being removed to allow more bits_per_component\nvalues besides 8 (possible since commit 49fd30a7153b (\"drm/msm/dsi: use\nDRM DSC helpers for DSC setup\")), a bpc of 10 will instead clash with\nthe 5th bit which is convert_rgb.  This is \"fortunately\" also always set\nto true by MSM's dsi_populate_dsc_params() already, but once a bpc of 12\nstarts being used it'll write into simple_422 which is normally false.\n\nTo solve all these overlaps, simply replicate downstream code and only\nset this lowest bit if bits_per_component is equal to 10.  It is unclear\nwhy DSC requires this only for bpc=10 but not bpc=12, and also notice\nthat this lowest bit wasn't set previously despite having a panel and\npatch on the list using it without any mentioned issues.\n\nFixes: c110cfd1753e (\"drm/msm/disp/dpu1: Add support for DSC\")\nSigned-off-by: Marijn Suijten <marijn.suijten@somainline.org>\nReviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>\nReviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>\nReviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>\nPatchwork: https://patchwork.freedesktop.org/patch/636311/\nLink: https://lore.kernel.org/r/20250211-dsc-10-bit-v1-1-1c85a9430d9a@somainline.org\nSigned-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/144429/patches/upstream_144429.patch",
+      "timestamp": "2025-03-06T18:17:43.581098"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-06T18:17:43.788765"
+  }
+}

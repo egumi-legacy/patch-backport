@@ -1,0 +1,12 @@
+diff --git a/drivers/firmware/imx/Kconfig b/drivers/firmware/imx/Kconfig
+index 907cd149c40a8..c964f4924359f 100644
+--- a/drivers/firmware/imx/Kconfig
++++ b/drivers/firmware/imx/Kconfig
+@@ -25,6 +25,7 @@ config IMX_SCU
+ 
+ config IMX_SCMI_MISC_DRV
+ 	tristate "IMX SCMI MISC Protocol driver"
++	depends on ARCH_MXC || COMPILE_TEST
+ 	default y if ARCH_MXC
+ 	help
+ 	  The System Controller Management Interface firmware (SCMI FW) is
