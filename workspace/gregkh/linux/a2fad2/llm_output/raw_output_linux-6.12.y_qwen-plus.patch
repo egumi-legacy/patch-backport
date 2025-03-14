@@ -1,14 +1,3 @@
-A. Commit message:
-Bluetooth: qca: Fix poor RF performance for WCN6855 on older kernel version
-
-B. Change summary:
-This patch backports the fix to ensure that board ID specific NVM is downloaded for WCN6855 if the board ID is available, improving RF performance and user experience on devices using this Bluetooth chip.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
 index a6b53d1f23dbd..cdf09d9a9ad27 100644
 --- a/drivers/bluetooth/btqca.c
@@ -269,4 +258,3 @@ index a6b53d1f23dbd..cdf09d9a9ad27 100644
  		default:
  			snprintf(config.fwname, sizeof(config.fwname),
  				 "qca/nvm_%08x.bin", soc_ver);
-```

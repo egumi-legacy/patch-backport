@@ -1,14 +1,3 @@
-A. Commit message:
-Backport PCI INTx management changes to 6.12.y
-
-B. Change summary:
-This patch backports the pci_intx_unmanaged() and pcim_intx() exports from the newer version to the 6.12.y kernel branch. It ensures that these functions are available for use in environments where pci_intx() cannot be used due to its hybrid nature, which can cause issues in interrupt context.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/pci/devres.c b/drivers/pci/devres.c
 index 609a9c5531a38..f9b93d1147f10 100644
 --- a/drivers/pci/devres.c
@@ -119,4 +108,3 @@ index db9b47ce3eefd..b5eb8bda655dc 100644
  int pcim_request_all_regions(struct pci_dev *pdev, const char *name);
  void __iomem *pcim_iomap(struct pci_dev *pdev, int bar, unsigned long maxlen);
  void __iomem *pcim_iomap_region(struct pci_dev *pdev, int bar,
-```

@@ -1,14 +1,3 @@
-A. Commit message:
-Backport dcn351 clock manager updates to older version
-
-B. Change summary:
-This patch backports the changes from the newer version of the DCN3.51 clock manager to the older version. It includes the necessary register definitions, function modifications, and conditional logic for handling different DCE versions. The changes ensure that the older version can support the updated clock management features introduced in DCN3.51.
-
-C. Compatibility Risk:
-High
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/Makefile b/drivers/gpu/drm/amd/display/dc/clk_mgr/Makefile
 index ab1132bc896a3..d9955c5d2e5ed 100644
 --- a/drivers/gpu/drm/amd/display/dc/clk_mgr/Makefile
@@ -484,4 +473,3 @@ index c2dd061892f4d..7a1ca1e98059b 100644
  };
  
  struct clk_mgr_shift {
-```

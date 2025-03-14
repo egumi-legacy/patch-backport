@@ -1,14 +1,3 @@
-A. Commit message:
-ASoC: Add check for negative sample_space in rz-ssi driver
-
-B. Change summary:
-Added a check to ensure that the `sample_space` is not negative before proceeding with the PIO send operation. This prevents potential issues due to type promotion of negative values to unsigned integers.
-
-C. Compatibility Risk:
-High
-
-D. Fixed Code:
-```diff
 diff --git a/sound/soc/renesas/rz-ssi.c b/sound/soc/renesas/rz-ssi.c
 new file mode 100644
 index 0000000..3a0af4ca7ab6c
@@ -39,6 +28,3 @@ index 0000000..3a0af4ca7ab6c
 +}
 +
 +/* ... (other lines of code) ... */
-```
-
-Note: Since the target version does not have the `sound/soc/renesas/rz-ssi.c` file, this patch introduces the entire file with the necessary changes included. The compatibility risk is high because this change involves adding an entirely new file, which may require additional context and integration work by the developer.

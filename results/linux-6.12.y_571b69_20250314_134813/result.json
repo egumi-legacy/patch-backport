@@ -1,0 +1,36 @@
+{
+  "commit": {
+    "sha": "571b69f2f9b1ec7cf7d0e9b79e52115a87a869c4",
+    "patch_url": "https://github.com/gregkh/linux/commit/571b69f2f9b1ec7cf7d0e9b79e52115a87a869c4.patch",
+    "downstream_sha": "72be19e184fc6a77c73eaa23ea009d2832f0ede7",
+    "downstream_message": "ASoC: imx-audmix: remove cpu_mclk which is from cpu dai device\n\n[ Upstream commit 571b69f2f9b1ec7cf7d0e9b79e52115a87a869c4 ]\n\nWhen defer probe happens, there may be below error:\n\nplatform 59820000.sai: Resources present before probing\n\nThe cpu_mclk clock is from the cpu dai device, if it is not released,\nthen the cpu dai device probe will fail for the second time.\n\nThe cpu_mclk is used to get rate for rate constraint, rate constraint\nmay be specific for each platform, which is not necessary for machine\ndriver, so remove it.\n\nFixes: b86ef5367761 (\"ASoC: fsl: Add Audio Mixer machine driver\")\nSigned-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>\nLink: https://patch.msgid.link/20250213070518.547375-1-shengjiu.wang@nxp.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/571b69/patches/upstream_571b69.patch",
+      "timestamp": "2025-03-14T13:48:13.404955"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-14T13:48:13.621944"
+  }
+}

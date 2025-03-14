@@ -1,0 +1,484 @@
+2025-03-14 14:18:34.806 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250314_141834.log
+2025-03-14 14:18:34.806 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-14 14:18:34.807 | INFO     | __main__:_get_commits_list:255 - commits_file:workspace/gregkh/linux_cache/branch_linux-6.12.y_commits.json
+2025-03-14 14:18:34.807 | INFO     | __main__:_get_commits_list:256 - use_cached_commits:True
+2025-03-14 14:18:34.808 | INFO     | __main__:_scan_commits:298 - 扫描提交历史: 页码范围=1-3, 每页=100
+2025-03-14 14:18:34.808 | INFO     | __main__:_scan_commits:312 - 获取第 1 页提交...
+2025-03-14 14:18:35.754 | DEBUG    | __main__:_scan_commits:314 - 请求URL: https://api.github.com/repos/gregkh/linux/commits?sha=linux-6.12.y&per_page=100&page=1
+2025-03-14 14:18:35.767 | INFO     | __main__:_extract_upstream_commit:357 - 未提取到上游提交: Linux 6.12.19
+
+Link: https://lore.kernel.org/r/20250310170457.700086763@linuxfoundation.org
+Tested-by: SeongJae Park <sj@kernel.org>
+Tested-by: Florian Fainelli <florian.fainelli@broadcom.com>
+Tested-by: Salvatore Bonaccorso <carnil@debian.org>
+Tested-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Tested-by: Ron Economos <re@w6rz.net>
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Tested-by: Mark Brown <broonie@kernel.org>
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+Tested-by: Markus Reichelt <lkt+2023@mareichelt.com>
+Tested-by: Miguel Ojeda <ojeda@kernel.org>
+Tested-by: Peter Schneider <pschneider1968@googlemail.com>
+Tested-by: Hardik Garg <hargar@linux.microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+2025-03-14 14:18:35.768 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: bbb18f7e23a3f5f56d5c8b4ee0f78f00edb3b1b2
+2025-03-14 14:18:35.769 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: f24f669d03f884a6ef95cca84317d0f329e93961
+2025-03-14 14:18:35.769 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 0e2fb011a0ba8e2258ce776fdf89fbd589c2a3a6
+2025-03-14 14:18:35.769 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b583ef82b671c9a752fbe3e95bd4c1c51eab764d
+2025-03-14 14:18:35.770 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 87ecfdbc699cc95fac73291b52650283ddcf929d
+2025-03-14 14:18:35.770 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c9be85dabb376299504e0d391d15662c0edf8273
+2025-03-14 14:18:35.771 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 84cf78dcd9d65c45ab73998d4ad50f433d53fb93
+2025-03-14 14:18:35.771 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 419cfb983ca93e75e905794521afefcfa07988bb
+2025-03-14 14:18:35.771 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 87ecfdbc699cc95fac73291b52650283ddcf929d
+2025-03-14 14:18:35.772 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b160dc46dd9af4001c802cc9c7d68b6ba58d27c4
+2025-03-14 14:18:35.772 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: afb41b08c44e5386f2f52fa859010ac4afd2b66f
+2025-03-14 14:18:35.772 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: d0bbe332669c5db32c8c92bc967f8e7f8d460ddf
+2025-03-14 14:18:35.773 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 02e9a22ceef0227175e391902d8760425fa072c6
+2025-03-14 14:18:35.773 | INFO     | __main__:_extract_upstream_commit:357 - 未提取到上游提交: fs/netfs/read_collect: fix crash due to uninitialized `prev` variable
+
+[ Just like the other two netfs patches I sent yesterday, this one
+  doesn't apply to v6.14 as it was obsoleted by commit e2d46f2ec332
+  ("netfs: Change the read result collector to only use one work item").  ]
+
+When checking whether the edges of adjacent subrequests touch, the
+`prev` variable is deferenced, but it might not have been initialized.
+This causes crashes like this one:
+
+ BUG: unable to handle page fault for address: 0000000181343843
+ #PF: supervisor read access in kernel mode
+ #PF: error_code(0x0000) - not-present page
+ PGD 8000001c66db0067 P4D 8000001c66db0067 PUD 0
+ Oops: Oops: 0000 [#1] SMP PTI
+ CPU: 1 UID: 33333 PID: 24424 Comm: php-cgi8.2 Kdump: loaded Not tainted 6.13.2-cm4all0-hp+ #427
+ Hardware name: HP ProLiant DL380 Gen9/ProLiant DL380 Gen9, BIOS P89 11/23/2021
+ RIP: 0010:netfs_consume_read_data.isra.0+0x5ef/0xb00
+ Code: fe ff ff 48 8b 83 88 00 00 00 48 8b 4c 24 30 4c 8b 43 78 48 85 c0 48 8d 51 70 75 20 48 8b 73 30 48 39 d6 74 17 48 8b 7c 24 40 <48> 8b 4f 78 48 03 4f 68 48 39 4b 68 0f 84 ab 02 00 00 49 29 c0 48
+ RSP: 0000:ffffc90037adbd00 EFLAGS: 00010283
+ RAX: 0000000000000000 RBX: ffff88811bda0600 RCX: ffff888620e7b980
+ RDX: ffff888620e7b9f0 RSI: ffff88811bda0428 RDI: 00000001813437cb
+ RBP: 0000000000000000 R08: 0000000000004000 R09: 0000000000000000
+ R10: ffffffff82e070c0 R11: 0000000007ffffff R12: 0000000000004000
+ R13: ffff888620e7bb68 R14: 0000000000008000 R15: ffff888620e7bb68
+ FS:  00007ff2e0e7ddc0(0000) GS:ffff88981f840000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 0000000181343843 CR3: 0000001bc10ba006 CR4: 00000000001706f0
+ Call Trace:
+  <TASK>
+  ? __die+0x1f/0x60
+  ? page_fault_oops+0x15c/0x450
+  ? search_extable+0x22/0x30
+  ? netfs_consume_read_data.isra.0+0x5ef/0xb00
+  ? search_module_extables+0xe/0x40
+  ? exc_page_fault+0x5e/0x100
+  ? asm_exc_page_fault+0x22/0x30
+  ? netfs_consume_read_data.isra.0+0x5ef/0xb00
+  ? intel_iommu_unmap_pages+0xaa/0x190
+  ? __pfx_cachefiles_read_complete+0x10/0x10
+  netfs_read_subreq_terminated+0x24f/0x390
+  cachefiles_read_complete+0x48/0xf0
+  iomap_dio_bio_end_io+0x125/0x160
+  blk_update_request+0xea/0x3e0
+  scsi_end_request+0x27/0x190
+  scsi_io_completion+0x43/0x6c0
+  blk_complete_reqs+0x40/0x50
+  handle_softirqs+0xd1/0x280
+  irq_exit_rcu+0x91/0xb0
+  common_interrupt+0x3b/0xa0
+  asm_common_interrupt+0x22/0x40
+ RIP: 0033:0x55fe8470d2ab
+ Code: 00 00 3c 7e 74 3b 3c b6 0f 84 dd 03 00 00 3c 1e 74 2f 83 c1 01 48 83 c2 38 48 83 c7 30 44 39 d1 74 3e 48 63 42 08 85 c0 79 a3 <49> 8b 46 48 8b 04 38 f6 c4 04 75 0b 0f b6 42 30 83 e0 0c 3c 04 75
+ RSP: 002b:00007ffca5ef2720 EFLAGS: 00000216
+ RAX: 0000000000000023 RBX: 0000000000000008 RCX: 000000000000001b
+ RDX: 00007ff2e0cdb6f8 RSI: 0000000000000006 RDI: 0000000000000510
+ RBP: 00007ffca5ef27a0 R08: 00007ffca5ef2720 R09: 0000000000000001
+ R10: 000000000000001e R11: 00007ff2e0c10d08 R12: 0000000000000001
+ R13: 0000000000000120 R14: 00007ff2e0cb1ed0 R15: 00000000000000b0
+  </TASK>
+
+Fixes: ee4cdf7ba857 ("netfs: Speed up buffered reading")
+Cc: stable@vger.kernel.org
+Signed-off-by: Max Kellermann <max.kellermann@ionos.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+2025-03-14 14:18:35.774 | INFO     | __main__:_extract_upstream_commit:357 - 未提取到上游提交: fs/netfs/read_pgpriv2: skip folio queues without `marks3`
+
+[ Note this patch doesn't apply to v6.14 as it was obsoleted by commit
+  e2d46f2ec332 ("netfs: Change the read result collector to only use one
+  work item"). ]
+
+At the beginning of the function, folio queues with marks3==0 are
+skipped, but after that, the `marks3` field is ignored.  If one such
+queue is found, `slot` is set to 64 (because `__ffs(0)==64`), leading
+to a buffer overflow in the folioq_folio() call.  The resulting crash
+may look like this:
+
+ BUG: kernel NULL pointer dereference, address: 0000000000000000
+ #PF: supervisor read access in kernel mode
+ #PF: error_code(0x0000) - not-present page
+ PGD 0 P4D 0
+ Oops: Oops: 0000 [#1] SMP PTI
+ CPU: 11 UID: 0 PID: 2909 Comm: kworker/u262:1 Not tainted 6.13.1-cm4all2-vm #415
+ Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+ Workqueue: events_unbound netfs_read_termination_worker
+ RIP: 0010:netfs_pgpriv2_write_to_the_cache+0x15a/0x3f0
+ Code: 48 85 c0 48 89 44 24 08 0f 84 24 01 00 00 48 8b 80 40 01 00 00 48 8b 7c 24 08 f3 48 0f bc c0 89 44 24 18 89 c0 48 8b 74 c7 08 <48> 8b 06 48 c7 04 24 00 10 00 00 a8 40 74 10 0f b6 4e 40 b8 00 10
+ RSP: 0018:ffffbbc440effe18 EFLAGS: 00010203
+ RAX: 0000000000000040 RBX: ffff96f8fc034000 RCX: 0000000000000000
+ RDX: 0000000000000040 RSI: 0000000000000000 RDI: ffff96f8fc036400
+ RBP: 0000000000001000 R08: ffff96f9132bb400 R09: 0000000000001000
+ R10: ffff96f8c1263c80 R11: 0000000000000003 R12: 0000000000001000
+ R13: ffff96f8fb75ade8 R14: fffffaaf5ca90000 R15: ffff96f8fb75ad00
+ FS:  0000000000000000(0000) GS:ffff9703cf0c0000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 0000000000000000 CR3: 000000010c9ca003 CR4: 00000000001706b0
+ DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ Call Trace:
+  <TASK>
+  ? __die+0x1f/0x60
+  ? page_fault_oops+0x158/0x450
+  ? search_extable+0x22/0x30
+  ? netfs_pgpriv2_write_to_the_cache+0x15a/0x3f0
+  ? search_module_extables+0xe/0x40
+  ? exc_page_fault+0x62/0x120
+  ? asm_exc_page_fault+0x22/0x30
+  ? netfs_pgpriv2_write_to_the_cache+0x15a/0x3f0
+  ? netfs_pgpriv2_write_to_the_cache+0xf6/0x3f0
+  netfs_read_termination_worker+0x1f/0x60
+  process_one_work+0x138/0x2d0
+  worker_thread+0x2a5/0x3b0
+  ? __pfx_worker_thread+0x10/0x10
+  kthread+0xba/0xe0
+  ? __pfx_kthread+0x10/0x10
+  ret_from_fork+0x30/0x50
+  ? __pfx_kthread+0x10/0x10
+  ret_from_fork_asm+0x1a/0x30
+  </TASK>
+
+Fixes: ee4cdf7ba857 ("netfs: Speed up buffered reading")
+Cc: stable@vger.kernel.org
+Signed-off-by: Max Kellermann <max.kellermann@ionos.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+2025-03-14 14:18:35.774 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 49c87f7677746f3c5bd16c81b23700bb6b88bfd4
+2025-03-14 14:18:35.775 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 02410ac72ac3707936c07ede66e94360d0d65319
+2025-03-14 14:18:35.775 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: aa5119c36d19639397d29ef305aa53a5ecd72b27
+2025-03-14 14:18:35.776 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 21d7241faf406e8aee3ce348451cc362d5db6a02
+2025-03-14 14:18:35.777 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e17b9f20da7d2bc1f48878ab2230523b2512d965
+2025-03-14 14:18:35.777 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: a96d3e2beca0e51c8444d0a3b6b3ec484c4c5a8f
+2025-03-14 14:18:35.777 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: cc2c3540d9477a9931fb0fd851fcaeba524a5b35
+2025-03-14 14:18:35.778 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 819cec1dc47cdeac8f5dd6ba81c1dbee2a68c3bb
+2025-03-14 14:18:35.778 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 038ef0754aae76f79b147b8867f9250e6a976872
+2025-03-14 14:18:35.778 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: a321d163de3d8aa38a6449ab2becf4b1581aed96
+2025-03-14 14:18:35.778 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: dcb0d43ba8eb9517e70b1a0e4b0ae0ab657a0e5a
+2025-03-14 14:18:35.779 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 78eb41f518f414378643ab022241df2a9dcd008b
+2025-03-14 14:18:35.779 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 6d991f569c5ef6eaeadf1238df2c36e3975233ad
+2025-03-14 14:18:35.779 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 49114ff05770264ae233f50023fc64a719a9dcf9
+2025-03-14 14:18:35.780 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: a70034d6c0d5f3cdee40bb00a578e17fd2ebe426
+2025-03-14 14:18:35.781 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b5edccae9f447a92d475267d94c33f4926963eec
+2025-03-14 14:18:35.781 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: fdb1ada57cf8b8752cdf54f08709d76d74999544
+2025-03-14 14:18:35.782 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: a8e8ffcc3afce2ee5fb70162aeaef3f03573ee1e
+2025-03-14 14:18:35.782 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 91d44c1afc61a2fec37a9c7a3485368309391e0b
+2025-03-14 14:18:35.782 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: f9dc8fb3afc968042bdaf4b6e445a9272071c9f3
+2025-03-14 14:18:35.782 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 189ecdb3e112da703ac0699f4ec76aa78122f911
+2025-03-14 14:18:35.783 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 433265870ab3455b418885bff48fa5fd02f7e448
+2025-03-14 14:18:35.783 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: fb71c795935652fa20eaf9517ca9547f5af99a76
+2025-03-14 14:18:35.783 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: d0eac42f5cecce009d315655bee341304fbe075e
+2025-03-14 14:18:35.783 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: ee89e8013383d50a27ea9bf3c8a69eed6799856f
+2025-03-14 14:18:35.784 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b2653cd3b75f62f29b72df4070e20357acb52bc4
+2025-03-14 14:18:35.784 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: be45bc4eff33d9a7dae84a2150f242a91a617402
+2025-03-14 14:18:35.784 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c133ec0e5717868c9967fa3df92a55e537b1aead
+2025-03-14 14:18:35.784 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 0309ed83791c079f239c13e0c605210425cd1a61
+2025-03-14 14:18:35.785 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 1bae8729e50a900f41e9a1c17ae81113e4cf62b8
+2025-03-14 14:18:35.785 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 27c7518e7f1ccaaa43eb5f25dc362779d2dc2ccb
+2025-03-14 14:18:35.785 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 976e7e9bdc7719a023a4ecccd2e3daec9ab20a40
+2025-03-14 14:18:35.785 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: dfc1b168a8c4b376fa222b27b97c2c4ad4b786e1
+2025-03-14 14:18:35.786 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 8e812e9355a6f14dffd54a33d951ca403b9732f5
+2025-03-14 14:18:35.786 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c783e1258f29c5caac9eea0aea6b172870f1baf8
+2025-03-14 14:18:35.786 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 40e89ff5750fca2c1d6da93f98a2038716bba86c
+2025-03-14 14:18:35.786 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: d6b82dafd17db0658f089b9cdec573982ca82bc5
+2025-03-14 14:18:35.787 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: bf4f9ae1cb08ccaafbe6874be6c46f59b83ae778
+2025-03-14 14:18:35.787 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 69c58deec19628c8a686030102176484eb94fed4
+2025-03-14 14:18:35.787 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: cc5bfc4e16fc1d1c520cd7bb28646e82b6e69217
+2025-03-14 14:18:35.787 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c90aad369899a607cfbc002bebeafd51e31900cd
+2025-03-14 14:18:35.788 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 17c2c87c37862c3e95b55f660681cc6e8d66660e
+2025-03-14 14:18:35.788 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 552ca6b87e3778f3dd5b87842f95138162e16c82
+2025-03-14 14:18:35.788 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b13abcb7ddd8d38de769486db5bd917537b32ab1
+2025-03-14 14:18:35.788 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: ff712188daa3fe3ce7e11e530b4dca3826dae14a
+2025-03-14 14:18:35.789 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 2b66ef84d0d2a0ea955b40bd306f5e3abbc5cf9c
+2025-03-14 14:18:35.789 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e0c92440938930e7fa7aa6362780d39cdea34449
+2025-03-14 14:18:35.789 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 487cfd4a8e3dc42d34a759017978a4edaf85fce0
+2025-03-14 14:18:35.789 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b5ea08aa883da05106fcc683d12489a4292d1122
+2025-03-14 14:18:35.790 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 2397d61ee45cddb8f3bd3a3a9840ef0f0b5aa843
+2025-03-14 14:18:35.790 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 391b41f983bf7ff853de44704d8e14e7cc648a9b
+2025-03-14 14:18:35.790 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 5da15a9c11c1c47ef573e6805b60a7d8a1687a2a
+2025-03-14 14:18:35.790 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 0e7633d7b95b67f1758aea19f8e85621c5f506a3
+2025-03-14 14:18:35.791 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: cf7ee25e70c6edfac4553d6b671e8b19db1d9573
+2025-03-14 14:18:35.791 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: ccc2f5a436fbb0ae1fb598932a9b8e48423c1959
+2025-03-14 14:18:35.791 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 528361c49962708a60f51a1afafeb00987cebedf
+2025-03-14 14:18:35.791 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 3b4035ddbfc8e4521f85569998a7569668cccf51
+2025-03-14 14:18:35.792 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 5ac60242b0173be83709603ebaf27a473f16c4e4
+2025-03-14 14:18:35.792 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 3c9231ea6497dfc50ac0ef69fff484da27d0df66
+2025-03-14 14:18:35.792 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: fda94a9919fd632033979ad7765a99ae3cab9289
+2025-03-14 14:18:35.793 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 9da33619e0ca53627641bc97d1b93ec741299111
+2025-03-14 14:18:35.794 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 6697f819a10b238ccf01998c3f203d65d8374696
+2025-03-14 14:18:35.794 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 0d3e0dfd68fb9e6b0ec865be9f3377cc3ff55733
+2025-03-14 14:18:35.794 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b33a534610067ade2bdaf2052900aaad99701353
+2025-03-14 14:18:35.795 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 637399bf7e77797811adf340090b561a8f9d1213
+2025-03-14 14:18:35.795 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b7a2c1fe6b55364e61b4b54b991eb43a47bb1104
+2025-03-14 14:18:35.796 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: fe55b1d401c697c2ef126fe3ebbcaa6885fced5a
+2025-03-14 14:18:35.796 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 4c2d14c40a68678d885eab4008a0129646805bae
+2025-03-14 14:18:35.797 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 934e69669e32eb653234898424ae007bae2f636e
+2025-03-14 14:18:35.797 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 6a2843aaf551d87beb92d774f7d5b8ae007fe774
+2025-03-14 14:18:35.797 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 5eb3dc1396aa7e315486b24df80df782912334b7
+2025-03-14 14:18:35.798 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e53fc232a65f7488ab75d03a5b95f06aaada7262
+2025-03-14 14:18:35.798 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 30bfc151f0c1ec80c27a80a7651b2c15c648ad16
+2025-03-14 14:18:35.798 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 01389846f7d61d262cc92d42ad4d1a25730e3eff
+2025-03-14 14:18:35.798 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 84d2d0430f0833cdf52a3d051906add051f20ef0
+2025-03-14 14:18:35.799 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b7365eab39831487a84e63a9638209b68dc54008
+2025-03-14 14:18:35.799 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 1a82d19ca2d6835904ee71e2d40fd331098f94a0
+2025-03-14 14:18:35.799 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 23e0832d6d7be2d3c713f9390c060b6f1c48bf36
+2025-03-14 14:18:35.799 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 10fce7ebe888fa8c97eee7e317a47e7603e5e78d
+2025-03-14 14:18:35.800 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 64e6a754d33d31aa844b3ee66fb93ac84ca1565e
+2025-03-14 14:18:35.800 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 172a0f509723fe4741d4b8e9190cf434b18320d8
+2025-03-14 14:18:35.800 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 1d2eabb6616433ccaa13927811bdfa205e91ba60
+2025-03-14 14:18:35.801 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: fd5ba38390c59e1c147480ae49b6133c4ac24001
+2025-03-14 14:18:35.801 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e278d5e8aef4c0a1d9a9fa8b8910d713a89aa800
+2025-03-14 14:18:35.801 | INFO     | __main__:_scan_commits:337 - 第 1 页处理完成，当前共找到 97 个上游提交
+2025-03-14 14:18:35.802 | INFO     | __main__:_scan_commits:312 - 获取第 2 页提交...
+2025-03-14 14:18:36.686 | DEBUG    | __main__:_scan_commits:314 - 请求URL: https://api.github.com/repos/gregkh/linux/commits?sha=linux-6.12.y&per_page=100&page=2
+2025-03-14 14:18:36.695 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 1c7932d5ae0f5c22fa52ac811b4c427bbca5aff5
+2025-03-14 14:18:36.695 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 6b6e2e8fd0de3fa7c6f4f8fe6841b01770b2e7bc
+2025-03-14 14:18:36.696 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 2565e42539b120b81a68a58da961ce5d1e34eac8
+2025-03-14 14:18:36.696 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: a466fd7e9fafd975949e5945e2f70c33a94b1a70
+2025-03-14 14:18:36.697 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: ee01b2f2d7d0010787c2343463965bbc283a497f
+2025-03-14 14:18:36.697 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 3414cda9d41f41703832d0abd01063dd8de82b89
+2025-03-14 14:18:36.698 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: a16f88964c647103dad7743a484b216d488a6352
+2025-03-14 14:18:36.698 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: ad95bab0cd28ed77c2c0d0b6e76e03e031391064
+2025-03-14 14:18:36.698 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 84e009042d0f3dfe91bec60bcd208ee3f866cbcd
+2025-03-14 14:18:36.699 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: cbf85b9cb80bec6345ffe0368dfff98386f4714f
+2025-03-14 14:18:36.699 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 6b481ab0e6855fb30e2923c51f62f1662d1cda7e
+2025-03-14 14:18:36.700 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: ef350898ae22db832ada972476fa2999f8ea978c
+2025-03-14 14:18:36.700 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c7c1b9e1d52b0a0dbb0ee552efdc3360c0f5363c
+2025-03-14 14:18:36.701 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: d07fdf9225922d3e36ebd13ccab3df62b1ccdab3
+2025-03-14 14:18:36.701 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 5d08c44e47b9d41366714552bdd374ac4b595591
+2025-03-14 14:18:36.701 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: eb1f4adf9101573fc2347978a60d71c4f1176cca
+2025-03-14 14:18:36.702 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 130067e9c13bdc4820748ef16076a6972364745f
+2025-03-14 14:18:36.702 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 99ca2c28e6b68084a0fb65585df09b9e28c3ec16
+2025-03-14 14:18:36.703 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 24711d60f8492a30622e419cee643d59264ea939
+2025-03-14 14:18:36.703 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 00817f0f1c45b007965f5676b9a2013bb39c7228
+2025-03-14 14:18:36.703 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 6fad84a4d624c300d03ebba457cc641765050c43
+2025-03-14 14:18:36.704 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 979c6342f9c0a48696a6420f14f9dd409591657f
+2025-03-14 14:18:36.704 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 39ec9eaaa165d297d008d1fa385748430bd18e4d
+2025-03-14 14:18:36.705 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 07583a0010696a17fb0942e0b499a62785c5fc9f
+2025-03-14 14:18:36.706 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 823987841424289339fdb4ba90e6d2c3792836db
+2025-03-14 14:18:36.706 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 4bd0725c09f377ffaf22b834241f6c050742e4fc
+2025-03-14 14:18:36.706 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 3640dbc1f75ce15d128ea4af44226960d894f3fd
+2025-03-14 14:18:36.706 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 3b08e608d50c44ca1135beed179f266aa0461da7
+2025-03-14 14:18:36.707 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e0dc2c1bef722cbf16ae557690861e5f91208129
+2025-03-14 14:18:36.707 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: d73d2c6e3313f0ba60711ab4f4b9044eddca9ca5
+2025-03-14 14:18:36.707 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: f9751163bffd3fe60794929829f810968c6de73d
+2025-03-14 14:18:36.707 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 773b9a6aa6d38894b95088e3ed6f8a701d9f50fd
+2025-03-14 14:18:36.708 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: af288a426c3e3552b62595c6138ec6371a17dbba
+2025-03-14 14:18:36.708 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 34b82f33cf3f03bc39e9a205a913d790e1520ade
+2025-03-14 14:18:36.708 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 3685024edd270f7c791f993157d65d3c928f3d6e
+2025-03-14 14:18:36.709 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b81679b1633aa43c0d973adfa816d78c1ed0d032
+2025-03-14 14:18:36.709 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 47b16d0462a460000b8f05dfb1292377ac48f3ca
+2025-03-14 14:18:36.710 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 8fe9ed44dc29fba0786b7e956d2e87179e407582
+2025-03-14 14:18:36.710 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e06472bab2a5393430cc2fbc3211cd3602422c1e
+2025-03-14 14:18:36.710 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 37b338eed10581784e854d4262da05c8d960c748
+2025-03-14 14:18:36.710 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: ce6d9c1c2b5cc785016faa11b48b6cd317eb367e
+2025-03-14 14:18:36.711 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 5623bc23a1cb9f9a9470fa73b3a20321dc4c4870
+2025-03-14 14:18:36.711 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 19fac3c93991502a22c5132824c40b6a2e64b136
+2025-03-14 14:18:36.711 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b2ef51c74b0171fde7eb69b6152d3d2f743ef269
+2025-03-14 14:18:36.711 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e842f9a1edf306bf36fe2a4d847a0b0d458770de
+2025-03-14 14:18:36.712 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 582ccf78f6090d88b1c7066b1e90b3d9ec952d08
+2025-03-14 14:18:36.712 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 695469c07a65547acb6e229b3fdf6aaa881817e3
+2025-03-14 14:18:36.712 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 1c684d77dfbcf926e0dd28f6d260e8fdd8a58e85
+2025-03-14 14:18:36.712 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 349db086a66051bc6114b64b4446787c20ac3f00
+2025-03-14 14:18:36.713 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 49f27f29446a5bfe633dd2cc0cfebd48a1a5e77f
+2025-03-14 14:18:36.713 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 59b348be7597c4a9903cb003c69e37df20c04a30
+2025-03-14 14:18:36.713 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: d8df010f72b8a32aaea393e36121738bb53ed905
+2025-03-14 14:18:36.714 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: f2176a07e7b19f73e05c805cf3d130a2999154cb
+2025-03-14 14:18:36.714 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 333b8906336174478efbbfc1e24a89e3397ffe65
+2025-03-14 14:18:36.714 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 475d06e00b7496c7915d87f7ae67af26738e4649
+2025-03-14 14:18:36.714 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 84211b1c0db6b9dbe0020fa97192fb9661617f24
+2025-03-14 14:18:36.714 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 54f94dc7f6b4db45dbc23b4db3d20c7194e2c54f
+2025-03-14 14:18:36.715 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 022bfe24aad8937705704ff2e414b100cf0f2e1a
+2025-03-14 14:18:36.715 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e775e2a060d99180edc5366fb9f4299d0f07b66c
+2025-03-14 14:18:36.715 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 1414d95d5805b1dc221d22db9b8dc5287ef083bc
+2025-03-14 14:18:36.715 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 0a98219bcc961edd3388960576e4353e123b4a51
+2025-03-14 14:18:36.716 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e3e2e7fc4cd8414c9a966ef1b344db543f8614f4
+2025-03-14 14:18:36.716 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: ae482ec8cd1a85bde3307f71921a7780086fbec0
+2025-03-14 14:18:36.716 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: f6bdaab79ee4228a143ee1b4cb80416d6ffc0c63
+2025-03-14 14:18:36.716 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 1881148215c67151b146450fb89ec22fd92337a7
+2025-03-14 14:18:36.716 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 8177c6bedb7013cf736137da586cf783922309dd
+2025-03-14 14:18:36.717 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c00b413a96261faef4ce22329153c6abd4acef25
+2025-03-14 14:18:36.717 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: d0d10eaedcb53740883d7e5d53c5e15c879b48fb
+2025-03-14 14:18:36.717 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 0a7565ee6ec31eb16c0476adbfc1af3f2271cb6b
+2025-03-14 14:18:36.717 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: eae116d1f0449ade3269ca47a67432622f5c6438
+2025-03-14 14:18:36.718 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 29ffeb73b216ce3eff10229eb077cf9b7812119d
+2025-03-14 14:18:36.718 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 68c3de7f707e8a70e0a6d8087cf0fe4a3d5dbfb0
+2025-03-14 14:18:36.718 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: a5c4c3ba95a52d66315acdfbaba9bd82ed39c250
+2025-03-14 14:18:36.718 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: df1a1ed5e1bdd9cc13148e0e5549f5ebcf76cf13
+2025-03-14 14:18:36.719 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: da552bda987420e877500fdd90bd0172e3bf412b
+2025-03-14 14:18:36.719 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: fd617ea3b79d2116d53f76cdb5a3601c0ba6e42f
+2025-03-14 14:18:36.719 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 374c9faac5a763a05bc3f68ad9f73dab3c6aec90
+2025-03-14 14:18:36.719 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 5797c04400ee117bfe459ff1e468d0ea38054ab4
+2025-03-14 14:18:36.719 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 35d99c68af40a8ca175babc5a89ef7e2226fb3ca
+2025-03-14 14:18:36.720 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: ca0dedaff92307591f66c9206933fbdfe87add10
+2025-03-14 14:18:36.721 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: f603b159231b0c58f0c27ab39348534063d38223
+2025-03-14 14:18:36.721 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 1ee5aa765c22a0577ec552d460bf2035300b4b51
+2025-03-14 14:18:36.721 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c9ce148ea753bef66686460fa3cec6641cdfbb9f
+2025-03-14 14:18:36.721 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 12f65d1203507f7db3ba59930fe29a3b8eee9945
+2025-03-14 14:18:36.722 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: f02c41f87cfe61440c18bf77d1ef0a884b9ee2b5
+2025-03-14 14:18:36.722 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e26e2d2e15daf1ab33e0135caf2304a0cfa2744b
+2025-03-14 14:18:36.722 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 84d2d1641b71dec326e8736a749b7ee76a9599fc
+2025-03-14 14:18:36.722 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: d6e13e19063db24f94b690159d0633aaf72a0f03
+2025-03-14 14:18:36.723 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e2ff19f0b7a30e03516e6eb73b948e27a55bc9d2
+2025-03-14 14:18:36.723 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 2ff5baa9b5275e3acafdf7f2089f74cccb2f38d1
+2025-03-14 14:18:36.723 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 6bdbb73dc8d99fbb77f5db79dbb6f108708090b4
+2025-03-14 14:18:36.723 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 78d7bc5a02e1468df53896df354fa80727f35b7d
+2025-03-14 14:18:36.723 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 6fb1867d5a44b0a061cf39d2492d23d314bcb8ce
+2025-03-14 14:18:36.724 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c8477bb0a8e7f6b2e47952b403c5cb67a6929e55
+2025-03-14 14:18:36.724 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c9117434c8f7523f0b77db4c5766f5011cc94677
+2025-03-14 14:18:36.724 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: da64a2359092ceec4f9dea5b329d0aef20104217
+2025-03-14 14:18:36.724 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 00371a3f48775967950c2fe3ec97b7c786ca956d
+2025-03-14 14:18:36.725 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: d0453655b6ddc685a4837f3cc0776ae8eef62d01
+2025-03-14 14:18:36.725 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: ac965d7d88fc36fb42e3d50225c0a44dd8326da4
+2025-03-14 14:18:36.725 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 75f1f311d883dfaffb98be3c1da208d6ed5d4df9
+2025-03-14 14:18:36.725 | INFO     | __main__:_scan_commits:337 - 第 2 页处理完成，当前共找到 197 个上游提交
+2025-03-14 14:18:36.726 | INFO     | __main__:_scan_commits:312 - 获取第 3 页提交...
+2025-03-14 14:18:37.652 | DEBUG    | __main__:_scan_commits:314 - 请求URL: https://api.github.com/repos/gregkh/linux/commits?sha=linux-6.12.y&per_page=100&page=3
+2025-03-14 14:18:37.659 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b7ed2b6f4e8d7f64649795e76ee9db67300de8eb
+2025-03-14 14:18:37.659 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: d072acda4862f095ec9056979b654cc06a22cc68
+2025-03-14 14:18:37.660 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 2fd6f55c048d0c863ffbc8590b1bd2edb5ff13e5
+2025-03-14 14:18:37.661 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 75c1fd41a671a0843b89d1526411a837a7163fa2
+2025-03-14 14:18:37.661 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b2c261fa8629dff2bd1143fa790797a773ace102
+2025-03-14 14:18:37.662 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 06b919e3fedf4798a1f0f60e0b67caa192f724a7
+2025-03-14 14:18:37.662 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 27aef8a52e4b7f120ce47cd638d9d83065b759d2
+2025-03-14 14:18:37.663 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 5bb698e6fc514ddd9e23b6649b29a0934d8d8586
+2025-03-14 14:18:37.663 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: da13129a3f2a75d49469e1d6f7dcefac2d11d205
+2025-03-14 14:18:37.663 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: ae75c40117b53ae3d91dfc9d0bf06984a079f044
+2025-03-14 14:18:37.664 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 7b6de57e0b2d1e62becfa3aac063c4c58d2c2c42
+2025-03-14 14:18:37.665 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c408dd81678bb0a957eae96962c913c242e069f7
+2025-03-14 14:18:37.665 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 6ce162a002657910104c7a07fb50017681bc476c
+2025-03-14 14:18:37.666 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 392e34b6bc22077ef63abf62387ea3e9f39418c1
+2025-03-14 14:18:37.666 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 8ae740c3917ff92108df17236b3cf1b9a74bd359
+2025-03-14 14:18:37.666 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: eb6f92cd3f755c179204ea1f933b07cf992892fd
+2025-03-14 14:18:37.667 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: dd09538fb4093176a818fcecd45114430cc5840f
+2025-03-14 14:18:37.667 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 909037ce0369bc3f4fd31743fd2d8d7096f06002
+2025-03-14 14:18:37.667 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 4a28ab469ff01855eb819dfd94754d1792f03f2a
+2025-03-14 14:18:37.668 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 29a48d25ff53c183482dc88a99133a0fb5aa541a
+2025-03-14 14:18:37.668 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 3145dc91c3c0ad945f06354385a6eb89d22becdb
+2025-03-14 14:18:37.668 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 405966efc789888c3e1a53cd09d2c2b338064438
+2025-03-14 14:18:37.669 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 58eff8e872bd04ccb3adcf99aec7334ffad06cfd
+2025-03-14 14:18:37.669 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 93e602310f87b7b515b86a8f919cc0799387e5c3
+2025-03-14 14:18:37.669 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 1d1d223aa3b37c34271aefc2706340d0843bfcb2
+2025-03-14 14:18:37.670 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 2aac4cd7dae3d7bb0e0ddec2561b2ee4cbe6c8f6
+2025-03-14 14:18:37.670 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 9e7bbfa182767f638ba61dba3518ff78da9f31ff
+2025-03-14 14:18:37.670 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e1044c2238f54ae5bd902cac6d12e48835df418b
+2025-03-14 14:18:37.671 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e8c6ccdbcaaf31f26c0fffd4073edd0b0147cdc6
+2025-03-14 14:18:37.671 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 8373147ce4961665c5700016b1c76299e962d077
+2025-03-14 14:18:37.671 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c8cfa8d0c0b10be216861fe904ea68978b1dcc97
+2025-03-14 14:18:37.671 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 01b2196e5aac8af9343282d0044fa0d6b07d484c
+2025-03-14 14:18:37.672 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 8362c2608ba1be635ffa22a256dfcfe51c6238cc
+2025-03-14 14:18:37.672 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 61c004781d6b928443052e7a6cf84b35d4f61401
+2025-03-14 14:18:37.672 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 5a888c28e3b4ff6f54a53fca33951537d135e7f1
+2025-03-14 14:18:37.673 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: a34822d1c4c93085f635b922441a017bd7e959b0
+2025-03-14 14:18:37.673 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: a87a36f0bf517dae22f3e3790b05c979070f776a
+2025-03-14 14:18:37.673 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 8a799831fc63c988eec90d334fdd68ff5f2c7eb5
+2025-03-14 14:18:37.674 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 941e65531446c1eb5d573c5d30172117ebe96112
+2025-03-14 14:18:37.674 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: a654a6e09644266e38ac05415ef7737d299c4497
+2025-03-14 14:18:37.674 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b7a084ba4fbb8f416ce8d19c93a3a2bee63c9c89
+2025-03-14 14:18:37.674 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: e9759c5b9ea555d09f426c70c880e9522e9b0576
+2025-03-14 14:18:37.675 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 5ed147473458f8c20f908a03227d8f5bb3cb8f7d
+2025-03-14 14:18:37.675 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 04866494e936d041fd196d3a36aecd979e4ef078
+2025-03-14 14:18:37.675 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 1f9ed172545687e5c04c77490a45896be6d2e459
+2025-03-14 14:18:37.675 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 139d396572ec4ba6e8cc5c02f5c8d5d1139be4b7
+2025-03-14 14:18:37.675 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 624063b9ac97f40cadca32a896aafeb28b1220fd
+2025-03-14 14:18:37.676 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 2f390cc589433dfcfedc307a141e103929a6fd4d
+2025-03-14 14:18:37.676 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 8577c9dca799bd74377f7c30015d8cdc53a53ca2
+2025-03-14 14:18:37.676 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 7d56786edcbdf58b6367fd7f01d5861214ad1c95
+2025-03-14 14:18:37.677 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 5e7c9b84ad08cc7a41b2ddbbbaccb60057da3860
+2025-03-14 14:18:37.677 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: d5cc7ab0a0a99496de1bd933dac242699a417809
+2025-03-14 14:18:37.677 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: bef83245f5ed434932aaf07f890142b576dc5d85
+2025-03-14 14:18:37.678 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 3fcc23397628c2357dbe66df59644e09f72ac725
+2025-03-14 14:18:37.678 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 23f42dc054b3c550373eae0c9ae97f1ce1501e0a
+2025-03-14 14:18:37.678 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c28bfe76e4ba707775a205b0274710de7aa1e31c
+2025-03-14 14:18:37.679 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: db4f72c904cb116e2bf56afdd67fc5167a607a7b
+2025-03-14 14:18:37.679 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 567cdff53e71de56ae67eaf4309db38778b7bcd3
+2025-03-14 14:18:37.679 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: a135aa3d30d28f26eb28a0ff5d48b387b0e0755f
+2025-03-14 14:18:37.680 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 024f9676a6d236132119832a90fb9a1a9115b41a
+2025-03-14 14:18:37.680 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 624bde3465f660e54a7cd4c1efc3e536349fead5
+2025-03-14 14:18:37.680 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 058a6bec37c6c3b826158f6d26b75de43816a880
+2025-03-14 14:18:37.680 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: efa11fd269c139e29b71ec21bc9c9c0063fde40d
+2025-03-14 14:18:37.681 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 9df23801c83d3e12b4c09be39d37d2be385e52f9
+2025-03-14 14:18:37.681 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 65c49767dd4fc058673f9259fda1772fd398eaa7
+2025-03-14 14:18:37.681 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 4e667a1968099c6deadee2313ecd648f8f0a8956
+2025-03-14 14:18:37.681 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 1b35c124f961b355dafb1906c591191bd0b37417
+2025-03-14 14:18:37.681 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 879f70382ff3e92fc854589ada3453e3f5f5b601
+2025-03-14 14:18:37.682 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 7c05c58c15d49b75eefaa24154cce771f1db955b
+2025-03-14 14:18:37.682 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 0c5928deada15a8d075516e6e0d9ee19011bb000
+2025-03-14 14:18:37.682 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 14cb5d83068ecf15d2da6f7d0e9ea9edbcbc0457
+2025-03-14 14:18:37.682 | INFO     | __main__:_extract_upstream_commit:357 - 未提取到上游提交: Linux 6.12.18
+
+Link: https://lore.kernel.org/r/20250305174503.801402104@linuxfoundation.org
+Tested-by: Salvatore Bonaccorso <carnil@debian.org>
+Tested-by: SeongJae Park <sj@kernel.org>
+Tested-by: Peter Schneider <pschneider1968@googlemail.com>
+Tested-by: Ron Economos <re@w6rz.net>
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+Tested-by: Hardik Garg <hargar@linux.microsoft.com>
+Link: https://lore.kernel.org/r/20250306151415.047855127@linuxfoundation.org
+Tested-by: Mark Brown <broonie@kernel.org>
+Tested-by: Florian Fainelli <florian.fainelli@broadcom.com>
+Tested-by: Peter Schneider <pschneider1968@googlemail.com>
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Tested-by: Markus Reichelt <lkt+2023@mareichelt.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+2025-03-14 14:18:37.683 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: ac1f43c03fc91eee53cc95683245350d4d87781e
+2025-03-14 14:18:37.683 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 50cef76d5cb0e199cda19f026842560f6eedc4f7
+2025-03-14 14:18:37.683 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 037e81fb9d2dfe7b31fd97e5f578854e38f09887
+2025-03-14 14:18:37.683 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b39c387164879eef71886fc93cee5ca7dd7bf500
+2025-03-14 14:18:37.683 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: dc15675074dcfd79a2f10a6e39f96b0244961a01
+2025-03-14 14:18:37.684 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 3ef0740d10b005a45e8ae5b4b7b5d37bfddf63c0
+2025-03-14 14:18:37.684 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 7103f0589ac220eac3d2b1e8411494b31b883d06
+2025-03-14 14:18:37.684 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 78e0aadbd4c6807a06a9d25bc190fe515d3f3c42
+2025-03-14 14:18:37.684 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: a85c08aaa665b5436d325f6d7138732a0e1315ce
+2025-03-14 14:18:37.684 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 91dcc66b34beb72dde8412421bdc1b4cd40e4fb8
+2025-03-14 14:18:37.685 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 2b90e7ace79774a3540ce569e000388f8d22c9e0
+2025-03-14 14:18:37.685 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: c6ec1e1b078d8e2ecd075e46db6197a14930a3fc
+2025-03-14 14:18:37.685 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 564fc8eb6f78e01292ff10801f318feae6153fdd
+2025-03-14 14:18:37.685 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: fb8179ce2996bffaa36a04e2b6262843b01b7565
+2025-03-14 14:18:37.686 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: aa49bc2ca8524186ceb0811c23a7f00c3dea6987
+2025-03-14 14:18:37.686 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 599c44cd21f4967774e0acf58f734009be4aea9a
+2025-03-14 14:18:37.686 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 713e788c0e07e185fd44dd581f74855ef149722f
+2025-03-14 14:18:37.686 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: f27a95845b01e86d67c8b014b4f41bd3327daa63
+2025-03-14 14:18:37.686 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 57a0ef02fefafc4b9603e33a18b669ba5ce59ba3
+2025-03-14 14:18:37.687 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 36e1b81f599a093ec7477e4593e110104adcfb96
+2025-03-14 14:18:37.687 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 7fb39882b20c98a9a393c244c86b56ef6933cff8
+2025-03-14 14:18:37.687 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: f5534d511bcd273720f168386de74af76e148a9b
+2025-03-14 14:18:37.687 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 8fef0a3b17bb258130a4fcbcb5addf94b25e9ec5
+2025-03-14 14:18:37.687 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 82c387ef7568c0d96a918a5a78d9cad6256cfa15
+2025-03-14 14:18:37.688 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: b9a49520679e98700d3d89689cc91c08a1c88c1d
+2025-03-14 14:18:37.688 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 68f3ea7ee199ef77551e090dfef5a49046ea8443
+2025-03-14 14:18:37.688 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 3d4033985ff508ef587ca11f1c8361ba57c7e09f
+2025-03-14 14:18:37.688 | INFO     | __main__:_extract_upstream_commit:354 - 提取上游提交: 8668860b0ad32a13fcd6c94a0995b7aa7638c9ef
+2025-03-14 14:18:37.689 | INFO     | __main__:_scan_commits:337 - 第 3 页处理完成，当前共找到 296 个上游提交
+2025-03-14 14:18:37.690 | INFO     | __main__:_get_commits_list:269 - 保存commits信息到缓存文件
+2025-03-14 14:18:37.696 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-03-14 14:18:37.696 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: direct_apply
+2025-03-14 14:18:37.697 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: chunk_analyzer
+2025-03-14 14:18:37.697 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: llm_adapter
+2025-03-14 14:18:37.697 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: patch_adapter
+2025-03-14 14:18:37.698 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: compiler
+2025-03-14 14:18:37.698 | INFO     | __main__:_process_mode2:197 - 处理提交 66/10: 0e7633
+2025-03-14 14:18:37.698 | INFO     | core.adaptation_pipeline:process_patch:68 - 开始处理补丁: 0e7633d7b95b67f1758aea19f8e85621c5f506a3
+2025-03-14 14:18:37.698 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: direct_apply
+2025-03-14 14:18:37.702 | INFO     | modules.direct_apply:_download_patch:217 - 下游补丁文件不存在，下载补丁: workspace/gregkh/linux/0e7633/patches/downstream_a3bf99.patch
+2025-03-14 14:18:37.703 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', 'a3bf9969e2089a47612a6edf975b6be9c49f5f0e.patch']
+2025-03-14 14:18:37.703 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/a3bf9969e2089a47612a6edf975b6be9c49f5f0e

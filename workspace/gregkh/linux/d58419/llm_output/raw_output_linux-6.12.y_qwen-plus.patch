@@ -1,14 +1,3 @@
-A. Commit message:
-Ensure consistent barrier state saved in gfx12 trap handler
-
-B. Change summary:
-This patch ensures that all waves in a workgroup wait for each other at the end of their save sequence before exiting the trap handler, thus maintaining a consistent barrier state. This prevents invalid barrier states from being restored due to premature wave exits.
-
-C. Compatibility Risk:
-High
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler.h b/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler.h
 index 984f0e7050788..651660958e5b1 100644
 --- a/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler.h
@@ -43,9 +32,3 @@ index 0000000000000..7b9d36e5fa437
 +
 +// Additional instructions for ensuring barrier consistency across waves
 +// Ensure that these changes are compatible with existing code structure
-```
-
-**Explanation:**
-- The `cwsr_trap_handler.h` file has been updated to ensure that the correct values are used for maintaining the barrier state.
-- A new assembly file `cwsr_trap_handler_gfx12.asm` has been introduced to handle the synchronization between waves using `s_barrier_signal` and `s_barrier_wait`. This ensures that all waves in a workgroup wait for each other before exiting the trap handler.
-- Given that the assembly file did not exist in the older version, this introduces a significant change, hence the compatibility risk is marked as High. Developers will need to review and integrate this new file carefully to ensure it works correctly within the existing system.

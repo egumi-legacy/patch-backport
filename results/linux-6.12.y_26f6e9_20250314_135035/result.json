@@ -1,0 +1,63 @@
+{
+  "commit": {
+    "sha": "26f6e91fa29a58fdc76b47f94f8f6027944a490c",
+    "patch_url": "https://github.com/gregkh/linux/commit/26f6e91fa29a58fdc76b47f94f8f6027944a490c.patch",
+    "downstream_sha": "d91a36b2703c2ea68a559af6770231ea6a7c2c99",
+    "downstream_message": "arm64: dts: mediatek: mt8183: Disable DSI display output by default\n\n[ Upstream commit 26f6e91fa29a58fdc76b47f94f8f6027944a490c ]\n\nMost SoC dtsi files have the display output interfaces disabled by\ndefault, and only enabled on boards that utilize them. The MT8183\nhas it backwards: the display outputs are left enabled by default,\nand only disabled at the board level.\n\nReverse the situation for the DSI output so that it follows the\nnormal scheme. For ease of backporting the DPI output is handled\nin a separate patch.\n\nFixes: 88ec840270e6 (\"arm64: dts: mt8183: Add dsi node\")\nFixes: 19b6403f1e2a (\"arm64: dts: mt8183: add mt8183 pumpkin board\")\nCc: stable@vger.kernel.org\nSigned-off-by: Chen-Yu Tsai <wenst@chromium.org>\nReviewed-by: Fei Shao <fshao@chromium.org>\nLink: https://lore.kernel.org/r/20241025075630.3917458-2-wenst@chromium.org\nSigned-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts:522\nerror: arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/26f6e9/patches/upstream_26f6e9.patch",
+      "timestamp": "2025-03-14T13:50:25.735412"
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts b/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts\nindex 61a6f66914b86..dbdee604edab4 100644\n--- a/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts\n+++ b/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts\n@@ -522,10 +522,6 @@\n \tstatus = \"okay\";\n };\n \n-&dsi0 {\n-\tstatus = \"disabled\";\n-};\n-\n &dpi0 {\n \tpinctrl-names = \"default\", \"sleep\";\n \tpinctrl-0 = <&dpi_func_pins>;\ndiff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi\nindex 8f31fc9050ec2..c7008bb8a81da 100644\n--- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi\n+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi\n@@ -1834,6 +1834,7 @@\n \t\t\tresets = <&mmsys MT8183_MMSYS_SW0_RST_B_DISP_DSI0>;\n \t\t\tphys = <&mipi_tx0>;\n \t\t\tphy-names = \"dphy\";\n+\t\t\tstatus = \"disabled\";\n \t\t};\n \n \t\tdpi0: dpi@14015000 {",
+      "prompt": {
+        "patch_content": "From 26f6e91fa29a58fdc76b47f94f8f6027944a490c Mon Sep 17 00:00:00 2001\nFrom: Chen-Yu Tsai <wenst@chromium.org>\nDate: Fri, 25 Oct 2024 15:56:28 +0800\nSubject: [PATCH] arm64: dts: mediatek: mt8183: Disable DSI display output by\n default\n\nMost SoC dtsi files have the display output interfaces disabled by\ndefault, and only enabled on boards that utilize them. The MT8183\nhas it backwards: the display outputs are left enabled by default,\nand only disabled at the board level.\n\nReverse the situation for the DSI output so that it follows the\nnormal scheme. For ease of backporting the DPI output is handled\nin a separate patch.\n\nFixes: 88ec840270e6 (\"arm64: dts: mt8183: Add dsi node\")\nFixes: 19b6403f1e2a (\"arm64: dts: mt8183: add mt8183 pumpkin board\")\nCc: stable@vger.kernel.org\nSigned-off-by: Chen-Yu Tsai <wenst@chromium.org>\nReviewed-by: Fei Shao <fshao@chromium.org>\nLink: https://lore.kernel.org/r/20241025075630.3917458-2-wenst@chromium.org\nSigned-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>\n---\n arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts | 4 ----\n arch/arm64/boot/dts/mediatek/mt8183.dtsi        | 1 +\n 2 files changed, 1 insertion(+), 4 deletions(-)\n\ndiff --git a/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts b/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts\nindex 61a6f66914b86..dbdee604edab4 100644\n--- a/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts\n+++ b/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts\n@@ -522,10 +522,6 @@\n \tstatus = \"okay\";\n };\n \n-&dsi0 {\n-\tstatus = \"disabled\";\n-};\n-\n &dpi0 {\n \tpinctrl-names = \"default\", \"sleep\";\n \tpinctrl-0 = <&dpi_func_pins>;\ndiff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi\nindex 8f31fc9050ec2..c7008bb8a81da 100644\n--- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi\n+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi\n@@ -1834,6 +1834,7 @@\n \t\t\tresets = <&mmsys MT8183_MMSYS_SW0_RST_B_DISP_DSI0>;\n \t\t\tphys = <&mipi_tx0>;\n \t\t\tphy-names = \"dphy\";\n+\t\t\tstatus = \"disabled\";\n \t\t};\n \n \t\tdpi0: dpi@14015000 {\n",
+        "target_version": "linux-6.12.y",
+        "context_diff": "modified file: arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts\n--- workspace/gregkh/linux/26f6e9/newer/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts\n+++ workspace/gregkh/linux/26f6e9/linux-6.12.y/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts\n@@ -63,18 +63,6 @@\n  \t\tpulldown-ohm = <0>;\n  \t\tio-channels = <&auxadc 0>;\n  \t};\n -\n -\tconnector {\n -\t\tcompatible = \"hdmi-connector\";\n -\t\tlabel = \"hdmi\";\n -\t\ttype = \"d\";\n -\n -\t\tport {\n -\t\t\thdmi_connector_in: endpoint {\n -\t\t\t\tremote-endpoint = <&hdmi_connector_out>;\n -\t\t\t};\n -\t\t};\n -\t};\n  };\n  \n  &auxadc {\n@@ -132,43 +120,6 @@\n  \tpinctrl-0 = <&i2c6_pins>;\n  \tstatus = \"okay\";\n  \tclock-frequency = <100000>;\n -\t#address-cells = <1>;\n -\t#size-cells = <0>;\n -\n -\tit66121hdmitx: hdmitx@4c {\n -\t\tcompatible = \"ite,it66121\";\n -\t\treg = <0x4c>;\n -\t\tpinctrl-names = \"default\";\n -\t\tpinctrl-0 = <&ite_pins>;\n -\t\treset-gpios = <&pio 160 GPIO_ACTIVE_LOW>;\n -\t\tinterrupt-parent = <&pio>;\n -\t\tinterrupts = <4 IRQ_TYPE_LEVEL_LOW>;\n -\t\tvcn33-supply = <&mt6358_vcn33_reg>;\n -\t\tvcn18-supply = <&mt6358_vcn18_reg>;\n -\t\tvrf12-supply = <&mt6358_vrf12_reg>;\n -\n -\t\tports {\n -\t\t\t#address-cells = <1>;\n -\t\t\t#size-cells = <0>;\n -\n -\t\t\tport@0 {\n -\t\t\t\treg = <0>;\n -\n -\t\t\t\tit66121_in: endpoint {\n -\t\t\t\t\tbus-width = <12>;\n -\t\t\t\t\tremote-endpoint = <&dpi_out>;\n -\t\t\t\t};\n -\t\t\t};\n -\n -\t\t\tport@1 {\n -\t\t\t\treg = <1>;\n -\n -\t\t\t\thdmi_connector_out: endpoint {\n -\t\t\t\t\tremote-endpoint = <&hdmi_connector_in>;\n -\t\t\t\t};\n -\t\t\t};\n -\t\t};\n -\t};\n  };\n  \n  &keyboard {\n@@ -411,67 +362,6 @@\n  \t\t\tinput-enable;\n  \t\t};\n  \t};\n -\n -\tite_pins: ite-pins {\n -\t\tpins-irq {\n -\t\t\tpinmux = <PINMUX_GPIO4__FUNC_GPIO4>;\n -\t\t\tinput-enable;\n -\t\t\tbias-pull-up;\n -\t\t};\n -\n -\t\tpins-rst {\n -\t\t\tpinmux = <PINMUX_GPIO160__FUNC_GPIO160>;\n -\t\t\toutput-high;\n -\t\t};\n -\t};\n -\n -\tdpi_func_pins: dpi-func-pins {\n -\t\tpins-dpi {\n -\t\t\tpinmux = <PINMUX_GPIO12__FUNC_I2S5_BCK>,\n -\t\t\t\t <PINMUX_GPIO46__FUNC_I2S5_LRCK>,\n -\t\t\t\t <PINMUX_GPIO47__FUNC_I2S5_DO>,\n -\t\t\t\t <PINMUX_GPIO13__FUNC_DBPI_D0>,\n -\t\t\t\t <PINMUX_GPIO14__FUNC_DBPI_D1>,\n -\t\t\t\t <PINMUX_GPIO15__FUNC_DBPI_D2>,\n -\t\t\t\t <PINMUX_GPIO16__FUNC_DBPI_D3>,\n -\t\t\t\t <PINMUX_GPIO17__FUNC_DBPI_D4>,\n -\t\t\t\t <PINMUX_GPIO18__FUNC_DBPI_D5>,\n -\t\t\t\t <PINMUX_GPIO19__FUNC_DBPI_D6>,\n -\t\t\t\t <PINMUX_GPIO20__FUNC_DBPI_D7>,\n -\t\t\t\t <PINMUX_GPIO21__FUNC_DBPI_D8>,\n -\t\t\t\t <PINMUX_GPIO22__FUNC_DBPI_D9>,\n -\t\t\t\t <PINMUX_GPIO23__FUNC_DBPI_D10>,\n -\t\t\t\t <PINMUX_GPIO24__FUNC_DBPI_D11>,\n -\t\t\t\t <PINMUX_GPIO25__FUNC_DBPI_HSYNC>,\n -\t\t\t\t <PINMUX_GPIO26__FUNC_DBPI_VSYNC>,\n -\t\t\t\t <PINMUX_GPIO27__FUNC_DBPI_DE>,\n -\t\t\t\t <PINMUX_GPIO28__FUNC_DBPI_CK>;\n -\t\t};\n -\t};\n -\n -\tdpi_idle_pins: dpi-idle-pins {\n -\t\tpins-idle {\n -\t\t\tpinmux = <PINMUX_GPIO12__FUNC_GPIO12>,\n -\t\t\t\t <PINMUX_GPIO46__FUNC_GPIO46>,\n -\t\t\t\t <PINMUX_GPIO47__FUNC_GPIO47>,\n -\t\t\t\t <PINMUX_GPIO13__FUNC_GPIO13>,\n -\t\t\t\t <PINMUX_GPIO14__FUNC_GPIO14>,\n -\t\t\t\t <PINMUX_GPIO15__FUNC_GPIO15>,\n -\t\t\t\t <PINMUX_GPIO16__FUNC_GPIO16>,\n -\t\t\t\t <PINMUX_GPIO17__FUNC_GPIO17>,\n -\t\t\t\t <PINMUX_GPIO18__FUNC_GPIO18>,\n -\t\t\t\t <PINMUX_GPIO19__FUNC_GPIO19>,\n -\t\t\t\t <PINMUX_GPIO20__FUNC_GPIO20>,\n -\t\t\t\t <PINMUX_GPIO21__FUNC_GPIO21>,\n -\t\t\t\t <PINMUX_GPIO22__FUNC_GPIO22>,\n -\t\t\t\t <PINMUX_GPIO23__FUNC_GPIO23>,\n -\t\t\t\t <PINMUX_GPIO24__FUNC_GPIO24>,\n -\t\t\t\t <PINMUX_GPIO25__FUNC_GPIO25>,\n -\t\t\t\t <PINMUX_GPIO26__FUNC_GPIO26>,\n -\t\t\t\t <PINMUX_GPIO27__FUNC_GPIO27>,\n -\t\t\t\t <PINMUX_GPIO28__FUNC_GPIO28>;\n -\t\t};\n -\t};\n  };\n  \n  &pmic {\n@@ -525,16 +415,3 @@\n  &dsi0 {\n  \tstatus = \"disabled\";\n  };\n -\n -&dpi0 {\n -\tpinctrl-names = \"default\", \"sleep\";\n -\tpinctrl-0 = <&dpi_func_pins>;\n -\tpinctrl-1 = <&dpi_idle_pins>;\n -\tstatus = \"okay\";\n -\n -\tport {\n -\t\tdpi_out: endpoint {\n -\t\t\tremote-endpoint = <&it66121_in>;\n -\t\t};\n -\t};\n -};\n\n\"\"\"\"\"\"\nmodified file: arch/arm64/boot/dts/mediatek/mt8183.dtsi\n--- workspace/gregkh/linux/26f6e9/newer/arch/arm64/boot/dts/mediatek/mt8183.dtsi\n+++ workspace/gregkh/linux/26f6e9/linux-6.12.y/arch/arm64/boot/dts/mediatek/mt8183.dtsi\n@@ -1845,7 +1845,6 @@\n  \t\t\t\t <&mmsys CLK_MM_DPI_MM>,\n  \t\t\t\t <&apmixedsys CLK_APMIXED_TVDPLL>;\n  \t\t\tclock-names = \"pixel\", \"engine\", \"pll\";\n -\t\t\tstatus = \"disabled\";\n  \n  \t\t\tport {\n  \t\t\t\tdpi_out: endpoint { };\n@@ -1979,23 +1978,6 @@\n  \t\t\tpower-domains = <&spm MT8183_POWER_DOMAIN_VENC>;\n  \t\t};\n  \n -\t\tvcodec_enc: vcodec@17020000 {\n -\t\t\tcompatible = \"mediatek,mt8183-vcodec-enc\";\n -\t\t\treg = <0 0x17020000 0 0x1000>;\n -\t\t\tinterrupts = <GIC_SPI 247 IRQ_TYPE_LEVEL_LOW>;\n -\t\t\tiommus = <&iommu M4U_PORT_VENC_REC>,\n -\t\t\t\t <&iommu M4U_PORT_VENC_BSDMA>,\n -\t\t\t\t <&iommu M4U_PORT_VENC_RD_COMV>,\n -\t\t\t\t <&iommu M4U_PORT_VENC_CUR_LUMA>,\n -\t\t\t\t <&iommu M4U_PORT_VENC_CUR_CHROMA>,\n -\t\t\t\t <&iommu M4U_PORT_VENC_REF_LUMA>,\n -\t\t\t\t <&iommu M4U_PORT_VENC_REF_CHROMA>;\n -\t\t\tmediatek,scp = <&scp>;\n -\t\t\tpower-domains = <&spm MT8183_POWER_DOMAIN_VENC>;\n -\t\t\tclocks = <&vencsys CLK_VENC_VENC>;\n -\t\t\tclock-names = \"venc_sel\";\n -\t\t};\n -\n  \t\tvenc_jpg: jpeg-encoder@17030000 {\n  \t\t\tcompatible = \"mediatek,mt8183-jpgenc\", \"mediatek,mtk-jpgenc\";\n  \t\t\treg = <0 0x17030000 0 0x1000>;\n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/gregkh/linux/26f6e9/llm_output/output_linux-6.12.y_qwen-plus.patch",
+      "apply_result": {
+        "success": false,
+        "error": "Patch format detection failed.\n",
+        "error_type": "other",
+        "output": null
+      },
+      "timestamp": "2025-03-14T13:50:29.024072",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": true,
+      "adapted_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/26f6e9/patches/adapted_linux-6.12.y.patch",
+      "apply_result": {
+        "success": true,
+        "error": null,
+        "error_type": null,
+        "output": "Applying: Applied adapted patch for linux-6.12.y\n"
+      }
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "compiler",
+    "timestamp": "2025-03-14T13:50:35.658889"
+  }
+}

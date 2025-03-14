@@ -1,0 +1,36 @@
+{
+  "commit": {
+    "sha": "55eff109e76a14e5ed10c8c3c3978d20a35e2a4d",
+    "patch_url": "https://github.com/gregkh/linux/commit/55eff109e76a14e5ed10c8c3c3978d20a35e2a4d.patch",
+    "downstream_sha": "4381a4fab3a59f7dc85b06584cb69c751efcd372",
+    "downstream_message": "vsock/virtio: fix variables initialization during resuming\n\n[ Upstream commit 55eff109e76a14e5ed10c8c3c3978d20a35e2a4d ]\n\nWhen executing suspend to ram twice in a row,\nthe `rx_buf_nr` and `rx_buf_max_nr` increase to three times vq->num_free.\nThen after virtqueue_get_buf and `rx_buf_nr` decreased\nin function virtio_transport_rx_work,\nthe condition to fill rx buffer\n(rx_buf_nr < rx_buf_max_nr / 2) will never be met.\n\nIt is because that `rx_buf_nr` and `rx_buf_max_nr`\nare initialized only in virtio_vsock_probe(),\nbut they should be reset whenever virtqueues are recreated,\nlike after a suspend/resume.\n\nMove the `rx_buf_nr` and `rx_buf_max_nr` initialization in\nvirtio_vsock_vqs_init(), so we are sure that they are properly\ninitialized, every time we initialize the virtqueues, either when we\nload the driver or after a suspend/resume.\n\nTo prevent erroneous atomic load operations on the `queued_replies`\nin the virtio_transport_send_pkt_work() function\nwhich may disrupt the scheduling of vsock->rx_work\nwhen transmitting reply-required socket packets,\nthis atomic variable must undergo synchronized initialization\nalongside the preceding two variables after a suspend/resume.\n\nFixes: bd50c5dc182b (\"vsock/virtio: add support for device suspend/resume\")\nLink: https://lore.kernel.org/virtualization/20250207052033.2222629-1-junnan01.wu@samsung.com/\nCo-developed-by: Ying Gao <ying01.gao@samsung.com>\nSigned-off-by: Ying Gao <ying01.gao@samsung.com>\nSigned-off-by: Junnan Wu <junnan01.wu@samsung.com>\nReviewed-by: Luigi Leonardi <leonardi@redhat.com>\nAcked-by: Michael S. Tsirkin <mst@redhat.com>\nReviewed-by: Stefano Garzarella <sgarzare@redhat.com>\nLink: https://patch.msgid.link/20250214012200.1883896-1-junnan01.wu@samsung.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/55eff1/patches/upstream_55eff1.patch",
+      "timestamp": "2025-03-14T13:48:09.260471"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-14T13:48:09.541479"
+  }
+}

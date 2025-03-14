@@ -228,6 +228,7 @@ class ModuleContext(BaseModel):
     llm_output: Optional[Dict[str, Any]] = None
     # adapted_patches: List[Dict[str, Any]] = Field(default_factory=list)
     compilation_result: List[Dict[str, Any]] = Field(default_factory=list)
+    compiler_branch: Optional[str] = None
     patch_adapter_result: List[Dict[str, Any]] = Field(default_factory=list)
     chunk_analyzer_result: List[Dict[str, Any]] = Field(default_factory=list)
 

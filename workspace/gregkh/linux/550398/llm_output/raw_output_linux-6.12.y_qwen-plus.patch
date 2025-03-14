@@ -1,14 +1,3 @@
-A. Commit message:
-Backport xe/oa: Fix query mode of operation for OAR/OAC to 6.12.y
-
-B. Change summary:
-This patch backports the changes from the newer version to fix the query mode of operation for OAR/OAC in the 6.12.y kernel branch. The changes include enabling submission of batches mapped in GGTT, using MI_LOAD_REGISTER_IMMEDIATE for configuration, and removing unnecessary code paths.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/gpu/drm/xe/xe_oa.c b/drivers/gpu/drm/xe/xe_oa.c
 index ae94490b0eac8..9add60097ab50 100644
 --- a/drivers/gpu/drm/xe/xe_oa.c

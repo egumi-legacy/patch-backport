@@ -1,14 +1,3 @@
-A. Commit message:
-btrfs: mark all dirty sectors as locked inside writepage_delalloc()
-
-B. Change summary:
-The patch ensures that all dirty sectors are marked as locked during the writepage_delalloc() operation, addressing a potential issue where some sectors might not be properly locked. This change prepares for future sector-perfect compression support and prevents double folio unlock scenarios.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
 index 40297345b89d8..89a7e85f2b387 100644
 --- a/fs/btrfs/extent_io.c
@@ -90,4 +79,3 @@ index 40297345b89d8..89a7e85f2b387 100644
  			if (wbc->sync_mode != WB_SYNC_NONE ||
  			    btrfs_is_subpage(inode_to_fs_info(inode), mapping)) {
  				if (folio_test_writeback(folio))
-```

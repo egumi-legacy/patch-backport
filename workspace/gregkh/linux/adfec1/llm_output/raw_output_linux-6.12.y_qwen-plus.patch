@@ -1,14 +1,3 @@
-A. Commit message:
-KVM: x86: Inline kvm_get_apic_mode() in lapic.h for older version
-
-B. Change summary:
-Inline the `kvm_get_apic_mode()` function in `lapic.h` to avoid a CALL+RET and remove the export. The underlying `kvm_apic_mode()` helper is public information, so there is no need to hide any state or information from vendor modules.
-
-C. Compatibility Risk:
-Low
-
-D. Fixed Code:
-```diff
 diff --git a/arch/x86/kvm/lapic.h b/arch/x86/kvm/lapic.h
 index 441abc4f4afd9..fc4bd36d44cfc 100644
 --- a/arch/x86/kvm/lapic.h
@@ -50,4 +39,3 @@ index f4edb29c69abd..6d4fd165081a5 100644
  int kvm_set_apic_base(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  {
  	enum lapic_mode old_mode = kvm_get_apic_mode(vcpu);
-```

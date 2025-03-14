@@ -1,14 +1,3 @@
-A. Commit message:
-btrfs: backport unification of writer locks for subpage locking
-
-B. Change summary:
-This patch backports the changes from a newer version to unify the use of writer locks for subpage locking in btrfs. It converts relevant functions to use `btrfs_folio_set_writer_lock` and `btrfs_folio_end_writer_lock`, removes unnecessary reader lock handling, and adds new helper functions like `btrfs_subpage_start_writer` and `btrfs_subpage_find_writer_locked`.
-
-C. Compatibility Risk:
-Medium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.
-
-D. Fixed Code:
-```diff
 diff --git a/fs/btrfs/compression.c b/fs/btrfs/compression.c
 index abcf8ed06afc0..e51d55bd1a29b 100644
 --- a/fs/btrfs/compression.c
@@ -219,4 +208,3 @@ index e4076c5b06bc9..c150aba9318ed 100644
 +
 +void btrfs_subpage_start_writer(const struct btrfs_fs_info *fs_info,
 +				struct folio *folio, u64 start, u32 len);
-```

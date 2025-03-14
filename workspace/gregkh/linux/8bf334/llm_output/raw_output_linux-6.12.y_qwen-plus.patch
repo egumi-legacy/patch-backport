@@ -1,14 +1,3 @@
-A. Commit message:
-btrfs: backport fix for double accounting race when extent_writepage_io() failed
-
-B. Change summary:
-Backported the fix to avoid double ordered extent accounting errors in extent_writepage_io(). The changes ensure that only sectors that failed submission are cleaned up, preventing double accounting issues. Adjusted error handling and sector cleanup logic to be more precise.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
 index bc2bd103c8cc0..5014134b9aa2c 100644
 --- a/fs/btrfs/extent_io.c
@@ -96,4 +85,3 @@ index bc2bd103c8cc0..5014134b9aa2c 100644
  		btrfs_folio_end_lock(fs_info, folio, cur, cur_len);
  		if (ret < 0)
  			found_error = true;
-```

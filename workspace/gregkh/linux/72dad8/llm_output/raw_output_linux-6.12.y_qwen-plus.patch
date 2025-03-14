@@ -1,14 +1,3 @@
-A. Commit message:
-btrfs: Fix double accounting race when btrfs_run_delalloc_range() failed for older kernel versions
-
-B. Change summary:
-This patch backports the fix for a double accounting race condition that occurs in btrfs when `btrfs_run_delalloc_range()` fails, particularly on systems with block sizes smaller than the page size. The original issue arises from improper handling of ordered extent cleanup during delalloc range failures, leading to potential kernel panics and data corruption. This fix consolidates error handling into `btrfs_run_delalloc_range()` and ensures that ordered extents are cleaned up correctly.
-
-C. Compatibility Risk:
-High
-
-D. Fixed Code:
-```diff
 diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
 index c068a442753c5..bc2bd103c8cc0 100644
 --- a/fs/btrfs/extent_io.c
@@ -131,4 +120,3 @@ index 1546f341f9a4f..b81afe757f641 100644
 +		btrfs_cleanup_ordered_extents(inode, NULL, start, end - start + 1);
  	return ret;
  }
-```

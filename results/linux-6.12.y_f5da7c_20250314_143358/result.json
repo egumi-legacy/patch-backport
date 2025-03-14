@@ -1,0 +1,36 @@
+{
+  "commit": {
+    "sha": "f5da7c45188eea71394bf445655cae2df88a7788",
+    "patch_url": "https://github.com/gregkh/linux/commit/f5da7c45188eea71394bf445655cae2df88a7788.patch",
+    "downstream_sha": "997ef6117efc03c4fdd8ba7fe42fab3638e07eb0",
+    "downstream_message": "tcp: adjust rcvq_space after updating scaling ratio\n\n[ Upstream commit f5da7c45188eea71394bf445655cae2df88a7788 ]\n\nSince commit under Fixes we set the window clamp in accordance\nto newly measured rcvbuf scaling_ratio. If the scaling_ratio\ndecreased significantly we may put ourselves in a situation\nwhere windows become smaller than rcvq_space, preventing\ntcp_rcv_space_adjust() from increasing rcvbuf.\n\nThe significant decrease of scaling_ratio is far more likely\nsince commit 697a6c8cec03 (\"tcp: increase the default TCP scaling ratio\"),\nwhich increased the \"default\" scaling ratio from ~30% to 50%.\n\nHitting the bad condition depends a lot on TCP tuning, and\ndrivers at play. One of Meta's workloads hits it reliably\nunder following conditions:\n - default rcvbuf of 125k\n - sender MTU 1500, receiver MTU 5000\n - driver settles on scaling_ratio of 78 for the config above.\nInitial rcvq_space gets calculated as TCP_INIT_CWND * tp->advmss\n(10 * 5k = 50k). Once we find out the true scaling ratio and\nMSS we clamp the windows to 38k. Triggering the condition also\ndepends on the message sequence of this workload. I can't repro\nthe problem with simple iperf or TCP_RR-style tests.\n\nFixes: a2cbb1603943 (\"tcp: Update window clamping condition\")\nReviewed-by: Eric Dumazet <edumazet@google.com>\nReviewed-by: Neal Cardwell <ncardwell@google.com>\nLink: https://patch.msgid.link/20250217232905.3162187-1-kuba@kernel.org\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": null,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/f5da7c/patches/upstream_f5da7c.patch",
+      "success": true,
+      "timestamp": "2025-03-14T14:31:09.606839"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-14T14:33:58.621945"
+  }
+}

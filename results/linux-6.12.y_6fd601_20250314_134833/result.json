@@ -1,0 +1,36 @@
+{
+  "commit": {
+    "sha": "6fd60136d256b3b948333ebdb3835f41a95ab7ef",
+    "patch_url": "https://github.com/gregkh/linux/commit/6fd60136d256b3b948333ebdb3835f41a95ab7ef.patch",
+    "downstream_sha": "87c8768a96092ce75cd47fe076db5080db7ac515",
+    "downstream_message": "ASoC: SOF: ipc4-topology: Harden loops for looking up ALH copiers\n\n[ Upstream commit 6fd60136d256b3b948333ebdb3835f41a95ab7ef ]\n\nOther, non DAI copier widgets could have the same  stream name (sname) as\nthe ALH copier and in that case the copier->data is NULL, no alh_data is\nattached, which could lead to NULL pointer dereference.\nWe could check for this NULL pointer in sof_ipc4_prepare_copier_module()\nand avoid the crash, but a similar loop in sof_ipc4_widget_setup_comp_dai()\nwill miscalculate the ALH device count, causing broken audio.\n\nThe correct fix is to harden the matching logic by making sure that the\n1. widget is a DAI widget - so dai = w->private is valid\n2. the dai (and thus the copier) is ALH copier\n\nFixes: a150345aa758 (\"ASoC: SOF: ipc4-topology: add SoundWire/ALH aggregation support\")\nReported-by: Seppo Ingalsuo <seppo.ingalsuo@linux.intel.com>\nLink: https://github.com/thesofproject/sof/pull/9652\nSigned-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>\nReviewed-by: Liam Girdwood <liam.r.girdwood@intel.com>\nReviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>\nReviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>\nLink: https://patch.msgid.link/20250206084642.14988-1-peter.ujfalusi@linux.intel.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/6fd601/patches/upstream_6fd601.patch",
+      "timestamp": "2025-03-14T13:48:33.635618"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-14T13:48:33.799858"
+  }
+}

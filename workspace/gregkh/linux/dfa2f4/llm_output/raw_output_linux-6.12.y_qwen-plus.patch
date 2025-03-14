@@ -1,14 +1,3 @@
-A. Commit message:
-PCI: Remove devres from pci_intx() and backport to older version
-
-B. Change summary:
-This patch removes the devres functionality from pci_intx(), as all users have been ported to either always-managed pcim_intx() or never-managed pci_intx_unmanaged(). Consequently, pci_intx_unmanaged() is now redundant and has been removed. The changes are applied to various drivers and core PCI functions to ensure consistency.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/misc/cardreader/rtsx_pcr.c b/drivers/misc/cardreader/rtsx_pcr.c
 index e25e6d560dd7b..be3d4e0e50ccd 100644
 --- a/drivers/misc/cardreader/rtsx_pcr.c
@@ -315,4 +304,3 @@ index b5eb8bda655dc..f05903dd7695e 100644
  void pci_intx(struct pci_dev *dev, int enable);
  bool pci_check_and_mask_intx(struct pci_dev *dev);
  bool pci_check_and_unmask_intx(struct pci_dev *dev);
-```

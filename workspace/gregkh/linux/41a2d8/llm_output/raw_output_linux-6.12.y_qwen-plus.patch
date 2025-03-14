@@ -1,14 +1,3 @@
-A. Commit message:
-accel/ivpu: Backport fix for error handling in recovery/reset
-
-B. Change summary:
-This patch backports the changes to improve error handling during recovery and reset operations in the ivpu driver. It ensures that runtime PM is disabled during reset/recovery, prevents suspending or resetting the hardware if the NPU is already suspended, and refactors common reset/recovery code into separate functions for better readability. Additionally, it addresses differences in header file inclusion and trace logging between the newer and older versions.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/accel/ivpu/ivpu_pm.c b/drivers/accel/ivpu/ivpu_pm.c
 index c3774d2221326..8b2b050cc41a9 100644
 --- a/drivers/accel/ivpu/ivpu_pm.c
@@ -287,4 +276,3 @@ index c3774d2221326..8b2b050cc41a9 100644
 +		ivpu_err_ratelimited(vdev, "Filed to disable DCT: %d\n", ret);
  		return ret;
  	}
-```

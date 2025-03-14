@@ -218,7 +218,9 @@ class LLMAdapterModule(BaseModule):
             # 运行patch_processor生成diff文件
             try:
                 result = patch_processor.run()
-                
+                logger.info("="*10)
+                logger.info(f"patch_processor result: {result}")
+                logger.info("="*10)
                 # 读取生成的diff文件
                 if diff_file.exists():
                     return html.unescape(diff_file.read_text())

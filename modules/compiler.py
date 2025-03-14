@@ -57,98 +57,103 @@ class CompilerModule(BaseModule):
                 self._save_metrics(context)
                 return context
             
-            # logger.info(f"use_docker: {context.config.kernel_compiler.get('use_docker', False)}")
-            # logger.info(f"use_docker: {context.config.module_configs.get('kernel_compiler', {}).get('use_docker', False)}")
+            # 应用适配后的补丁
+            if not self._apply_adapted_patch(context):
+                logger.error("应用补丁失败，无法进行编译测试")
+                context.compilation_result = {
+                    'success': False,
+                    'error': '应用补丁失败'
+                }
+                self._update_metrics(False, error_type="PatchApplyFailed")
+                self._save_metrics(context)
+                return context
             
-            # 调用内核编译模块
-            kernel_compiler = KernelCompiler(
-                repo_path=context.config.repo_path,
-                output_dir=context.commit.compilation_dir,
-                use_docker=context.config.module_configs.get('kernel_compiler', {}).get('use_docker', False),
-                docker_image=context.config.module_configs.get('kernel_compiler', {}).get('docker_image', 'kernel-builder:arm64'),
-                ccache_dir=Path(os.path.expanduser(context.config.module_configs.get('kernel_compiler', {}).get('ccache_dir', '~/.ccache')))
-            )
-            
-            # 首次运行时构建Docker镜像
-            if context.config.module_configs.get('kernel_compiler', {}).get('use_docker', False) and not context.docker_image_built:
-                logger.info("开始构建Docker镜像")
-                if not kernel_compiler.build_docker_image():
-                    logger.error("Docker镜像构建失败，无法继续编译验证")
+            try:
+                # 调用内核编译模块
+                kernel_compiler = KernelCompiler(
+                    repo_path=context.config.repo_path,
+                    output_dir=context.commit.compilation_dir,
+                    use_docker=context.config.module_configs.get('kernel_compiler', {}).get('use_docker', False),
+                    docker_image=context.config.module_configs.get('kernel_compiler', {}).get('docker_image', 'kernel-builder:arm64'),
+                    ccache_dir=Path(os.path.expanduser(context.config.module_configs.get('kernel_compiler', {}).get('ccache_dir', '~/.ccache')))
+                )
+                
+                # 首次运行时构建Docker镜像
+                if context.config.module_configs.get('kernel_compiler', {}).get('use_docker', False) and not context.docker_image_built:
+                    logger.info("开始构建Docker镜像")
+                    if not kernel_compiler.build_docker_image():
+                        logger.error("Docker镜像构建失败，无法继续编译验证")
+                        context.compilation_result = {
+                            'success': False,
+                            'error': 'Docker镜像构建失败'
+                        }
+                        # 重要：返回上下文，不返回布尔值
+                        return context
+                    logger.info("Docker镜像构建完成")
+                    context.docker_image_built = True
+                
+                # 修改的文件路径列表
+                modified_files = self._get_modified_files(context)
+                if not modified_files:
+                    logger.warning("未找到修改的文件，跳过编译验证")
                     context.compilation_result = {
-                        'success': False,
-                        'error': 'Docker镜像构建失败'
+                        'success': True,
+                        'warning': '未找到修改的文件'
                     }
                     # 重要：返回上下文，不返回布尔值
                     return context
-                logger.info("Docker镜像构建完成")
-                context.docker_image_built = True
-            
-            # 修改的文件路径列表
-            modified_files = self._get_modified_files(context)
-            if not modified_files:
-                logger.warning("未找到修改的文件，跳过编译验证")
-                context.compilation_result = {
-                    'success': True,
-                    'warning': '未找到修改的文件'
-                }
-                # 重要：返回上下文，不返回布尔值
+                
+                # 执行编译验证
+                logger.info(f"开始编译文件: {modified_files}")
+                compilation_ok = kernel_compiler.compile_files(modified_files)
+                # kernel_compiler.compile_files(modified_files)
+                # logger.info(f"编译函数返回结果: {compilation_ok}")
+                # compilation_ok = kernel_compiler.compile_files(modified_files)
+                # logger.info(f"编译函数返回结果2222: {compilation_ok}")
+                # 更新编译结果
+                if not compilation_ok:
+                    logger.error("补丁导致编译错误")
+                    context.compilation_result = {
+                        'success': False,
+                        'error': '编译失败，请查看日志了解详情'
+                    }
+                    self.metrics['compilation_failures'] += 1
+                    self._update_metrics(False)
+                else:
+                    logger.info("补丁编译验证通过")
+                    context.compilation_result = {
+                        'success': True,
+                        'files': [str(f) for f in modified_files]
+                    }
+                    self.metrics['compilation_success'] += 1
+                    self._update_metrics(True)
+                
                 return context
-            
-            # 执行编译验证
-            logger.info(f"开始编译文件: {modified_files}")
-            compilation_ok = kernel_compiler.compile_files(modified_files)
-            # kernel_compiler.compile_files(modified_files)
-            # logger.info(f"编译函数返回结果: {compilation_ok}")
-            # compilation_ok = kernel_compiler.compile_files(modified_files)
-            # logger.info(f"编译函数返回结果2222: {compilation_ok}")
-            # 更新编译结果
-            if not compilation_ok:
-                logger.error("补丁导致编译错误")
+                
+            except Exception as e:
+                logger.error(f"编译过程发生错误: {str(e)}")
                 context.compilation_result = {
                     'success': False,
-                    'error': '编译失败，请查看日志了解详情'
+                    'error': str(e)
                 }
-                self.metrics['compilation_failures'] += 1
                 self._update_metrics(False)
-                # 重要：返回上下文，不返回布尔值
                 return context
-            if compilation_ok:
-                logger.info("补丁编译验证通过")
-                context.compilation_result = {
-                    'success': True,
-                    # 'files': [str(f.relative_to(context.config.repo_path)) for f in modified_files]
-                }
-                self.metrics['compilation_success'] += 1
-                self._update_metrics(True)
-            else:
-                logger.info("补丁编译验证未通过")
-            
-            
-            # 重要：返回上下文，不返回布尔值
-            return context
             
         except Exception as e:
             logger.error(f"编译测试过程发生错误: {str(e)}")
-            # 使用hasattr检查verbose属性
-            if hasattr(self, 'verbose') and self.verbose:
-                logger.error(f"详细错误信息: {traceback.format_exc()}")
-            
-            # 更新上下文和指标
             context.compilation_result = {
                 'success': False,
                 'error': str(e)
             }
-            
-            error_type = type(e).__name__
-            if error_type in self.metrics['error_types']:
-                self.metrics['error_types'][error_type] += 1
-            else:
-                self.metrics['error_types'][error_type] = 1
-                
             self._update_metrics(False)
-            
-            # 重要：返回上下文，不返回布尔值
             return context
+        
+        finally:
+            # 无论成功失败，都清理临时分支
+            if hasattr(context, 'compiler_branch'):
+                logger.info("清理编译测试分支")
+                self._cleanup_branch(context, context.compiler_branch)
+                delattr(context, 'compiler_branch')  # 清理上下文中的分支记录
     
     def _create_compile_dir(self, context: ModuleContext) -> Path:
         """创建编译目录"""
@@ -366,3 +371,92 @@ class CompilerModule(BaseModule):
             json.dump(self.metrics, f, indent=2)
         
         logger.info(f"编译指标已保存到: {metrics_file}")
+
+    def _apply_adapted_patch(self, context: ModuleContext) -> bool:
+        """
+        应用适配后的补丁到仓库
+        
+        :param context: 模块上下文
+        :return: 是否成功应用补丁
+        """
+        try:
+            # 获取适配后的补丁路径
+            if not hasattr(context, 'patch_adapter_result') or not context.patch_adapter_result:
+                logger.warning("缺少补丁适配结果")
+                return False
+            
+            adapted_patch_path = context.patch_adapter_result.get('adapted_patch_path')
+            if not adapted_patch_path or not Path(adapted_patch_path).exists():
+                logger.warning(f"适配后的补丁文件不存在: {adapted_patch_path}")
+                return False
+            
+            repo_path = context.config.repo_path
+            
+            # 创建并切换到临时分支
+            branch_name = f"compile_test_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            
+            # 执行git命令
+            commands = [
+                ["git", "checkout", "-b", branch_name],  # 创建并切换到新分支
+                ["git", "am", str(adapted_patch_path)]   # 应用补丁
+            ]
+            
+            for cmd in commands:
+                logger.info(f"执行命令: {' '.join(cmd)}")
+                process = subprocess.run(
+                    cmd,
+                    cwd=repo_path,
+                    capture_output=True,
+                    text=True
+                )
+                
+                if process.returncode != 0:
+                    logger.error(f"命令执行失败: {' '.join(cmd)}")
+                    logger.error(f"错误输出: {process.stderr}")
+                    # 清理：删除临时分支
+                    self._cleanup_branch(context, branch_name)
+                    return False
+                else:
+                    logger.info(f"命令执行成功: {' '.join(cmd)}")
+                    logger.debug(f"命令输出: {process.stdout}")
+            
+            # 记录分支名到上下文，以便后续清理
+            context.compiler_branch = branch_name
+            return True
+            
+        except Exception as e:
+            logger.error(f"应用补丁时发生错误: {str(e)}")
+            if hasattr(context, 'compiler_branch'):
+                self._cleanup_branch(context, context.compiler_branch)
+            return False
+
+    def _cleanup_branch(self, context: ModuleContext, branch_name: str) -> None:
+        """
+        清理临时分支
+        
+        :param context: 模块上下文
+        :param branch_name: 要清理的分支名
+        """
+        try:
+            repo_path = context.config.repo_path
+            
+            # 切换回主分支
+            subprocess.run(
+                ["git", "checkout", context.config.target_version],
+                cwd=repo_path,
+                capture_output=True,
+                text=True
+            )
+            
+            # 删除临时分支
+            subprocess.run(
+                ["git", "branch", "-D", branch_name],
+                cwd=repo_path,
+                capture_output=True,
+                text=True
+            )
+            
+            logger.info(f"已清理临时分支: {branch_name}")
+            
+        except Exception as e:
+            logger.error(f"清理分支时发生错误: {str(e)}")

@@ -1,14 +1,3 @@
-A. Commit message:
-drm/xe/oa: Add input fence dependencies for OA configuration
-
-B. Change summary:
-This patch backports the addition of input fence dependencies to the `xe_oa_submit_bb` function, ensuring that OA configuration waits until these dependencies are met. The changes include introducing an enumeration for dependency options and modifying the submission function to handle dependencies.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/gpu/drm/xe/xe_oa.c b/drivers/gpu/drm/xe/xe_oa.c
 index 3f1de88c5f882..380ee1e632510 100644
 --- a/drivers/gpu/drm/xe/xe_oa.c
@@ -85,4 +74,3 @@ index 3f1de88c5f882..380ee1e632510 100644
  	if (IS_ERR(fence)) {
  		err = PTR_ERR(fence);
  		goto exit;
-```

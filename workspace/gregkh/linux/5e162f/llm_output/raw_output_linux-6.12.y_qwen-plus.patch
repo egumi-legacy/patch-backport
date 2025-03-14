@@ -1,14 +1,3 @@
-A. Commit message:
-accel/ivpu: Add FW state dump on TDR for older version
-
-B. Change summary:
-This patch adds the functionality to send a JSM state dump message at the beginning of the TDR handler, allowing the firmware to collect debug information before the NPU state is lost. It also includes a predefined timeout (10 ms) to ensure the firmware has enough time to write debug logs.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/accel/ivpu/ivpu_drv.h b/drivers/accel/ivpu/ivpu_drv.h
 index 63f13b697eed7..2b30cc2e9272e 100644
 --- a/drivers/accel/ivpu/ivpu_drv.h
@@ -136,4 +125,3 @@ index bf77395ffcb7c..b5a69941e6e0a 100644
  	ivpu_fw_log_dump(vdev);
  
  	atomic_inc(&vdev->pm->reset_counter);
-```

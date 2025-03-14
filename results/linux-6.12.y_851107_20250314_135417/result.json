@@ -1,0 +1,36 @@
+{
+  "commit": {
+    "sha": "8511074c42b6255e03eceb09396338572572f1c7",
+    "patch_url": "https://github.com/gregkh/linux/commit/8511074c42b6255e03eceb09396338572572f1c7.patch",
+    "downstream_sha": "93c985ddccc3a21285b83055889d36c861900ea0",
+    "downstream_message": "btrfs: remove unused btrfs_folio_start_writer_lock()\n\n[ Upstream commit 8511074c42b6255e03eceb09396338572572f1c7 ]\n\nThis function is not really suitable to lock a folio, as it lacks the\nproper mapping checks, thus the locked folio may not even belong to\nbtrfs.\n\nAnd due to the above reason, the last user inside lock_delalloc_folios()\nis already removed, and we can remove this function.\n\nSigned-off-by: Qu Wenruo <wqu@suse.com>\nReviewed-by: David Sterba <dsterba@suse.com>\nSigned-off-by: David Sterba <dsterba@suse.com>\nStable-dep-of: 8bf334beb349 (\"btrfs: fix double accounting race when extent_writepage_io() failed\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/851107/patches/upstream_851107.patch",
+      "timestamp": "2025-03-14T13:54:16.912370"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-14T13:54:17.073342"
+  }
+}

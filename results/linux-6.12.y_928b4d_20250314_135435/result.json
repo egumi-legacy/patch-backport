@@ -1,0 +1,36 @@
+{
+  "commit": {
+    "sha": "928b4de66ed3b0d9a6f201ce41ab2eed6ea2e7ef",
+    "patch_url": "https://github.com/gregkh/linux/commit/928b4de66ed3b0d9a6f201ce41ab2eed6ea2e7ef.patch",
+    "downstream_sha": "1853fd0894166835853cfd1814811ae21ce49da5",
+    "downstream_message": "btrfs: do not assume the full page range is not dirty in extent_writepage_io()\n\n[ Upstream commit 928b4de66ed3b0d9a6f201ce41ab2eed6ea2e7ef ]\n\nThe function extent_writepage_io() will submit the dirty sectors inside\nthe page for the write.\n\nBut recently to co-operate with the incoming subpage compression\nenhancement, a new bitmap is introduced to\nbtrfs_bio_ctrl::submit_bitmap, to only avoid a subset of the dirty\nrange.\n\nThis is because we can have the following cases with 64K page size:\n\n    0      16K       32K       48K       64K\n    |      |/////////|         |/|\n                                 52K\n\nFor range [16K, 32K), we queue the dirty range for compression, which is\nran in a delayed workqueue.\nThen for range [48K, 52K), we go through the regular submission path.\n\nIn that case, our btrfs_bio_ctrl::submit_bitmap will exclude the range\n[16K, 32K).\n\nThe dirty flags for the range [16K, 32K) is only cleared when the\ncompression is done, by the extent_clear_unlock_delalloc() call inside\nsubmit_one_async_extent().\n\nThis patch fix the false alert by removing the\nbtrfs_folio_assert_not_dirty() check, since it's no longer correct for\nsubpage compression cases.\n\nSigned-off-by: Qu Wenruo <wqu@suse.com>\nSigned-off-by: David Sterba <dsterba@suse.com>\nStable-dep-of: 8bf334beb349 (\"btrfs: fix double accounting race when extent_writepage_io() failed\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/928b4d/patches/upstream_928b4d.patch",
+      "timestamp": "2025-03-14T13:54:35.546473"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-14T13:54:35.716181"
+  }
+}

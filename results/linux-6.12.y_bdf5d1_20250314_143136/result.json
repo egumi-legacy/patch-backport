@@ -1,0 +1,63 @@
+{
+  "commit": {
+    "sha": "bdf5d13aa05ec314d4385b31ac974d6c7e0997c9",
+    "patch_url": "https://github.com/gregkh/linux/commit/bdf5d13aa05ec314d4385b31ac974d6c7e0997c9.patch",
+    "downstream_sha": "25dddd01dcc8ef3acff964dbb32eeb0d89f098e9",
+    "downstream_message": "ibmvnic: Don't reference skb after sending to VIOS\n\n[ Upstream commit bdf5d13aa05ec314d4385b31ac974d6c7e0997c9 ]\n\nPreviously, after successfully flushing the xmit buffer to VIOS,\nthe tx_bytes stat was incremented by the length of the skb.\n\nIt is invalid to access the skb memory after sending the buffer to\nthe VIOS because, at any point after sending, the VIOS can trigger\nan interrupt to free this memory. A race between reading skb->len\nand freeing the skb is possible (especially during LPM) and will\nresult in use-after-free:\n ==================================================================\n BUG: KASAN: slab-use-after-free in ibmvnic_xmit+0x75c/0x1808 [ibmvnic]\n Read of size 4 at addr c00000024eb48a70 by task hxecom/14495\n <...>\n Call Trace:\n [c000000118f66cf0] [c0000000018cba6c] dump_stack_lvl+0x84/0xe8 (unreliable)\n [c000000118f66d20] [c0000000006f0080] print_report+0x1a8/0x7f0\n [c000000118f66df0] [c0000000006f08f0] kasan_report+0x128/0x1f8\n [c000000118f66f00] [c0000000006f2868] __asan_load4+0xac/0xe0\n [c000000118f66f20] [c0080000046eac84] ibmvnic_xmit+0x75c/0x1808 [ibmvnic]\n [c000000118f67340] [c0000000014be168] dev_hard_start_xmit+0x150/0x358\n <...>\n Freed by task 0:\n kasan_save_stack+0x34/0x68\n kasan_save_track+0x2c/0x50\n kasan_save_free_info+0x64/0x108\n __kasan_mempool_poison_object+0x148/0x2d4\n napi_skb_cache_put+0x5c/0x194\n net_tx_action+0x154/0x5b8\n handle_softirqs+0x20c/0x60c\n do_softirq_own_stack+0x6c/0x88\n <...>\n The buggy address belongs to the object at c00000024eb48a00 which\n  belongs to the cache skbuff_head_cache of size 224\n==================================================================\n\nFixes: 032c5e82847a (\"Driver for IBM System i/p VNIC protocol\")\nSigned-off-by: Nick Child <nnac123@linux.ibm.com>\nReviewed-by: Simon Horman <horms@kernel.org>\nLink: https://patch.msgid.link/20250214155233.235559-1-nnac123@linux.ibm.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/net/ethernet/ibm/ibmvnic.c:2614\nerror: drivers/net/ethernet/ibm/ibmvnic.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/bdf5d1/patches/upstream_bdf5d1.patch",
+      "timestamp": "2025-03-14T14:31:26.986319"
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c\nindex 6c9d3e4..e95ae0d 100644\n--- a/drivers/net/ethernet/ibm/ibmvnic.c\n+++ b/drivers/net/ethernet/ibm/ibmvnic.c\n@@ -2402,6 +2402,7 @@\n \tunsigned int tx_map_failed = 0;\n \tunion sub_crq indir_arr[16];\n \tunsigned int tx_dropped = 0;\n+\tunsigned int skblen;\n \tunsigned int tx_packets = 0;\n \tunsigned int tx_bytes = 0;\n \tdma_addr_t data_dma_addr;\n@@ -2576,7 +2577,6 @@\n \t\tif (lpar_rc != H_SUCCESS)\n \t\t\tgoto tx_err;\n \n-\t\ttx_dpackets++;\n \t\tgoto early_exit;\n \t}\n \n@@ -2605,8 +2605,6 @@\n \t\t\tgoto tx_err;\n \t}\n \n-\ttx_bpackets++;\n-\n early_exit:\n \tif (atomic_add_return(num_entries, &tx_scrq->used)\n  \t\t\t\t\t>= adapter->req_tx_entries_per_subcrq) {\n@@ -2614,6 +2612,7 @@\n \t\tnetif_stop_subqueue(netdev, queue_num);\n \t}\n \n+\tskblen = skb->len;\n \ttx_packets++;\n-\ttx_bytes += skb->len;\n+\ttx_bytes += skblen;\n \ttxq_trans_cond_update(txq);\n \tret = NETDEV_TX_OK;\n \tgoto out;",
+      "prompt": {
+        "patch_content": "From bdf5d13aa05ec314d4385b31ac974d6c7e0997c9 Mon Sep 17 00:00:00 2001\nFrom: Nick Child <nnac123@linux.ibm.com>\nDate: Fri, 14 Feb 2025 09:52:33 -0600\nSubject: [PATCH] ibmvnic: Don't reference skb after sending to VIOS\n\nPreviously, after successfully flushing the xmit buffer to VIOS,\nthe tx_bytes stat was incremented by the length of the skb.\n\nIt is invalid to access the skb memory after sending the buffer to\nthe VIOS because, at any point after sending, the VIOS can trigger\nan interrupt to free this memory. A race between reading skb->len\nand freeing the skb is possible (especially during LPM) and will\nresult in use-after-free:\n ==================================================================\n BUG: KASAN: slab-use-after-free in ibmvnic_xmit+0x75c/0x1808 [ibmvnic]\n Read of size 4 at addr c00000024eb48a70 by task hxecom/14495\n <...>\n Call Trace:\n [c000000118f66cf0] [c0000000018cba6c] dump_stack_lvl+0x84/0xe8 (unreliable)\n [c000000118f66d20] [c0000000006f0080] print_report+0x1a8/0x7f0\n [c000000118f66df0] [c0000000006f08f0] kasan_report+0x128/0x1f8\n [c000000118f66f00] [c0000000006f2868] __asan_load4+0xac/0xe0\n [c000000118f66f20] [c0080000046eac84] ibmvnic_xmit+0x75c/0x1808 [ibmvnic]\n [c000000118f67340] [c0000000014be168] dev_hard_start_xmit+0x150/0x358\n <...>\n Freed by task 0:\n kasan_save_stack+0x34/0x68\n kasan_save_track+0x2c/0x50\n kasan_save_free_info+0x64/0x108\n __kasan_mempool_poison_object+0x148/0x2d4\n napi_skb_cache_put+0x5c/0x194\n net_tx_action+0x154/0x5b8\n handle_softirqs+0x20c/0x60c\n do_softirq_own_stack+0x6c/0x88\n <...>\n The buggy address belongs to the object at c00000024eb48a00 which\n  belongs to the cache skbuff_head_cache of size 224\n==================================================================\n\nFixes: 032c5e82847a (\"Driver for IBM System i/p VNIC protocol\")\nSigned-off-by: Nick Child <nnac123@linux.ibm.com>\nReviewed-by: Simon Horman <horms@kernel.org>\nLink: https://patch.msgid.link/20250214155233.235559-1-nnac123@linux.ibm.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\n---\n drivers/net/ethernet/ibm/ibmvnic.c | 4 +++-\n 1 file changed, 3 insertions(+), 1 deletion(-)\n\ndiff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c\nindex e95ae0d39948c..0676fc547b6f4 100644\n--- a/drivers/net/ethernet/ibm/ibmvnic.c\n+++ b/drivers/net/ethernet/ibm/ibmvnic.c\n@@ -2408,6 +2408,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)\n \tdma_addr_t data_dma_addr;\n \tstruct netdev_queue *txq;\n \tunsigned long lpar_rc;\n+\tunsigned int skblen;\n \tunion sub_crq tx_crq;\n \tunsigned int offset;\n \tbool use_scrq_send_direct = false;\n@@ -2522,6 +2523,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)\n \ttx_buff->skb = skb;\n \ttx_buff->index = bufidx;\n \ttx_buff->pool_index = queue_num;\n+\tskblen = skb->len;\n \n \tmemset(&tx_crq, 0, sizeof(tx_crq));\n \ttx_crq.v1.first = IBMVNIC_CRQ_CMD;\n@@ -2614,7 +2616,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)\n \t\tnetif_stop_subqueue(netdev, queue_num);\n \t}\n \n-\ttx_bytes += skb->len;\n+\ttx_bytes += skblen;\n \ttxq_trans_cond_update(txq);\n \tret = NETDEV_TX_OK;\n \tgoto out;\n",
+        "target_version": "linux-6.12.y",
+        "context_diff": "modified file: drivers/net/ethernet/ibm/ibmvnic.c\n--- workspace/gregkh/linux/bdf5d1/newer/drivers/net/ethernet/ibm/ibmvnic.c\n+++ workspace/gregkh/linux/bdf5d1/linux-6.12.y/drivers/net/ethernet/ibm/ibmvnic.c\n@@ -2310,7 +2310,7 @@\n  \t\ttx_buff = &tx_pool->tx_buff[index];\n  \t\tadapter->netdev->stats.tx_packets--;\n  \t\tadapter->netdev->stats.tx_bytes -= tx_buff->skb->len;\n -\t\tadapter->tx_stats_buffers[queue_num].batched_packets--;\n +\t\tadapter->tx_stats_buffers[queue_num].packets--;\n  \t\tadapter->tx_stats_buffers[queue_num].bytes -=\n  \t\t\t\t\t\ttx_buff->skb->len;\n  \t\tdev_kfree_skb_any(tx_buff->skb);\n@@ -2402,8 +2402,7 @@\n  \tunsigned int tx_map_failed = 0;\n  \tunion sub_crq indir_arr[16];\n  \tunsigned int tx_dropped = 0;\n -\tunsigned int tx_dpackets = 0;\n -\tunsigned int tx_bpackets = 0;\n +\tunsigned int tx_packets = 0;\n  \tunsigned int tx_bytes = 0;\n  \tdma_addr_t data_dma_addr;\n  \tstruct netdev_queue *txq;\n@@ -2576,7 +2575,6 @@\n  \t\tif (lpar_rc != H_SUCCESS)\n  \t\t\tgoto tx_err;\n  \n -\t\ttx_dpackets++;\n  \t\tgoto early_exit;\n  \t}\n  \n@@ -2605,8 +2603,6 @@\n  \t\t\tgoto tx_err;\n  \t}\n  \n -\ttx_bpackets++;\n -\n  early_exit:\n  \tif (atomic_add_return(num_entries, &tx_scrq->used)\n  \t\t\t\t\t>= adapter->req_tx_entries_per_subcrq) {\n@@ -2614,6 +2610,7 @@\n  \t\tnetif_stop_subqueue(netdev, queue_num);\n  \t}\n  \n +\ttx_packets++;\n  \ttx_bytes += skb->len;\n  \ttxq_trans_cond_update(txq);\n  \tret = NETDEV_TX_OK;\n@@ -2643,11 +2640,10 @@\n  \trcu_read_unlock();\n  \tnetdev->stats.tx_dropped += tx_dropped;\n  \tnetdev->stats.tx_bytes += tx_bytes;\n -\tnetdev->stats.tx_packets += tx_bpackets + tx_dpackets;\n +\tnetdev->stats.tx_packets += tx_packets;\n  \tadapter->tx_send_failed += tx_send_failed;\n  \tadapter->tx_map_failed += tx_map_failed;\n -\tadapter->tx_stats_buffers[queue_num].batched_packets += tx_bpackets;\n -\tadapter->tx_stats_buffers[queue_num].direct_packets += tx_dpackets;\n +\tadapter->tx_stats_buffers[queue_num].packets += tx_packets;\n  \tadapter->tx_stats_buffers[queue_num].bytes += tx_bytes;\n  \tadapter->tx_stats_buffers[queue_num].dropped_packets += tx_dropped;\n  \n@@ -3808,20 +3804,29 @@\n  \tif (stringset != ETH_SS_STATS)\n  \t\treturn;\n  \n -\tfor (i = 0; i < ARRAY_SIZE(ibmvnic_stats); i++)\n -\t\tethtool_puts(&data, ibmvnic_stats[i].name);\n +\tfor (i = 0; i < ARRAY_SIZE(ibmvnic_stats); i++, data += ETH_GSTRING_LEN)\n +\t\tmemcpy(data, ibmvnic_stats[i].name, ETH_GSTRING_LEN);\n  \n  \tfor (i = 0; i < adapter->req_tx_queues; i++) {\n -\t\tethtool_sprintf(&data, \"tx%d_batched_packets\", i);\n -\t\tethtool_sprintf(&data, \"tx%d_direct_packets\", i);\n -\t\tethtool_sprintf(&data, \"tx%d_bytes\", i);\n -\t\tethtool_sprintf(&data, \"tx%d_dropped_packets\", i);\n +\t\tsnprintf(data, ETH_GSTRING_LEN, \"tx%d_packets\", i);\n +\t\tdata += ETH_GSTRING_LEN;\n +\n +\t\tsnprintf(data, ETH_GSTRING_LEN, \"tx%d_bytes\", i);\n +\t\tdata += ETH_GSTRING_LEN;\n +\n +\t\tsnprintf(data, ETH_GSTRING_LEN, \"tx%d_dropped_packets\", i);\n +\t\tdata += ETH_GSTRING_LEN;\n  \t}\n  \n  \tfor (i = 0; i < adapter->req_rx_queues; i++) {\n -\t\tethtool_sprintf(&data, \"rx%d_packets\", i);\n -\t\tethtool_sprintf(&data, \"rx%d_bytes\", i);\n -\t\tethtool_sprintf(&data, \"rx%d_interrupts\", i);\n +\t\tsnprintf(data, ETH_GSTRING_LEN, \"rx%d_packets\", i);\n +\t\tdata += ETH_GSTRING_LEN;\n +\n +\t\tsnprintf(data, ETH_GSTRING_LEN, \"rx%d_bytes\", i);\n +\t\tdata += ETH_GSTRING_LEN;\n +\n +\t\tsnprintf(data, ETH_GSTRING_LEN, \"rx%d_interrupts\", i);\n +\t\tdata += ETH_GSTRING_LEN;\n  \t}\n  }\n  \n@@ -3868,9 +3873,7 @@\n  \t\t\t\t      (adapter, ibmvnic_stats[i].offset));\n  \n  \tfor (j = 0; j < adapter->req_tx_queues; j++) {\n -\t\tdata[i] = adapter->tx_stats_buffers[j].batched_packets;\n -\t\ti++;\n -\t\tdata[i] = adapter->tx_stats_buffers[j].direct_packets;\n +\t\tdata[i] = adapter->tx_stats_buffers[j].packets;\n  \t\ti++;\n  \t\tdata[i] = adapter->tx_stats_buffers[j].bytes;\n  \t\ti++;\n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/gregkh/linux/bdf5d1/llm_output/output_linux-6.12.y_qwen-plus.patch",
+      "apply_result": {
+        "success": false,
+        "error": "Patch format detection failed.\n",
+        "error_type": "other",
+        "output": null
+      },
+      "timestamp": "2025-03-14T14:31:30.150896",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": true,
+      "adapted_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/bdf5d1/patches/adapted_linux-6.12.y.patch",
+      "apply_result": {
+        "success": true,
+        "error": null,
+        "error_type": null,
+        "output": "Applying: Applied adapted patch for linux-6.12.y\n"
+      }
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "compiler",
+    "timestamp": "2025-03-14T14:31:36.838294"
+  }
+}

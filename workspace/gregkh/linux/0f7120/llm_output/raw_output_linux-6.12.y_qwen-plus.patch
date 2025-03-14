@@ -1,14 +1,3 @@
-A. Commit message:
-btrfs: Backport renaming of btrfs_folio_(set|end)_writer_lock() to older version
-
-B. Change summary:
-This patch backports the renaming of `btrfs_folio_set_writer_lock()` and `btrfs_folio_end_writer_lock()` to `btrfs_folio_set_lock()` and `btrfs_folio_end_lock()` respectively. Additionally, it renames `btrfs_subpage::writers` to `btrfs_subpage::nr_locked`. The changes ensure consistency with the newer version while maintaining compatibility with the older codebase.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/fs/btrfs/compression.c b/fs/btrfs/compression.c
 index e51d55bd1a29b..21d73ea594a99 100644
 --- a/fs/btrfs/compression.c
@@ -259,4 +248,3 @@ index c150aba9318ed..428fa9389fd49 100644
  /*
   * Template for subpage related operations.
   */
-```

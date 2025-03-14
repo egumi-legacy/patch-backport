@@ -1,14 +1,3 @@
-A. Commit message:
-KVM: nVMX: Defer SVI update to vmcs01 on EOI when L2 is active w/o VID
-
-B. Change summary:
-This patch defers the update of GUEST_INTERRUPT_STATUS.SVI in vmcs01 until L1 is active, ensuring that vISR tracking remains accurate when L2 is active without Virtual Interrupt Delivery (VID). This prevents L1 interrupts from being incorrectly blocked due to a stale SVI value. Additionally, it includes necessary changes to handle APIC base setting and address canonical checks.
-
-C. Compatibility Risk:
-Medium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.
-
-D. Fixed Code:
-```diff
 diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
 index 39ae2f5f9866c..d0913aceeae48 100644
 --- a/arch/x86/kvm/lapic.c
@@ -103,4 +92,3 @@ index 43f573f6ca46a..892302022094a 100644
  
  	/*
  	 * Enlightened VMCS has been enabled. It does not mean that L1 has to
-```

@@ -142,8 +142,8 @@ class DirectApplyModule(BaseModule):
             target_dir.mkdir(parents=True, exist_ok=True)
 
             # 如果目标目录已存在，先删除
-            if target_dir.exists():
-                shutil.rmtree(target_dir)
+            if Path(target_dir / source_dir.name).exists():
+                shutil.rmtree(target_dir / source_dir.name)
 
             # 移动目录
             shutil.move(str(source_dir), str(target_dir))

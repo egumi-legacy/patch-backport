@@ -1,14 +1,3 @@
-A. Commit message:
-ASoC: renesas: rz-ssi: Terminate all the DMA transactions for full-duplex setup
-
-B. Change summary:
-When stopping the SSI controller in full-duplex mode, ensure that DMA transactions are terminated for both playback and capture substreams when the last substream is stopped. This prevents failures when starting and stopping full-duplex operations multiple times.
-
-C. Compatibility Risk:
-High
-
-D. Fixed Code:
-```diff
 diff --git a/sound/soc/renesas/rz-ssi.c b/sound/soc/renesas/rz-ssi.c
 new file mode 100644
 index 0000000..2d8721156099a
@@ -46,6 +35,3 @@ index 0000000..2d8721156099a
 +}
 +
 +/* Add other necessary functions and code here */
-```
-
-Note: Since the file does not exist in the older version, this patch creates the entire file with the necessary changes. The rest of the file content should be added as needed to match the functionality of the newer version.

@@ -1,13 +1,3 @@
-A. Commit message:
-PCI: Backport fix for restoring original INTX_DISABLE bit by pcim_intx()
-
-B. Change summary:
-Backported the fix to ensure that the original INTx state is correctly saved and restored when using `pcim_intx()`. Adjusted the function to save the initial INTx state only on the first call, preventing incorrect assumptions about the INTx state.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
 diff --git a/drivers/pci/devres.c b/drivers/pci/devres.c
 index d1d97a4bb36d3..f5e2c8a9b40a1 100644
 --- a/drivers/pci/devres.c

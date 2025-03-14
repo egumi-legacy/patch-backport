@@ -1,0 +1,57 @@
+{
+  "commit": {
+    "sha": "541011dc2d7c4c82523706f726f422a5e23cc86f",
+    "patch_url": "https://github.com/gregkh/linux/commit/541011dc2d7c4c82523706f726f422a5e23cc86f.patch",
+    "downstream_sha": "fffb4a352672082316c5ae80977640aa0a85dfe6",
+    "downstream_message": "ASoC: renesas: rz-ssi: Terminate all the DMA transactions\n\n[ Upstream commit 541011dc2d7c4c82523706f726f422a5e23cc86f ]\n\nThe stop trigger invokes rz_ssi_stop() and rz_ssi_stream_quit().\n- The purpose of rz_ssi_stop() is to disable TX/RX, terminate DMA\n  transactions, and set the controller to idle.\n- The purpose of rz_ssi_stream_quit() is to reset the substream-specific\n  software data by setting strm->running and strm->substream appropriately.\n\nThe function rz_ssi_is_stream_running() checks if both strm->substream and\nstrm->running are valid and returns true if so. Its implementation is as\nfollows:\n\nstatic inline bool rz_ssi_is_stream_running(struct rz_ssi_stream *strm)\n{\n    return strm->substream && strm->running;\n}\n\nWhen the controller is configured in full-duplex mode (with both playback\nand capture active), the rz_ssi_stop() function does not modify the\ncontroller settings when called for the first substream in the full-duplex\nsetup. Instead, it simply sets strm->running = 0 and returns if the\ncompanion substream is still running. The following code illustrates this:\n\nstatic int rz_ssi_stop(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)\n{\n    strm->running = 0;\n\n    if (rz_ssi_is_stream_running(&ssi->playback) ||\n        rz_ssi_is_stream_running(&ssi->capture))\n        return 0;\n\n    // ...\n}\n\nThe controller settings, along with the DMA termination (for the last\nstopped substream), are only applied when the last substream in the\nfull-duplex setup is stopped.\n\nWhile applying the controller settings only when the last substream stops\nis not problematic, terminating the DMA operations for only one substream\ncauses failures when starting and stopping full-duplex operations multiple\ntimes in a loop.\n\nTo address this issue, call dmaengine_terminate_async() for both substreams\ninvolved in the full-duplex setup when the last substream in the setup is\nstopped.\n\nFixes: 4f8cd05a4305 (\"ASoC: sh: rz-ssi: Add full duplex support\")\nCc: stable@vger.kernel.org\nReviewed-by: Biju Das <biju.das.jz@bp.renesas.com>\nSigned-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>\nReviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>\nLink: https://patch.msgid.link/20241210170953.2936724-5-claudiu.beznea.uj@bp.renesas.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: sound/soc/renesas/rz-ssi.c: does not exist in index\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/541011/patches/upstream_541011.patch",
+      "timestamp": "2025-03-14T13:51:47.815811"
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/sound/soc/renesas/rz-ssi.c b/sound/soc/renesas/rz-ssi.c\nnew file mode 100644\nindex 0000000..2d8721156099a\n--- /dev/null\n+++ b/sound/soc/renesas/rz-ssi.c\n@@ -0,0 +1,435 @@\n+/* Add necessary includes and definitions here */\n+\n+static inline bool rz_ssi_is_stream_running(struct rz_ssi_stream *strm)\n+{\n+    return strm->substream && strm->running;\n+}\n+\n+static int rz_ssi_stop(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)\n+{\n+    strm->running = 0;\n+\n+    if (rz_ssi_is_stream_running(&ssi->playback) ||\n+        rz_ssi_is_stream_running(&ssi->capture))\n+        return 0;\n+\n+    rz_ssi_reg_mask_setl(ssi, SSICR, SSICR_TEN | SSICR_REN, 0);\n+\n+    /* Cancel all remaining DMA transactions */\n+    if (rz_ssi_is_dma_enabled(ssi)) {\n+        if (ssi->playback.dma_ch)\n+            dmaengine_terminate_async(ssi->playback.dma_ch);\n+        if (ssi->capture.dma_ch)\n+            dmaengine_terminate_async(ssi->capture.dma_ch);\n+    }\n+\n+    rz_ssi_set_idle(ssi);\n+\n+    return 0;\n+}\n+\n+/* Add other necessary functions and code here */",
+      "prompt": {
+        "patch_content": "From 541011dc2d7c4c82523706f726f422a5e23cc86f Mon Sep 17 00:00:00 2001\nFrom: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>\nDate: Tue, 10 Dec 2024 19:09:33 +0200\nSubject: [PATCH] ASoC: renesas: rz-ssi: Terminate all the DMA transactions\n\nThe stop trigger invokes rz_ssi_stop() and rz_ssi_stream_quit().\n- The purpose of rz_ssi_stop() is to disable TX/RX, terminate DMA\n  transactions, and set the controller to idle.\n- The purpose of rz_ssi_stream_quit() is to reset the substream-specific\n  software data by setting strm->running and strm->substream appropriately.\n\nThe function rz_ssi_is_stream_running() checks if both strm->substream and\nstrm->running are valid and returns true if so. Its implementation is as\nfollows:\n\nstatic inline bool rz_ssi_is_stream_running(struct rz_ssi_stream *strm)\n{\n    return strm->substream && strm->running;\n}\n\nWhen the controller is configured in full-duplex mode (with both playback\nand capture active), the rz_ssi_stop() function does not modify the\ncontroller settings when called for the first substream in the full-duplex\nsetup. Instead, it simply sets strm->running = 0 and returns if the\ncompanion substream is still running. The following code illustrates this:\n\nstatic int rz_ssi_stop(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)\n{\n    strm->running = 0;\n\n    if (rz_ssi_is_stream_running(&ssi->playback) ||\n        rz_ssi_is_stream_running(&ssi->capture))\n        return 0;\n\n    // ...\n}\n\nThe controller settings, along with the DMA termination (for the last\nstopped substream), are only applied when the last substream in the\nfull-duplex setup is stopped.\n\nWhile applying the controller settings only when the last substream stops\nis not problematic, terminating the DMA operations for only one substream\ncauses failures when starting and stopping full-duplex operations multiple\ntimes in a loop.\n\nTo address this issue, call dmaengine_terminate_async() for both substreams\ninvolved in the full-duplex setup when the last substream in the setup is\nstopped.\n\nFixes: 4f8cd05a4305 (\"ASoC: sh: rz-ssi: Add full duplex support\")\nCc: stable@vger.kernel.org\nReviewed-by: Biju Das <biju.das.jz@bp.renesas.com>\nSigned-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>\nReviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>\nLink: https://patch.msgid.link/20241210170953.2936724-5-claudiu.beznea.uj@bp.renesas.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\n---\n sound/soc/renesas/rz-ssi.c | 8 ++++++--\n 1 file changed, 6 insertions(+), 2 deletions(-)\n\ndiff --git a/sound/soc/renesas/rz-ssi.c b/sound/soc/renesas/rz-ssi.c\nindex 6efd017aaa7fc..2d8721156099a 100644\n--- a/sound/soc/renesas/rz-ssi.c\n+++ b/sound/soc/renesas/rz-ssi.c\n@@ -415,8 +415,12 @@ static int rz_ssi_stop(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)\n \trz_ssi_reg_mask_setl(ssi, SSICR, SSICR_TEN | SSICR_REN, 0);\n \n \t/* Cancel all remaining DMA transactions */\n-\tif (rz_ssi_is_dma_enabled(ssi))\n-\t\tdmaengine_terminate_async(strm->dma_ch);\n+\tif (rz_ssi_is_dma_enabled(ssi)) {\n+\t\tif (ssi->playback.dma_ch)\n+\t\t\tdmaengine_terminate_async(ssi->playback.dma_ch);\n+\t\tif (ssi->capture.dma_ch)\n+\t\t\tdmaengine_terminate_async(ssi->capture.dma_ch);\n+\t}\n \n \trz_ssi_set_idle(ssi);\n \n",
+        "target_version": "linux-6.12.y",
+        "context_diff": "The file does not exist in the older (target) version: sound/soc/renesas/rz-ssi.c\n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/gregkh/linux/541011/llm_output/output_linux-6.12.y_qwen-plus.patch",
+      "apply_result": {
+        "success": false,
+        "error": "Patch format detection failed.\n",
+        "error_type": "other",
+        "output": null
+      },
+      "timestamp": "2025-03-14T13:51:51.082445",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": false,
+    "method": "failed",
+    "timestamp": "2025-03-14T13:51:54.959242"
+  }
+}
