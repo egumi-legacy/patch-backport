@@ -1,0 +1,52 @@
+A. Commit message:
+ibmvnic: Prevent skb reference after sending to VIOS in older version
+
+B. Change summary:
+The patch ensures that the skb length is captured before sending the buffer to VIOS, avoiding a potential use-after-free bug. This change prevents accessing the skb memory after it has been sent to VIOS, which could lead to race conditions and memory corruption.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 6c9d3e4..e95ae0d 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -2402,6 +2402,7 @@
+ 	unsigned int tx_map_failed = 0;
+ 	union sub_crq indir_arr[16];
+ 	unsigned int tx_dropped = 0;
++	unsigned int skblen;
+ 	unsigned int tx_packets = 0;
+ 	unsigned int tx_bytes = 0;
+ 	dma_addr_t data_dma_addr;
+@@ -2576,7 +2577,6 @@
+ 		if (lpar_rc != H_SUCCESS)
+ 			goto tx_err;
+ 
+-		tx_dpackets++;
+ 		goto early_exit;
+ 	}
+ 
+@@ -2605,8 +2605,6 @@
+ 			goto tx_err;
+ 	}
+ 
+-	tx_bpackets++;
+-
+ early_exit:
+ 	if (atomic_add_return(num_entries, &tx_scrq->used)
+  					>= adapter->req_tx_entries_per_subcrq) {
+@@ -2614,6 +2612,7 @@
+ 		netif_stop_subqueue(netdev, queue_num);
+ 	}
+ 
++	skblen = skb->len;
+ 	tx_packets++;
+-	tx_bytes += skb->len;
++	tx_bytes += skblen;
+ 	txq_trans_cond_update(txq);
+ 	ret = NETDEV_TX_OK;
+ 	goto out;
+```

@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "d33b10c0c73adca00f72bf4a153a07b7f5f34715",
+    "patch_url": "https://github.com/gregkh/linux/commit/d33b10c0c73adca00f72bf4a153a07b7f5f34715.patch",
+    "downstream_sha": "3284fbfa87115f4295c9a9edd2a4d02b337fd2ca",
+    "downstream_message": "tracing: Switch trace.c code over to use guard()\n\n[ Upstream commit d33b10c0c73adca00f72bf4a153a07b7f5f34715 ]\n\nThere are several functions in trace.c that have \"goto out;\" or\nequivalent on error in order to release locks or free values that were\nallocated. This can be error prone or just simply make the code more\ncomplex.\n\nSwitch every location that ends with unlocking a mutex or freeing on error\nover to using the guard(mutex)() and __free() infrastructure to let the\ncompiler worry about releasing locks. This makes the code easier to read\nand understand.\n\nThere's one place that should probably return an error but instead return\n0. This does not change the return as the only changes are to do the\nconversion without changing the logic. Fixing that location will have to\ncome later.\n\nCc: Mark Rutland <mark.rutland@arm.com>\nCc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>\nCc: Peter Zijlstra <peterz@infradead.org>\nCc: Andrew Morton <akpm@linux-foundation.org>\nAcked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>\nLink: https://lore.kernel.org/20241224221413.7b8c68c3@batman.local.home\nSigned-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>\nStable-dep-of: 60b8f711143d (\"tracing: Have the error of __tracing_resize_ring_buffer() passed to user\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/d33b10/patches/upstream_d33b10.patch",
+      "timestamp": "2025-03-12T04:54:35.175450"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T04:54:35.538069"
+  }
+}

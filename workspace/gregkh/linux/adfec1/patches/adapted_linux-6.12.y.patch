@@ -1,0 +1,54 @@
+From 070c654f742d83c548fc9fabf8473f480b49e10f Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:18:26 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ arch/x86/kvm/lapic.h | 6 +++++-
+ arch/x86/kvm/x86.c   | 6 ------
+ 2 files changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/kvm/lapic.h b/arch/x86/kvm/lapic.h
+index 1b8ef9856422..2483270b17ec 100644
+--- a/arch/x86/kvm/lapic.h
++++ b/arch/x86/kvm/lapic.h
+@@ -121,7 +121,6 @@ u64 kvm_get_apic_base(struct kvm_vcpu *vcpu);
+ int kvm_set_apic_base(struct kvm_vcpu *vcpu, struct msr_data *msr_info);
+ int kvm_apic_get_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s);
+ int kvm_apic_set_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s);
+-enum lapic_mode kvm_get_apic_mode(struct kvm_vcpu *vcpu);
+ int kvm_lapic_find_highest_irr(struct kvm_vcpu *vcpu);
+ 
+ u64 kvm_get_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu);
+@@ -271,6 +270,11 @@ static inline enum lapic_mode kvm_apic_mode(u64 apic_base)
+ 	return apic_base & (MSR_IA32_APICBASE_ENABLE | X2APIC_ENABLE);
+ }
+ 
++static inline enum lapic_mode kvm_get_apic_mode(struct kvm_vcpu *vcpu)
++{
++	return kvm_apic_mode(vcpu->arch.apic_base);
++}
++
+ static inline u8 kvm_xapic_id(struct kvm_lapic *apic)
+ {
+ 	return kvm_lapic_get_reg(apic, APIC_ID) >> 24;
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 83fe0a78146f..1576e5bc2b0c 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -672,12 +672,6 @@ u64 kvm_get_apic_base(struct kvm_vcpu *vcpu)
+ 	return vcpu->arch.apic_base;
+ }
+ 
+-enum lapic_mode kvm_get_apic_mode(struct kvm_vcpu *vcpu)
+-{
+-	return kvm_apic_mode(kvm_get_apic_base(vcpu));
+-}
+-EXPORT_SYMBOL_GPL(kvm_get_apic_mode);
+-
+ int kvm_set_apic_base(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ {
+ 	enum lapic_mode old_mode = kvm_get_apic_mode(vcpu);
+-- 
+2.25.1
+

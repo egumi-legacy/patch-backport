@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "4aac0db5a0ebc599d4ad9bf5ebab78afa1f33e10",
+    "patch_url": "https://github.com/gregkh/linux/commit/4aac0db5a0ebc599d4ad9bf5ebab78afa1f33e10.patch",
+    "downstream_sha": "847fff8e20c983b42c8b51b0b2b11780b94e534b",
+    "downstream_message": "usb: core: fix pipe creation for get_bMaxPacketSize0\n\ncommit 4aac0db5a0ebc599d4ad9bf5ebab78afa1f33e10 upstream.\n\nWhen usb_control_msg is used in the get_bMaxPacketSize0 function, the\nUSB pipe does not include the endpoint device number. This can cause\nfailures when a usb hub port is reinitialized after encountering a bad\ncable connection. As a result, the system logs the following error\nmessages:\nusb usb2-port1: cannot reset (err = -32)\nusb usb2-port1: Cannot enable. Maybe the USB cable is bad?\nusb usb2-port1: attempt power cycle\nusb 2-1: new high-speed USB device number 5 using ci_hdrc\nusb 2-1: device descriptor read/8, error -71\n\nThe problem began after commit 85d07c556216 (\"USB: core: Unite old\nscheme and new scheme descriptor reads\"). There\nusb_get_device_descriptor was replaced with get_bMaxPacketSize0. Unlike\nusb_get_device_descriptor, the get_bMaxPacketSize0 function uses the\nmacro usb_rcvaddr0pipe, which does not include the endpoint device\nnumber. usb_get_device_descriptor, on the other hand, used the macro\nusb_rcvctrlpipe, which includes the endpoint device number.\n\nBy modifying the get_bMaxPacketSize0 function to use usb_rcvctrlpipe\ninstead of usb_rcvaddr0pipe, the issue can be resolved. This change will\nensure that the endpoint device number is included in the USB pipe,\npreventing reinitialization failures. If the endpoint has not set the\ndevice number yet, it will still work because the device number is 0 in\nudev.\n\nCc: stable <stable@kernel.org>\nFixes: 85d07c556216 (\"USB: core: Unite old scheme and new scheme descriptor reads\")\nSigned-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>\nReviewed-by: Alan Stern <stern@rowland.harvard.edu>\nLink: https://lore.kernel.org/r/20250203105840.17539-1-eichest@gmail.com\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4aac0d/patches/upstream_4aac0d.patch",
+      "timestamp": "2025-03-12T06:00:36.702578"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T06:00:36.988300"
+  }
+}

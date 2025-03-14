@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "b1089e0c8817fda93d474eaa82ad86386887aefe",
+    "patch_url": "https://github.com/gregkh/linux/commit/b1089e0c8817fda93d474eaa82ad86386887aefe",
+    "downstream_sha": "8ce0d636da0fb6ecb3458dafe9c4220b8c064de7",
+    "downstream_message": "cpufreq/amd-pstate: Refactor amd_pstate_epp_reenable() and amd_pstate_epp_offline()\n\n[ Upstream commit b1089e0c8817fda93d474eaa82ad86386887aefe ]\n\nReplace similar code chunks with amd_pstate_update_perf() and\namd_pstate_set_epp() function calls.\n\nSigned-off-by: Dhananjay Ugwekar <Dhananjay.Ugwekar@amd.com>\nReviewed-by: Mario Limonciello <mario.limonciello@amd.com>\nReviewed-by: Gautham R. Shenoy <gautham.shenoy@amd.com>\nLink: https://lore.kernel.org/r/20241204144842.164178-4-Dhananjay.Ugwekar@amd.com\n[ML: Fix LKP reported error about unused variable]\nSigned-off-by: Mario Limonciello <mario.limonciello@amd.com>\nStable-dep-of: 3ace20038e19 (\"cpufreq/amd-pstate: Fix cpufreq_policy ref counting\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/cpufreq/amd-pstate.c:1632\nerror: drivers/cpufreq/amd-pstate.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/b1089e/patches/upstream_b1089e.patch",
+      "timestamp": "2025-03-12T05:45:40.891052"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:46:38.833745"
+  }
+}

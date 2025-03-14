@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "159daf1258227f44b26b5d38f4aa8f37b8cca663",
+    "patch_url": "https://github.com/gregkh/linux/commit/159daf1258227f44b26b5d38f4aa8f37b8cca663.patch",
+    "downstream_sha": "f4e1cebbfaa0208c4e7c08f9c2ebed4034f3a207",
+    "downstream_message": "USB: Add USB_QUIRK_NO_LPM quirk for sony xperia xz1 smartphone\n\ncommit 159daf1258227f44b26b5d38f4aa8f37b8cca663 upstream.\n\nThe fastboot tool for communicating with Android bootloaders does not\nwork reliably with this device if USB 2 Link Power Management (LPM)\nis enabled.\n\nVarious fastboot commands are affected, including the\nfollowing, which usually reproduces the problem within two tries:\n\n  fastboot getvar kernel\n  getvar:kernel  FAILED (remote: 'GetVar Variable Not found')\n\nThis issue was hidden on many systems up until commit 63a1f8454962\n(\"xhci: stored cached port capability values in one place\") as the xhci\ndriver failed to detect USB 2 LPM support if USB 3 ports were listed\nbefore USB 2 ports in the \"supported protocol capabilities\".\n\nAdding the quirk resolves the issue. No drawbacks are expected since\nthe device uses different USB product IDs outside of fastboot mode, and\nsince fastboot commands worked before, until LPM was enabled on the\ntested system by the aforementioned commit.\n\nBased on a patch from Forest <forestix@nom.one> from which most of the\ncode and commit message is taken.\n\nCc: stable <stable@kernel.org>\nReported-by: Forest <forestix@nom.one>\nCloses: https://lore.kernel.org/hk8umj9lv4l4qguftdq1luqtdrpa1gks5l@sonic.net\nTested-by: Forest <forestix@nom.one>\nSigned-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>\nLink: https://lore.kernel.org/r/20250206151836.51742-1-mathias.nyman@linux.intel.com\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/159daf/patches/upstream_159daf.patch",
+      "timestamp": "2025-03-12T06:00:28.051626"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T06:00:28.283138"
+  }
+}

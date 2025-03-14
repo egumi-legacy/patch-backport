@@ -1,0 +1,119 @@
+modified file: net/vmw_vsock/af_vsock.c
+--- workspace/gregkh/linux/857ae0/newer/net/vmw_vsock/af_vsock.c
++++ workspace/gregkh/linux/857ae0/linux-6.12.y/net/vmw_vsock/af_vsock.c
+@@ -337,10 +337,7 @@
+  
+  void vsock_remove_sock(struct vsock_sock *vsk)
+  {
+ -	/* Transport reassignment must not remove the binding. */
+ -	if (sock_flag(sk_vsock(vsk), SOCK_DEAD))
+ -		vsock_remove_bound(vsk);
+ -
+ +	vsock_remove_bound(vsk);
+  	vsock_remove_connected(vsk);
+  }
+  EXPORT_SYMBOL_GPL(vsock_remove_sock);
+@@ -494,15 +491,6 @@
+  		 */
+  		vsk->transport->release(vsk);
+  		vsock_deassign_transport(vsk);
+ -
+ -		/* transport's release() and destruct() can touch some socket
+ -		 * state, since we are reassigning the socket to a new transport
+ -		 * during vsock_connect(), let's reset these fields to have a
+ -		 * clean state.
+ -		 */
+ -		sock_reset_flag(sk, SOCK_DONE);
+ -		sk->sk_state = TCP_CLOSE;
+ -		vsk->peer_shutdown = 0;
+  	}
+  
+  	lock_sock_nested(sk, level);
+  
+ -	/* Indicate to vsock_remove_sock() that the socket is being released and
+ -	 * can be removed from the bound_table. Unlike transport reassignment
+ -	 * case, where the socket must remain bound despite vsock_remove_sock()
+ -	 * being called from the transport release() callback.
+ -	 */
+ -	sock_set_flag(sk, SOCK_DEAD);
+ -
+  	if (vsk->transport)
+  		vsk->transport->release(vsk);
+  	else if (sock_type_connectible(sk->sk_type))
+@@ -889,9 +870,6 @@
+  
+  s64 vsock_stream_has_data(struct vsock_sock *vsk)
+  {
+ -	if (WARN_ON(!vsk->transport))
+ -		return 0;
+ -
+  	return vsk->transport->stream_has_data(vsk);
+  }
+  EXPORT_SYMBOL_GPL(vsock_stream_has_data);
+@@ -899,9 +877,6 @@
+  s64 vsock_connectible_has_data(struct vsock_sock *vsk)
+  {
+  	struct sock *sk = sk_vsock(vsk);
+ -
+ -	if (WARN_ON(!vsk->transport))
+ -		return 0;
+  
+  	if (sk->sk_type == SOCK_SEQPACKET)
+  		return vsk->transport->seqpacket_has_data(vsk);
+@@ -912,9 +887,6 @@
+  
+  s64 vsock_stream_has_space(struct vsock_sock *vsk)
+  {
+ -	if (WARN_ON(!vsk->transport))
+ -		return 0;
+ -
+  	return vsk->transport->stream_has_space(vsk);
+  }
+  EXPORT_SYMBOL_GPL(vsock_stream_has_space);
+@@ -1528,11 +1500,6 @@
+  		err = transport->connect(vsk);
+  		if (err < 0)
+  			goto out;
+ -
+ -		/* sk_err might have been set as a result of an earlier
+ -		 * (failed) connect attempt.
+ -		 */
+ -		sk->sk_err = 0;
+  
+
+""""""
+modified file: net/vmw_vsock/vsock_bpf.c
+--- workspace/gregkh/linux/857ae0/newer/net/vmw_vsock/vsock_bpf.c
++++ workspace/gregkh/linux/857ae0/linux-6.12.y/net/vmw_vsock/vsock_bpf.c
+@@ -77,7 +77,6 @@
+  			     size_t len, int flags, int *addr_len)
+  {
+  	struct sk_psock *psock;
+ -	struct vsock_sock *vsk;
+  	int copied;
+  
+  	psock = sk_psock_get(sk);
+@@ -85,13 +84,6 @@
+  		return __vsock_recvmsg(sk, msg, len, flags);
+  
+  	lock_sock(sk);
+ -	vsk = vsock_sk(sk);
+ -
+ -	if (!vsk->transport) {
+ -		copied = -ENODEV;
+ -		goto out;
+ -	}
+ -
+  	if (vsock_has_data(sk, psock) && sk_psock_queue_empty(psock)) {
+  		release_sock(sk);
+  		sk_psock_put(sk, psock);
+@@ -116,7 +108,6 @@
+  		copied = sk_msg_recvmsg(sk, psock, msg, len, flags);
+  	}
+  
+ -out:
+  	release_sock(sk);
+  	sk_psock_put(sk, psock);
+  
+
+""""""

@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "da2dccd7451de62b175fb8f0808d644959e964c7",
+    "patch_url": "https://github.com/gregkh/linux/commit/da2dccd7451de62b175fb8f0808d644959e964c7",
+    "downstream_sha": "cad62c5aee916d5b5f537af29cd84c163330fd78",
+    "downstream_message": "btrfs: fix hole expansion when writing at an offset beyond EOF\n\ncommit da2dccd7451de62b175fb8f0808d644959e964c7 upstream.\n\nAt btrfs_write_check() if our file's i_size is not sector size aligned and\nwe have a write that starts at an offset larger than the i_size that falls\nwithin the same page of the i_size, then we end up not zeroing the file\nrange [i_size, write_offset).\n\nThe code is this:\n\n    start_pos = round_down(pos, fs_info->sectorsize);\n    oldsize = i_size_read(inode);\n    if (start_pos > oldsize) {\n        /* Expand hole size to cover write data, preventing empty gap */\n        loff_t end_pos = round_up(pos + count, fs_info->sectorsize);\n\n        ret = btrfs_cont_expand(BTRFS_I(inode), oldsize, end_pos);\n        if (ret)\n            return ret;\n    }\n\nSo if our file's i_size is 90269 bytes and a write at offset 90365 bytes\ncomes in, we get 'start_pos' set to 90112 bytes, which is less than the\ni_size and therefore we don't zero out the range [90269, 90365) by\ncalling btrfs_cont_expand().\n\nThis is an old bug introduced in commit 9036c10208e1 (\"Btrfs: update hole\nhandling v2\"), from 2008, and the buggy code got moved around over the\nyears.\n\nFix this by discarding 'start_pos' and comparing against the write offset\n('pos') without any alignment.\n\nThis bug was recently exposed by test case generic/363 which tests this\nscenario by polluting ranges beyond EOF with an mmap write and than verify\nthat after a file increases we get zeroes for the range which is supposed\nto be a hole and not what we wrote with the previous mmaped write.\n\nWe're only seeing this exposed now because generic/363 used to run only\non xfs until last Sunday's fstests update.\n\nThe test was failing like this:\n\n   $ ./check generic/363\n   FSTYP         -- btrfs\n   PLATFORM      -- Linux/x86_64 debian0 6.13.0-rc7-btrfs-next-185+ #17 SMP PREEMPT_DYNAMIC Mon Feb  3 12:28:46 WET 2025\n   MKFS_OPTIONS  -- /dev/sdc\n   MOUNT_OPTIONS -- /dev/sdc /home/fdmanana/btrfs-tests/scratch_1\n\n   generic/363 0s ... [failed, exit status 1]- output mismatch (see /home/fdmanana/git/hub/xfstests/results//generic/363.out.bad)\n#      --- tests/generic/363.out\t2025-02-05 15:31:14.013646509 +0000\n#      +++ /home/fdmanana/git/hub/xfstests/results//generic/363.out.bad\t2025-02-05 17:25:33.112630781 +0000\n       @@ -1 +1,46 @@\n        QA output created by 363\n       +READ BAD DATA: offset = 0xdcad, size = 0xd921, fname = /home/fdmanana/btrfs-tests/dev/junk\n       +OFFSET      GOOD    BAD     RANGE\n       +0x1609d     0x0000  0x3104  0x0\n       +operation# (mod 256) for the bad data may be 4\n       +0x1609e     0x0000  0x0472  0x1\n       +operation# (mod 256) for the bad data may be 4\n       ...\n       (Run 'diff -u /home/fdmanana/git/hub/xfstests/tests/generic/363.out /home/fdmanana/git/hub/xfstests/results//generic/363.out.bad'  to see the entire diff)\n   Ran: generic/363\n   Failures: generic/363\n   Failed 1 of 1 tests\n\nFixes: 9036c10208e1 (\"Btrfs: update hole handling v2\")\nCC: stable@vger.kernel.org\nReviewed-by: Qu Wenruo <wqu@suse.com>\nSigned-off-by: Filipe Manana <fdmanana@suse.com>\nSigned-off-by: David Sterba <dsterba@suse.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: fs/btrfs/file.c:1066\nerror: fs/btrfs/file.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/da2dcc/patches/upstream_da2dcc.patch",
+      "timestamp": "2025-03-12T05:53:15.516361"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:53:38.212703"
+  }
+}

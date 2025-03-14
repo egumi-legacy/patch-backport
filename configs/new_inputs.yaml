@@ -12,6 +12,7 @@ common:
   
   enabled_modules:  # 启用的管道模块
     - "direct_apply"
+    - "chunk_analyzer"
     - "llm_adapter"
     - "patch_adapter"
     - "compiler"
@@ -30,7 +31,7 @@ common:
       ccache_dir: "~/.ccache"
   
   stop_on_failure: false  # 是否在失败时停止
-  use_cached_patches: false
+  use_cached_patches: true
   repo_path: "../backport-test/linux"  # 本地仓库路径
   target_version: "linux-6.12.y"  # 目标版本
 

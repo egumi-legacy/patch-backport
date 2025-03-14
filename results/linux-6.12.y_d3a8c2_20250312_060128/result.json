@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "d3a8c28426fc1fb3252753a9f1db0d691ffc21b0",
+    "patch_url": "https://github.com/gregkh/linux/commit/d3a8c28426fc1fb3252753a9f1db0d691ffc21b0.patch",
+    "downstream_sha": "5fead36e095fbcb1bfd921c54159de7c11d42e0c",
+    "downstream_message": "usb: dwc3: Fix timeout issue during controller enter/exit from halt state\n\ncommit d3a8c28426fc1fb3252753a9f1db0d691ffc21b0 upstream.\n\nThere is a frequent timeout during controller enter/exit from halt state\nafter toggling the run_stop bit by SW. This timeout occurs when\nperforming frequent role switches between host and device, causing\ndevice enumeration issues due to the timeout.\u00a0This issue was not present\nwhen USB2 suspend PHY was disabled by passing the SNPS quirks\n(snps,dis_u2_susphy_quirk and snps,dis_enblslpm_quirk) from the DTS.\nHowever, there is a requirement to enable USB2 suspend PHY by setting of\nGUSB2PHYCFG.ENBLSLPM and GUSB2PHYCFG.SUSPHY bits when controller starts\nin gadget or host mode results in the timeout issue.\n\nThis commit addresses this timeout issue by ensuring that the bits\nGUSB2PHYCFG.ENBLSLPM and GUSB2PHYCFG.SUSPHY are cleared before starting\nthe dwc3_gadget_run_stop sequence and restoring them after the\ndwc3_gadget_run_stop sequence is completed.\n\nFixes: 72246da40f37 (\"usb: Introduce DesignWare USB3 DRD Driver\")\nCc: stable <stable@kernel.org>\nSigned-off-by: Selvarasu Ganesan <selvarasu.g@samsung.com>\nAcked-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>\nLink: https://lore.kernel.org/r/20250201163903.459-1-selvarasu.g@samsung.com\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/d3a8c2/patches/upstream_d3a8c2.patch",
+      "timestamp": "2025-03-12T06:01:28.012589"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T06:01:28.268008"
+  }
+}

@@ -1,0 +1,199 @@
+
+""""""
+
+""""""
+modified file: drivers/gpu/drm/amd/display/dc/clk_mgr/dcn35/dcn35_clk_mgr.c
+--- workspace/gregkh/linux/a1fc28/newer/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn35/dcn35_clk_mgr.c
++++ workspace/gregkh/linux/a1fc28/linux-6.12.y/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn35/dcn35_clk_mgr.c
+@@ -55,7 +55,6 @@
+  #define DC_LOGGER \
+  	clk_mgr->base.base.ctx->logger
+  
+ -
+  #define regCLK1_CLK_PLL_REQ			0x0237
+  #define regCLK1_CLK_PLL_REQ_BASE_IDX		0
+  
+@@ -151,15 +150,7 @@
+  		new_pipe->stream_res.stream_enc &&
+  		new_pipe->stream_res.stream_enc->funcs->is_fifo_enabled &&
+  		new_pipe->stream_res.stream_enc->funcs->is_fifo_enabled(new_pipe->stream_res.stream_enc);
+ -
+ -		bool has_active_hpo = false;
+ -
+ -		if (old_pipe->stream && new_pipe->stream && old_pipe->stream == new_pipe->stream) {
+ -			has_active_hpo =  dccg->ctx->dc->link_srv->dp_is_128b_132b_signal(old_pipe) &&
+ -			dccg->ctx->dc->link_srv->dp_is_128b_132b_signal(new_pipe);
+ -
+ -		 }
+ -
+ +		bool has_active_hpo = dccg->ctx->dc->link_srv->dp_is_128b_132b_signal(old_pipe) && dccg->ctx->dc->link_srv->dp_is_128b_132b_signal(new_pipe);
+  
+  		if (!has_active_hpo && !dccg->ctx->dc->link_srv->dp_is_128b_132b_signal(pipe) &&
+  					(pipe->stream && (pipe->stream->dpms_off || dc_is_virtual_signal(pipe->stream->signal) ||
+@@ -632,7 +623,6 @@
+  };
+  
+  static DpmClocks_t_dcn35 dummy_clocks;
+ -static DpmClocks_t_dcn351 dummy_clocks_dcn351;
+  
+  static struct dcn35_watermarks dummy_wms = { 0 };
+  
+@@ -756,22 +746,6 @@
+  	dcn35_smu_transfer_dpm_table_smu_2_dram(clk_mgr);
+  }
+  
+ -static void dcn351_get_dpm_table_from_smu(struct clk_mgr_internal *clk_mgr,
+ -		struct dcn351_smu_dpm_clks *smu_dpm_clks)
+ -{
+ -	DpmClocks_t_dcn351 *table = smu_dpm_clks->dpm_clks;
+ -
+ -	if (!clk_mgr->smu_ver)
+ -		return;
+ -	if (!table || smu_dpm_clks->mc_address.quad_part == 0)
+ -		return;
+ -	memset(table, 0, sizeof(*table));
+ -	dcn35_smu_set_dram_addr_high(clk_mgr,
+ -			smu_dpm_clks->mc_address.high_part);
+ -	dcn35_smu_set_dram_addr_low(clk_mgr,
+ -			smu_dpm_clks->mc_address.low_part);
+ -	dcn35_smu_transfer_dpm_table_smu_2_dram(clk_mgr);
+ -}
+  static uint32_t find_max_clk_value(const uint32_t clocks[], uint32_t num_clocks)
+  {
+  	uint32_t max = 0;
+@@ -1010,8 +984,11 @@
+  static bool dcn35_is_ips_supported(struct clk_mgr *clk_mgr_base)
+  {
+  	struct clk_mgr_internal *clk_mgr = TO_CLK_MGR_INTERNAL(clk_mgr_base);
+ -
+ -	return dcn35_smu_get_ips_supported(clk_mgr) ? true : false;
+ +	bool ips_supported = true;
+ +
+ +	ips_supported = dcn35_smu_get_ips_supported(clk_mgr) ? true : false;
+ +
+ +	return ips_supported;
+  }
+  
+  static void dcn35_init_clocks_fpga(struct clk_mgr *clk_mgr)
+@@ -1110,57 +1087,6 @@
+  	.get_dtb_ref_clk_frequency = dcn31_get_dtb_ref_freq_khz,
+  };
+  
+ -static void translate_to_DpmClocks_t_dcn35(struct dcn351_smu_dpm_clks *smu_dpm_clks_a,
+ -		struct dcn35_smu_dpm_clks *smu_dpm_clks_b)
+ -{
+ -	/*translate two structures and only take need clock tables*/
+ -	uint8_t i;
+ -
+ -	if (smu_dpm_clks_a == NULL || smu_dpm_clks_b == NULL ||
+ -		smu_dpm_clks_a->dpm_clks == NULL || smu_dpm_clks_b->dpm_clks == NULL)
+ -		return;
+ -
+ -	for (i = 0; i < NUM_DCFCLK_DPM_LEVELS; i++)
+ -		smu_dpm_clks_b->dpm_clks->DcfClocks[i] = smu_dpm_clks_a->dpm_clks->DcfClocks[i];
+ -
+ -	for (i = 0; i < NUM_DISPCLK_DPM_LEVELS; i++)
+ -		smu_dpm_clks_b->dpm_clks->DispClocks[i] = smu_dpm_clks_a->dpm_clks->DispClocks[i];
+ -
+ -	for (i = 0; i < NUM_DPPCLK_DPM_LEVELS; i++)
+ -		smu_dpm_clks_b->dpm_clks->DppClocks[i] = smu_dpm_clks_a->dpm_clks->DppClocks[i];
+ -
+ -	for (i = 0; i < NUM_FCLK_DPM_LEVELS; i++) {
+ -		smu_dpm_clks_b->dpm_clks->FclkClocks_Freq[i] = smu_dpm_clks_a->dpm_clks->FclkClocks_Freq[i];
+ -		smu_dpm_clks_b->dpm_clks->FclkClocks_Voltage[i] = smu_dpm_clks_a->dpm_clks->FclkClocks_Voltage[i];
+ -	}
+ -	for (i = 0; i < NUM_MEM_PSTATE_LEVELS; i++) {
+ -		smu_dpm_clks_b->dpm_clks->MemPstateTable[i].MemClk =
+ -			smu_dpm_clks_a->dpm_clks->MemPstateTable[i].MemClk;
+ -		smu_dpm_clks_b->dpm_clks->MemPstateTable[i].UClk =
+ -			smu_dpm_clks_a->dpm_clks->MemPstateTable[i].UClk;
+ -		smu_dpm_clks_b->dpm_clks->MemPstateTable[i].Voltage =
+ -			smu_dpm_clks_a->dpm_clks->MemPstateTable[i].Voltage;
+ -		smu_dpm_clks_b->dpm_clks->MemPstateTable[i].WckRatio =
+ -			smu_dpm_clks_a->dpm_clks->MemPstateTable[i].WckRatio;
+ -	}
+ -	smu_dpm_clks_b->dpm_clks->MaxGfxClk = smu_dpm_clks_a->dpm_clks->MaxGfxClk;
+ -	smu_dpm_clks_b->dpm_clks->MinGfxClk = smu_dpm_clks_a->dpm_clks->MinGfxClk;
+ -	smu_dpm_clks_b->dpm_clks->NumDcfClkLevelsEnabled =
+ -		smu_dpm_clks_a->dpm_clks->NumDcfClkLevelsEnabled;
+ -	smu_dpm_clks_b->dpm_clks->NumDispClkLevelsEnabled =
+ -		smu_dpm_clks_a->dpm_clks->NumDispClkLevelsEnabled;
+ -	smu_dpm_clks_b->dpm_clks->NumFclkLevelsEnabled =
+ -		smu_dpm_clks_a->dpm_clks->NumFclkLevelsEnabled;
+ -	smu_dpm_clks_b->dpm_clks->NumMemPstatesEnabled =
+ -		smu_dpm_clks_a->dpm_clks->NumMemPstatesEnabled;
+ -	smu_dpm_clks_b->dpm_clks->NumSocClkLevelsEnabled =
+ -		smu_dpm_clks_a->dpm_clks->NumSocClkLevelsEnabled;
+ -
+ -	for (i = 0; i < NUM_SOC_VOLTAGE_LEVELS; i++) {
+ -		smu_dpm_clks_b->dpm_clks->SocClocks[i] = smu_dpm_clks_a->dpm_clks->SocClocks[i];
+ -		smu_dpm_clks_b->dpm_clks->SocVoltage[i] = smu_dpm_clks_a->dpm_clks->SocVoltage[i];
+ -	}
+ -}
+  void dcn35_clk_mgr_construct(
+  		struct dc_context *ctx,
+  		struct clk_mgr_dcn35 *clk_mgr,
+@@ -1168,7 +1094,6 @@
+  		struct dccg *dccg)
+  {
+  	struct dcn35_smu_dpm_clks smu_dpm_clks = { 0 };
+ -	struct dcn351_smu_dpm_clks smu_dpm_clks_dcn351 = { 0 };
+  	clk_mgr->base.base.ctx = ctx;
+  	clk_mgr->base.base.funcs = &dcn35_funcs;
+  
+@@ -1199,23 +1124,13 @@
+  				DC_MEM_ALLOC_TYPE_GART,
+  				sizeof(DpmClocks_t_dcn35),
+  				&smu_dpm_clks.mc_address.quad_part);
+ +
+  	if (smu_dpm_clks.dpm_clks == NULL) {
+  		smu_dpm_clks.dpm_clks = &dummy_clocks;
+  		smu_dpm_clks.mc_address.quad_part = 0;
+  	}
+ +
+  	ASSERT(smu_dpm_clks.dpm_clks);
+ -
+ -	if (ctx->dce_version == DCN_VERSION_3_51) {
+ -		smu_dpm_clks_dcn351.dpm_clks = (DpmClocks_t_dcn351 *)dm_helpers_allocate_gpu_mem(
+ -				clk_mgr->base.base.ctx,
+ -				DC_MEM_ALLOC_TYPE_GART,
+ -				sizeof(DpmClocks_t_dcn351),
+ -				&smu_dpm_clks_dcn351.mc_address.quad_part);
+ -		if (smu_dpm_clks_dcn351.dpm_clks == NULL) {
+ -			smu_dpm_clks_dcn351.dpm_clks = &dummy_clocks_dcn351;
+ -			smu_dpm_clks_dcn351.mc_address.quad_part = 0;
+ -		}
+ -	}
+  
+  	clk_mgr->base.smu_ver = dcn35_smu_get_smu_version(&clk_mgr->base);
+  
+@@ -1245,11 +1160,7 @@
+  
+  	if (clk_mgr->base.base.ctx->dc->debug.pstate_enabled) {
+  		int i;
+ -		if (ctx->dce_version == DCN_VERSION_3_51) {
+ -			dcn351_get_dpm_table_from_smu(&clk_mgr->base, &smu_dpm_clks_dcn351);
+ -			translate_to_DpmClocks_t_dcn35(&smu_dpm_clks_dcn351, &smu_dpm_clks);
+ -		} else
+ -			dcn35_get_dpm_table_from_smu(&clk_mgr->base, &smu_dpm_clks);
+ +		dcn35_get_dpm_table_from_smu(&clk_mgr->base, &smu_dpm_clks);
+  		DC_LOG_SMU("NumDcfClkLevelsEnabled: %d\n"
+  				   "NumDispClkLevelsEnabled: %d\n"
+  				   "NumSocClkLevelsEnabled: %d\n"
+@@ -1310,10 +1221,6 @@
+  		dm_helpers_free_gpu_mem(clk_mgr->base.base.ctx, DC_MEM_ALLOC_TYPE_GART,
+  				smu_dpm_clks.dpm_clks);
+  
+ -	if (smu_dpm_clks_dcn351.dpm_clks && smu_dpm_clks_dcn351.mc_address.quad_part != 0)
+ -		dm_helpers_free_gpu_mem(clk_mgr->base.base.ctx, DC_MEM_ALLOC_TYPE_GART,
+ -				smu_dpm_clks_dcn351.dpm_clks);
+ -
+  	if (ctx->dc->config.disable_ips != DMUB_IPS_DISABLE_ALL) {
+  		bool ips_support = false;
+  
+
+""""""
+
+""""""
+
+""""""

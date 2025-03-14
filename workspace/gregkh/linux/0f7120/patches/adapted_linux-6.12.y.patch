@@ -1,0 +1,214 @@
+From 6516d9027c2be6d976ef494df186878a87d35dd6 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:23:05 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ fs/btrfs/extent_io.c | 12 ++++++------
+ fs/btrfs/subpage.c   | 44 ++++++++++++++++++++++----------------------
+ fs/btrfs/subpage.h   |  8 ++++++--
+ 3 files changed, 34 insertions(+), 30 deletions(-)
+
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index 872cca54cc6c..cb68f2ef9001 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -190,7 +190,7 @@ static void process_one_folio(struct btrfs_fs_info *fs_info,
+ 		btrfs_folio_clamp_clear_writeback(fs_info, folio, start, len);
+ 
+ 	if (folio != locked_folio && (page_ops & PAGE_UNLOCK))
+-		btrfs_folio_end_writer_lock(fs_info, folio, start, len);
++		btrfs_folio_end_lock(fs_info, folio, start, len);
+ }
+ 
+ static void __process_folios_contig(struct address_space *mapping,
+@@ -276,7 +276,7 @@ static noinline int lock_delalloc_folios(struct inode *inode,
+ 			range_start = max_t(u64, folio_pos(folio), start);
+ 			range_len = min_t(u64, folio_pos(folio) + folio_size(folio),
+ 					  end + 1) - range_start;
+-			btrfs_folio_set_writer_lock(fs_info, folio, range_start, range_len);
++			btrfs_folio_set_lock(fs_info, folio, range_start, range_len);
+ 
+ 			processed_end = range_start + range_len - 1;
+ 		}
+@@ -438,7 +438,7 @@ static void end_folio_read(struct folio *folio, bool uptodate, u64 start, u32 le
+ 	if (!btrfs_is_subpage(fs_info, folio->mapping))
+ 		folio_unlock(folio);
+ 	else
+-		btrfs_subpage_end_reader(fs_info, folio, start, len);
++		btrfs_folio_end_lock(fs_info, folio, start, len);
+ }
+ 
+ /*
+@@ -495,7 +495,7 @@ static void begin_folio_read(struct btrfs_fs_info *fs_info, struct folio *folio)
+ 		return;
+ 
+ 	ASSERT(folio_test_private(folio));
+-	btrfs_subpage_start_reader(fs_info, folio, folio_pos(folio), PAGE_SIZE);
++	btrfs_folio_set_lock(fs_info, folio, folio_pos(folio), PAGE_SIZE);
+ }
+ 
+ /*
+@@ -1476,7 +1476,7 @@ static int extent_writepage(struct folio *folio, struct btrfs_bio_ctrl *bio_ctrl
+ 	 * Only unlock ranges that are submitted. As there can be some async
+ 	 * submitted ranges inside the folio.
+ 	 */
+-	btrfs_folio_end_writer_lock_bitmap(fs_info, folio, bio_ctrl->submit_bitmap);
++	btrfs_folio_end_lock_bitmap(fs_info, folio, bio_ctrl->submit_bitmap);
+ 	ASSERT(ret <= 0);
+ 	return ret;
+ }
+@@ -2234,7 +2234,7 @@ void extent_write_locked_range(struct inode *inode, const struct folio *locked_f
+ 						       cur, cur_len, !ret);
+ 			mapping_set_error(mapping, ret);
+ 		}
+-		btrfs_folio_end_writer_lock(fs_info, folio, cur, cur_len);
++		btrfs_folio_end_lock(fs_info, folio, cur, cur_len);
+ 		if (ret < 0)
+ 			found_error = true;
+ next_page:
+diff --git a/fs/btrfs/subpage.c b/fs/btrfs/subpage.c
+index fe4d719d506b..d963af5cabaf 100644
+--- a/fs/btrfs/subpage.c
++++ b/fs/btrfs/subpage.c
+@@ -315,8 +315,8 @@ static void btrfs_subpage_start_writer(const struct btrfs_fs_info *fs_info,
+ 	spin_unlock_irqrestore(&subpage->lock, flags);
+ }
+ 
+-static bool btrfs_subpage_end_and_test_writer(const struct btrfs_fs_info *fs_info,
+-					      struct folio *folio, u64 start, u32 len)
++static bool btrfs_subpage_end_and_test_lock(const struct btrfs_fs_info *fs_info,
++					    struct folio *folio, u64 start, u32 len)
+ {
+ 	struct btrfs_subpage *subpage = folio_get_private(folio);
+ 	const int start_bit = subpage_calc_start_bit(fs_info, folio, locked, start, len);
+@@ -334,9 +334,9 @@ static bool btrfs_subpage_end_and_test_writer(const struct btrfs_fs_info *fs_inf
+ 	 * extent_clear_unlock_delalloc() for compression path.
+ 	 *
+ 	 * This @locked_page is locked by plain lock_page(), thus its
+-	 * subpage::writers is 0.  Handle them in a special way.
++	 * subpage::locked is 0.  Handle them in a special way.
+ 	 */
+-	if (atomic_read(&subpage->writers) == 0) {
++	if (atomic_read(&subpage->nr_locked) == 0) {
+ 		spin_unlock_irqrestore(&subpage->lock, flags);
+ 		return true;
+ 	}
+@@ -345,8 +345,8 @@ static bool btrfs_subpage_end_and_test_writer(const struct btrfs_fs_info *fs_inf
+ 		clear_bit(bit, subpage->bitmaps);
+ 		cleared++;
+ 	}
+-	ASSERT(atomic_read(&subpage->writers) >= cleared);
+-	last = atomic_sub_and_test(cleared, &subpage->writers);
++	ASSERT(atomic_read(&subpage->nr_locked) >= cleared);
++	last = atomic_sub_and_test(cleared, &subpage->nr_locked);
+ 	spin_unlock_irqrestore(&subpage->lock, flags);
+ 	return last;
+ }
+@@ -394,8 +394,8 @@ int btrfs_folio_start_writer_lock(const struct btrfs_fs_info *fs_info,
+  *   bitmap, reduce the writer lock number, and unlock the page if that's
+  *   the last locked range.
+  */
+-void btrfs_folio_end_writer_lock(const struct btrfs_fs_info *fs_info,
+-				 struct folio *folio, u64 start, u32 len)
++void btrfs_folio_end_lock(const struct btrfs_fs_info *fs_info,
++			  struct folio *folio, u64 start, u32 len)
+ {
+ 	struct btrfs_subpage *subpage = folio_get_private(folio);
+ 
+@@ -408,24 +408,24 @@ void btrfs_folio_end_writer_lock(const struct btrfs_fs_info *fs_info,
+ 
+ 	/*
+ 	 * For subpage case, there are two types of locked page.  With or
+-	 * without writers number.
++	 * without locked number.
+ 	 *
+-	 * Since we own the page lock, no one else could touch subpage::writers
++	 * Since we own the page lock, no one else could touch subpage::locked
+ 	 * and we are safe to do several atomic operations without spinlock.
+ 	 */
+-	if (atomic_read(&subpage->writers) == 0) {
+-		/* No writers, locked by plain lock_page(). */
++	if (atomic_read(&subpage->nr_locked) == 0) {
++		/* No subpage lock, locked by plain lock_page(). */
+ 		folio_unlock(folio);
+ 		return;
+ 	}
+ 
+ 	btrfs_subpage_clamp_range(folio, &start, &len);
+-	if (btrfs_subpage_end_and_test_writer(fs_info, folio, start, len))
++	if (btrfs_subpage_end_and_test_lock(fs_info, folio, start, len))
+ 		folio_unlock(folio);
+ }
+ 
+-void btrfs_folio_end_writer_lock_bitmap(const struct btrfs_fs_info *fs_info,
+-					struct folio *folio, unsigned long bitmap)
++void btrfs_folio_end_lock_bitmap(const struct btrfs_fs_info *fs_info,
++				 struct folio *folio, unsigned long bitmap)
+ {
+ 	struct btrfs_subpage *subpage = folio_get_private(folio);
+ 	const int start_bit = fs_info->sectors_per_page * btrfs_bitmap_nr_locked;
+@@ -439,8 +439,8 @@ void btrfs_folio_end_writer_lock_bitmap(const struct btrfs_fs_info *fs_info,
+ 		return;
+ 	}
+ 
+-	if (atomic_read(&subpage->writers) == 0) {
+-		/* No writers, locked by plain lock_page(). */
++	if (atomic_read(&subpage->nr_locked) == 0) {
++		/* No subpage lock, locked by plain lock_page(). */
+ 		folio_unlock(folio);
+ 		return;
+ 	}
+@@ -450,8 +450,8 @@ void btrfs_folio_end_writer_lock_bitmap(const struct btrfs_fs_info *fs_info,
+ 		if (test_and_clear_bit(bit + start_bit, subpage->bitmaps))
+ 			cleared++;
+ 	}
+-	ASSERT(atomic_read(&subpage->writers) >= cleared);
+-	last = atomic_sub_and_test(cleared, &subpage->writers);
++	ASSERT(atomic_read(&subpage->nr_locked) >= cleared);
++	last = atomic_sub_and_test(cleared, &subpage->nr_locked);
+ 	spin_unlock_irqrestore(&subpage->lock, flags);
+ 	if (last)
+ 		folio_unlock(folio);
+@@ -776,8 +776,8 @@ void btrfs_folio_assert_not_dirty(const struct btrfs_fs_info *fs_info,
+  * This populates the involved subpage ranges so that subpage helpers can
+  * properly unlock them.
+  */
+-void btrfs_folio_set_writer_lock(const struct btrfs_fs_info *fs_info,
+-				 struct folio *folio, u64 start, u32 len)
++void btrfs_folio_set_lock(const struct btrfs_fs_info *fs_info,
++			  struct folio *folio, u64 start, u32 len)
+ {
+ 	struct btrfs_subpage *subpage;
+ 	unsigned long flags;
+@@ -796,7 +796,7 @@ void btrfs_folio_set_writer_lock(const struct btrfs_fs_info *fs_info,
+ 	/* Target range should not yet be locked. */
+ 	ASSERT(bitmap_test_range_all_zero(subpage->bitmaps, start_bit, nbits));
+ 	bitmap_set(subpage->bitmaps, start_bit, nbits);
+-	ret = atomic_add_return(nbits, &subpage->writers);
++	ret = atomic_add_return(nbits, &subpage->nr_locked);
+ 	ASSERT(ret <= fs_info->sectors_per_page);
+ 	spin_unlock_irqrestore(&subpage->lock, flags);
+ }
+diff --git a/fs/btrfs/subpage.h b/fs/btrfs/subpage.h
+index 4b85d91d0e18..37fd658243bf 100644
+--- a/fs/btrfs/subpage.h
++++ b/fs/btrfs/subpage.h
+@@ -62,8 +62,12 @@ struct btrfs_subpage {
+ 		 */
+ 		atomic_t eb_refs;
+ 
+-		/* Structures only used by data */
+-		atomic_t writers;
++		/*
++		 * Structures only used by data,
++		 *
++		 * How many sectors inside the page is locked.
++		 */
++		atomic_t nr_locked;
+ 	};
+ 	unsigned long bitmaps[];
+ };
+-- 
+2.25.1
+

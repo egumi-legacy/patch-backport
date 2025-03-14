@@ -1,0 +1,299 @@
+modified file: fs/btrfs/compression.c
+--- workspace/gregkh/linux/336e69/newer/fs/btrfs/compression.c
++++ workspace/gregkh/linux/336e69/linux-6.12.y/fs/btrfs/compression.c
+@@ -702,7 +702,7 @@
+  	kfree(workspace);
+  }
+  
+ -static struct list_head *alloc_heuristic_ws(void)
+ +static struct list_head *alloc_heuristic_ws(unsigned int level)
+  {
+  	struct heuristic_ws *ws;
+  
+@@ -744,9 +744,9 @@
+  static struct list_head *alloc_workspace(int type, unsigned int level)
+  {
+  	switch (type) {
+ -	case BTRFS_COMPRESS_NONE: return alloc_heuristic_ws();
+ +	case BTRFS_COMPRESS_NONE: return alloc_heuristic_ws(level);
+  	case BTRFS_COMPRESS_ZLIB: return zlib_alloc_workspace(level);
+ -	case BTRFS_COMPRESS_LZO:  return lzo_alloc_workspace();
+ +	case BTRFS_COMPRESS_LZO:  return lzo_alloc_workspace(level);
+  	case BTRFS_COMPRESS_ZSTD: return zstd_alloc_workspace(level);
+  	default:
+ -	ASSERT(*total_in <= orig_len);
+  	put_workspace(type, workspace);
+  	return ret;
+  }
+
+""""""
+modified file: fs/btrfs/extent_io.c
+--- workspace/gregkh/linux/336e69/newer/fs/btrfs/extent_io.c
++++ workspace/gregkh/linux/336e69/linux-6.12.y/fs/btrfs/extent_io.c
+@@ -1102,45 +1102,6 @@
+  	return ret;
+  }
+  
+ -static void set_delalloc_bitmap(struct folio *folio, unsigned long *delalloc_bitmap,
+ -				u64 start, u32 len)
+ -{
+ -	struct btrfs_fs_info *fs_info = folio_to_fs_info(folio);
+ -	const u64 folio_start = folio_pos(folio);
+ -	unsigned int start_bit;
+ -	unsigned int nbits;
+ -
+ -	ASSERT(start >= folio_start && start + len <= folio_start + PAGE_SIZE);
+ -	start_bit = (start - folio_start) >> fs_info->sectorsize_bits;
+ -	nbits = len >> fs_info->sectorsize_bits;
+ -	ASSERT(bitmap_test_range_all_zero(delalloc_bitmap, start_bit, nbits));
+ -	bitmap_set(delalloc_bitmap, start_bit, nbits);
+ -}
+ -
+ -static bool find_next_delalloc_bitmap(struct folio *folio,
+ -				      unsigned long *delalloc_bitmap, u64 start,
+ -				      u64 *found_start, u32 *found_len)
+ -{
+ -	struct btrfs_fs_info *fs_info = folio_to_fs_info(folio);
+ -	const u64 folio_start = folio_pos(folio);
+ -	const unsigned int bitmap_size = fs_info->sectors_per_page;
+ -	unsigned int start_bit;
+ -	unsigned int first_zero;
+ -	unsigned int first_set;
+ -
+ -	ASSERT(start >= folio_start && start < folio_start + PAGE_SIZE);
+ -
+ -	start_bit = (start - folio_start) >> fs_info->sectorsize_bits;
+ -	first_set = find_next_bit(delalloc_bitmap, bitmap_size, start_bit);
+ -	if (first_set >= bitmap_size)
+ -		return false;
+ -
+ -	*found_start = folio_start + (first_set << fs_info->sectorsize_bits);
+ -	first_zero = find_next_zero_bit(delalloc_bitmap, bitmap_size, first_set);
+ -	*found_len = (first_zero - first_set) << fs_info->sectorsize_bits;
+ -	return true;
+ -}
+ -
+  	if (btrfs_is_subpage(fs_info, inode->vfs_inode.i_mapping)) {
+@@ -1179,12 +1138,6 @@
+  		btrfs_get_subpage_dirty_bitmap(fs_info, folio, &bio_ctrl->submit_bitmap);
+  	} else {
+  		bio_ctrl->submit_bitmap = 1;
+ -	}
+ -
+ -	for_each_set_bit(bit, &bio_ctrl->submit_bitmap, fs_info->sectors_per_page) {
+ -		u64 start = page_start + (bit << fs_info->sectorsize_bits);
+ -
+ -		btrfs_folio_set_writer_lock(fs_info, folio, start, fs_info->sectorsize);
+  	}
+  
+@@ -1195,8 +1148,9 @@
+  			delalloc_start = delalloc_end + 1;
+  			continue;
+  		}
+ -		set_delalloc_bitmap(folio, &delalloc_bitmap, delalloc_start,
+ -				    min(delalloc_end, page_end) + 1 - delalloc_start);
+ +		btrfs_folio_set_writer_lock(fs_info, folio, delalloc_start,
+ +					    min(delalloc_end, page_end) + 1 -
+ +					    delalloc_start);
+  		last_delalloc_end = delalloc_end;
+  		delalloc_start = delalloc_end + 1;
+  	}
+@@ -1221,7 +1175,7 @@
+  			found_len = last_delalloc_end + 1 - found_start;
+  			found = true;
+  		} else {
+ -			found = find_next_delalloc_bitmap(folio, &delalloc_bitmap,
+ +			found = btrfs_subpage_find_writer_locked(fs_info, folio,
+  					delalloc_start, &found_start, &found_len);
+  		}
+  		if (!found)
+@@ -1360,7 +1314,7 @@
+  	 * a folio for a range already written to disk.
+  	 */
+  	btrfs_folio_clear_dirty(fs_info, folio, filepos, sectorsize);
+ -	btrfs_folio_set_writeback(fs_info, folio, filepos, sectorsize);
+ +	btrfs_set_range_writeback(inode, filepos, filepos + sectorsize - 1);
+ -			if (wbc->sync_mode != WB_SYNC_NONE ||
+ -			    btrfs_is_subpage(inode_to_fs_info(inode), mapping)) {
+ +			if (wbc->sync_mode != WB_SYNC_NONE) {
+  				if (folio_test_writeback(folio))
+  					submit_write_bio(bio_ctrl, 0);
+  				folio_wait_writeback(folio);
+@@ -2382,7 +2318,7 @@
+   * to drop the page.
+   */
+  static bool try_release_extent_state(struct extent_io_tree *tree,
+ -				     struct folio *folio)
+ +				    struct folio *folio, gfp_t mask)
+  {
+  	u64 start = folio_pos(folio);
+  	u64 end = start + PAGE_SIZE - 1;
+@@ -2493,7 +2429,7 @@
+  			cond_resched();
+  		}
+  	}
+ -	return try_release_extent_state(io_tree, folio);
+ +	return try_release_extent_state(io_tree, folio, mask);
+  }
+  
+  static void __free_extent_buffer(struct extent_buffer *eb)
+@@ -2507,7 +2443,7 @@
+  		test_bit(EXTENT_BUFFER_DIRTY, &eb->bflags));
+  }
+  
+ -static bool folio_range_has_eb(struct folio *folio)
+ +static bool folio_range_has_eb(struct btrfs_fs_info *fs_info, struct folio *folio)
+  {
+  	struct btrfs_subpage *subpage;
+  
+@@ -2581,7 +2517,7 @@
+  	 * We can only detach the folio private if there are no other ebs in the
+  	 * page range and no unfinished IO.
+  	 */
+ -	if (!folio_range_has_eb(folio))
+ +	if (!folio_range_has_eb(fs_info, folio))
+  		btrfs_detach_subpage(fs_info, folio);
+  
+  	spin_unlock(&folio->mapping->i_private_lock);
+@@ -3186,7 +3122,7 @@
+  	}
+  	set_bit(EXTENT_BUFFER_UNMAPPED, &eb->bflags);
+  
+@@ -4286,6 +4222,7 @@
+  				u64 bytenr, u64 owner_root, u64 gen, int level)
+  {
+  	struct btrfs_tree_parent_check check = {
+ +		.has_first_key = 0,
+  		.level = level,
+  		.transid = gen
+  	};
+
+""""""
+modified file: fs/btrfs/subpage.c
+--- workspace/gregkh/linux/336e69/newer/fs/btrfs/subpage.c
++++ workspace/gregkh/linux/336e69/linux-6.12.y/fs/btrfs/subpage.c
+@@ -295,6 +295,26 @@
+  			     orig_start + orig_len) - *start;
+  }
+  
+ +static void btrfs_subpage_start_writer(const struct btrfs_fs_info *fs_info,
+ +				       struct folio *folio, u64 start, u32 len)
+ +{
+ +	struct btrfs_subpage *subpage = folio_get_private(folio);
+ +	const int start_bit = subpage_calc_start_bit(fs_info, folio, locked, start, len);
+ +	const int nbits = (len >> fs_info->sectorsize_bits);
+ +	unsigned long flags;
+ +	int ret;
+ +
+ +	btrfs_subpage_assert(fs_info, folio, start, len);
+ +
+ +	spin_lock_irqsave(&subpage->lock, flags);
+ +	ASSERT(atomic_read(&subpage->readers) == 0);
+ +	ASSERT(bitmap_test_range_all_zero(subpage->bitmaps, start_bit, nbits));
+ +	bitmap_set(subpage->bitmaps, start_bit, nbits);
+ +	ret = atomic_add_return(nbits, &subpage->writers);
+ +	ASSERT(ret == nbits);
+ +	spin_unlock_irqrestore(&subpage->lock, flags);
+ +}
+ +
+  static bool btrfs_subpage_end_and_test_writer(const struct btrfs_fs_info *fs_info,
+  					      struct folio *folio, u64 start, u32 len)
+  {
+@@ -329,6 +349,33 @@
+  	last = atomic_sub_and_test(cleared, &subpage->writers);
+  	spin_unlock_irqrestore(&subpage->lock, flags);
+  	return last;
+ +}
+ +
+ +/*
+ + * Lock a folio for delalloc page writeback.
+ + *
+ + * Return -EAGAIN if the page is not properly initialized.
+ + * Return 0 with the page locked, and writer counter updated.
+ + *
+ + * Even with 0 returned, the page still need extra check to make sure
+ + * it's really the correct page, as the caller is using
+ + * filemap_get_folios_contig(), which can race with page invalidating.
+ + */
+ +int btrfs_folio_start_writer_lock(const struct btrfs_fs_info *fs_info,
+ +				  struct folio *folio, u64 start, u32 len)
+ +{
+ +	if (unlikely(!fs_info) || !btrfs_is_subpage(fs_info, folio->mapping)) {
+ +		folio_lock(folio);
+ +		return 0;
+ +	}
+ +	folio_lock(folio);
+ +	if (!folio_test_private(folio) || !folio_get_private(folio)) {
+ +		folio_unlock(folio);
+ +		return -EAGAIN;
+ +	}
+ +	btrfs_subpage_clamp_range(folio, &start, &len);
+ +	btrfs_subpage_start_writer(fs_info, folio, start, len);
+ +	return 0;
+  }
+  
+ +bool btrfs_subpage_find_writer_locked(const struct btrfs_fs_info *fs_info,
+ +				      struct folio *folio, u64 search_start,
+ +				      u64 *found_start_ret, u32 *found_len_ret)
+ +{
+ +	struct btrfs_subpage *subpage = folio_get_private(folio);
+ +	const u32 sectors_per_page = fs_info->sectors_per_page;
+ +	const unsigned int len = PAGE_SIZE - offset_in_page(search_start);
+ +	const unsigned int start_bit = subpage_calc_start_bit(fs_info, folio,
+ +						locked, search_start, len);
+ +	const unsigned int locked_bitmap_start = sectors_per_page * btrfs_bitmap_nr_locked;
+ +	const unsigned int locked_bitmap_end = locked_bitmap_start + sectors_per_page;
+ +	unsigned long flags;
+ +	int first_zero;
+ +	int first_set;
+ +	bool found = false;
+ +
+ +	ASSERT(folio_test_locked(folio));
+ +	spin_lock_irqsave(&subpage->lock, flags);
+ +	first_set = find_next_bit(subpage->bitmaps, locked_bitmap_end, start_bit);
+ +	if (first_set >= locked_bitmap_end)
+ +		goto out;
+ +
+ +	found = true;
+ +
+ +	*found_start_ret = folio_pos(folio) +
+ +		((first_set - locked_bitmap_start) << fs_info->sectorsize_bits);
+ +	/*
+ +	 * Since @first_set is ensured to be smaller than locked_bitmap_end
+ +	 * here, @found_start_ret should be inside the folio.
+ +	 */
+ +	ASSERT(*found_start_ret < folio_pos(folio) + PAGE_SIZE);
+ +
+ +	first_zero = find_next_zero_bit(subpage->bitmaps, locked_bitmap_end, first_set);
+ +	*found_len_ret = (first_zero - first_set) << fs_info->sectorsize_bits;
+ +out:
+ +	spin_unlock_irqrestore(&subpage->lock, flags);
+ +	return found;
+ +}
+ +
+  #define GET_SUBPAGE_BITMAP(subpage, fs_info, name, dst)			\
+  {									\
+  	const int sectors_per_page = fs_info->sectors_per_page;		\
+
+""""""
+modified file: fs/btrfs/subpage.h
+--- workspace/gregkh/linux/336e69/newer/fs/btrfs/subpage.h
++++ workspace/gregkh/linux/336e69/linux-6.12.y/fs/btrfs/subpage.h
+@@ -100,12 +100,18 @@
+  void btrfs_subpage_end_reader(const struct btrfs_fs_info *fs_info,
+  			      struct folio *folio, u64 start, u32 len);
+  
+ +int btrfs_folio_start_writer_lock(const struct btrfs_fs_info *fs_info,
+ +				  struct folio *folio, u64 start, u32 len);
+  void btrfs_folio_end_writer_lock(const struct btrfs_fs_info *fs_info,
+  				 struct folio *folio, u64 start, u32 len);
+  void btrfs_folio_set_writer_lock(const struct btrfs_fs_info *fs_info,
+  				 struct folio *folio, u64 start, u32 len);
+  void btrfs_folio_end_writer_lock_bitmap(const struct btrfs_fs_info *fs_info,
+  					struct folio *folio, unsigned long bitmap);
+ +bool btrfs_subpage_find_writer_locked(const struct btrfs_fs_info *fs_info,
+ +				      struct folio *folio, u64 search_start,
+ +				      u64 *found_start_ret, u32 *found_len_ret);
+ +
+
+""""""

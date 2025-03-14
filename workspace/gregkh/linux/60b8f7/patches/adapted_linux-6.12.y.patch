@@ -1,0 +1,25 @@
+From 7363725d15f539d2f1e3e1053297a27349895f69 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 04:54:29 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ kernel/trace/trace.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 17d2ffde0bb6..92502d94b280 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -6154,8 +6154,6 @@ static int __tracing_resize_ring_buffer(struct trace_array *tr,
+ ssize_t tracing_resize_ring_buffer(struct trace_array *tr,
+ 				  unsigned long size, int cpu_id)
+ {
+-	int ret;
+-
+ 	mutex_lock(&trace_types_lock);
+ 
+ 	if (cpu_id != RING_BUFFER_ALL_CPUS) {
+-- 
+2.25.1
+

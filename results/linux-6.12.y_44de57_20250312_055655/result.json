@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "44de577e61ed239db09f0da9d436866bef9b77dd",
+    "patch_url": "https://github.com/gregkh/linux/commit/44de577e61ed239db09f0da9d436866bef9b77dd.patch",
+    "downstream_sha": "759e4e94a3c97298f14d5b9812eb71d2ad56df71",
+    "downstream_message": "can: j1939: j1939_sk_send_loop(): fix unable to send messages with data length zero\n\ncommit 44de577e61ed239db09f0da9d436866bef9b77dd upstream.\n\nThe J1939 standard requires the transmission of messages of length 0.\n\nFor example proprietary messages are specified with a data length of 0\nto 1785. The transmission of such messages is not possible. Sending\nresults in no error being returned but no corresponding can frame\nbeing generated.\n\nEnable the transmission of zero length J1939 messages. In order to\nfacilitate this two changes are necessary:\n\n1) If the transmission of a new message is requested from user space\nthe message is segmented in j1939_sk_send_loop(). Let the segmentation\ntake into account zero length messages, do not terminate immediately,\nqueue the corresponding skb.\n\n2) j1939_session_skb_get_by_offset() selects the next skb to transmit\nfor a session. Take into account that there might be zero length skbs\nin the queue.\n\nSigned-off-by: Alexander H\u00f6lzl <alexander.hoelzl@gmx.net>\nAcked-by: Oleksij Rempel <o.rempel@pengutronix.de>\nLink: https://patch.msgid.link/20250205174651.103238-1-alexander.hoelzl@gmx.net\nFixes: 9d71dd0c7009 (\"can: add support of SAE J1939 protocol\")\nCc: stable@vger.kernel.org\n[mkl: commit message rephrased]\nSigned-off-by: Marc Kleine-Budde <mkl@pengutronix.de>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/44de57/patches/upstream_44de57.patch",
+      "timestamp": "2025-03-12T05:56:54.799774"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:56:55.062885"
+  }
+}

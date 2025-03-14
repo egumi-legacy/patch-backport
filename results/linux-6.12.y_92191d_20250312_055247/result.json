@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "92191dd1073088753821b862b791dcc83e558e07",
+    "patch_url": "https://github.com/gregkh/linux/commit/92191dd1073088753821b862b791dcc83e558e07",
+    "downstream_sha": "5ab11a4e219e93b8b31a27f8ec98d42afadd8b7a",
+    "downstream_message": "net: ipv6: fix dst ref loops in rpl, seg6 and ioam6 lwtunnels\n\n[ Upstream commit 92191dd1073088753821b862b791dcc83e558e07 ]\n\nSome lwtunnels have a dst cache for post-transformation dst.\nIf the packet destination did not change we may end up recording\na reference to the lwtunnel in its own cache, and the lwtunnel\nstate will never be freed.\n\nDiscovered by the ioam6.sh test, kmemleak was recently fixed\nto catch per-cpu memory leaks. I'm not sure if rpl and seg6\ncan actually hit this, but in principle I don't see why not.\n\nFixes: 8cb3bf8bff3c (\"ipv6: ioam: Add support for the ip6ip6 encapsulation\")\nFixes: 6c8702c60b88 (\"ipv6: sr: add support for SRH encapsulation and injection with lwtunnels\")\nFixes: a7a29f9c361f (\"net: ipv6: add rpl sr tunnel\")\nReviewed-by: Simon Horman <horms@kernel.org>\nLink: https://patch.msgid.link/20250130031519.2716843-2-kuba@kernel.org\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: net/ipv6/ioam6_iptunnel.c:410\nerror: net/ipv6/ioam6_iptunnel.c: patch does not apply\nerror: patch failed: net/ipv6/rpl_iptunnel.c:235\nerror: net/ipv6/rpl_iptunnel.c: patch does not apply\nerror: patch failed: net/ipv6/seg6_iptunnel.c:576\nerror: net/ipv6/seg6_iptunnel.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/92191d/patches/upstream_92191d.patch",
+      "timestamp": "2025-03-12T05:51:54.760883"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": false,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:52:47.891436"
+  }
+}

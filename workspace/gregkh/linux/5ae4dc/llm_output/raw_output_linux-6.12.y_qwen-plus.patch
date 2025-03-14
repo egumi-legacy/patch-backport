@@ -1,14 +1,3 @@
-A. Commit message:
-arm64: dts: rockchip: Disable DMA for uart5 on px30-ringneck
-
-B. Change summary:
-This patch disables the DMA for UART5 on the PX30-uQ7 Ringneck SoM due to stability issues observed when DMA is enabled. The flow control pins for UART5 are not available, and extensive testing has shown that disabling DMA resolves the system becoming unresponsive after extended periods of UART communication.
-
-C. Compatibility Risk:
-Low
-
-D. Fixed Code:
-```diff
 diff --git a/arch/arm64/boot/dts/rockchip/px30-ringneck.dtsi b/arch/arm64/boot/dts/rockchip/px30-ringneck.dtsi
 index e80412abec081..e80412abec081 100644
 --- a/arch/arm64/boot/dts/rockchip/px30-ringneck.dtsi
@@ -21,4 +10,3 @@ index e80412abec081..e80412abec081 100644
 +	/delete-property/ dma-names;
  	pinctrl-0 = <&uart5_xfer>;
  };
-```

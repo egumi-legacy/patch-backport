@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "0a0f7362b0367634a2d5cb7c96226afc116f19c9",
+    "patch_url": "https://github.com/gregkh/linux/commit/0a0f7362b0367634a2d5cb7c96226afc116f19c9.patch",
+    "downstream_sha": "2c637b4aa50ff3bfc57b6e28413f9e2c0f823990",
+    "downstream_message": "alpha: make stack 16-byte aligned (most cases)\n\ncommit 0a0f7362b0367634a2d5cb7c96226afc116f19c9 upstream.\n\nThe problem is that GCC expects 16-byte alignment of the incoming stack\nsince early 2004, as Maciej found out [1]:\n  Having actually dug speculatively I can see that the psABI was changed in\n GCC 3.5 with commit e5e10fb4a350 (\"re PR target/14539 (128-bit long double\n improperly aligned)\") back in Mar 2004, when the stack pointer alignment\n was increased from 8 bytes to 16 bytes, and arch/alpha/kernel/entry.S has\n various suspicious stack pointer adjustments, starting with SP_OFF which\n is not a whole multiple of 16.\n\nAlso, as Magnus noted, \"ALPHA Calling Standard\" [2] required the same:\n D.3.1 Stack Alignment\n  This standard requires that stacks be octaword aligned at the time a\n  new procedure is invoked.\n\nHowever:\n- the \"normal\" kernel stack is always misaligned by 8 bytes, thanks to\n  the odd number of 64-bit words in 'struct pt_regs', which is the very\n  first thing pushed onto the kernel thread stack;\n- syscall, fault, interrupt etc. handlers may, or may not, receive aligned\n  stack depending on numerous factors.\n\nSomehow we got away with it until recently, when we ended up with\na stack corruption in kernel/smp.c:smp_call_function_single() due to\nits use of 32-byte aligned local data and the compiler doing clever\nthings allocating it on the stack.\n\nThis adds padding between the PAL-saved and kernel-saved registers\nso that 'struct pt_regs' have an even number of 64-bit words.\nThis makes the stack properly aligned for most of the kernel\ncode, except two handlers which need special threatment.\n\nNote: struct pt_regs doesn't belong in uapi/asm; this should be fixed,\nbut let's put this off until later.\n\nLink: https://lore.kernel.org/rcu/alpine.DEB.2.21.2501130248010.18889@angie.orcam.me.uk/ [1]\nLink: https://bitsavers.org/pdf/dec/alpha/Alpha_Calling_Standard_Rev_2.0_19900427.pdf [2]\n\nCc: stable@vger.kernel.org\nTested-by: Maciej W. Rozycki <macro@orcam.me.uk>\nTested-by: Magnus Lindholm <linmag7@gmail.com>\nTested-by: Matt Turner <mattst88@gmail.com>\nReviewed-by: Maciej W. Rozycki <macro@orcam.me.uk>\nSigned-off-by: Ivan Kokshaysky <ink@unseen.parts>\nSigned-off-by: Matt Turner <mattst88@gmail.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/0a0f73/patches/upstream_0a0f73.patch",
+      "timestamp": "2025-03-12T05:56:40.635731"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:56:40.907295"
+  }
+}

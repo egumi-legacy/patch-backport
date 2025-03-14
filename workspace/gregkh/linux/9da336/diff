@@ -1,0 +1,58 @@
+
+""""""
+modified file: fs/exfat/exfat_fs.h
+--- workspace/gregkh/linux/9da336/newer/fs/exfat/exfat_fs.h
++++ workspace/gregkh/linux/9da336/linux-6.12.y/fs/exfat/exfat_fs.h
+@@ -204,9 +204,7 @@
+  #define IS_DYNAMIC_ES(es)	((es)->__bh != (es)->bh)
+  
+  struct exfat_dir_entry {
+ -	/* the cluster where file dentry is located */
+  	struct exfat_chain dir;
+ -	/* the index of file dentry in ->dir */
+  	int entry;
+  	unsigned int type;
+  	unsigned int start_clu;
+@@ -292,9 +290,7 @@
+   * EXFAT file system inode in-memory data
+   */
+  struct exfat_inode_info {
+ -	/* the cluster where file dentry is located */
+  	struct exfat_chain dir;
+ -	/* the index of file dentry in ->dir */
+  	int entry;
+  	unsigned int type;
+  	unsigned short attr;
+@@ -512,8 +508,6 @@
+  int exfat_get_dentry_set(struct exfat_entry_set_cache *es,
+  		struct super_block *sb, struct exfat_chain *p_dir, int entry,
+  		unsigned int num_entries);
+ -#define exfat_get_dentry_set_by_ei(es, sb, ei)		\
+ -	exfat_get_dentry_set(es, sb, &(ei)->dir, (ei)->entry, ES_ALL_ENTRIES)
+  int exfat_get_empty_dentry_set(struct exfat_entry_set_cache *es,
+  		struct super_block *sb, struct exfat_chain *p_dir, int entry,
+  		unsigned int num_entries);
+
+""""""
+modified file: fs/exfat/fatent.c
+--- workspace/gregkh/linux/9da336/newer/fs/exfat/fatent.c
++++ workspace/gregkh/linux/9da336/linux-6.12.y/fs/exfat/fatent.c
+@@ -216,16 +216,6 @@
+  
+  			if (err)
+  				goto dec_used_clus;
+ -
+ -			if (num_clusters >= sbi->num_clusters - EXFAT_FIRST_CLUSTER) {
+ -				/*
+ -				 * The cluster chain includes a loop, scan the
+ -				 * bitmap to get the number of used clusters.
+ -				 */
+ -				exfat_count_used_clusters(sb, &sbi->used_clusters);
+ -
+ -				return 0;
+ -			}
+  		} while (clu != EXFAT_EOF_CLUSTER);
+  	}
+  
+
+""""""

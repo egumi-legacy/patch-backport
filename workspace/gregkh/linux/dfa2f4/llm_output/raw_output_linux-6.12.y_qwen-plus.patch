@@ -1,0 +1,318 @@
+A. Commit message:
+PCI: Remove devres from pci_intx() and backport to older version
+
+B. Change summary:
+This patch removes the devres functionality from pci_intx(), as all users have been ported to either always-managed pcim_intx() or never-managed pci_intx_unmanaged(). Consequently, pci_intx_unmanaged() is now redundant and has been removed. The changes are applied to various drivers and core PCI functions to ensure consistency.
+
+C. Compatibility Risk:
+Medium
+
+D. Fixed Code:
+```diff
+diff --git a/drivers/misc/cardreader/rtsx_pcr.c b/drivers/misc/cardreader/rtsx_pcr.c
+index e25e6d560dd7b..be3d4e0e50ccd 100644
+--- a/drivers/misc/cardreader/rtsx_pcr.c
++++ b/drivers/misc/cardreader/rtsx_pcr.c
+@@ -1057,7 +1057,7 @@ static int rtsx_pci_acquire_irq(struct rtsx_pcr *pcr)
+ 	}
+ 
+ 	pcr->irq = pcr->pci->irq;
+-	pci_intx_unmanaged(pcr->pci, !pcr->msi_en);
++	pci_intx(pcr->pci, !pcr->msi_en);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/misc/tifm_7xx1.c b/drivers/misc/tifm_7xx1.c
+index 5f9c7ccae8d2e..1d54680d6ed20 100644
+--- a/drivers/misc/tifm_7xx1.c
++++ b/drivers/misc/tifm_7xx1.c
+@@ -327,7 +327,7 @@ static int tifm_7xx1_probe(struct pci_dev *dev,
+ 		goto err_out;
+ 	}
+ 
+-	pci_intx_unmanaged(dev, 1);
++	pci_intx(dev, 1);
+ 
+ 	fm = tifm_alloc_adapter(dev->device == PCI_DEVICE_ID_TI_XX21_XX11_FM
+ 				? 4 : 2, &dev->dev);
+@@ -368,7 +368,7 @@ static int tifm_7xx1_probe(struct pci_dev *dev,
+ err_out_free:
+ 	tifm_free_adapter(fm);
+ err_out_int:
+-	pci_intx_unmanaged(dev, 0);
++	pci_intx(dev, 0);
+ 	pci_release_regions(dev);
+ err_out:
+ 	if (!pci_dev_busy)
+@@ -392,7 +392,7 @@ static void tifm_7xx1_remove(struct pci_dev *dev)
+ 		tifm_7xx1_sock_power_off(tifm_7xx1_sock_addr(fm->addr, cnt));
+ 
+ 	iounmap(fm->addr);
+-	pci_intx_unmanaged(dev, 0);
++	pci_intx(dev, 0);
+ 	pci_release_regions(dev);
+ 
+ 	pci_disable_device(dev);
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index 2ae63d6e67925..678829646cec3 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -1669,7 +1669,7 @@ static void bnx2x_igu_int_enable(struct bnx2x *bp)
+ 	REG_WR(bp, IGU_REG_PF_CONFIGURATION, val);
+ 
+ 	if (val & IGU_PF_CONF_INT_LINE_EN)
+-		pci_intx_unmanaged(bp->pdev, true);
++		pci_intx(bp->pdev, true);
+ 
+ 	barrier();
+ 
+diff --git a/drivers/net/ethernet/brocade/bna/bnad.c b/drivers/net/ethernet/brocade/bna/bnad.c
+index 2b37462d406ed..ece6f3b483273 100644
+--- a/drivers/net/ethernet/brocade/bna/bnad.c
++++ b/drivers/net/ethernet/brocade/bna/bnad.c
+@@ -2669,7 +2669,7 @@ bnad_enable_msix(struct bnad *bnad)
+ 		}
+ 	}
+ 
+-	pci_intx_unmanaged(bnad->pcidev, 0);
++	pci_intx(bnad->pcidev, 0);
+ 
+ 	return;
+ 
+diff --git a/drivers/ntb/hw/amd/ntb_hw_amd.c b/drivers/ntb/hw/amd/ntb_hw_amd.c
+index b146f170e8397..d687e8c2cc78d 100644
+--- a/drivers/ntb/hw/amd/ntb_hw_amd.c
++++ b/drivers/ntb/hw/amd/ntb_hw_amd.c
+@@ -791,7 +791,7 @@ static int ndev_init_isr(struct amd_ntb_dev *ndev,
+ err_msi_enable:
+ 
+ 	/* Try to set up intx irq */
+-	pci_intx_unmanaged(pdev, 1);
++	pci_intx(pdev, 1);
+ 
+ 	rc = request_irq(pdev->irq, ndev_irq_isr, IRQF_SHARED,
+ 			 "ndev_irq_isr", ndev);
+@@ -831,7 +831,7 @@ static void ndev_deinit_isr(struct amd_ntb_dev *ndev)
+ 		if (pci_dev_msi_enabled(pdev))
+ 			pci_disable_msi(pdev);
+ 		else
+-			pci_intx_unmanaged(pdev, 0);
++			pci_intx(pdev, 0);
+ 	}
+ }
+ 
+diff --git a/drivers/ntb/hw/intel/ntb_hw_gen1.c b/drivers/ntb/hw/intel/ntb_hw_gen1.c
+index 9ad9d7fe227eb..079b8cd797857 100644
+--- a/drivers/ntb/hw/intel/ntb_hw_gen1.c
++++ b/drivers/ntb/hw/intel/ntb_hw_gen1.c
+@@ -445,7 +445,7 @@ int ndev_init_isr(struct intel_ntb_dev *ndev,
+ 
+ 	/* Try to set up intx irq */
+ 
+-	pci_intx_unmanaged(pdev, 1);
++	pci_intx(pdev, 1);
+ 
+ 	rc = request_irq(pdev->irq, ndev_irq_isr, IRQF_SHARED,
+ 			 "ndev_irq_isr", ndev);
+diff --git a/drivers/pci/devres.c b/drivers/pci/devres.c
+index f9b93d1147f10..d1d97a4bb36d3 100644
+--- a/drivers/pci/devres.c
++++ b/drivers/pci/devres.c
+@@ -416,7 +416,7 @@ static void pcim_intx_restore(struct device *dev, void *data)
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct pcim_intx_devres *res = data;
+ 
+-	pci_intx_unmanaged(pdev, res->orig_intx);
++	pci_intx(pdev, res->orig_intx);
+ }
+ 
+ static struct pcim_intx_devres *get_or_create_intx_devres(struct device *dev)
+@@ -453,7 +453,7 @@ int pcim_intx(struct pci_dev *pdev, int enable)
+ 		return -ENOMEM;
+ 
+ 	res->orig_intx = !enable;
+-	pci_intx_unmanaged(pdev, enable);
++	pci_intx(pdev, enable);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/pci/msi/api.c b/drivers/pci/msi/api.c
+index c95e2e7dc9ab4..b956ce591f964 100644
+--- a/drivers/pci/msi/api.c
++++ b/drivers/pci/msi/api.c
+@@ -289,7 +289,7 @@ int pci_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
+ 			 */
+ 			if (affd)
+ 				irq_create_affinity_masks(1, affd);
+-			pci_intx_unmanaged(dev, 1);
++			pci_intx(dev, 1);
+ 			return 1;
+ 		}
+ 	}
+diff --git a/drivers/pci/msi/msi.c b/drivers/pci/msi/msi.c
+index 53f13b09db500..3a45879d85db9 100644
+--- a/drivers/pci/msi/msi.c
++++ b/drivers/pci/msi/msi.c
+@@ -268,7 +268,7 @@ EXPORT_SYMBOL_GPL(pci_write_msi_msg);
+ static void pci_intx_for_msi(struct pci_dev *dev, int enable)
+ {
+ 	if (!(dev->dev_flags & PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG))
+-		pci_intx_unmanaged(dev, enable);
++		pci_intx(dev, enable);
+ }
+ 
+ static void pci_msi_set_enable(struct pci_dev *dev, int enable)
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 3f384e9137e3f..1afe310e86ef0 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -4480,17 +4480,13 @@ void pci_disable_parity(struct pci_dev *dev)
+ }
+ 
+ /**
+- * pci_intx_unmanaged - enables/disables PCI INTx for device dev,
+- * unmanaged version
++ * pci_intx - enables/disables PCI INTx for device dev
+  * @pdev: the PCI device to operate on
+  * @enable: boolean: whether to enable or disable PCI INTx
+  *
+  * Enables/disables PCI INTx for device @pdev
+- *
+- * This function behavios identically to pci_intx(), but is never managed with
+- * devres.
+  */
+-void pci_intx_unmanaged(struct pci_dev *pdev, int enable)
++void pci_intx(struct pci_dev *pdev, int enable)
+ {
+ 	u16 pci_command, new;
+ 
+@@ -4506,41 +4502,6 @@ void pci_intx_unmanaged(struct pci_dev *pdev, int enable)
+ 
+ 	pci_write_config_word(pdev, PCI_COMMAND, new);
+ }
+-EXPORT_SYMBOL_GPL(pci_intx_unmanaged);
+-
+-/**
+- * pci_intx - enables/disables PCI INTx for device dev
+- * @pdev: the PCI device to operate on
+- * @enable: boolean: whether to enable or disable PCI INTx
+- *
+- * Enables/disables PCI INTx for device @pdev
+- *
+- * NOTE:
+- * This is a "hybrid" function: It's normally unmanaged, but becomes managed
+- * when pcim_enable_device() has been called in advance. This hybrid feature is
+- * DEPRECATED! If you want managed cleanup, use pcim_intx() instead.
+- */
+-void pci_intx(struct pci_dev *pdev, int enable)
+-{
+-	u16 pci_command, new;
+-
+-	pci_read_config_word(pdev, PCI_COMMAND, &pci_command);
+-
+-	if (enable)
+-		new = pci_command & ~PCI_COMMAND_INTX_DISABLE;
+-	else
+-		new = pci_command | PCI_COMMAND_INTX_DISABLE;
+-
+-	if (new != pci_command) {
+-		/* Preserve the "hybrid" behavior for backwards compatibility */
+-		if (pci_is_managed(pdev)) {
+-			WARN_ON_ONCE(pcim_intx(pdev, enable) != 0);
+-			return;
+-		}
+-
+-		pci_write_config_word(pdev, PCI_COMMAND, new);
+-	}
+-}
+ EXPORT_SYMBOL_GPL(pci_intx);
+ 
+ /**
+diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+index 90240c8d51aaa..1ab58da9f38a6 100644
+--- a/drivers/vfio/pci/vfio_pci_core.c
++++ b/drivers/vfio/pci/vfio_pci_core.c
+@@ -498,7 +498,7 @@ int vfio_pci_core_enable(struct vfio_pci_core_device *vdev)
+ 		if (vfio_pci_nointx(pdev)) {
+ 			pci_info(pdev, "Masking broken INTx support\n");
+ 			vdev->nointx = true;
+-			pci_intx_unmanaged(pdev, 0);
++			pci_intx(pdev, 0);
+ 		} else
+ 			vdev->pci_2_3 = pci_intx_mask_supported(pdev);
+ 	}
+diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
+index 40abb0b937a27..8382c58343356 100644
+--- a/drivers/vfio/pci/vfio_pci_intrs.c
++++ b/drivers/vfio/pci/vfio_pci_intrs.c
+@@ -118,7 +118,7 @@ static bool __vfio_pci_intx_mask(struct vfio_pci_core_device *vdev)
+ 	 */
+ 	if (unlikely(!is_intx(vdev))) {
+ 		if (vdev->pci_2_3)
+-			pci_intx_unmanaged(pdev, 0);
++			pci_intx(pdev, 0);
+ 		goto out_unlock;
+ 	}
+ 
+@@ -132,7 +132,7 @@ static bool __vfio_pci_intx_mask(struct vfio_pci_core_device *vdev)
+ 		 * mask, not just when something is pending.
+ 		 */
+ 		if (vdev->pci_2_3)
+-			pci_intx_unmanaged(pdev, 0);
++			pci_intx(pdev, 0);
+ 		else
+ 			disable_irq_nosync(pdev->irq);
+ 
+@@ -178,7 +178,7 @@ static int vfio_pci_intx_unmask_handler(void *opaque, void *data)
+ 	 */
+ 	if (unlikely(!is_intx(vdev))) {
+ 		if (vdev->pci_2_3)
+-			pci_intx_unmanaged(pdev, 1);
++			pci_intx(pdev, 1);
+ 		goto out_unlock;
+ 	}
+ 
+@@ -296,7 +296,7 @@ static int vfio_intx_enable(struct vfio_pci_core_device *vdev,
+ 	 */
+ 	ctx->masked = vdev->virq_disabled;
+ 	if (vdev->pci_2_3) {
+-		pci_intx_unmanaged(pdev, !ctx->masked);
++		pci_intx(pdev, !ctx->masked);
+ 		irqflags = IRQF_SHARED;
+ 	} else {
+ 		irqflags = ctx->masked ? IRQF_NO_AUTOEN : 0;
+@@ -569,7 +569,7 @@ static void vfio_msi_disable(struct vfio_pci_core_device *vdev, bool msix)
+ 	 * via their shutdown paths.  Restore for NoINTx devices.
+ 	 */
+ 	if (vdev->nointx)
+-		pci_intx_unmanaged(pdev, 0);
++		pci_intx(pdev, 0);
+ 
+ 	vdev->irq_type = VFIO_PCI_NUM_IRQS;
+ }
+diff --git a/drivers/xen/xen-pciback/conf_space_header.c b/drivers/xen/xen-pciback/conf_space_header.c
+index 8d26d64232e86..fc03326459664 100644
+--- a/drivers/xen/xen-pciback/conf_space_header.c
++++ b/drivers/xen/xen-pciback/conf_space_header.c
+@@ -106,7 +106,7 @@ static int command_write(struct pci_dev *dev, int offset, u16 value, void *data)
+ 
+ 	if (dev_data && dev_data->allow_interrupt_control &&
+ 	    ((cmd->val ^ value) & PCI_COMMAND_INTX_DISABLE))
+-		pci_intx_unmanaged(dev, !(value & PCI_COMMAND_INTX_DISABLE));
++		pci_intx(dev, !(value & PCI_COMMAND_INTX_DISABLE));
+ 
+ 	cmd->val = value;
+ 
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index b5eb8bda655dc..f05903dd7695e 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1350,7 +1350,6 @@ int __must_check pcim_set_mwi(struct pci_dev *dev);
+ int pci_try_set_mwi(struct pci_dev *dev);
+ void pci_clear_mwi(struct pci_dev *dev);
+ void pci_disable_parity(struct pci_dev *dev);
+-void pci_intx_unmanaged(struct pci_dev *pdev, int enable);
+ void pci_intx(struct pci_dev *dev, int enable);
+ bool pci_check_and_mask_intx(struct pci_dev *dev);
+ bool pci_check_and_unmask_intx(struct pci_dev *dev);
+```

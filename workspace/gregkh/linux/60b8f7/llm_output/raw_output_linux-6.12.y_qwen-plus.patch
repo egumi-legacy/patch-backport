@@ -1,0 +1,38 @@
+A. Commit message:
+tracing: Backport error propagation fix for __tracing_resize_ring_buffer()
+
+B. Change summary:
+This patch backports the changes from the newer version to ensure that the actual error returned by __tracing_resize_ring_buffer() is propagated to the user instead of always returning -ENOMEM. This change ensures better error reporting when resizing the ring buffer, especially when memory mapping is involved.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 1496a5ac33ae1..25ff37aab00f1 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -5977,8 +5977,6 @@ static int __tracing_resize_ring_buffer(struct trace_array *tr,
+ ssize_t tracing_resize_ring_buffer(struct trace_array *tr,
+ 				  unsigned long size, int cpu_id)
+ {
+-	int ret;
+-
+ 	guard(mutex)(&trace_types_lock);
+ 
+ 	if (cpu_id != RING_BUFFER_ALL_CPUS) {
+@@ -5987,11 +5985,7 @@ ssize_t tracing_resize_ring_buffer(struct trace_array *tr,
+ 			return -EINVAL;
+ 	}
+ 
+-	ret = __tracing_resize_ring_buffer(tr, size, cpu_id);
+-	if (ret < 0)
+-		ret = -ENOMEM;
+-
+-	return ret;
++	return __tracing_resize_ring_buffer(tr, size, cpu_id);
+ }
+ 
+ static void update_last_data(struct trace_array *tr)
+```

@@ -1,0 +1,92 @@
+
+""""""
+modified file: net/batman-adv/bat_v_elp.c
+--- workspace/gregkh/linux/8c8ecc/newer/net/batman-adv/bat_v_elp.c
++++ workspace/gregkh/linux/8c8ecc/linux-6.12.y/net/batman-adv/bat_v_elp.c
+@@ -59,36 +59,25 @@
+ -static bool batadv_v_elp_get_throughput(struct batadv_hardif_neigh_node *neigh,
+ -					u32 *pthroughput)
+ + *
+ + * Return: The throughput towards the given neighbour in multiples of 100kpbs
+ + *         (a value of '1' equals 0.1Mbps, '10' equals 1Mbps, etc).
+ + */
+ +static u32 batadv_v_elp_get_throughput(struct batadv_hardif_neigh_node *neigh)
+  {
+  	struct batadv_hard_iface *hard_iface = neigh->if_incoming;
+ -	struct net_device *soft_iface = hard_iface->soft_iface;
+  	struct ethtool_link_ksettings link_settings;
+  	struct net_device *real_netdev;
+  	struct station_info sinfo;
+  	u32 throughput;
+  	int ret;
+  
+ -	/* don't query throughput when no longer associated with any
+ -	 * batman-adv interface
+ -	 */
+ -	if (!soft_iface)
+ -		return false;
+ -
+  	throughput =  atomic_read(&hard_iface->bat_v.throughput_override);
+ -	if (throughput != 0) {
+ -		*pthroughput = throughput;
+ -		return true;
+ -	}
+ +	if (throughput != 0)
+ +		return throughput;
+  
+ -			*pthroughput = 0;
+ -			return true;
+ +			return 0;
+  		}
+  		if (ret)
+  			goto default_throughput;
+  
+ -		if (sinfo.filled & BIT(NL80211_STA_INFO_EXPECTED_THROUGHPUT)) {
+ -			*pthroughput = sinfo.expected_throughput / 100;
+ -			return true;
+ -		}
+ +		if (sinfo.filled & BIT(NL80211_STA_INFO_EXPECTED_THROUGHPUT))
+ +			return sinfo.expected_throughput / 100;
+  
+ -		if (sinfo.filled & BIT(NL80211_STA_INFO_TX_BITRATE)) {
+ -			*pthroughput = cfg80211_calculate_bitrate(&sinfo.txrate) / 3;
+ -			return true;
+ -		}
+ +		if (sinfo.filled & BIT(NL80211_STA_INFO_TX_BITRATE))
+ +			return cfg80211_calculate_bitrate(&sinfo.txrate) / 3;
+  
+  		goto default_throughput;
+  	}
+@@ -151,15 +135,13 @@
+  			hard_iface->bat_v.flags &= ~BATADV_FULL_DUPLEX;
+  
+  		throughput = link_settings.base.speed;
+ -		if (throughput && throughput != SPEED_UNKNOWN) {
+ -			*pthroughput = throughput * 10;
+ -			return true;
+ -		}
+ +		if (throughput && throughput != SPEED_UNKNOWN)
+ +			return throughput * 10;
+  	}
+  
+  default_throughput:
+  	if (!(hard_iface->bat_v.flags & BATADV_WARNING_DEFAULT)) {
+ -		batadv_info(soft_iface,
+ +		batadv_info(hard_iface->soft_iface,
+  			    "WiFi driver or ethtool info does not provide information about link speeds on interface %s, therefore defaulting to hardcoded throughput values of %u.%1u Mbps. Consider overriding the throughput manually or checking your driver.\n",
+  			    hard_iface->net_dev->name,
+  			    BATADV_THROUGHPUT_DEFAULT_VALUE / 10,
+@@ -168,8 +150,7 @@
+  	}
+  
+ -	*pthroughput = BATADV_THROUGHPUT_DEFAULT_VALUE;
+ -	return true;
+ +	return BATADV_THROUGHPUT_DEFAULT_VALUE;
+  }
+  
+
+""""""
+
+""""""
+
+""""""

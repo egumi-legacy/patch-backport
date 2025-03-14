@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "a4c5a468c6329bde7dfd46bacff2cbf5f8a8152e",
+    "patch_url": "https://github.com/gregkh/linux/commit/a4c5a468c6329bde7dfd46bacff2cbf5f8a8152e.patch",
+    "downstream_sha": "065215ef00f1e5773dcb0a5de4203aa6f00a7496",
+    "downstream_message": "Bluetooth: qca: Update firmware-name to support board specific nvm\n\n[ Upstream commit a4c5a468c6329bde7dfd46bacff2cbf5f8a8152e ]\n\nDifferent connectivity boards may be attached to the same platform. For\nexample, QCA6698-based boards can support either a two-antenna or\nthree-antenna solution, both of which work on the sa8775p-ride platform.\nDue to differences in connectivity boards and variations in RF\nperformance from different foundries, different NVM configurations are\nused based on the board ID.\n\nTherefore, in the firmware-name property, if the NVM file has an\nextension, the NVM file will be used. Otherwise, the system will first\ntry the .bNN (board ID) file, and if that fails, it will fall back to\nthe .bin file.\n\nPossible configurations:\nfirmware-name = \"QCA6698/hpnv21\";\nfirmware-name = \"QCA6698/hpnv21.bin\";\n\nSigned-off-by: Cheng Jiang <quic_chejiang@quicinc.com>\nSigned-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>\nStable-dep-of: a2fad248947d (\"Bluetooth: qca: Fix poor RF performance for WCN6855\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a4c5a4/patches/upstream_a4c5a4.patch",
+      "timestamp": "2025-03-12T05:11:05.859407"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:11:06.116834"
+  }
+}

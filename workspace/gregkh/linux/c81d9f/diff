@@ -1,0 +1,95 @@
+modified file: drivers/usb/host/xhci-pci.c
+--- workspace/gregkh/linux/c81d9f/newer/drivers/usb/host/xhci-pci.c
++++ workspace/gregkh/linux/c81d9f/linux-6.12.y/drivers/usb/host/xhci-pci.c
+@@ -28,18 +28,18 @@
+  #define SPARSE_CNTL_ENABLE	0xC12C
+  
+ -#define PCI_VENDOR_ID_FRESCO_LOGIC		0x1b73
+ -#define PCI_DEVICE_ID_FRESCO_LOGIC_PDK		0x1000
+ +#define PCI_VENDOR_ID_FRESCO_LOGIC	0x1b73
+ +#define PCI_DEVICE_ID_FRESCO_LOGIC_PDK	0x1000
+  #define PCI_DEVICE_ID_FRESCO_LOGIC_FL1009	0x1009
+  #define PCI_DEVICE_ID_FRESCO_LOGIC_FL1100	0x1100
+  #define PCI_DEVICE_ID_FRESCO_LOGIC_FL1400	0x1400
+  
+ -#define PCI_VENDOR_ID_ETRON			0x1b6f
+ -#define PCI_DEVICE_ID_ETRON_EJ168		0x7023
+ -#define PCI_DEVICE_ID_ETRON_EJ188		0x7052
+ -
+ -#define PCI_DEVICE_ID_INTEL_LYNXPOINT_XHCI		0x8c31
+ -#define PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_XHCI		0x9c31
+ +#define PCI_VENDOR_ID_ETRON		0x1b6f
+ +#define PCI_DEVICE_ID_EJ168		0x7023
+ +#define PCI_DEVICE_ID_EJ188		0x7052
+ +
+ +#define PCI_DEVICE_ID_INTEL_LYNXPOINT_XHCI	0x8c31
+ +#define PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_XHCI	0x9c31
+  #define PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP_XHCI	0x9cb1
+  #define PCI_DEVICE_ID_INTEL_CHERRYVIEW_XHCI		0x22b5
+  #define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_H_XHCI		0xa12f
+@@ -82,6 +82,9 @@
+  #define PCI_DEVICE_ID_ASMEDIA_3042_XHCI			0x3042
+  #define PCI_DEVICE_ID_ASMEDIA_3242_XHCI			0x3242
+  
+ +#define PCI_DEVICE_ID_CADENCE				0x17CD
+ +#define PCI_DEVICE_ID_CADENCE_SSP			0x0200
+ +
+  static const char hcd_name[] = "xhci_hcd";
+  
+  static struct hc_driver __read_mostly xhci_pci_hc_driver;
+@@ -147,11 +150,14 @@
+  	hcd->irq = 0;
+  
+ -	xhci->nvecs = min(num_online_cpus() + 1, xhci->max_interrupters);
+ +	xhci->nvecs = min(num_online_cpus() + 1,
+ +			  HCS_MAX_INTRS(xhci->hcs_params1));
+  
+  	xhci->nvecs = pci_alloc_irq_vectors(pdev, 1, xhci->nvecs,
+@@ -389,8 +395,8 @@
+  		xhci->quirks |= XHCI_DEFAULT_PM_RUNTIME_ALLOW;
+  
+  	if (pdev->vendor == PCI_VENDOR_ID_ETRON &&
+ -	    (pdev->device == PCI_DEVICE_ID_ETRON_EJ168 ||
+ -	     pdev->device == PCI_DEVICE_ID_ETRON_EJ188)) {
+ +	    (pdev->device == PCI_DEVICE_ID_EJ168 ||
+ +	     pdev->device == PCI_DEVICE_ID_EJ188)) {
+  		xhci->quirks |= XHCI_ETRON_HOST;
+  		xhci->quirks |= XHCI_RESET_ON_RESUME;
+  		xhci->quirks |= XHCI_BROKEN_STREAMS;
+@@ -474,8 +480,8 @@
+  			xhci->quirks |= XHCI_ZHAOXIN_TRB_FETCH;
+  	}
+  
+ -	if (pdev->vendor == PCI_VENDOR_ID_CDNS &&
+ -	    pdev->device == PCI_DEVICE_ID_CDNS_USBSSP)
+ +	if (pdev->vendor == PCI_DEVICE_ID_CADENCE &&
+ +	    pdev->device == PCI_DEVICE_ID_CADENCE_SSP)
+  		xhci->quirks |= XHCI_CDNS_SCTX_QUIRK;
+  
+@@ -638,9 +644,6 @@
+  
+  	dma_set_max_seg_size(&dev->dev, UINT_MAX);
+  
+ -	if (device_property_read_bool(&dev->dev, "ti,pwron-active-high"))
+ -		pci_clear_and_set_config_dword(dev, 0xE0, 0, 1 << 22);
+ -
+  	return 0;
+  
+  put_usb3_hcd:
+@@ -651,7 +654,7 @@
+  	pm_runtime_put_noidle(&dev->dev);
+  	return retval;
+  }
+ -EXPORT_SYMBOL_NS_GPL(xhci_pci_common_probe, "xhci");
+ +EXPORT_SYMBOL_NS_GPL(xhci_pci_common_probe, xhci);
+  
+  static const struct pci_device_id pci_ids_reject[] = {
+@@ -695,7 +698,7 @@
+  	if (set_power_d3)
+  		pci_set_power_state(dev, PCI_D3hot);
+  }
+ -EXPORT_SYMBOL_NS_GPL(xhci_pci_remove, "xhci");
+ +EXPORT_SYMBOL_NS_GPL(xhci_pci_remove, xhci);
+  
+
+""""""

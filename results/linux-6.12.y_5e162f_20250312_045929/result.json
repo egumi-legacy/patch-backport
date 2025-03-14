@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "5e162f872d7af8f041b143536617ab2563ea7de5",
+    "patch_url": "https://github.com/gregkh/linux/commit/5e162f872d7af8f041b143536617ab2563ea7de5",
+    "downstream_sha": "6e254503a3883c74f76a4474841b181e0ef00df9",
+    "downstream_message": "accel/ivpu: Add FW state dump on TDR\n\n[ Upstream commit 5e162f872d7af8f041b143536617ab2563ea7de5 ]\n\nSend JSM state dump message at the beginning of TDR handler. This allows\nFW to collect debug info in the FW log before the state of the NPU is\nlost allowing to analyze the cause of a TDR.\n\nWait a predefined timeout (10 ms) so the FW has a chance to write debug\nlogs. We cannot wait for JSM response at this point because IRQs are\nalready disabled before TDR handler is invoked.\n\nSigned-off-by: Tomasz Rusinowicz <tomasz.rusinowicz@intel.com>\nReviewed-by: Jacek Lawrynowicz <jacek.lawrynowicz@linux.intel.com>\nLink: https://patchwork.freedesktop.org/patch/msgid/20240930195322.461209-9-jacek.lawrynowicz@linux.intel.com\nSigned-off-by: Jacek Lawrynowicz <jacek.lawrynowicz@linux.intel.com>\nStable-dep-of: 41a2d8286c90 (\"accel/ivpu: Fix error handling in recovery/reset\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/accel/ivpu/ivpu_jsm_msg.c:559\nerror: drivers/accel/ivpu/ivpu_jsm_msg.c: patch does not apply\nerror: patch failed: drivers/accel/ivpu/ivpu_pm.c:125\nerror: drivers/accel/ivpu/ivpu_pm.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/5e162f/patches/upstream_5e162f.patch",
+      "timestamp": "2025-03-12T04:58:16.407855"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T04:59:29.857348"
+  }
+}

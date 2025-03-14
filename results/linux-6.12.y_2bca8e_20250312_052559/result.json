@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "2bca8eb0774d271b1077b72f1be135073e0a898f",
+    "patch_url": "https://github.com/gregkh/linux/commit/2bca8eb0774d271b1077b72f1be135073e0a898f.patch",
+    "downstream_sha": "4dd35a361f874ffa01d7a138315883a655c80fd8",
+    "downstream_message": "btrfs: move the delalloc range bitmap search into extent_io.c\n\n[ Upstream commit 2bca8eb0774d271b1077b72f1be135073e0a898f ]\n\nCurrently for subpage (sector size < page size) cases, we reuse subpage\nlocked bitmap to find out all delalloc ranges we have locked, and run\nall those found ranges.\n\nHowever such reuse is not perfect, e.g.:\n\n    0       32K      64K      96K       128K\n    |       |////////||///////|    |////|\n                                   120K\n\nFor above range, writepage_delalloc() for page 0 will handle the range\n[32K, 96k), note delalloc range can be beyond the page boundary.\n\nBut writepage_delalloc() for page 64K will only handle range [120K,\n128K), as the previous run on page 0 has already handled range [64K,\n96K).\nMeanwhile for the writeback we should expect range [64K, 96K) to also be\nlocked, this leads to the mismatch from locked bitmap and delalloc\nrange.\n\nThis is not causing problems yet, but it's still an inconsistent\nbehavior.\n\nSo instead of relying on the subpage locked bitmap, move the delalloc\nrange search using local @delalloc_bitmap, so that we can remove the\nexisting btrfs_folio_find_writer_locked().\n\nSigned-off-by: Qu Wenruo <wqu@suse.com>\nSigned-off-by: David Sterba <dsterba@suse.com>\nStable-dep-of: 8bf334beb349 (\"btrfs: fix double accounting race when extent_writepage_io() failed\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/2bca8e/patches/upstream_2bca8e.patch",
+      "timestamp": "2025-03-12T05:25:59.197424"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:25:59.430786"
+  }
+}

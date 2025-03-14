@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "719817cd293e4fa389e1f69c396f3f816ed5aa41",
+    "patch_url": "https://github.com/gregkh/linux/commit/719817cd293e4fa389e1f69c396f3f816ed5aa41.patch",
+    "downstream_sha": "ad66c7c4d81d01950244e02c1dacde59feea551d",
+    "downstream_message": "ipv4: use RCU protection in inet_select_addr()\n\n[ Upstream commit 719817cd293e4fa389e1f69c396f3f816ed5aa41 ]\n\ninet_select_addr() must use RCU protection to make\nsure the net structure it reads does not disappear.\n\nFixes: c4544c724322 (\"[NETNS]: Process inet_select_addr inside a namespace.\")\nSigned-off-by: Eric Dumazet <edumazet@google.com>\nLink: https://patch.msgid.link/20250205155120.1676781-7-edumazet@google.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/719817/patches/upstream_719817.patch",
+      "timestamp": "2025-03-12T05:43:03.433428"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:43:03.749193"
+  }
+}

@@ -1,0 +1,53 @@
+A. Commit message:
+Merge amd_pstate_epp_cpu_offline() and amd_pstate_epp_offline(), remove unnecessary debug print
+
+B. Change summary:
+- Merged `amd_pstate_epp_offline()` into `amd_pstate_epp_cpu_offline()`.
+- Removed unnecessary debug print in the offline path.
+- Ensured the code changes are compatible with the older version's architecture.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/drivers/cpufreq/amd-pstate.c b/drivers/cpufreq/amd-pstate.c
+index 9b8d7f299fcaf..8ce754ead328c 100644
+--- a/drivers/cpufreq/amd-pstate.c
++++ b/drivers/cpufreq/amd-pstate.c
+@@ -1657,11 +1657,14 @@ static int amd_pstate_epp_cpu_online(struct cpufreq_policy *policy)
+ 	return 0;
+ }
+ 
+-static void amd_pstate_epp_offline(struct cpufreq_policy *policy)
++static int amd_pstate_epp_cpu_offline(struct cpufreq_policy *policy)
+ {
+ 	struct amd_cpudata *cpudata = policy->driver_data;
+ 	int min_perf;
+ 
++	if (cpudata->suspended)
++		return 0;
++
+ 	min_perf = READ_ONCE(cpudata->lowest_perf);
+ 
+ 	mutex_lock(&amd_pstate_limits_lock);
+@@ -1670,18 +1673,6 @@ static void amd_pstate_epp_offline(struct cpufreq_policy *policy)
+ 	amd_pstate_set_epp(cpudata, AMD_CPPC_EPP_BALANCE_POWERSAVE);
+ 
+ 	mutex_unlock(&amd_pstate_limits_lock);
+-}
+-
+-static int amd_pstate_epp_cpu_offline(struct cpufreq_policy *policy)
+-{
+-	struct amd_cpudata *cpudata = policy->driver_data;
+-
+-	pr_debug("AMD CPU Core %d going offline\n", cpudata->cpu);
+-
+-	if (cpudata->suspended)
+-		return 0;
+-
+-	amd_pstate_epp_offline(policy);
+ 
+ 	return 0;
+ }
+```

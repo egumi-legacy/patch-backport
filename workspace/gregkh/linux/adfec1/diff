@@ -1,0 +1,81 @@
+modified file: arch/x86/kvm/lapic.h
+--- workspace/gregkh/linux/adfec1/newer/arch/x86/kvm/lapic.h
++++ workspace/gregkh/linux/adfec1/linux-6.12.y/arch/x86/kvm/lapic.h
+@@ -117,6 +117,7 @@
+  		struct kvm_lapic_irq *irq, int *r, struct dest_map *dest_map);
+  void kvm_apic_send_ipi(struct kvm_lapic *apic, u32 icr_low, u32 icr_high);
+  
+ +u64 kvm_get_apic_base(struct kvm_vcpu *vcpu);
+  int kvm_set_apic_base(struct kvm_vcpu *vcpu, struct msr_data *msr_info);
+  int kvm_apic_get_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s);
+  int kvm_apic_set_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s);
+
+""""""
+modified file: arch/x86/kvm/x86.c
+--- workspace/gregkh/linux/adfec1/newer/arch/x86/kvm/x86.c
++++ workspace/gregkh/linux/adfec1/linux-6.12.y/arch/x86/kvm/x86.c
+@@ -451,7 +451,6 @@
+  	MSR_IA32_UCODE_REV,
+  	MSR_IA32_ARCH_CAPABILITIES,
+  	MSR_IA32_PERF_CAPABILITIES,
+ -	MSR_PLATFORM_INFO,
+  };
+  
+  static u32 msr_based_features[ARRAY_SIZE(msr_based_features_all_except_vmx) +
+@@ -668,9 +667,14 @@
+  		kvm_on_user_return(&msrs->urn);
+  }
+  
+ +u64 kvm_get_apic_base(struct kvm_vcpu *vcpu)
+ +{
+ +	return vcpu->arch.apic_base;
+ +}
+ +
+  enum lapic_mode kvm_get_apic_mode(struct kvm_vcpu *vcpu)
+  {
+ -	return kvm_apic_mode(vcpu->arch.apic_base);
+ +	return kvm_apic_mode(kvm_get_apic_base(vcpu));
+  }
+  EXPORT_SYMBOL_GPL(kvm_get_apic_mode);
+  
+@@ -1850,7 +1854,7 @@
+  	case MSR_KERNEL_GS_BASE:
+  	case MSR_CSTAR:
+  	case MSR_LSTAR:
+ -		if (is_noncanonical_msr_address(data, vcpu))
+ +		if (is_noncanonical_address(data, vcpu))
+  			return 1;
+  		break;
+  	case MSR_IA32_SYSENTER_EIP:
+@@ -1867,7 +1871,7 @@
+  		 * value, and that something deterministic happens if the guest
+  		 * invokes 64-bit SYSENTER.
+  		 */
+ -		data = __canonical_address(data, max_host_virt_addr_bits());
+ +		data = __canonical_address(data, vcpu_virt_addr_bits(vcpu));
+  		break;
+  	case MSR_TSC_AUX:
+  		if (!kvm_is_supported_user_return_msr(MSR_TSC_AUX))
+@@ -2140,9 +2144,8 @@
+  static inline bool kvm_vcpu_exit_request(struct kvm_vcpu *vcpu)
+  {
+  	xfer_to_guest_mode_prepare();
+ -
+ -	return READ_ONCE(vcpu->mode) == EXITING_GUEST_MODE ||
+ -	       kvm_request_pending(vcpu) || xfer_to_guest_mode_work_pending();
+ +	return vcpu->mode == EXITING_GUEST_MODE || kvm_request_pending(vcpu) ||
+ +		xfer_to_guest_mode_work_pending();
+  }
+  
+ -		vcpu->arch.preempted_in_kernel = vcpu->arch.guest_state_protected ||
+ -						 !kvm_x86_call(get_cpl_no_cache)(vcpu);
+ +		vcpu->arch.preempted_in_kernel = kvm_arch_vcpu_in_kernel(vcpu);
+  
+  		if ((!pcid_enabled && (operand.pcid != 0)) ||
+ -		    is_noncanonical_invlpg_address(operand.gla, vcpu)) {
+ +		    is_noncanonical_address(operand.gla, vcpu)) {
+  			kvm_inject_gp(vcpu, 0);
+  			return 1;
+  		}
+
+""""""

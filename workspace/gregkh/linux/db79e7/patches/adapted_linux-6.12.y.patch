@@ -1,0 +1,28 @@
+From ddcdddc5a306fc908762ffbb7cab4ad21b331481 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:59:54 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/usb/serial/option.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+index 9ba5584061c8..8dcf11f2c398 100644
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -621,7 +621,10 @@ static void option_instat_callback(struct urb *urb);
+ 
+ /* MeiG Smart Technology products */
+ #define MEIGSMART_VENDOR_ID			0x2dee
+-/* MeiG Smart SRM825L based on Qualcomm 315 */
++/*
++ * MeiG Smart SLM828, SRM815, and SRM825L use the same product ID. SLM828 is
++ * based on Qualcomm SDX12. SRM815 and SRM825L are based on Qualcomm 315.
++ */
+ #define MEIGSMART_PRODUCT_SRM825L		0x4d22
+ /* MeiG Smart SLM320 based on UNISOC UIS8910 */
+ #define MEIGSMART_PRODUCT_SLM320		0x4d41
+-- 
+2.25.1
+

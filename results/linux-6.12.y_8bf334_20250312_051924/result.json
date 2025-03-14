@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "8bf334beb3496da3c3fbf3daf3856f7eec70dacc",
+    "patch_url": "https://github.com/gregkh/linux/commit/8bf334beb3496da3c3fbf3daf3856f7eec70dacc",
+    "downstream_sha": "2627661c31ba53dd3b813d852f2d56dec78ab028",
+    "downstream_message": "btrfs: fix double accounting race when extent_writepage_io() failed\n\n[ Upstream commit 8bf334beb3496da3c3fbf3daf3856f7eec70dacc ]\n\n[BUG]\nIf submit_one_sector() failed inside extent_writepage_io() for sector\nsize < page size cases (e.g. 4K sector size and 64K page size), then\nwe can hit double ordered extent accounting error.\n\nThis should be very rare, as submit_one_sector() only fails when we\nfailed to grab the extent map, and such extent map should exist inside\nthe memory and has been pinned.\n\n[CAUSE]\nFor example we have the following folio layout:\n\n    0  4K          32K    48K   60K 64K\n    |//|           |//////|     |///|\n\nWhere |///| is the dirty range we need to writeback. The 3 different\ndirty ranges are submitted for regular COW.\n\nNow we hit the following sequence:\n\n- submit_one_sector() returned 0 for [0, 4K)\n\n- submit_one_sector() returned 0 for [32K, 48K)\n\n- submit_one_sector() returned error for [60K, 64K)\n\n- btrfs_mark_ordered_io_finished() called for the whole folio\n  This will mark the following ranges as finished:\n  * [0, 4K)\n  * [32K, 48K)\n    Both ranges have their IO already submitted, this cleanup will\n    lead to double accounting.\n\n  * [60K, 64K)\n    That's the correct cleanup.\n\nThe only good news is, this error is only theoretical, as the target\nextent map is always pinned, thus we should directly grab it from\nmemory, other than reading it from the disk.\n\n[FIX]\nInstead of calling btrfs_mark_ordered_io_finished() for the whole folio\nrange, which can touch ranges we should not touch, instead\nmove the error handling inside extent_writepage_io().\n\nSo that we can cleanup exact sectors that ought to be submitted but failed.\n\nThis provides much more accurate cleanup, avoiding the double accounting.\n\nCC: stable@vger.kernel.org # 5.15+\nSigned-off-by: Qu Wenruo <wqu@suse.com>\nSigned-off-by: David Sterba <dsterba@suse.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: fs/btrfs/extent_io.c:1462\nerror: fs/btrfs/extent_io.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/8bf334/patches/upstream_8bf334.patch",
+      "timestamp": "2025-03-12T05:18:35.975404"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:19:24.103494"
+  }
+}

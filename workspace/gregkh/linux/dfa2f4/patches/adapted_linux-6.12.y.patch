@@ -1,0 +1,95 @@
+From 0115ec17abdcf31b53431e2ef86b679e8f3d1abb Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:05:03 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/pci/devres.c              |  4 ++--
+ drivers/pci/pci.c                 | 35 -------------------------------
+ drivers/vfio/pci/vfio_pci_intrs.c |  2 +-
+ 3 files changed, 3 insertions(+), 38 deletions(-)
+
+diff --git a/drivers/pci/devres.c b/drivers/pci/devres.c
+index b133967faef8..96ac8c89d207 100644
+--- a/drivers/pci/devres.c
++++ b/drivers/pci/devres.c
+@@ -435,7 +435,7 @@ static void pcim_intx_restore(struct device *dev, void *data)
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct pcim_intx_devres *res = data;
+ 
+-	__pcim_intx(pdev, res->orig_intx);
++	pci_intx(pdev, res->orig_intx);
+ }
+ 
+ static struct pcim_intx_devres *get_or_create_intx_devres(struct device *dev)
+@@ -472,7 +472,7 @@ int pcim_intx(struct pci_dev *pdev, int enable)
+ 		return -ENOMEM;
+ 
+ 	res->orig_intx = !enable;
+-	__pcim_intx(pdev, enable);
++	pci_intx(pdev, enable);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index dd3c6dcb47ae..3491f4901f68 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -4478,41 +4478,6 @@ void pci_disable_parity(struct pci_dev *dev)
+ 		cmd &= ~PCI_COMMAND_PARITY;
+ 		pci_write_config_word(dev, PCI_COMMAND, cmd);
+ 	}
+-}
+-
+-/**
+- * pci_intx - enables/disables PCI INTx for device dev
+- * @pdev: the PCI device to operate on
+- * @enable: boolean: whether to enable or disable PCI INTx
+- *
+- * Enables/disables PCI INTx for device @pdev
+- *
+- * NOTE:
+- * This is a "hybrid" function: It's normally unmanaged, but becomes managed
+- * when pcim_enable_device() has been called in advance. This hybrid feature is
+- * DEPRECATED! If you want managed cleanup, use pcim_intx() instead.
+- */
+-void pci_intx(struct pci_dev *pdev, int enable)
+-{
+-	u16 pci_command, new;
+-
+-	pci_read_config_word(pdev, PCI_COMMAND, &pci_command);
+-
+-	if (enable)
+-		new = pci_command & ~PCI_COMMAND_INTX_DISABLE;
+-	else
+-		new = pci_command | PCI_COMMAND_INTX_DISABLE;
+-
+-	if (new != pci_command) {
+-		/* Preserve the "hybrid" behavior for backwards compatibility */
+-		if (pci_is_managed(pdev)) {
+-			WARN_ON_ONCE(pcim_intx(pdev, enable) != 0);
+-			return;
+-		}
+-
+-		pci_write_config_word(pdev, PCI_COMMAND, new);
+-	}
+-}
+ EXPORT_SYMBOL_GPL(pci_intx);
+ 
+ /**
+diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
+index 8382c5834335..2baa60effc5e 100644
+--- a/drivers/vfio/pci/vfio_pci_intrs.c
++++ b/drivers/vfio/pci/vfio_pci_intrs.c
+@@ -118,7 +118,7 @@ static bool __vfio_pci_intx_mask(struct vfio_pci_core_device *vdev)
+ 	 */
+ 	if (unlikely(!is_intx(vdev))) {
+ 		if (vdev->pci_2_3)
+-			pci_intx(pdev, 0);
++			pci_intx(pdev, 1);
+ 		goto out_unlock;
+ 	}
+ 
+-- 
+2.25.1
+

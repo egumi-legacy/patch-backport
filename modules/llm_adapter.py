@@ -43,7 +43,14 @@ class LLMAdapterModule(BaseModule):
             is_retry = context.config.retry_with_feedback and context.retry_count > 0 and context.feedback_data
             
             # 获取补丁文件路径
-            patch_path = context.commit.patch_path
+            # 优先使用chunk_analyzer模块优化后的补丁路径
+            if hasattr(context.commit, 'optimized_patch_path') and context.commit.optimized_patch_path.exists():
+                patch_path = context.commit.optimized_patch_path
+                logger.info(f"使用优化后的补丁文件: {patch_path}")
+            else:
+                patch_path = context.commit.patch_path
+                logger.info(f"使用原始补丁文件: {patch_path}")
+                
             if not patch_path.exists():
                 raise ValueError("没有找到补丁文件路径")
 

@@ -1,0 +1,115 @@
+A. Commit message:
+Input: synaptics - fix crash when enabling pass-through port
+
+B. Change summary:
+This patch backports the fix to prevent a potential crash when enabling a pass-through port in the Synaptics driver. The issue arises because an interrupt might come before the psmouse driver binds to the pass-through port, leading to a crash if the psmouse instance has not been attached yet. To address this, open() and close() methods are introduced for the port, ensuring that the port is checked before accessing the psmouse instance.
+
+C. Compatibility Risk:
+Medium
+
+D. Fixed Code:
+```diff
+diff --git a/drivers/input/mouse/synaptics.c b/drivers/input/mouse/synaptics.c
+index 2735f86c23cc8..aba57abe69788 100644
+--- a/drivers/input/mouse/synaptics.c
++++ b/drivers/input/mouse/synaptics.c
+@@ -665,23 +665,50 @@ static void synaptics_pt_stop(struct serio *serio)
+ 	priv->pt_port = NULL;
+ }
+ 
++static int synaptics_pt_open(struct serio *serio)
++{
++	struct psmouse *parent = psmouse_from_serio(serio->parent);
++	struct synaptics_data *priv = parent->private;
++
++	serio_pause_rx(parent->ps2dev.serio);
++	priv->pt_port_open = true;
++	serio_continue_rx(parent->ps2dev.serio);
++
++	return 0;
++}
++
++static void synaptics_pt_close(struct serio *serio)
++{
++	struct psmouse *parent = psmouse_from_serio(serio->parent);
++	struct synaptics_data *priv = parent->private;
++
++	serio_pause_rx(parent->ps2dev.serio);
++	priv->pt_port_open = false;
++	serio_continue_rx(parent->ps2dev.serio);
++}
++
+ static int synaptics_is_pt_packet(u8 *buf)
+ {
+ 	return (buf[0] & 0xFC) == 0x84 && (buf[3] & 0xCC) == 0xC4;
+ }
+ 
+-static void synaptics_pass_pt_packet(struct serio *ptport, u8 *packet)
++static void synaptics_pass_pt_packet(struct synaptics_data *priv, u8 *packet)
+ {
+-	struct psmouse *child = psmouse_from_serio(ptport);
++	struct serio *ptport;
+ 
+-	if (child && child->state == PSMOUSE_ACTIVATED) {
+-		serio_interrupt(ptport, packet[1], 0);
+-		serio_interrupt(ptport, packet[4], 0);
+-		serio_interrupt(ptport, packet[5], 0);
+-		if (child->pktsize == 4)
+-			serio_interrupt(ptport, packet[2], 0);
+-	} else {
+-		serio_interrupt(ptport, packet[1], 0);
++	ptport = priv->pt_port;
++	if (!ptport)
++		return;
++
++	serio_interrupt(ptport, packet[1], 0);
++
++	if (priv->pt_port_open) {
++		struct psmouse *child = psmouse_from_serio(ptport);
++
++		if (child->state == PSMOUSE_ACTIVATED) {
++			serio_interrupt(ptport, packet[4], 0);
++			serio_interrupt(ptport, packet[5], 0);
++			if (child->pktsize == 4)
++				serio_interrupt(ptport, packet[2], 0);
++		}
+ 	}
+ }
+ 
+@@ -720,6 +747,8 @@ static void synaptics_pt_create(struct psmouse *psmouse)
+ 	serio->write = synaptics_pt_write;
+ 	serio->start = synaptics_pt_start;
+ 	serio->stop = synaptics_pt_stop;
++	serio->open = synaptics_pt_open;
++	serio->close = synaptics_pt_close;
+ 	serio->parent = psmouse->ps2dev.serio;
+ 
+ 	psmouse->pt_activate = synaptics_pt_activate;
+@@ -1216,11 +1245,10 @@ static psmouse_ret_t synaptics_process_byte(struct psmouse *psmouse)
+ 
+ 		if (SYN_CAP_PASS_THROUGH(priv->info.capabilities) &&
+ 		    synaptics_is_pt_packet(psmouse->packet)) {
+-			if (priv->pt_port)
+-				synaptics_pass_pt_packet(priv->pt_port,
+-							 psmouse->packet);
+-		} else
++			synaptics_pass_pt_packet(priv, psmouse->packet);
++		} else {
+ 			synaptics_process_packet(psmouse);
++		}
+ 
+ 		return PSMOUSE_FULL_PACKET;
+ 	}
+diff --git a/drivers/input/mouse/synaptics.h b/drivers/input/mouse/synaptics.h
+index 899aee598632b..3853165b6b3a0 100644
+--- a/drivers/input/mouse/synaptics.h
++++ b/drivers/input/mouse/synaptics.h
+@@ -188,6 +188,7 @@ struct synaptics_data {
+ 	bool disable_gesture;			/* disable gestures */
+ 
+ 	struct serio *pt_port;			/* Pass-through serio port */
++	bool pt_port_open;
+ 
+ 	/*
+ 	 * Last received Advanced Gesture Mode (AGM) packet. An AGM packet
+```

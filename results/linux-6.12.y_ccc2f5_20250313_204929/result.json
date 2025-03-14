@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "ccc2f5a436fbb0ae1fb598932a9b8e48423c1959",
+    "patch_url": "https://github.com/gregkh/linux/commit/ccc2f5a436fbb0ae1fb598932a9b8e48423c1959.patch",
+    "downstream_sha": "bb73c406b4c6078c02ab60a48f9a73288b15ff9d",
+    "downstream_message": "net: dsa: mt7530: Fix traffic flooding for MMIO devices\n\n[ Upstream commit ccc2f5a436fbb0ae1fb598932a9b8e48423c1959 ]\n\nOn MMIO devices (e.g. MT7988 or EN7581) unicast traffic received on lanX\nport is flooded on all other user ports if the DSA switch is configured\nwithout VLAN support since PORT_MATRIX in PCR regs contains all user\nports. Similar to MDIO devices (e.g. MT7530 and MT7531) fix the issue\ndefining default VLAN-ID 0 for MT7530 MMIO devices.\n\nFixes: 110c18bfed414 (\"net: dsa: mt7530: introduce driver for MT7988 built-in switch\")\nSigned-off-by: Lorenzo Bianconi <lorenzo@kernel.org>\nReviewed-by: Chester A. Unal <chester.a.unal@arinc9.com>\nLink: https://patch.msgid.link/20250304-mt7988-flooding-fix-v1-1-905523ae83e9@kernel.org\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/ccc2f5/patches/upstream_ccc2f5.patch",
+      "timestamp": "2025-03-13T20:49:29.666289"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-13T20:49:29.919038"
+  }
+}

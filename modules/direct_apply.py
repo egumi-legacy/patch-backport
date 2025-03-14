@@ -50,6 +50,7 @@ class DirectApplyModule(BaseModule):
                 if cache_result:
                     logger.info(f"从缓存中获取到直接应用结果: {cache_result}")
                     context.direct_apply_result = cache_result
+                    context.commit.patch_path = cache_result.get('patch_path')
                     return context
             
             # 下载补丁文件
@@ -58,7 +59,7 @@ class DirectApplyModule(BaseModule):
                 raise ValueError("下载补丁失败")
             else:
                 context.commit.patch_path = patch_path
-                # logger.info(f"此时upstream_patch_path存在状态: {True if context.commit.patch_path.exists() else False}")
+                logger.info(f"此时upstream_patch_path存在状态: {True if context.commit.patch_path.exists() else False}")
                 logger.info(f"下载补丁成功: {patch_path}")
             
             # 准备测试分支
@@ -117,7 +118,8 @@ class DirectApplyModule(BaseModule):
             )
         
         # 保存指标
-        self._save_metrics(context)
+        if context.direct_apply_result.get('success', False):
+            self._save_metrics(context)
         
         return context
 
@@ -139,9 +141,9 @@ class DirectApplyModule(BaseModule):
             # 确保目标目录存在
             target_dir.mkdir(parents=True, exist_ok=True)
 
-            # # 如果目标目录已存在，先删除
-            # if target_dir.exists():
-            #     shutil.rmtree(target_dir)
+            # 如果目标目录已存在，先删除
+            if target_dir.exists():
+                shutil.rmtree(target_dir)
 
             # 移动目录
             shutil.move(str(source_dir), str(target_dir))

@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "9e512eaaf8f4008c44ede3dfc0fbc9d9c5118583",
+    "patch_url": "https://github.com/gregkh/linux/commit/9e512eaaf8f4008c44ede3dfc0fbc9d9c5118583.patch",
+    "downstream_sha": "c8a52c772c7c6de72257a435bcad03d3bb914a70",
+    "downstream_message": "serial: 8250: Fix fifo underflow on flush\n\ncommit 9e512eaaf8f4008c44ede3dfc0fbc9d9c5118583 upstream.\n\nWhen flushing the serial port's buffer, uart_flush_buffer() calls\nkfifo_reset() but if there is an outstanding DMA transfer then the\ncompletion function will consume data from the kfifo via\nuart_xmit_advance(), underflowing and leading to ongoing DMA as the\ndriver tries to transmit another 2^32 bytes.\n\nThis is readily reproduced with serial-generic and amidi sending even\nshort messages as closing the device on exit will wait for the fifo to\ndrain and in the underflow case amidi hangs for 30 seconds on exit in\ntty_wait_until_sent().  A trace of that gives:\n\n     kworker/1:1-84    [001]    51.769423: bprint:               serial8250_tx_dma: tx_size=3 fifo_len=3\n           amidi-763   [001]    51.769460: bprint:               uart_flush_buffer: resetting fifo\n irq/21-fe530000-76    [000]    51.769474: bprint:               __dma_tx_complete: tx_size=3\n irq/21-fe530000-76    [000]    51.769479: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294967293\n irq/21-fe530000-76    [000]    51.781295: bprint:               __dma_tx_complete: tx_size=4096\n irq/21-fe530000-76    [000]    51.781301: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294963197\n irq/21-fe530000-76    [000]    51.793131: bprint:               __dma_tx_complete: tx_size=4096\n irq/21-fe530000-76    [000]    51.793135: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294959101\n irq/21-fe530000-76    [000]    51.804949: bprint:               __dma_tx_complete: tx_size=4096\n\nSince the port lock is held in when the kfifo is reset in\nuart_flush_buffer() and in __dma_tx_complete(), adding a flush_buffer\nhook to adjust the outstanding DMA byte count is sufficient to avoid the\nkfifo underflow.\n\nFixes: 9ee4b83e51f74 (\"serial: 8250: Add support for dmaengine\")\nCc: stable <stable@kernel.org>\nSigned-off-by: John Keeping <jkeeping@inmusicbrands.com>\nLink: https://lore.kernel.org/r/20250208124148.1189191-1-jkeeping@inmusicbrands.com\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/9e512e/patches/upstream_9e512e.patch",
+      "timestamp": "2025-03-12T05:55:48.783482"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:55:49.121836"
+  }
+}

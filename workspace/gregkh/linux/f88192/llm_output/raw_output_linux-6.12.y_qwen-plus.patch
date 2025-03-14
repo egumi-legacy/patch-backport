@@ -1,0 +1,25 @@
+A. Commit message:
+Correct register address in dcn35 for older version
+
+B. Change summary:
+The patch corrects the incorrect offset address of mmCLK5_spll_field_8 for dcn35, which causes SSC not to be enabled. The fix ensures that the correct register address is used, thereby enabling SSC functionality.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn35/dcn35_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn35/dcn35_clk_mgr.c
+index 1f974ea3b0c65..1648226586e22 100644
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn35/dcn35_clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn35/dcn35_clk_mgr.c
+@@ -89,7 +89,7 @@
+ #define mmCLK1_CLK4_ALLOW_DS 0x16EA8
+ #define mmCLK1_CLK5_ALLOW_DS 0x16EB1
+ 
+-#define mmCLK5_spll_field_8 0x1B04B
++#define mmCLK5_spll_field_8 0x1B24B
+ #define mmDENTIST_DISPCLK_CNTL 0x0124
+ #define regDENTIST_DISPCLK_CNTL 0x0064
+ #define regDENTIST_DISPCLK_CNTL_BASE_IDX 1
+```

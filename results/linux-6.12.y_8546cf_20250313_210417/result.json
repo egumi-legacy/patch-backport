@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "8546cfd08aa4b982acd2357403a1f15495d622ec",
+    "patch_url": "https://github.com/gregkh/linux/commit/8546cfd08aa4b982acd2357403a1f15495d622ec.patch",
+    "downstream_sha": "df072331325598d7706223f4d8d93f828bb3d020",
+    "downstream_message": "arm64: dts: rockchip: adjust SMMU interrupt type on rk3588\n\n[ Upstream commit 8546cfd08aa4b982acd2357403a1f15495d622ec ]\n\nThe SMMU architecture requires wired interrupts to be edge triggered,\nwhich does not align with the DT description for the RK3588.  This leads\nto interrupt storms, as the SMMU continues to hold the pin high and only\npulls it down for a short amount when issuing an IRQ.  Update the DT\ndescription to be in line with the spec and perceived reality.\n\nSigned-off-by: Patrick Wildt <patrick@blueri.se>\nFixes: cd81d3a0695c (\"arm64: dts: rockchip: add rk3588 pcie and php IOMMUs\")\nReviewed-by: Niklas Cassel <cassel@kernel.org>\nLink: https://lore.kernel.org/r/Z6pxme2Chmf3d3uK@windev.fritz.box\nSigned-off-by: Heiko Stuebner <heiko@sntech.de>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": "error: patch failed: arch/arm64/boot/dts/rockchip/rk3588-base.dtsi:549\nerror: arch/arm64/boot/dts/rockchip/rk3588-base.dtsi: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/8546cf/patches/upstream_8546cf.patch",
+      "success": false,
+      "timestamp": "2025-03-13T20:56:29.271658"
+    },
+    "last_error": "'NoneType' object has no attribute 'exists'"
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-13T21:04:17.152353"
+  }
+}

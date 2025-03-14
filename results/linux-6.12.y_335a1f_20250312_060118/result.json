@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "335a1fc1193481f8027f176649c72868172f6f8b",
+    "patch_url": "https://github.com/gregkh/linux/commit/335a1fc1193481f8027f176649c72868172f6f8b.patch",
+    "downstream_sha": "bcc1c91017c43be3515db0f35ff74b372057c884",
+    "downstream_message": "usb: gadget: udc: renesas_usb3: Fix compiler warning\n\ncommit 335a1fc1193481f8027f176649c72868172f6f8b upstream.\n\ndrivers/usb/gadget/udc/renesas_usb3.c: In function 'renesas_usb3_probe':\ndrivers/usb/gadget/udc/renesas_usb3.c:2638:73: warning: '%d'\ndirective output may be truncated writing between 1 and 11 bytes into a\nregion of size 6 [-Wformat-truncation=]\n2638 |   snprintf(usb3_ep->ep_name, sizeof(usb3_ep->ep_name), \"ep%d\", i);\n                                    ^~~~~~~~~~~~~~~~~~~~~~~~     ^~   ^\n\nFixes: 746bfe63bba3 (\"usb: gadget: renesas_usb3: add support for Renesas USB3.0 peripheral controller\")\nCc: stable@vger.kernel.org\nReported-by: kernel test robot <lkp@intel.com>\nCloses: https://lore.kernel.org/oe-kbuild-all/202501201409.BIQPtkeB-lkp@intel.com/\nSigned-off-by: Guo Ren <guoren@linux.alibaba.com>\nLink: https://lore.kernel.org/r/20250122081231.47594-1-guoren@kernel.org\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/335a1f/patches/upstream_335a1f.patch",
+      "timestamp": "2025-03-12T06:01:18.450670"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T06:01:18.773895"
+  }
+}

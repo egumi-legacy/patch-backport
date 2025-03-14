@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "d364eee14c682b141f4667efc3c65191339d88bd",
+    "patch_url": "https://github.com/gregkh/linux/commit/d364eee14c682b141f4667efc3c65191339d88bd",
+    "downstream_sha": "704fdc59601e5b3f455184e4a0b65fbdefe0f86d",
+    "downstream_message": "cpufreq/amd-pstate: Remove the goto label in amd_pstate_update_limits\n\ncommit d364eee14c682b141f4667efc3c65191339d88bd upstream.\n\nScope based guard/cleanup macros should not be used together with goto\nlabels. Hence, remove the goto label.\n\nFixes: 6c093d5a5b73 (\"cpufreq/amd-pstate: convert mutex use to guard()\")\nSigned-off-by: Dhananjay Ugwekar <dhananjay.ugwekar@amd.com>\nReviewed-by: Mario Limonciello <mario.limonciello@amd.com>\nLink: https://lore.kernel.org/r/20250205112523.201101-2-dhananjay.ugwekar@amd.com\nSigned-off-by: Mario Limonciello <mario.limonciello@amd.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/cpufreq/amd-pstate.c:838\nerror: drivers/cpufreq/amd-pstate.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/d364ee/patches/upstream_d364ee.patch",
+      "timestamp": "2025-03-12T05:36:46.598730"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:37:10.196725"
+  }
+}

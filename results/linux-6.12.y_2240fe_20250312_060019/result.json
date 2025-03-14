@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "2240fed37afbcdb5e8b627bc7ad986891100e05d",
+    "patch_url": "https://github.com/gregkh/linux/commit/2240fed37afbcdb5e8b627bc7ad986891100e05d.patch",
+    "downstream_sha": "62d8f4c5454dd39aded4f343720d1c5a1803cfef",
+    "downstream_message": "USB: hub: Ignore non-compliant devices with too many configs or interfaces\n\ncommit 2240fed37afbcdb5e8b627bc7ad986891100e05d upstream.\n\nRobert Morris created a test program which can cause\nusb_hub_to_struct_hub() to dereference a NULL or inappropriate\npointer:\n\nOops: general protection fault, probably for non-canonical address\n0xcccccccccccccccc: 0000 [#1] SMP DEBUG_PAGEALLOC PTI\nCPU: 7 UID: 0 PID: 117 Comm: kworker/7:1 Not tainted 6.13.0-rc3-00017-gf44d154d6e3d #14\nHardware name: FreeBSD BHYVE/BHYVE, BIOS 14.0 10/17/2021\nWorkqueue: usb_hub_wq hub_event\nRIP: 0010:usb_hub_adjust_deviceremovable+0x78/0x110\n...\nCall Trace:\n <TASK>\n ? die_addr+0x31/0x80\n ? exc_general_protection+0x1b4/0x3c0\n ? asm_exc_general_protection+0x26/0x30\n ? usb_hub_adjust_deviceremovable+0x78/0x110\n hub_probe+0x7c7/0xab0\n usb_probe_interface+0x14b/0x350\n really_probe+0xd0/0x2d0\n ? __pfx___device_attach_driver+0x10/0x10\n __driver_probe_device+0x6e/0x110\n driver_probe_device+0x1a/0x90\n __device_attach_driver+0x7e/0xc0\n bus_for_each_drv+0x7f/0xd0\n __device_attach+0xaa/0x1a0\n bus_probe_device+0x8b/0xa0\n device_add+0x62e/0x810\n usb_set_configuration+0x65d/0x990\n usb_generic_driver_probe+0x4b/0x70\n usb_probe_device+0x36/0xd0\n\nThe cause of this error is that the device has two interfaces, and the\nhub driver binds to interface 1 instead of interface 0, which is where\nusb_hub_to_struct_hub() looks.\n\nWe can prevent the problem from occurring by refusing to accept hub\ndevices that violate the USB spec by having more than one\nconfiguration or interface.\n\nReported-and-tested-by: Robert Morris <rtm@csail.mit.edu>\nCc: stable <stable@kernel.org>\nCloses: https://lore.kernel.org/linux-usb/95564.1737394039@localhost/\nSigned-off-by: Alan Stern <stern@rowland.harvard.edu>\nLink: https://lore.kernel.org/r/c27f3bf4-63d8-4fb5-ac82-09e3cd19f61c@rowland.harvard.edu\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/2240fe/patches/upstream_2240fe.patch",
+      "timestamp": "2025-03-12T06:00:18.707623"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T06:00:19.006899"
+  }
+}

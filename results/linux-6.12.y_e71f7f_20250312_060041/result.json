@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "e71f7f42e3c874ac3314b8f250e8416a706165af",
+    "patch_url": "https://github.com/gregkh/linux/commit/e71f7f42e3c874ac3314b8f250e8416a706165af.patch",
+    "downstream_sha": "9c91296e2dc69e8a38016ddf2bbd474cd6d6acc0",
+    "downstream_message": "USB: pci-quirks: Fix HCCPARAMS register error for LS7A EHCI\n\ncommit e71f7f42e3c874ac3314b8f250e8416a706165af upstream.\n\nLS7A EHCI controller doesn't have extended capabilities, so the EECP\n(EHCI Extended Capabilities Pointer) field of HCCPARAMS register should\nbe 0x0, but it reads as 0xa0 now. This is a hardware flaw and will be\nfixed in future, now just clear the EECP field to avoid error messages\non boot:\n\n......\n[    0.581675] pci 0000:00:04.1: EHCI: unrecognized capability ff\n[    0.581699] pci 0000:00:04.1: EHCI: unrecognized capability ff\n[    0.581716] pci 0000:00:04.1: EHCI: unrecognized capability ff\n[    0.581851] pci 0000:00:04.1: EHCI: unrecognized capability ff\n......\n[    0.581916] pci 0000:00:05.1: EHCI: unrecognized capability ff\n[    0.581951] pci 0000:00:05.1: EHCI: unrecognized capability ff\n[    0.582704] pci 0000:00:05.1: EHCI: unrecognized capability ff\n[    0.582799] pci 0000:00:05.1: EHCI: unrecognized capability ff\n......\n\nCc: stable <stable@kernel.org>\nSigned-off-by: Baoqi Zhang <zhangbaoqi@loongson.cn>\nSigned-off-by: Huacai Chen <chenhuacai@loongson.cn>\nLink: https://lore.kernel.org/r/20250202124935.480500-1-chenhuacai@loongson.cn\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/e71f7f/patches/upstream_e71f7f.patch",
+      "timestamp": "2025-03-12T06:00:41.134000"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T06:00:41.415526"
+  }
+}

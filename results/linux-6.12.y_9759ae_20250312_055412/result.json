@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "9759ae2cee7cd42b95f1c48aa3749bd02b5ddb08",
+    "patch_url": "https://github.com/gregkh/linux/commit/9759ae2cee7cd42b95f1c48aa3749bd02b5ddb08.patch",
+    "downstream_sha": "db60d2d896a17decd58d143eef92cf22eb0a0176",
+    "downstream_message": "iommu: Fix potential memory leak in iopf_queue_remove_device()\n\ncommit 9759ae2cee7cd42b95f1c48aa3749bd02b5ddb08 upstream.\n\nThe iopf_queue_remove_device() helper removes a device from the per-iommu\niopf queue when PRI is disabled on the device. It responds to all\noutstanding iopf's with an IOMMU_PAGE_RESP_INVALID code and detaches the\ndevice from the queue.\n\nHowever, it fails to release the group structure that represents a group\nof iopf's awaiting for a response after responding to the hardware. This\ncan cause a memory leak if iopf_queue_remove_device() is called with\npending iopf's.\n\nFix it by calling iopf_free_group() after the iopf group is responded.\n\nFixes: 199112327135 (\"iommu: Track iopf group instead of last fault\")\nCc: stable@vger.kernel.org\nSuggested-by: Kevin Tian <kevin.tian@intel.com>\nSigned-off-by: Lu Baolu <baolu.lu@linux.intel.com>\nReviewed-by: Kevin Tian <kevin.tian@intel.com>\nReviewed-by: Jason Gunthorpe <jgg@nvidia.com>\nLink: https://lore.kernel.org/r/20250117055800.782462-1-baolu.lu@linux.intel.com\nSigned-off-by: Joerg Roedel <jroedel@suse.de>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/9759ae/patches/upstream_9759ae.patch",
+      "timestamp": "2025-03-12T05:54:12.532016"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:54:12.842744"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "857ae05549ee2542317e7084ecaa5f8536634dd9",
+    "patch_url": "https://github.com/gregkh/linux/commit/857ae05549ee2542317e7084ecaa5f8536634dd9",
+    "downstream_sha": "478a46f1122f0830392bef2a46a8d91d8abc354e",
+    "downstream_message": "vsock/bpf: Warn on socket without transport\n\n[ Upstream commit 857ae05549ee2542317e7084ecaa5f8536634dd9 ]\n\nIn the spirit of commit 91751e248256 (\"vsock: prevent null-ptr-deref in\nvsock_*[has_data|has_space]\"), armorize the \"impossible\" cases with a\nwarning.\n\nFixes: 634f1a7110b4 (\"vsock: support sockmap\")\nSigned-off-by: Michal Luczaj <mhal@rbox.co>\nReviewed-by: Stefano Garzarella <sgarzare@redhat.com>\nSigned-off-by: Paolo Abeni <pabeni@redhat.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: net/vmw_vsock/vsock_bpf.c:87\nerror: net/vmw_vsock/vsock_bpf.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/857ae0/patches/upstream_857ae0.patch",
+      "timestamp": "2025-03-12T04:51:22.411334"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T04:52:06.563477"
+  }
+}

@@ -1,0 +1,78 @@
+From 873eb907d08de68cd4535f51fdf99c283481390a Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:36:40 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ net/ipv6/ioam6_iptunnel.c | 4 +++-
+ net/ipv6/rpl_iptunnel.c   | 2 +-
+ net/ipv6/seg6_iptunnel.c  | 2 +-
+ 3 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv6/ioam6_iptunnel.c b/net/ipv6/ioam6_iptunnel.c
+index beb6b4cfc551..beb599f61dba 100644
+--- a/net/ipv6/ioam6_iptunnel.c
++++ b/net/ipv6/ioam6_iptunnel.c
+@@ -336,7 +336,7 @@ static int ioam6_do_encap(struct net *net, struct sk_buff *skb,
+ 
+ static int ioam6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ {
+-	struct dst_entry *dst = skb_dst(skb);
++	struct dst_entry *dst = skb_dst(skb), *cache_dst = NULL;
+ 	struct in6_addr orig_daddr;
+ 	struct ioam6_lwt *ilwt;
+ 	int err = -EINVAL;
+@@ -427,8 +427,10 @@ static int ioam6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ 		return dst_output(net, sk, skb);
+ 	}
+ out:
++	dst_release(cache_dst);
+ 	return dst->lwtstate->orig_output(net, sk, skb);
+ drop:
++	dst_release(cache_dst);
+ 	kfree_skb(skb);
+ 	return err;
+ }
+diff --git a/net/ipv6/rpl_iptunnel.c b/net/ipv6/rpl_iptunnel.c
+index db3c19a42e1c..e4e0a1bb8d92 100644
+--- a/net/ipv6/rpl_iptunnel.c
++++ b/net/ipv6/rpl_iptunnel.c
+@@ -230,7 +230,6 @@ static int rpl_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ 		dst = ip6_route_output(net, NULL, &fl6);
+ 		if (dst->error) {
+ 			err = dst->error;
+-			dst_release(dst);
+ 			goto drop;
+ 		}
+ 
+@@ -249,6 +248,7 @@ static int rpl_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ 	return dst_output(net, sk, skb);
+ 
+ drop:
++	dst_release(dst);
+ 	kfree_skb(skb);
+ 	return err;
+ }
+diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
+index 098632adc9b5..d76458d7ea8c 100644
+--- a/net/ipv6/seg6_iptunnel.c
++++ b/net/ipv6/seg6_iptunnel.c
+@@ -552,7 +552,6 @@ static int seg6_output_core(struct net *net, struct sock *sk,
+ 		dst = ip6_route_output(net, NULL, &fl6);
+ 		if (dst->error) {
+ 			err = dst->error;
+-			dst_release(dst);
+ 			goto drop;
+ 		}
+ 
+@@ -574,6 +573,7 @@ static int seg6_output_core(struct net *net, struct sock *sk,
+ 
+ 	return dst_output(net, sk, skb);
+ drop:
++	dst_release(dst);
+ 	kfree_skb(skb);
+ 	return err;
+ }
+-- 
+2.25.1
+

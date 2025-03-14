@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "41a2d8286c905614f29007f1bc8e652d54654b82",
+    "patch_url": "https://github.com/gregkh/linux/commit/41a2d8286c905614f29007f1bc8e652d54654b82",
+    "downstream_sha": "639fc79f84f3cc0646c55157d12e97ae86223324",
+    "downstream_message": "accel/ivpu: Fix error handling in recovery/reset\n\n[ Upstream commit 41a2d8286c905614f29007f1bc8e652d54654b82 ]\n\nDisable runtime PM for the duration of reset/recovery so it is possible\nto set the correct runtime PM state depending on the outcome of the\n`ivpu_resume()`. Don\u2019t suspend or reset the HW if the NPU is suspended\nwhen the reset/recovery is requested. Also, move common reset/recovery\ncode to separate functions for better code readability.\n\nFixes: 27d19268cf39 (\"accel/ivpu: Improve recovery and reset support\")\nCc: stable@vger.kernel.org # v6.8+\nReviewed-by: Maciej Falkowski <maciej.falkowski@linux.intel.com>\nReviewed-by: Jeffrey Hugo <quic_jhugo@quicinc.com>\nSigned-off-by: Jacek Lawrynowicz <jacek.lawrynowicz@linux.intel.com>\nLink: https://patchwork.freedesktop.org/patch/msgid/20250129124009.1039982-4-jacek.lawrynowicz@linux.intel.com\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/accel/ivpu/ivpu_pm.c:115\nerror: drivers/accel/ivpu/ivpu_pm.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/41a2d8/patches/upstream_41a2d8.patch",
+      "timestamp": "2025-03-12T04:55:46.735791"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T04:58:11.892771"
+  }
+}

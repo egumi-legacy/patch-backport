@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "69ab34f705fbfabcace64b5d53bb7a4450fac875",
+    "patch_url": "https://github.com/gregkh/linux/commit/69ab34f705fbfabcace64b5d53bb7a4450fac875.patch",
+    "downstream_sha": "cbd75b9136c58a7c58f488a993b80cf79bf6eca4",
+    "downstream_message": "flow_dissector: Fix port range key handling in BPF conversion\n\n[ Upstream commit 69ab34f705fbfabcace64b5d53bb7a4450fac875 ]\n\nFix how port range keys are handled in __skb_flow_bpf_to_target() by:\n- Separating PORTS and PORTS_RANGE key handling\n- Using correct key_ports_range structure for range keys\n- Properly initializing both key types independently\n\nThis ensures port range information is correctly stored in its dedicated\nstructure rather than incorrectly using the regular ports key structure.\n\nFixes: 59fb9b62fb6c (\"flow_dissector: Fix to use new variables for port ranges in bpf hook\")\nReported-by: Qiang Zhang <dtzq01@gmail.com>\nCloses: https://lore.kernel.org/netdev/CAPx+-5uvFxkhkz4=j_Xuwkezjn9U6kzKTD5jz4tZ9msSJ0fOJA@mail.gmail.com/\nCc: Yoshiki Komachi <komachi.yoshiki@gmail.com>\nCc: Jamal Hadi Salim <jhs@mojatatu.com>\nCc: Jiri Pirko <jiri@resnulli.us>\nSigned-off-by: Cong Wang <xiyou.wangcong@gmail.com>\nLink: https://patch.msgid.link/20250218043210.732959-4-xiyou.wangcong@gmail.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/69ab34/patches/upstream_69ab34.patch",
+      "timestamp": "2025-03-12T04:48:30.912430"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T04:48:31.136000"
+  }
+}

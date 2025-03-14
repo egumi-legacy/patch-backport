@@ -1,0 +1,41 @@
+modified file: drivers/input/mouse/synaptics.c
+--- workspace/gregkh/linux/08bd5b/newer/drivers/input/mouse/synaptics.c
++++ workspace/gregkh/linux/08bd5b/linux-6.12.y/drivers/input/mouse/synaptics.c
+@@ -650,8 +650,9 @@
+  	struct psmouse *parent = psmouse_from_serio(serio->parent);
+  	struct synaptics_data *priv = parent->private;
+  
+ -	guard(serio_pause_rx)(parent->ps2dev.serio);
+ +	serio_pause_rx(parent->ps2dev.serio);
+  	priv->pt_port = serio;
+ +	serio_continue_rx(parent->ps2dev.serio);
+  
+  	return 0;
+  }
+@@ -661,8 +662,9 @@
+  	struct psmouse *parent = psmouse_from_serio(serio->parent);
+  	struct synaptics_data *priv = parent->private;
+  
+ -	guard(serio_pause_rx)(parent->ps2dev.serio);
+ +	serio_pause_rx(parent->ps2dev.serio);
+  	priv->pt_port = NULL;
+ +	serio_continue_rx(parent->ps2dev.serio);
+  }
+  
+  static int synaptics_is_pt_packet(u8 *buf)
+
+""""""
+modified file: drivers/input/mouse/synaptics.h
+--- workspace/gregkh/linux/08bd5b/newer/drivers/input/mouse/synaptics.h
++++ workspace/gregkh/linux/08bd5b/linux-6.12.y/drivers/input/mouse/synaptics.h
+@@ -21,7 +21,7 @@
+  #define SYN_QUE_EXT_MIN_COORDS		0x0f
+  #define SYN_QUE_MEXT_CAPAB_10		0x10
+  
+ -/* synaptics modes */
+ +/* synatics modes */
+  #define SYN_BIT_ABSOLUTE_MODE		BIT(7)
+  #define SYN_BIT_HIGH_RATE		BIT(6)
+  #define SYN_BIT_SLEEP_MODE		BIT(3)
+
+""""""

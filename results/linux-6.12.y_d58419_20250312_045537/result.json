@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "d584198a6fe4c51f4aa88ad72f258f8961a0f11c",
+    "patch_url": "https://github.com/gregkh/linux/commit/d584198a6fe4c51f4aa88ad72f258f8961a0f11c",
+    "downstream_sha": "e68f4717a2928aa499d07a4836c2b47b7a626b06",
+    "downstream_message": "drm/amdkfd: Ensure consistent barrier state saved in gfx12 trap handler\n\n[ Upstream commit d584198a6fe4c51f4aa88ad72f258f8961a0f11c ]\n\nIt is possible for some waves in a workgroup to finish their save\nsequence before the group leader has had time to capture the workgroup\nbarrier state.  When this happens, having those waves exit do impact the\nbarrier state.  As a consequence, the state captured by the group leader\nis invalid, and is eventually incorrectly restored.\n\nThis patch proposes to have all waves in a workgroup wait for each other\nat the end of their save sequence (just before calling s_endpgm_saved).\n\nSigned-off-by: Lancelot SIX <lancelot.six@amd.com>\nReviewed-by: Jay Cornwall <jay.cornwall@amd.com>\nSigned-off-by: Alex Deucher <alexander.deucher@amd.com>\nCc: stable@vger.kernel.org # 6.12.x\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler_gfx12.asm: does not exist in index\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/d58419/patches/upstream_d58419.patch",
+      "timestamp": "2025-03-12T04:54:40.466741"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T04:55:37.136235"
+  }
+}

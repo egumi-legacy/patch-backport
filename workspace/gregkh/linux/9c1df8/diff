@@ -1,0 +1,416 @@
+modified file: drivers/net/wireless/realtek/rtw89/pci.c
+--- workspace/gregkh/linux/9c1df8/newer/drivers/net/wireless/realtek/rtw89/pci.c
++++ workspace/gregkh/linux/9c1df8/linux-6.12.y/drivers/net/wireless/realtek/rtw89/pci.c
+@@ -2358,15 +2358,13 @@
+  	return 0;
+  }
+  
+ -static void rtw89_pci_disable_eq_ax(struct rtw89_dev *rtwdev)
+ +static void rtw89_pci_disable_eq(struct rtw89_dev *rtwdev)
+  {
+  	u16 g1_oobs, g2_oobs;
+  	u32 backup_aspm;
+  	u32 phy_offset;
+ -	u16 offset_cal;
+  	u16 oobs_val;
+  	int ret;
+ -	u8 gen;
+  
+  	if (rtwdev->chip->chip_id != RTL8852C)
+  		return;
+@@ -2401,28 +2399,6 @@
+  			   OOBS_SEN_MASK, oobs_val);
+  	rtw89_write16_set(rtwdev, R_RAC_DIRECT_OFFSET_G2 + RAC_ANA09 * RAC_MULT,
+  			  BAC_OOBS_SEL);
+ -
+ -	/* offset K */
+ -	for (gen = 1; gen <= 2; gen++) {
+ -		phy_offset = gen == 1 ? R_RAC_DIRECT_OFFSET_G1 :
+ -					R_RAC_DIRECT_OFFSET_G2;
+ -
+ -		rtw89_write16_clr(rtwdev, phy_offset + RAC_ANA19 * RAC_MULT,
+ -				  B_PCIE_BIT_RD_SEL);
+ -	}
+ -
+ -	offset_cal = rtw89_read16_mask(rtwdev, R_RAC_DIRECT_OFFSET_G1 +
+ -					       RAC_ANA1F * RAC_MULT, OFFSET_CAL_MASK);
+ -
+ -	for (gen = 1; gen <= 2; gen++) {
+ -		phy_offset = gen == 1 ? R_RAC_DIRECT_OFFSET_G1 :
+ -					R_RAC_DIRECT_OFFSET_G2;
+ -
+ -		rtw89_write16_mask(rtwdev, phy_offset + RAC_ANA0B * RAC_MULT,
+ -				   MANUAL_LVL_MASK, offset_cal);
+ -		rtw89_write16_clr(rtwdev, phy_offset + RAC_ANA0D * RAC_MULT,
+ -				  OFFSET_CAL_MODE);
+ -	}
+  
+  out:
+  	rtw89_write32(rtwdev, R_AX_PCIE_MIX_CFG_V1, backup_aspm);
+@@ -2671,10 +2647,9 @@
+  static int rtw89_pci_poll_txdma_ch_idle_ax(struct rtw89_dev *rtwdev)
+  {
+  	const struct rtw89_pci_info *info = rtwdev->pci_info;
+ +	u32 ret, check, dma_busy;
+  	u32 dma_busy1 = info->dma_busy1.addr;
+  	u32 dma_busy2 = info->dma_busy2_reg;
+ -	u32 check, dma_busy;
+ -	int ret;
+  
+  	check = info->dma_busy1.mask;
+  
+@@ -2699,9 +2674,8 @@
+  static int rtw89_pci_poll_rxdma_ch_idle_ax(struct rtw89_dev *rtwdev)
+  {
+  	const struct rtw89_pci_info *info = rtwdev->pci_info;
+ +	u32 ret, check, dma_busy;
+  	u32 dma_busy3 = info->dma_busy3_reg;
+ -	u32 check, dma_busy;
+ -	int ret;
+  
+  	check = B_AX_RXQ_BUSY | B_AX_RPQ_BUSY;
+  
+@@ -3784,16 +3758,19 @@
+  	pci_free_irq_vectors(pdev);
+  }
+  
+ -static u16 gray_code_to_bin(u16 gray_code)
+ -{
+ -	u16 binary = gray_code;
+ -
+ -	while (gray_code) {
+ -		gray_code >>= 1;
+ -		binary ^= gray_code;
+ -	}
+ -
+ -	return binary;
+ +static u16 gray_code_to_bin(u16 gray_code, u32 bit_num)
+ +{
+ +	u16 bin = 0, gray_bit;
+ +	u32 bit_idx;
+ +
+ +	for (bit_idx = 0; bit_idx < bit_num; bit_idx++) {
+ +		gray_bit = (gray_code >> bit_idx) & 0x1;
+ +		if (bit_num - bit_idx > 1)
+ +			gray_bit ^= (gray_code >> (bit_idx + 1)) & 0x1;
+ +		bin |= (gray_bit << bit_idx);
+ +	}
+ +
+ +	return bin;
+  }
+  
+  static int rtw89_pci_filter_out(struct rtw89_dev *rtwdev)
+@@ -3829,7 +3806,7 @@
+  		val16 = rtw89_read16_mask(rtwdev,
+  					  phy_offset + RAC_ANA1F * RAC_MULT,
+  					  FILTER_OUT_EQ_MASK);
+ -		val16 = gray_code_to_bin(val16);
+ +		val16 = gray_code_to_bin(val16, hweight16(val16));
+  		filter_out_val = rtw89_read16(rtwdev, phy_offset + RAC_ANA24 *
+  					      RAC_MULT);
+  		filter_out_val &= ~REG_FILTER_OUT_MASK;
+@@ -4211,36 +4188,6 @@
+  	return work_done;
+  }
+  
+ -static
+ -void rtw89_check_pci_ssid_quirks(struct rtw89_dev *rtwdev,
+ -				 struct pci_dev *pdev,
+ -				 const struct rtw89_pci_ssid_quirk *ssid_quirks)
+ -{
+ -	int i;
+ -
+ -	if (!ssid_quirks)
+ -		return;
+ -
+ -	for (i = 0; i < 200; i++, ssid_quirks++) {
+ -		if (ssid_quirks->vendor == 0 && ssid_quirks->device == 0)
+ -			break;
+ -
+ -		if (ssid_quirks->vendor != pdev->vendor ||
+ -		    ssid_quirks->device != pdev->device ||
+ -		    ssid_quirks->subsystem_vendor != pdev->subsystem_vendor ||
+ -		    ssid_quirks->subsystem_device != pdev->subsystem_device)
+ -			continue;
+ -
+ -		bitmap_or(rtwdev->quirks, rtwdev->quirks, &ssid_quirks->bitmap,
+ -			  NUM_OF_RTW89_QUIRKS);
+ -		rtwdev->custid = ssid_quirks->custid;
+ -		break;
+ -	}
+ -
+ -	rtw89_debug(rtwdev, RTW89_DBG_HCI, "quirks=%*ph custid=%d\n",
+ -		    (int)sizeof(rtwdev->quirks), rtwdev->quirks, rtwdev->custid);
+ -}
+ -
+  static int __maybe_unused rtw89_pci_suspend(struct device *dev)
+  {
+  	struct ieee80211_hw *hw = dev_get_drvdata(dev);
+@@ -4273,17 +4220,6 @@
+  				    RTW89_PCIE_BIT_CFG_RST_MSTATE);
+  	rtw89_pci_write_config_byte(rtwdev, RTW89_PCIE_RST_MSTATE,
+  				    RTW89_PCIE_BIT_CFG_RST_MSTATE);
+ -}
+ -
+ -void rtw89_pci_basic_cfg(struct rtw89_dev *rtwdev, bool resume)
+ -{
+ -	if (resume)
+ -		rtw89_pci_cfg_dac(rtwdev);
+ -
+ -	rtw89_pci_disable_eq(rtwdev);
+ -	rtw89_pci_filter_out(rtwdev);
+ -	rtw89_pci_link_cfg(rtwdev);
+ -	rtw89_pci_l1ss_cfg(rtwdev);
+  }
+  
+  static int __maybe_unused rtw89_pci_resume(struct device *dev)
+@@ -4307,8 +4243,11 @@
+  				  B_AX_SEL_REQ_ENTR_L1);
+  	}
+  	rtw89_pci_l2_hci_ldo(rtwdev);
+ -
+ -	rtw89_pci_basic_cfg(rtwdev, true);
+ +	rtw89_pci_disable_eq(rtwdev);
+ +	rtw89_pci_cfg_dac(rtwdev);
+ +	rtw89_pci_filter_out(rtwdev);
+ +	rtw89_pci_link_cfg(rtwdev);
+ +	rtw89_pci_l1ss_cfg(rtwdev);
+  
+  	return 0;
+  }
+@@ -4341,8 +4280,6 @@
+  	.aspm_set = rtw89_pci_aspm_set_ax,
+  	.clkreq_set = rtw89_pci_clkreq_set_ax,
+  	.l1ss_set = rtw89_pci_l1ss_set_ax,
+ -
+ -	.disable_eq = rtw89_pci_disable_eq_ax,
+  };
+  EXPORT_SYMBOL(rtw89_pci_gen_ax);
+  
+@@ -4415,7 +4352,6 @@
+  	rtwdev->hci.cpwm_addr = pci_info->cpwm_addr;
+  
+  	rtw89_check_quirks(rtwdev, info->quirks);
+ -	rtw89_check_pci_ssid_quirks(rtwdev, pdev, pci_info->ssid_quirks);
+  
+  	SET_IEEE80211_DEV(rtwdev->hw, &pdev->dev);
+  
+@@ -4443,7 +4379,10 @@
+  		goto err_clear_resource;
+  	}
+  
+ -	rtw89_pci_basic_cfg(rtwdev, false);
+ +	rtw89_pci_disable_eq(rtwdev);
+ +	rtw89_pci_filter_out(rtwdev);
+ +	rtw89_pci_link_cfg(rtwdev);
+ +	rtw89_pci_l1ss_cfg(rtwdev);
+  
+  	ret = rtw89_core_napi_init(rtwdev);
+  	if (ret) {
+
+""""""
+modified file: drivers/net/wireless/realtek/rtw89/pci.h
+--- workspace/gregkh/linux/9c1df8/newer/drivers/net/wireless/realtek/rtw89/pci.h
++++ workspace/gregkh/linux/9c1df8/linux-6.12.y/drivers/net/wireless/realtek/rtw89/pci.h
+@@ -18,16 +18,11 @@
+  #define BAC_OOBS_SEL			BIT(4)
+  #define RAC_ANA0A			0x0A
+  #define B_BAC_EQ_SEL			BIT(5)
+ -#define RAC_ANA0B			0x0B
+ -#define MANUAL_LVL_MASK			GENMASK(8, 5)
+  #define RAC_ANA0C			0x0C
+  #define B_PCIE_BIT_PSAVE		BIT(15)
+  #define RAC_ANA0D			0x0D
+ -#define OFFSET_CAL_MODE			BIT(13)
+  #define BAC_RX_TEST_EN			BIT(6)
+  #define RAC_ANA10			0x10
+ -#define ADDR_SEL_MASK		        GENMASK(9, 4)
+ -#define ADDR_SEL_VAL		        0x3C
+  #define ADDR_SEL_PINOUT_DIS_VAL		0x3C4
+  #define B_PCIE_BIT_PINOUT_DIS		BIT(3)
+  #define RAC_REG_REV2			0x1B
+@@ -43,7 +38,6 @@
+  #define RAC_ANA1E_G2_VAL		0x6EEA
+  #define RAC_ANA1F			0x1F
+  #define OOBS_LEVEL_MASK			GENMASK(12, 8)
+ -#define OFFSET_CAL_MASK		        GENMASK(7, 4)
+  #define RAC_ANA24			0x24
+  #define B_AX_DEGLITCH			GENMASK(11, 8)
+  #define RAC_ANA26			0x26
+@@ -139,11 +133,6 @@
+  #define R_RAC_DIRECT_OFFSET_G2 0x3880
+  #define REG_FILTER_OUT_MASK GENMASK(6, 2)
+  #define RAC_MULT 2
+ -
+ -#define R_RAC_DIRECT_OFFSET_BE_LANE0_G1 0x3800
+ -#define R_RAC_DIRECT_OFFSET_BE_LANE1_G1 0x3880
+ -#define R_RAC_DIRECT_OFFSET_BE_LANE0_G2 0x3900
+ -#define R_RAC_DIRECT_OFFSET_BE_LANE1_G2 0x3980
+  
+  #define RTW89_PCI_WR_RETRY_CNT		20
+  
+@@ -310,7 +299,6 @@
+  #define B_BE_L1SS_TIMEOUT_CTRL BIT(18)
+  #define B_BE_ASPM_CTRL_L1 BIT(17)
+  #define B_BE_ASPM_CTRL_L0 BIT(16)
+ -#define B_BE_RTK_ASPM_CTRL_MASK GENMASK(17, 16)
+  #define B_BE_XFER_PENDING_FW BIT(11)
+  #define B_BE_XFER_PENDING BIT(10)
+  #define B_BE_REQ_EXIT_L1 BIT(9)
+@@ -1288,21 +1276,6 @@
+  	void (*aspm_set)(struct rtw89_dev *rtwdev, bool enable);
+  	void (*clkreq_set)(struct rtw89_dev *rtwdev, bool enable);
+  	void (*l1ss_set)(struct rtw89_dev *rtwdev, bool enable);
+ -
+ -	void (*disable_eq)(struct rtw89_dev *rtwdev);
+ -};
+ -
+ -#define RTW89_PCI_SSID(v, d, ssv, ssd, cust) \
+ -	.vendor = v, .device = d, .subsystem_vendor = ssv, .subsystem_device = ssd, \
+ -	.custid = RTW89_CUSTID_ ##cust
+ -
+ -struct rtw89_pci_ssid_quirk {
+ -	unsigned short vendor;
+ -	unsigned short device;
+ -	unsigned short subsystem_vendor;
+ -	unsigned short subsystem_device;
+ -	enum rtw89_custid custid;
+ -	unsigned long bitmap; /* bitmap of rtw89_quirks */
+  };
+  
+  struct rtw89_pci_info {
+@@ -1358,8 +1331,6 @@
+  	void (*recognize_intrs)(struct rtw89_dev *rtwdev,
+  				struct rtw89_pci *rtwpci,
+  				struct rtw89_pci_isrs *isrs);
+ -
+ -	const struct rtw89_pci_ssid_quirk *ssid_quirks;
+  };
+  
+  struct rtw89_pci_tx_data {
+@@ -1629,7 +1600,6 @@
+  
+  int rtw89_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id);
+  void rtw89_pci_remove(struct pci_dev *pdev);
+ -void rtw89_pci_basic_cfg(struct rtw89_dev *rtwdev, bool resume);
+  void rtw89_pci_ops_reset(struct rtw89_dev *rtwdev);
+  int rtw89_pci_ltr_set(struct rtw89_dev *rtwdev, bool en);
+  int rtw89_pci_ltr_set_v1(struct rtw89_dev *rtwdev, bool en);
+@@ -1796,13 +1766,4 @@
+  
+  	return gen_def->poll_txdma_ch_idle(rtwdev);
+  }
+ -
+ -static inline void rtw89_pci_disable_eq(struct rtw89_dev *rtwdev)
+ -{
+ -	const struct rtw89_pci_info *info = rtwdev->pci_info;
+ -	const struct rtw89_pci_gen_def *gen_def = info->gen_def;
+ -
+ -	gen_def->disable_eq(rtwdev);
+ -}
+ -
+  #endif
+
+""""""
+modified file: drivers/net/wireless/realtek/rtw89/pci_be.c
+--- workspace/gregkh/linux/9c1df8/newer/drivers/net/wireless/realtek/rtw89/pci_be.c
++++ workspace/gregkh/linux/9c1df8/linux-6.12.y/drivers/net/wireless/realtek/rtw89/pci_be.c
+@@ -550,79 +550,6 @@
+  	return 0;
+  }
+  
+ -static void rtw89_pci_disable_eq_be(struct rtw89_dev *rtwdev)
+ -{
+ -	u32 backup_aspm, phy_offset;
+ -	u16 oobs_val, offset_cal;
+ -	u16 g1_oobs, g2_oobs;
+ -	u8 gen;
+ -
+ -	if (rtwdev->chip->chip_id != RTL8922A)
+ -		return;
+ -
+ -	g1_oobs = rtw89_read16_mask(rtwdev, R_RAC_DIRECT_OFFSET_BE_LANE0_G1 +
+ -					    RAC_ANA09 * RAC_MULT, BAC_OOBS_SEL);
+ -	g2_oobs = rtw89_read16_mask(rtwdev, R_RAC_DIRECT_OFFSET_BE_LANE0_G2 +
+ -					    RAC_ANA09 * RAC_MULT, BAC_OOBS_SEL);
+ -	if (g1_oobs && g2_oobs)
+ -		return;
+ -
+ -	backup_aspm = rtw89_read32(rtwdev, R_BE_PCIE_MIX_CFG);
+ -	rtw89_write32_clr(rtwdev, R_BE_PCIE_MIX_CFG, B_BE_RTK_ASPM_CTRL_MASK);
+ -
+ -	/* offset K */
+ -	for (gen = 1; gen <= 2; gen++) {
+ -		phy_offset = gen == 1 ? R_RAC_DIRECT_OFFSET_BE_LANE0_G1 :
+ -					R_RAC_DIRECT_OFFSET_BE_LANE0_G2;
+ -
+ -		rtw89_write16_clr(rtwdev, phy_offset + RAC_ANA19 * RAC_MULT,
+ -				  B_PCIE_BIT_RD_SEL);
+ -	}
+ -
+ -	offset_cal = rtw89_read16_mask(rtwdev, R_RAC_DIRECT_OFFSET_BE_LANE0_G1 +
+ -					       RAC_ANA1F * RAC_MULT, OFFSET_CAL_MASK);
+ -
+ -	for (gen = 1; gen <= 2; gen++) {
+ -		phy_offset = gen == 1 ? R_RAC_DIRECT_OFFSET_BE_LANE0_G1 :
+ -					R_RAC_DIRECT_OFFSET_BE_LANE0_G2;
+ -
+ -		rtw89_write16_mask(rtwdev, phy_offset + RAC_ANA0B * RAC_MULT,
+ -				   MANUAL_LVL_MASK, offset_cal);
+ -		rtw89_write16_clr(rtwdev, phy_offset + RAC_ANA0D * RAC_MULT,
+ -				  OFFSET_CAL_MODE);
+ -	}
+ -
+ -	/* OOBS */
+ -	for (gen = 1; gen <= 2; gen++) {
+ -		phy_offset = gen == 1 ? R_RAC_DIRECT_OFFSET_BE_LANE0_G1 :
+ -					R_RAC_DIRECT_OFFSET_BE_LANE0_G2;
+ -
+ -		rtw89_write16_set(rtwdev, phy_offset + RAC_ANA0D * RAC_MULT,
+ -				  BAC_RX_TEST_EN);
+ -		rtw89_write16_mask(rtwdev, phy_offset + RAC_ANA10 * RAC_MULT,
+ -				   ADDR_SEL_MASK, ADDR_SEL_VAL);
+ -		rtw89_write16_clr(rtwdev, phy_offset + RAC_ANA10 * RAC_MULT,
+ -				  B_PCIE_BIT_PINOUT_DIS);
+ -		rtw89_write16_set(rtwdev, phy_offset + RAC_ANA19 * RAC_MULT,
+ -				  B_PCIE_BIT_RD_SEL);
+ -	}
+ -
+ -	oobs_val = rtw89_read16_mask(rtwdev, R_RAC_DIRECT_OFFSET_BE_LANE0_G1 +
+ -					     RAC_ANA1F * RAC_MULT, OOBS_LEVEL_MASK);
+ -
+ -	for (gen = 1; gen <= 2; gen++) {
+ -		phy_offset = gen == 1 ? R_RAC_DIRECT_OFFSET_BE_LANE0_G1 :
+ -					R_RAC_DIRECT_OFFSET_BE_LANE0_G2;
+ -
+ -		rtw89_write16_mask(rtwdev, phy_offset + RAC_ANA03 * RAC_MULT,
+ -				   OOBS_SEN_MASK, oobs_val);
+ -		rtw89_write16_set(rtwdev, phy_offset + RAC_ANA09 * RAC_MULT,
+ -				  BAC_OOBS_SEL);
+ -	}
+ -
+ -	rtw89_write32(rtwdev, R_BE_PCIE_MIX_CFG, backup_aspm);
+ -}
+ -
+  static int __maybe_unused rtw89_pci_suspend_be(struct device *dev)
+  {
+  	struct ieee80211_hw *hw = dev_get_drvdata(dev);
+@@ -656,8 +583,6 @@
+  
+  	rtw89_write32_set(rtwdev, R_BE_SER_PL1_CTRL, B_BE_PL1_SER_PL1_EN);
+  	rtw89_write32_set(rtwdev, R_BE_REG_PL1_MASK, B_BE_SER_PM_MASTER_IMR);
+ -
+ -	rtw89_pci_basic_cfg(rtwdev, true);
+  
+  	return 0;
+  }
+@@ -689,7 +614,5 @@
+  	.aspm_set = rtw89_pci_aspm_set_be,
+  	.clkreq_set = rtw89_pci_clkreq_set_be,
+  	.l1ss_set = rtw89_pci_l1ss_set_be,
+ -
+ -	.disable_eq = rtw89_pci_disable_eq_be,
+  };
+  EXPORT_SYMBOL(rtw89_pci_gen_be);
+
+""""""

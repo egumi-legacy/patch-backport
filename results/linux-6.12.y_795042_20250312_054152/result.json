@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "79504249d7e27cad4a3eeb9afc6386e418728ce0",
+    "patch_url": "https://github.com/gregkh/linux/commit/79504249d7e27cad4a3eeb9afc6386e418728ce0",
+    "downstream_sha": "3e38cbbfa0a128a9d64773240a9eb3bc7bae3b1a",
+    "downstream_message": "HID: hid-steam: Move hidraw input (un)registering to work\n\n[ Upstream commit 79504249d7e27cad4a3eeb9afc6386e418728ce0 ]\n\nDue to an interplay between locking in the input and hid transport subsystems,\nattempting to register or deregister the relevant input devices during the\nhidraw open/close events can lead to a lock ordering issue. Though this\nshouldn't cause a deadlock, this commit moves the input device manipulation to\ndeferred work to sidestep the issue.\n\nFixes: 385a4886778f6 (\"HID: steam: remove input device when a hid client is running.\")\nSigned-off-by: Vicki Pfau <vi@endrift.com>\nSigned-off-by: Jiri Kosina <jkosina@suse.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/hid/hid-steam.c:1307\nerror: drivers/hid/hid-steam.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/patches/upstream_795042.patch",
+      "timestamp": "2025-03-12T05:41:11.053463"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:41:52.698297"
+  }
+}

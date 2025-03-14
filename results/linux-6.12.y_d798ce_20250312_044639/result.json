@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "d798ce3f4cab1b0d886b19ec5cc8e6b3d7e35081",
+    "patch_url": "https://github.com/gregkh/linux/commit/d798ce3f4cab1b0d886b19ec5cc8e6b3d7e35081.patch",
+    "downstream_sha": "abd30e947f70e846f2b7fdf164c23a929696b181",
+    "downstream_message": "selftests/bpf: Add tests for raw_tp null handling\n\n[ Upstream commit d798ce3f4cab1b0d886b19ec5cc8e6b3d7e35081 ]\n\nEnsure that trusted PTR_TO_BTF_ID accesses perform PROBE_MEM handling in\nraw_tp program. Without the previous fix, this selftest crashes the\nkernel due to a NULL-pointer dereference. Also ensure that dead code\nelimination does not kick in for checks on the pointer.\n\nReviewed-by: Jiri Olsa <jolsa@kernel.org>\nSigned-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>\nLink: https://lore.kernel.org/r/20241104171959.2938862-4-memxor@gmail.com\nSigned-off-by: Alexei Starovoitov <ast@kernel.org>\nStable-dep-of: 5da7e15fb5a1 (\"net: Add rx_skb of kfree_skb to raw_tp_null_args[].\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/d798ce/patches/upstream_d798ce.patch",
+      "timestamp": "2025-03-12T04:46:39.127023"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T04:46:39.396976"
+  }
+}

@@ -1,0 +1,26 @@
+From 66b29fafe16582faa47db50122f841bf454096bf Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 04:55:35 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler.h b/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler.h
+index 02f7ba8c93cd..7062f12b5b75 100644
+--- a/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler.h
++++ b/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler.h
+@@ -4117,7 +4117,8 @@ static const uint32_t cwsr_trap_gfx12_hex[] = {
+ 	0x0000ffff, 0x8bfe7e7e,
+ 	0x8bea6a6a, 0xb97af804,
+ 	0xbe804ec2, 0xbf94fffe,
+-	0xbe804a6c, 0xbfb10000,
++	0xbe804a6c, 0xbe804ec2,
++	0xbf94fffe, 0xbfb10000,
+ 	0xbf9f0000, 0xbf9f0000,
+ 	0xbf9f0000, 0xbf9f0000,
+ 	0xbf9f0000, 0x00000000,
+-- 
+2.25.1
+

@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "f5b95f1fa2ef3a03f49eeec658ba97e721412b32",
+    "patch_url": "https://github.com/gregkh/linux/commit/f5b95f1fa2ef3a03f49eeec658ba97e721412b32.patch",
+    "downstream_sha": "3ec743d558f111d8999aea24577ba66c65ee2eeb",
+    "downstream_message": "ring-buffer: Validate the persistent meta data subbuf array\n\ncommit f5b95f1fa2ef3a03f49eeec658ba97e721412b32 upstream.\n\nThe meta data for a mapped ring buffer contains an array of indexes of all\nthe subbuffers. The first entry is the reader page, and the rest of the\nentries lay out the order of the subbuffers in how the ring buffer link\nlist is to be created.\n\nThe validator currently makes sure that all the entries are within the\nrange of 0 and nr_subbufs. But it does not check if there are any\nduplicates.\n\nWhile working on the ring buffer, I corrupted this array, where I added\nduplicates. The validator did not catch it and created the ring buffer\nlink list on top of it. Luckily, the corruption was only that the reader\npage was also in the writer path and only presented corrupted data but did\nnot crash the kernel. But if there were duplicates in the writer side,\nthen it could corrupt the ring buffer link list and cause a crash.\n\nCreate a bitmask array with the size of the number of subbuffers. Then\nclear it. When walking through the subbuf array checking to see if the\nentries are within the range, test if its bit is already set in the\nsubbuf_mask. If it is, then there is duplicates and fail the validation.\nIf not, set the corresponding bit and continue.\n\nCc: stable@vger.kernel.org\nCc: Masami Hiramatsu <mhiramat@kernel.org>\nCc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>\nCc: Vincent Donnefort <vdonnefort@google.com>\nLink: https://lore.kernel.org/20250214102820.7509ddea@gandalf.local.home\nFixes: c76883f18e59b (\"ring-buffer: Add test if range of boot buffer is valid\")\nSigned-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/f5b95f/patches/upstream_f5b95f.patch",
+      "timestamp": "2025-03-12T06:01:42.060488"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T06:01:42.348268"
+  }
+}

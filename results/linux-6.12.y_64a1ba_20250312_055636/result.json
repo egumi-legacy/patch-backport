@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "64a1ba4072b34af1b76bf15fca5c2075b8cc4d64",
+    "patch_url": "https://github.com/gregkh/linux/commit/64a1ba4072b34af1b76bf15fca5c2075b8cc4d64.patch",
+    "downstream_sha": "44de00e8bc8f8bf387799c4d2d8f5c4e30377c29",
+    "downstream_message": "wifi: ath12k: fix handling of 6 GHz rules\n\ncommit 64a1ba4072b34af1b76bf15fca5c2075b8cc4d64 upstream.\n\nIn the US country code, to avoid including 6 GHz rules in the 5 GHz rules\nlist, the number of 5 GHz rules is set to a default constant value of 4\n(REG_US_5G_NUM_REG_RULES). However, if there are more than 4 valid 5 GHz\nrules, the current logic will bypass the legitimate 6 GHz rules.\n\nFor example, if there are 5 valid 5 GHz rules and 1 valid 6 GHz rule, the\ncurrent logic will only consider 4 of the 5 GHz rules, treating the last\nvalid rule as a 6 GHz rule. Consequently, the actual 6 GHz rule is never\nprocessed, leading to the eventual disabling of 6 GHz channels.\n\nTo fix this issue, instead of hardcoding the value to 4, use a helper\nfunction to determine the number of 6 GHz rules present in the 5 GHz rules\nlist and ignore only those rules.\n\nTested-on: QCN9274 hw2.0 PCI WLAN.WBE.1.3.1-00173-QCAHKSWPL_SILICONZ-1\n\nCc: stable@vger.kernel.org\nFixes: d889913205cf (\"wifi: ath12k: driver for Qualcomm Wi-Fi 7 devices\")\nSigned-off-by: Aditya Kumar Singh <aditya.kumar.singh@oss.qualcomm.com>\nLink: https://patch.msgid.link/20250123-fix_6ghz_rules_handling-v1-1-d734bfa58ff4@oss.qualcomm.com\nSigned-off-by: Jeff Johnson <jeff.johnson@oss.qualcomm.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/64a1ba/patches/upstream_64a1ba.patch",
+      "timestamp": "2025-03-12T05:56:36.035309"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:56:36.296492"
+  }
+}

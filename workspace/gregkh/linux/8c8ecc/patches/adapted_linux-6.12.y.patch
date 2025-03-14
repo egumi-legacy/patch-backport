@@ -1,0 +1,60 @@
+From 4d1fc0cb22f7afc5fbc642a18932177d3e221f26 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 06:04:31 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ net/batman-adv/bat_v.c     | 2 --
+ net/batman-adv/bat_v_elp.h | 2 --
+ net/batman-adv/types.h     | 3 ---
+ 3 files changed, 7 deletions(-)
+
+diff --git a/net/batman-adv/bat_v.c b/net/batman-adv/bat_v.c
+index ac11f1f08db0..d35479c465e2 100644
+--- a/net/batman-adv/bat_v.c
++++ b/net/batman-adv/bat_v.c
+@@ -113,8 +113,6 @@ static void
+ batadv_v_hardif_neigh_init(struct batadv_hardif_neigh_node *hardif_neigh)
+ {
+ 	ewma_throughput_init(&hardif_neigh->bat_v.throughput);
+-	INIT_WORK(&hardif_neigh->bat_v.metric_work,
+-		  batadv_v_elp_throughput_metric_update);
+ }
+ 
+ /**
+diff --git a/net/batman-adv/bat_v_elp.h b/net/batman-adv/bat_v_elp.h
+index 9e2740195fa2..c9cb0a307100 100644
+--- a/net/batman-adv/bat_v_elp.h
++++ b/net/batman-adv/bat_v_elp.h
+@@ -10,7 +10,6 @@
+ #include "main.h"
+ 
+ #include <linux/skbuff.h>
+-#include <linux/workqueue.h>
+ 
+ int batadv_v_elp_iface_enable(struct batadv_hard_iface *hard_iface);
+ void batadv_v_elp_iface_disable(struct batadv_hard_iface *hard_iface);
+@@ -19,6 +18,5 @@ void batadv_v_elp_iface_activate(struct batadv_hard_iface *primary_iface,
+ void batadv_v_elp_primary_iface_set(struct batadv_hard_iface *primary_iface);
+ int batadv_v_elp_packet_recv(struct sk_buff *skb,
+ 			     struct batadv_hard_iface *if_incoming);
+-void batadv_v_elp_throughput_metric_update(struct work_struct *work);
+ 
+ #endif /* _NET_BATMAN_ADV_BAT_V_ELP_H_ */
+diff --git a/net/batman-adv/types.h b/net/batman-adv/types.h
+index 04f6398b3a40..85a50096f5b2 100644
+--- a/net/batman-adv/types.h
++++ b/net/batman-adv/types.h
+@@ -596,9 +596,6 @@ struct batadv_hardif_neigh_node_bat_v {
+ 	 *  neighbor
+ 	 */
+ 	unsigned long last_unicast_tx;
+-
+-	/** @metric_work: work queue callback item for metric update */
+-	struct work_struct metric_work;
+ };
+ 
+ /**
+-- 
+2.25.1
+

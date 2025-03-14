@@ -1,0 +1,25 @@
+From 49433f9f9df7224f19e86e71b6e166bc3660be58 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:48:00 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/ufs/core/ufshcd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index bc13133efaa5..f1463ebd1315 100644
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -9237,7 +9237,7 @@ static int ufshcd_setup_clocks(struct ufs_hba *hba, bool on)
+ 			if (!IS_ERR_OR_NULL(clki->clk) && clki->enabled)
+ 				clk_disable_unprepare(clki->clk);
+ 		}
+-	} else if (!ret && on) {
++	} else if (!ret && on && hba->clk_gating.is_initialized) {
+ 		spin_lock_irqsave(hba->host->host_lock, flags);
+ 		hba->clk_gating.state = CLKS_ON;
+ 		trace_ufshcd_clk_gating(dev_name(hba->dev),
+-- 
+2.25.1
+

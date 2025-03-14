@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "42602e3a06f8e5b9a059344e305c9bee2dcc87c8",
+    "patch_url": "https://github.com/gregkh/linux/commit/42602e3a06f8e5b9a059344e305c9bee2dcc87c8.patch",
+    "downstream_sha": "449dd20852d8563d5e9c32a9228a106d8399570a",
+    "downstream_message": "bpf: handle implicit declaration of function gettid in bpf_iter.c\n\ncommit 42602e3a06f8e5b9a059344e305c9bee2dcc87c8 upstream.\n\nAs we can see from the title, when I compiled the selftests/bpf, I\nsaw the error:\nimplicit declaration of function \u2018gettid\u2019 ; did you mean \u2018getgid\u2019? [-Werror=implicit-function-declaration]\n  skel->bss->tid = gettid();\n                   ^~~~~~\n                   getgid\n\nDirectly call the syscall solves this issue.\n\nSigned-off-by: Jason Xing <kernelxing@tencent.com>\nReviewed-by: Alan Maguire <alan.maguire@oracle.com>\nTested-by: Alan Maguire <alan.maguire@oracle.com>\nLink: https://lore.kernel.org/r/20241029074627.80289-1-kerneljasonxing@gmail.com\nSigned-off-by: Martin KaFai Lau <martin.lau@kernel.org>\nCc: Alan Maguire <alan.maguire@oracle.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/42602e/patches/upstream_42602e.patch",
+      "timestamp": "2025-03-12T05:38:35.404291"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:38:35.658078"
+  }
+}

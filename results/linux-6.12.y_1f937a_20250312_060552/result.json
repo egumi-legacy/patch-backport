@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "1f937a4bcb0472015818f30f4d3c5546d3f09933",
+    "patch_url": "https://github.com/gregkh/linux/commit/1f937a4bcb0472015818f30f4d3c5546d3f09933.patch",
+    "downstream_sha": "bf5a5e636aaba2a264840075cc51bad9115bdfa1",
+    "downstream_message": "kbuild: suppress stdout from merge_config for silent builds\n\n[ Upstream commit 1f937a4bcb0472015818f30f4d3c5546d3f09933 ]\n\nmerge_config does not respect the Make's -s (--silent) option.\n\nLet's sink the stdout from merge_config for silent builds.\n\nThis commit does not cater to the direct invocation of merge_config.sh\n(e.g. arch/mips/Makefile).\n\nReported-by: Leon Romanovsky <leon@kernel.org>\nCloses: https://lore.kernel.org/all/e534ce33b0e1060eb85ece8429810f087b034c88.1733234008.git.leonro@nvidia.com/\nSigned-off-by: Masahiro Yamada <masahiroy@kernel.org>\nTested-by: Leon Romanovsky <leon@kernel.org>\nReviewed-by: Nathan Chancellor <nathan@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/1f937a/patches/upstream_1f937a.patch",
+      "timestamp": "2025-03-12T06:05:52.334668"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T06:05:52.569561"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "9bd24927e3eeb85642c7baa3b28be8bea6c2a078",
+    "patch_url": "https://github.com/gregkh/linux/commit/9bd24927e3eeb85642c7baa3b28be8bea6c2a078.patch",
+    "downstream_sha": "b0e592dd46a0a952b41c3bf6c963afdd6a42b526",
+    "downstream_message": "can: ctucanfd: handle skb allocation failure\n\ncommit 9bd24927e3eeb85642c7baa3b28be8bea6c2a078 upstream.\n\nIf skb allocation fails, the pointer to struct can_frame is NULL. This\nis actually handled everywhere inside ctucan_err_interrupt() except for\nthe only place.\n\nAdd the missed NULL check.\n\nFound by Linux Verification Center (linuxtesting.org) with SVACE static\nanalysis tool.\n\nFixes: 2dcb8e8782d8 (\"can: ctucanfd: add support for CTU CAN FD open-source IP core - bus independent part.\")\nCc: stable@vger.kernel.org\nSigned-off-by: Fedor Pchelkin <pchelkin@ispras.ru>\nAcked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>\nReviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>\nLink: https://patch.msgid.link/20250114152138.139580-1-pchelkin@ispras.ru\nSigned-off-by: Marc Kleine-Budde <mkl@pengutronix.de>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/9bd249/patches/upstream_9bd249.patch",
+      "timestamp": "2025-03-12T05:57:03.265816"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:57:03.563701"
+  }
+}

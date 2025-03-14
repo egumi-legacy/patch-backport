@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "80e648042e512d5a767da251d44132553fe04ae0",
+    "patch_url": "https://github.com/gregkh/linux/commit/80e648042e512d5a767da251d44132553fe04ae0.patch",
+    "downstream_sha": "6578717ebca91678131d2b1f4ba4258e60536e9f",
+    "downstream_message": "partitions: mac: fix handling of bogus partition table\n\ncommit 80e648042e512d5a767da251d44132553fe04ae0 upstream.\n\nFix several issues in partition probing:\n\n - The bailout for a bad partoffset must use put_dev_sector(), since the\n   preceding read_part_sector() succeeded.\n - If the partition table claims a silly sector size like 0xfff bytes\n   (which results in partition table entries straddling sector boundaries),\n   bail out instead of accessing out-of-bounds memory.\n - We must not assume that the partition table contains proper NUL\n   termination - use strnlen() and strncmp() instead of strlen() and\n   strcmp().\n\nCc: stable@vger.kernel.org\nSigned-off-by: Jann Horn <jannh@google.com>\nLink: https://lore.kernel.org/r/20250214-partition-mac-v1-1-c1c626dffbd5@google.com\nSigned-off-by: Jens Axboe <axboe@kernel.dk>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/80e648/patches/upstream_80e648.patch",
+      "timestamp": "2025-03-12T05:54:27.314405"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:54:27.564462"
+  }
+}

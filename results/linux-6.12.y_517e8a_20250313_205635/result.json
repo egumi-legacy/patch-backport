@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "517e8a7835e8cfb398a0aeb0133de50e31cae32b",
+    "patch_url": "https://github.com/gregkh/linux/commit/517e8a7835e8cfb398a0aeb0133de50e31cae32b.patch",
+    "downstream_sha": "c1f3f3892d4526f18aaeffdb6068ce861e793ee3",
+    "downstream_message": "bpf: Fix softlockup in arena_map_free on 64k page kernel\n\n[ Upstream commit 517e8a7835e8cfb398a0aeb0133de50e31cae32b ]\n\nOn an aarch64 kernel with CONFIG_PAGE_SIZE_64KB=y,\narena_htab tests cause a segmentation fault and soft lockup.\nThe same failure is not observed with 4k pages on aarch64.\n\nIt turns out arena_map_free() is calling\napply_to_existing_page_range() with the address returned by\nbpf_arena_get_kern_vm_start().  If this address is not page-aligned\nthe code ends up calling apply_to_pte_range() with that unaligned\naddress causing soft lockup.\n\nFix it by round up GUARD_SZ to PAGE_SIZE << 1 so that the\ndivision by 2 in bpf_arena_get_kern_vm_start() returns\na page-aligned value.\n\nFixes: 317460317a02 (\"bpf: Introduce bpf_arena.\")\nReported-by: Colm Harrington <colm.harrington@oracle.com>\nSuggested-by: Alexei Starovoitov <ast@kernel.org>\nSigned-off-by: Alan Maguire <alan.maguire@oracle.com>\nLink: https://lore.kernel.org/r/20250205170059.427458-1-alan.maguire@oracle.com\nSigned-off-by: Alexei Starovoitov <ast@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/517e8a/patches/upstream_517e8a.patch",
+      "timestamp": "2025-03-13T20:56:35.362186"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-13T20:56:35.574172"
+  }
+}

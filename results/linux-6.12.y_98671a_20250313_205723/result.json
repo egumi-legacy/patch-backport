@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "98671a0fd1f14e4a518ee06b19037c20014900eb",
+    "patch_url": "https://github.com/gregkh/linux/commit/98671a0fd1f14e4a518ee06b19037c20014900eb.patch",
+    "downstream_sha": "1c81ba1913fba71b413123e7364c654247f09eca",
+    "downstream_message": "bpf: unify VM_WRITE vs VM_MAYWRITE use in BPF map mmaping logic\n\n[ Upstream commit 98671a0fd1f14e4a518ee06b19037c20014900eb ]\n\nFor all BPF maps we ensure that VM_MAYWRITE is cleared when\nmemory-mapping BPF map contents as initially read-only VMA. This is\nbecause in some cases BPF verifier relies on the underlying data to not\nbe modified afterwards by user space, so once something is mapped\nread-only, it shouldn't be re-mmap'ed as read-write.\n\nAs such, it's not necessary to check VM_MAYWRITE in bpf_map_mmap() and\nmap->ops->map_mmap() callbacks: VM_WRITE should be consistently set for\nread-write mappings, and if VM_WRITE is not set, there is no way for\nuser space to upgrade read-only mapping to read-write one.\n\nThis patch cleans up this VM_WRITE vs VM_MAYWRITE handling within\nbpf_map_mmap(), which is an entry point for any BPF map mmap()-ing\nlogic. We also drop unnecessary sanitization of VM_MAYWRITE in BPF\nringbuf's map_mmap() callback implementation, as it is already performed\nby common code in bpf_map_mmap().\n\nNote, though, that in bpf_map_mmap_{open,close}() callbacks we can't\ndrop VM_MAYWRITE use, because it's possible (and is outside of\nsubsystem's control) to have initially read-write memory mapping, which\nis subsequently dropped to read-only by user space through mprotect().\nIn such case, from BPF verifier POV it's read-write data throughout the\nlifetime of BPF map, and is counted as \"active writer\".\n\nBut its VMAs will start out as VM_WRITE|VM_MAYWRITE, then mprotect() can\nchange it to just VM_MAYWRITE (and no VM_WRITE), so when its finally\nmunmap()'ed and bpf_map_mmap_close() is called, vm_flags will be just\nVM_MAYWRITE, but we still need to decrement active writer count with\nbpf_map_write_active_dec() as it's still considered to be a read-write\nmapping by the rest of BPF subsystem.\n\nSimilar reasoning applies to bpf_map_mmap_open(), which is called\nwhenever mmap(), munmap(), and/or mprotect() forces mm subsystem to\nsplit original VMA into multiple discontiguous VMAs.\n\nMemory-mapping handling is a bit tricky, yes.\n\nCc: Jann Horn <jannh@google.com>\nCc: Suren Baghdasaryan <surenb@google.com>\nCc: Shakeel Butt <shakeel.butt@linux.dev>\nSigned-off-by: Andrii Nakryiko <andrii@kernel.org>\nLink: https://lore.kernel.org/r/20250129012246.1515826-1-andrii@kernel.org\nSigned-off-by: Alexei Starovoitov <ast@kernel.org>\nStable-dep-of: bc27c52eea18 (\"bpf: avoid holding freeze_mutex during mmap operation\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/98671a/patches/upstream_98671a.patch",
+      "timestamp": "2025-03-13T20:57:23.235247"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-13T20:57:23.552022"
+  }
+}

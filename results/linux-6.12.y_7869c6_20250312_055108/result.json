@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "7869c6521f5715688b3d1f1c897374a68544eef0",
+    "patch_url": "https://github.com/gregkh/linux/commit/7869c6521f5715688b3d1f1c897374a68544eef0",
+    "downstream_sha": "9ece41a0d7d39590069093f056463e7771035a66",
+    "downstream_message": "scsi: ufs: core: Prepare to introduce a new clock_gating lock\n\n[ Upstream commit 7869c6521f5715688b3d1f1c897374a68544eef0 ]\n\nRemove hba->clk_gating.active_reqs check from ufshcd_is_ufs_dev_busy()\nfunction to separate clock gating logic from general device busy checks.\n\nSigned-off-by: Avri Altman <avri.altman@wdc.com>\nLink: https://lore.kernel.org/r/20241124070808.194860-3-avri.altman@wdc.com\nReviewed-by: Bart Van Assche <bvanassche@acm.org>\nSigned-off-by: Martin K. Petersen <martin.petersen@oracle.com>\nStable-dep-of: 839a74b5649c (\"scsi: ufs: Fix toggling of clk_gating.state when clock gating is not allowed\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/ufs/core/ufshcd.c:266\nerror: drivers/ufs/core/ufshcd.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/7869c6/patches/upstream_7869c6.patch",
+      "timestamp": "2025-03-12T05:50:30.730351"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:51:08.897147"
+  }
+}

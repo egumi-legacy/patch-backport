@@ -1,4 +1,5 @@
 from .direct_apply import DirectApplyModule
+from .chunk_analyzer import ChunkAnalyzerModule
 from .llm_adapter import LLMAdapterModule
 from .patch_adapter import PatchAdapterModule
 from .compiler import CompilerModule
@@ -7,6 +8,7 @@ from .compiler import CompilerModule
 
 module_registry = {
     "direct_apply": DirectApplyModule,
+    "chunk_analyzer": ChunkAnalyzerModule,
     "llm_adapter": LLMAdapterModule,
     "patch_adapter": PatchAdapterModule,
     "compiler": CompilerModule,

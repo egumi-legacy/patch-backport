@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "71b8471c93fa0bcab911fcb65da1eb6c4f5f735f",
+    "patch_url": "https://github.com/gregkh/linux/commit/71b8471c93fa0bcab911fcb65da1eb6c4f5f735f.patch",
+    "downstream_sha": "f4ba5e65c92b768ba542353fda2ec8c2ff3faaee",
+    "downstream_message": "ipv4: use RCU protection in ipv4_default_advmss()\n\n[ Upstream commit 71b8471c93fa0bcab911fcb65da1eb6c4f5f735f ]\n\nipv4_default_advmss() must use RCU protection to make\nsure the net structure it reads does not disappear.\n\nFixes: 2e9589ff809e (\"ipv4: Namespaceify min_adv_mss sysctl knob\")\nSigned-off-by: Eric Dumazet <edumazet@google.com>\nReviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>\nLink: https://patch.msgid.link/20250205155120.1676781-5-edumazet@google.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/71b847/patches/upstream_71b847.patch",
+      "timestamp": "2025-03-12T05:43:12.567274"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:43:12.930865"
+  }
+}

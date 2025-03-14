@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "2844ddbd540fc84d7571cca65d6c43088e4d6952",
+    "patch_url": "https://github.com/gregkh/linux/commit/2844ddbd540fc84d7571cca65d6c43088e4d6952",
+    "downstream_sha": "01df870db957eae7d031722f2ca90642ac526cd6",
+    "downstream_message": "s390/pci: Fix handling of isolated VFs\n\ncommit 2844ddbd540fc84d7571cca65d6c43088e4d6952 upstream.\n\nIn contrast to the commit message of the fixed commit VFs whose parent\nPF is not configured are not always isolated, that is put on their own\nPCI domain. This is because for VFs to be added to an existing PCI\ndomain it is enough for that PCI domain to share the same topology ID or\nPCHID. Such a matching PCI domain without a parent PF may exist when\na PF from the same PCI card created the domain with the VF being a child\nof a different, non accessible, PF. While not causing technical issues\nit makes the rules which VFs are isolated inconsistent.\n\nFix this by explicitly checking that the parent PF exists on the PCI\ndomain determined by the topology ID or PCHID before registering the VF.\nThis works because a parent PF which is under control of this Linux\ninstance must be enabled and configured at the point where its child VFs\nappear because otherwise SR-IOV could not have been enabled on the\nparent.\n\nFixes: 25f39d3dcb48 (\"s390/pci: Ignore RID for isolated VFs\")\nCc: stable@vger.kernel.org\nReviewed-by: Halil Pasic <pasic@linux.ibm.com>\nSigned-off-by: Niklas Schnelle <schnelle@linux.ibm.com>\nSigned-off-by: Vasily Gorbik <gor@linux.ibm.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: arch/s390/pci/pci_iov.c:74\nerror: arch/s390/pci/pci_iov.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/2844dd/patches/upstream_2844dd.patch",
+      "timestamp": "2025-03-12T05:54:42.198364"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:55:30.077982"
+  }
+}

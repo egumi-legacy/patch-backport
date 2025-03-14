@@ -58,10 +58,77 @@ class KernelCompiler:
         except Exception:
             return 2
 
+    # def _create_default_config(self) -> None:
+    #     """创建默认的内核配置文件"""
+    #     try:
+    #         # # 先检查Docker镜像是否存在
+    #         # logger.info(f"是否使用Docker镜像: {self.use_docker}")
+    #         # if self.use_docker:
+    #         #     check_image = subprocess.run(
+    #         #         ["docker", "image", "inspect", self.docker_image],
+    #         #         capture_output=True
+    #         #     )
+                
+    #         #     if check_image.returncode != 0:
+    #         #         logger.error(f"Docker镜像 {self.docker_image} 不存在，无法创建配置")
+    #         logger.info("开始创建默认配置...")
+            
+    #         # 确保在正确的目录
+    #         os.chdir(self.repo_path)
+            
+    #         # 首先清理
+    #         clean_cmd = self._prepare_command("mrproper")
+    #         returncode, stdout, stderr = self._run_command(clean_cmd)
+    #         if returncode != 0:
+    #             logger.warning(f"清理命令返回非零值: {stderr}")
+            
+    #         # 检查架构特定的默认配置是否存在
+    #         arch_defconfig = self.repo_path / "arch" / self.arch / "configs" / "defconfig"
+    #         if arch_defconfig.exists():
+    #             # 复制架构默认配置
+    #             shutil.copy(arch_defconfig, self.repo_path / ".config")
+    #             logger.info(f"已复制架构默认配置: {arch_defconfig}")
+                
+    #             # if check_image.returncode != 0:
+    #             #     logger.error(f"Docker镜像 {self.docker_image} 不存在，无法创建配置")
+    #             # 更新配置
+    #             update_cmd = self._prepare_command("olddefconfig")
+    #             returncode, stdout, stderr = self._run_command(update_cmd)
+    #             if returncode != 0:
+    #                 logger.error(f"更新配置失败: {stderr}")
+    #                 return
+            
+    #         # # 准备创建配置命令
+    #         # config_cmd = self._prepare_command("defconfig")
+    #         # returncode, stdout, stderr = self._run_command(config_cmd)
+            
+    #         # if returncode != 0:
+    #         #     logger.error(f"创建配置失败: {stderr}")
+    #         else:
+    #             # 使用defconfig
+    #             config_cmd = self._prepare_command("defconfig")
+    #             returncode, stdout, stderr = self._run_command(config_cmd)
+    #             if returncode != 0:
+    #                 logger.error(f"创建默认配置失败: {stderr}")
+    #                 return
+            
+    #         # 验证配置文件是否创建
+    #         config_file = self.repo_path / ".config"
+    #         if config_file.exists():
+    #             logger.info(f"配置文件创建成功: {config_file}")
+    #         else:
+    #             logger.error("配置文件未能创建")
+                
+    #     except Exception as e:
+    #         import traceback
+    #         logger.error(f"创建配置时发生错误: {str(e)}")
+    #         logger.debug(traceback.format_exc())
+    
     def _create_default_config(self) -> None:
         """创建默认的内核配置文件"""
         try:
             # 先检查Docker镜像是否存在
+            logger.info(f"是否使用Docker镜像: {self.use_docker}")
             if self.use_docker:
                 check_image = subprocess.run(
                     ["docker", "image", "inspect", self.docker_image],

@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "0e45a09a1da0872786885c505467aab8fb29b5b4",
+    "patch_url": "https://github.com/gregkh/linux/commit/0e45a09a1da0872786885c505467aab8fb29b5b4.patch",
+    "downstream_sha": "3e0686bc608ea6fd710e6ccf26f5ee06969fd3e5",
+    "downstream_message": "Input: serio - define serio_pause_rx guard to pause and resume serio ports\n\n[ Upstream commit 0e45a09a1da0872786885c505467aab8fb29b5b4 ]\n\nserio_pause_rx() and serio_continue_rx() are usually used together to\ntemporarily stop receiving interrupts/data for a given serio port.\nDefine \"serio_pause_rx\" guard for this so that the port is always\nresumed once critical section is over.\n\nExample:\n\n\tscoped_guard(serio_pause_rx, elo->serio) {\n\t\telo->expected_packet = toupper(packet[0]);\n\t\tinit_completion(&elo->cmd_done);\n\t}\n\nLink: https://lore.kernel.org/r/20240905041732.2034348-2-dmitry.torokhov@gmail.com\nSigned-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>\nStable-dep-of: 08bd5b7c9a24 (\"Input: synaptics - fix crash when enabling pass-through port\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/0e45a0/patches/upstream_0e45a0.patch",
+      "timestamp": "2025-03-12T05:08:25.119166"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:08:25.345021"
+  }
+}

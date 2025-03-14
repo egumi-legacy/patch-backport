@@ -1,0 +1,34 @@
+From 22ec5aba7ea9ca7a1d36b8eb5448480e42b22b69 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:35:07 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ io_uring/kbuf.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/io_uring/kbuf.c b/io_uring/kbuf.c
+index d407576ddfb7..8009895a9d62 100644
+--- a/io_uring/kbuf.c
++++ b/io_uring/kbuf.c
+@@ -715,12 +715,13 @@ int io_register_pbuf_ring(struct io_ring_ctx *ctx, void __user *arg)
+ 		/* if mapped buffer ring OR classic exists, don't allow */
+ 		if (bl->flags & IOBL_BUF_RING || !list_empty(&bl->buf_list))
+ 			return -EEXIST;
+-	} else {
+-		free_bl = bl = kzalloc(sizeof(*bl), GFP_KERNEL);
+-		if (!bl)
+-			return -ENOMEM;
++		io_destroy_bl(ctx, bl);
+ 	}
+ 
++	free_bl = bl = kzalloc(sizeof(*bl), GFP_KERNEL);
++	if (!bl)
++		return -ENOMEM;
++
+ 	if (!(reg.flags & IOU_PBUF_RING_MMAP))
+ 		ret = io_pin_pbuf_ring(&reg, bl);
+ 	else
+-- 
+2.25.1
+

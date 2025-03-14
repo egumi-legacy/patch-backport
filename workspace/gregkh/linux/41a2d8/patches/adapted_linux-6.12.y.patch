@@ -1,0 +1,61 @@
+From 315c8764c8854ec3049aeb9bdc235bd8248bf485 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 04:58:10 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/accel/ivpu/ivpu_pm.c | 27 +++++++++------------------
+ 1 file changed, 9 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/accel/ivpu/ivpu_pm.c b/drivers/accel/ivpu/ivpu_pm.c
+index 59d3170f5e35..31d745316cd8 100644
+--- a/drivers/accel/ivpu/ivpu_pm.c
++++ b/drivers/accel/ivpu/ivpu_pm.c
+@@ -311,16 +311,13 @@ void ivpu_pm_reset_prepare_cb(struct pci_dev *pdev)
+ 	struct ivpu_device *vdev = pci_get_drvdata(pdev);
+ 
+ 	ivpu_dbg(vdev, PM, "Pre-reset..\n");
+-	atomic_inc(&vdev->pm->reset_counter);
+-	atomic_set(&vdev->pm->reset_pending, 1);
+ 
+-	pm_runtime_get_sync(vdev->drm.dev);
+-	down_write(&vdev->pm->reset_lock);
+-	ivpu_prepare_for_reset(vdev);
+-	ivpu_hw_reset(vdev);
+-	ivpu_pm_prepare_cold_boot(vdev);
+-	ivpu_jobs_abort_all(vdev);
+-	ivpu_ms_cleanup_all(vdev);
++	ivpu_pm_reset_begin(vdev);
++
++	if (!pm_runtime_status_suspended(vdev->drm.dev)) {
++		ivpu_prepare_for_reset(vdev);
++		ivpu_hw_reset(vdev);
++	}
+ 
+ 	ivpu_dbg(vdev, PM, "Pre-reset done.\n");
+ }
+@@ -328,18 +325,12 @@ void ivpu_pm_reset_prepare_cb(struct pci_dev *pdev)
+ void ivpu_pm_reset_done_cb(struct pci_dev *pdev)
+ {
+ 	struct ivpu_device *vdev = pci_get_drvdata(pdev);
+-	int ret;
+ 
+ 	ivpu_dbg(vdev, PM, "Post-reset..\n");
+-	ret = ivpu_resume(vdev);
+-	if (ret)
+-		ivpu_err(vdev, "Failed to set RESUME state: %d\n", ret);
+-	up_write(&vdev->pm->reset_lock);
+-	atomic_set(&vdev->pm->reset_pending, 0);
+-	ivpu_dbg(vdev, PM, "Post-reset done.\n");
+ 
+-	pm_runtime_mark_last_busy(vdev->drm.dev);
+-	pm_runtime_put_autosuspend(vdev->drm.dev);
++	ivpu_pm_reset_complete(vdev);
++
++	ivpu_dbg(vdev, PM, "Post-reset done.\n");
+ }
+ 
+ void ivpu_pm_init(struct ivpu_device *vdev)
+-- 
+2.25.1
+

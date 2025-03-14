@@ -1,0 +1,25 @@
+From 44ceecfe656d97c0120dae376421f45ac1534dce Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 04:49:53 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/net/pse-pd/pd692x0.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/pse-pd/pd692x0.c b/drivers/net/pse-pd/pd692x0.c
+index 0af7db80b2f8..aaf2aea98814 100644
+--- a/drivers/net/pse-pd/pd692x0.c
++++ b/drivers/net/pse-pd/pd692x0.c
+@@ -701,7 +701,7 @@ static int pd692x0_ethtool_get_status(struct pse_controller_dev *pcdev,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return 0;
++	return pd692x0_pi_get_pw_from_table(buf.data[0], buf.data[1]);
+ }
+ 
+ static struct pd692x0_msg_ver pd692x0_get_sw_version(struct pd692x0_priv *priv)
+-- 
+2.25.1
+

@@ -174,8 +174,8 @@ class PatchBackportTool:
         pipeline = AdaptationPipeline(self.config)
         
         # 统计变量
-        start = 60
-        end = 65
+        start = 65 # 30
+        end = len(commits_list) - 1 # 65
         total_commits = len(commits_list[start:end])
         successful_commits = 0
         failed_commits = []
@@ -183,6 +183,8 @@ class PatchBackportTool:
         # 处理每个提交
         for idx, commit_info in enumerate(commits_list[start:end], start+1):
             upstream_sha = commit_info['upstream_sha']
+            if upstream_sha != "3d4114a1d34413dfffa0094c2eb7b95e61087abd":
+                continue
             logger.info(f"处理提交 {idx}/{total_commits}: {upstream_sha[:6]}")
             
             # 创建提交上下文

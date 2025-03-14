@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "bdf5d13aa05ec314d4385b31ac974d6c7e0997c9",
+    "patch_url": "https://github.com/gregkh/linux/commit/bdf5d13aa05ec314d4385b31ac974d6c7e0997c9",
+    "downstream_sha": "25dddd01dcc8ef3acff964dbb32eeb0d89f098e9",
+    "downstream_message": "ibmvnic: Don't reference skb after sending to VIOS\n\n[ Upstream commit bdf5d13aa05ec314d4385b31ac974d6c7e0997c9 ]\n\nPreviously, after successfully flushing the xmit buffer to VIOS,\nthe tx_bytes stat was incremented by the length of the skb.\n\nIt is invalid to access the skb memory after sending the buffer to\nthe VIOS because, at any point after sending, the VIOS can trigger\nan interrupt to free this memory. A race between reading skb->len\nand freeing the skb is possible (especially during LPM) and will\nresult in use-after-free:\n ==================================================================\n BUG: KASAN: slab-use-after-free in ibmvnic_xmit+0x75c/0x1808 [ibmvnic]\n Read of size 4 at addr c00000024eb48a70 by task hxecom/14495\n <...>\n Call Trace:\n [c000000118f66cf0] [c0000000018cba6c] dump_stack_lvl+0x84/0xe8 (unreliable)\n [c000000118f66d20] [c0000000006f0080] print_report+0x1a8/0x7f0\n [c000000118f66df0] [c0000000006f08f0] kasan_report+0x128/0x1f8\n [c000000118f66f00] [c0000000006f2868] __asan_load4+0xac/0xe0\n [c000000118f66f20] [c0080000046eac84] ibmvnic_xmit+0x75c/0x1808 [ibmvnic]\n [c000000118f67340] [c0000000014be168] dev_hard_start_xmit+0x150/0x358\n <...>\n Freed by task 0:\n kasan_save_stack+0x34/0x68\n kasan_save_track+0x2c/0x50\n kasan_save_free_info+0x64/0x108\n __kasan_mempool_poison_object+0x148/0x2d4\n napi_skb_cache_put+0x5c/0x194\n net_tx_action+0x154/0x5b8\n handle_softirqs+0x20c/0x60c\n do_softirq_own_stack+0x6c/0x88\n <...>\n The buggy address belongs to the object at c00000024eb48a00 which\n  belongs to the cache skbuff_head_cache of size 224\n==================================================================\n\nFixes: 032c5e82847a (\"Driver for IBM System i/p VNIC protocol\")\nSigned-off-by: Nick Child <nnac123@linux.ibm.com>\nReviewed-by: Simon Horman <horms@kernel.org>\nLink: https://patch.msgid.link/20250214155233.235559-1-nnac123@linux.ibm.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/net/ethernet/ibm/ibmvnic.c:2614\nerror: drivers/net/ethernet/ibm/ibmvnic.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/bdf5d1/patches/upstream_bdf5d1.patch",
+      "timestamp": "2025-03-12T04:52:16.018012"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T04:52:42.996170"
+  }
+}

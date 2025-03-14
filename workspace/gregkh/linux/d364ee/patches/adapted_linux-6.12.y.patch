@@ -1,0 +1,38 @@
+From e20bbad24d94de740e9dfd285aa7fce82e14c8d4 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:37:08 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/cpufreq/amd-pstate.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/cpufreq/amd-pstate.c b/drivers/cpufreq/amd-pstate.c
+index 91d3c3b1c2d3..71e6d406f17a 100644
+--- a/drivers/cpufreq/amd-pstate.c
++++ b/drivers/cpufreq/amd-pstate.c
+@@ -794,8 +794,10 @@ static void amd_pstate_update_limits(unsigned int cpu)
+ 
+ 	mutex_lock(&amd_pstate_driver_lock);
+ 	ret = amd_get_highest_perf(cpu, &cur_high);
+-	if (ret)
+-		goto free_cpufreq_put;
++	if (ret) {
++		cpufreq_cpu_put(policy);
++		return;
++	}
+ 
+ 	prev_high = READ_ONCE(cpudata->prefcore_ranking);
+ 	highest_perf_changed = (prev_high != cur_high);
+@@ -805,8 +807,6 @@ static void amd_pstate_update_limits(unsigned int cpu)
+ 		if (cur_high < CPPC_MAX_PERF)
+ 			sched_set_itmt_core_prio((int)cur_high, cpu);
+ 	}
+-
+-free_cpufreq_put:
+ 	cpufreq_cpu_put(policy);
+ 
+ 	if (!highest_perf_changed)
+-- 
+2.25.1
+

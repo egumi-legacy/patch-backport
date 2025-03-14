@@ -1,0 +1,34 @@
+diff --git a/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler.h b/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler.h
+index 984f0e7050788..651660958e5b1 100644
+--- a/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler.h
++++ b/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler.h
+@@ -4121,7 +4121,8 @@ static const uint32_t cwsr_trap_gfx12_hex[] = {
+ 	0x0000ffff, 0x8bfe7e7e,
+ 	0x8bea6a6a, 0xb97af804,
+ 	0xbe804ec2, 0xbf94fffe,
+-	0xbe804a6c, 0xbfb10000,
++	0xbe804a6c, 0xbe804ec2,
++	0xbf94fffe, 0xbfb10000,
+ 	0xbf9f0000, 0xbf9f0000,
+ 	0xbf9f0000, 0x00000000,
+ };
+
+diff --git a/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler_gfx12.asm b/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler_gfx12.asm
+new file mode 100644
+index 0000000000000..7b9d36e5fa437
+--- /dev/null
++++ b/drivers/gpu/drm/amd/amdkfd/cwsr_trap_handler_gfx12.asm
+@@ -0,0 +1049,14 @@
++L_SKIP_BARRIER_RESTORE:
++	s_rfe_b64	s_restore_pc_lo						//Return to the main shader program and resume execution
++
++L_END_PGM:
++	// Make sure that no wave of the workgroup can exit the trap handler
++	// before the workgroup barrier state is saved.
++	s_barrier_signal	-2
++	s_barrier_wait	-2
++	s_endpgm_saved
++end
++
++// Additional instructions for ensuring barrier consistency across waves
++// Ensure that these changes are compatible with existing code structure

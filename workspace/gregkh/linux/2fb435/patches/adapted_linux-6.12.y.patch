@@ -1,0 +1,38 @@
+From e19b611bafe328ee7ec167282c5d93d4d437e54d Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:33:57 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/gpu/drm/xe/xe_oa.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/xe/xe_oa.c b/drivers/gpu/drm/xe/xe_oa.c
+index 78823f53d290..4c6704246010 100644
+--- a/drivers/gpu/drm/xe/xe_oa.c
++++ b/drivers/gpu/drm/xe/xe_oa.c
+@@ -41,6 +41,11 @@
+ #define DEFAULT_POLL_PERIOD_NS (NSEC_PER_SEC / DEFAULT_POLL_FREQUENCY_HZ)
+ #define XE_OA_UNIT_INVALID U32_MAX
+ 
++enum xe_oa_submit_deps {
++	XE_OA_SUBMIT_NO_DEPS,
++	XE_OA_SUBMIT_ADD_DEPS,
++};
++
+ struct xe_oa_reg {
+ 	struct xe_reg addr;
+ 	u32 value;
+@@ -567,7 +572,8 @@ static __poll_t xe_oa_poll(struct file *file, poll_table *wait)
+ 	return ret;
+ }
+ 
+-static int xe_oa_submit_bb(struct xe_oa_stream *stream, struct xe_bb *bb)
++static struct dma_fence *xe_oa_submit_bb(struct xe_oa_stream *stream, enum xe_oa_submit_deps deps,
++					 struct xe_bb *bb)
+ {
+ 	struct xe_sched_job *job;
+ 	struct dma_fence *fence;
+-- 
+2.25.1
+

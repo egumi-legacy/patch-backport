@@ -31,6 +31,7 @@ class AdaptationPipeline:
         # 模块映射
         module_mapping = {
             "direct_apply": "modules.direct_apply.DirectApplyModule",
+            "chunk_analyzer": "modules.chunk_analyzer.ChunkAnalyzerModule",
             "llm_adapter": "modules.llm_adapter.LLMAdapterModule",
             "patch_adapter": "modules.patch_adapter.PatchAdapterModule",
             "compiler": "modules.compiler.CompilerModule"
@@ -84,7 +85,6 @@ class AdaptationPipeline:
             try:
                 context = module.execute(context)
                 
-                logger.info(f"此时upstream_patch_path存在状态: {True if context.commit.patch_path.exists() else False}")
                 # 检查是否需要停止
                 if context.last_error and self.config.stop_on_failure:
                     logger.error(f"模块 {module.name} 执行失败，停止处理: {context.last_error}")

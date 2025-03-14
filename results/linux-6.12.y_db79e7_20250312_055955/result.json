@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "db79e75460fc59b19f9c89d4b068e61cee59f37d",
+    "patch_url": "https://github.com/gregkh/linux/commit/db79e75460fc59b19f9c89d4b068e61cee59f37d",
+    "downstream_sha": "0ab22a1c2bd5bd114a4bf60715fda8b7bcea9628",
+    "downstream_message": "USB: serial: option: add MeiG Smart SLM828\n\ncommit db79e75460fc59b19f9c89d4b068e61cee59f37d upstream.\n\nMeiG Smart SLM828 is an LTE-A CAT6 modem with the mPCIe form factor. The\n\"Cls=ff(vend.) Sub=10 Prot=02\" and \"Cls=ff(vend.) Sub=10 Prot=03\"\ninterfaces respond to AT commands. Add these interfaces.\n\nThe product ID the modem uses is shared across multiple modems. Therefore,\nadd comments to describe which interface is used for which modem.\n\nT:  Bus=01 Lev=01 Prnt=05 Port=01 Cnt=01 Dev#=  6 Spd=480  MxCh= 0\nD:  Ver= 2.10 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1\nP:  Vendor=2dee ProdID=4d22 Rev=05.04\nS:  Manufacturer=MEIG\nS:  Product=LTE-A Module\nS:  SerialNumber=4da7ec42\nC:  #Ifs= 6 Cfg#= 1 Atr=80 MxPwr=500mA\nI:  If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=10 Prot=01 Driver=(none)\nE:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms\nE:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms\nI:  If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=10 Prot=02 Driver=(none)\nE:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms\nE:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms\nE:  Ad=83(I) Atr=03(Int.) MxPS=  10 Ivl=32ms\nI:  If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=10 Prot=03 Driver=(none)\nE:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms\nE:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms\nE:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms\nI:  If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=10 Prot=04 Driver=(none)\nE:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms\nE:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms\nE:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms\nI:  If#= 4 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)\nE:  Ad=88(I) Atr=03(Int.) MxPS=  64 Ivl=32ms\nI:  If#= 5 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=10 Prot=05 Driver=qmi_wwan\nE:  Ad=0f(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms\nE:  Ad=89(I) Atr=03(Int.) MxPS=   8 Ivl=32ms\nE:  Ad=8e(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms\n\nSigned-off-by: Chester A. Unal <chester.a.unal@arinc9.com>\nLink: https://lore.kernel.org/20250124-for-johan-meig-slm828-v2-1-6b4cd3f6344f@arinc9.com\nCc: stable@vger.kernel.org\nSigned-off-by: Johan Hovold <johan@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/usb/serial/option.c:621\nerror: drivers/usb/serial/option.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/db79e7/patches/upstream_db79e7.patch",
+      "timestamp": "2025-03-12T05:59:23.191516"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:59:55.896860"
+  }
+}

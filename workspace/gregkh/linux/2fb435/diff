@@ -1,0 +1,416 @@
+modified file: drivers/gpu/drm/xe/xe_oa.c
+--- workspace/gregkh/linux/2fb435/newer/drivers/gpu/drm/xe/xe_oa.c
++++ workspace/gregkh/linux/2fb435/linux-6.12.y/drivers/gpu/drm/xe/xe_oa.c
+@@ -36,7 +36,6 @@
+  #include "xe_pm.h"
+  #include "xe_sched_job.h"
+  #include "xe_sriov.h"
+ -#include "xe_sync.h"
+  
+  #define DEFAULT_POLL_FREQUENCY_HZ 200
+  #define DEFAULT_POLL_PERIOD_NS (NSEC_PER_SEC / DEFAULT_POLL_FREQUENCY_HZ)
+@@ -71,7 +70,6 @@
+  };
+  
+  struct xe_oa_open_param {
+ -	struct xe_file *xef;
+  	u32 oa_unit_id;
+  	bool sample;
+  	u32 metric_set;
+@@ -83,9 +81,6 @@
+  	struct xe_exec_queue *exec_q;
+  	struct xe_hw_engine *hwe;
+  	bool no_preempt;
+ -	struct drm_xe_sync __user *syncs_user;
+ -	int num_syncs;
+ -	struct xe_sync_entry *syncs;
+  };
+  
+  struct xe_oa_config_bo {
+@@ -181,7 +176,7 @@
+  
+  static u32 xe_oa_hw_tail_read(struct xe_oa_stream *stream)
+  {
+ -	return xe_mmio_read32(&stream->gt->mmio, __oa_regs(stream)->oa_tail_ptr) &
+ +	return xe_mmio_read32(stream->gt, __oa_regs(stream)->oa_tail_ptr) &
+  		OAG_OATAILPTR_MASK;
+  }
+  
+@@ -371,7 +366,7 @@
+  		struct xe_reg oaheadptr = __oa_regs(stream)->oa_head_ptr;
+  
+  		spin_lock_irqsave(&stream->oa_buffer.ptr_lock, flags);
+ -		xe_mmio_write32(&stream->gt->mmio, oaheadptr,
+ +		xe_mmio_write32(stream->gt, oaheadptr,
+  				(head + gtt_offset) & OAG_OAHEADPTR_MASK);
+  		stream->oa_buffer.head = head;
+  		spin_unlock_irqrestore(&stream->oa_buffer.ptr_lock, flags);
+@@ -382,23 +377,22 @@
+  
+  static void xe_oa_init_oa_buffer(struct xe_oa_stream *stream)
+  {
+ -	struct xe_mmio *mmio = &stream->gt->mmio;
+  	u32 gtt_offset = xe_bo_ggtt_addr(stream->oa_buffer.bo);
+  	u32 oa_buf = gtt_offset | OABUFFER_SIZE_16M | OAG_OABUFFER_MEMORY_SELECT;
+  	unsigned long flags;
+  
+  	spin_lock_irqsave(&stream->oa_buffer.ptr_lock, flags);
+  
+ -	xe_mmio_write32(mmio, __oa_regs(stream)->oa_status, 0);
+ -	xe_mmio_write32(mmio, __oa_regs(stream)->oa_head_ptr,
+ +	xe_mmio_write32(stream->gt, __oa_regs(stream)->oa_status, 0);
+ +	xe_mmio_write32(stream->gt, __oa_regs(stream)->oa_head_ptr,
+  			gtt_offset & OAG_OAHEADPTR_MASK);
+  	stream->oa_buffer.head = 0;
+ -	xe_mmio_write32(mmio, __oa_regs(stream)->oa_buffer, oa_buf);
+ -	xe_mmio_write32(mmio, __oa_regs(stream)->oa_tail_ptr,
+ +	xe_mmio_write32(stream->gt, __oa_regs(stream)->oa_buffer, oa_buf);
+ +	xe_mmio_write32(stream->gt, __oa_regs(stream)->oa_tail_ptr,
+  			gtt_offset & OAG_OATAILPTR_MASK);
+  
+@@ -450,23 +444,21 @@
+  	    stream->hwe->oa_unit->type == DRM_XE_OA_UNIT_TYPE_OAG)
+  		val |= OAG_OACONTROL_OA_PES_DISAG_EN;
+  
+ -	xe_mmio_write32(&stream->gt->mmio, regs->oa_ctrl, val);
+ +	xe_mmio_write32(stream->gt, regs->oa_ctrl, val);
+  }
+  
+  static void xe_oa_disable(struct xe_oa_stream *stream)
+  {
+ -	struct xe_mmio *mmio = &stream->gt->mmio;
+ -
+ -	xe_mmio_write32(mmio, __oa_regs(stream)->oa_ctrl, 0);
+ -	if (xe_mmio_wait32(mmio, __oa_regs(stream)->oa_ctrl,
+ +	xe_mmio_write32(stream->gt, __oa_regs(stream)->oa_ctrl, 0);
+ +	if (xe_mmio_wait32(stream->gt, __oa_regs(stream)->oa_ctrl,
+  			   OAG_OACONTROL_OA_COUNTER_ENABLE, 0, 50000, NULL, false))
+  		drm_err(&stream->oa->xe->drm,
+  			"wait for OA to be disabled timed out\n");
+  
+  	if (GRAPHICS_VERx100(stream->oa->xe) <= 1270 && GRAPHICS_VERx100(stream->oa->xe) != 1260) {
+ -		xe_mmio_write32(mmio, OA_TLB_INV_CR, 1);
+ -		if (xe_mmio_wait32(mmio, OA_TLB_INV_CR, 1, 0, 50000, NULL, false))
+ +		xe_mmio_write32(stream->gt, OA_TLB_INV_CR, 1);
+ +		if (xe_mmio_wait32(stream->gt, OA_TLB_INV_CR, 1, 0, 50000, NULL, false))
+  			drm_err(&stream->oa->xe->drm,
+  				"wait for OA tlb invalidate timed out\n");
+  	}
+@@ -489,7 +481,7 @@
+  			size_t count, size_t *offset)
+  {
+ -	stream->oa_status = xe_mmio_rmw32(&stream->gt->mmio, __oa_regs(stream)->oa_status,
+ +	stream->oa_status = xe_mmio_rmw32(stream->gt, __oa_regs(stream)->oa_status,
+  					  OASTATUS_RELEVANT_BITS, 0);
+@@ -592,9 +585,14 @@
+  	fence = dma_fence_get(&job->drm.s_fence->finished);
+  	xe_sched_job_push(job);
+  
+ -	return fence;
+ +	timeout = dma_fence_wait_timeout(fence, false, HZ);
+ +	dma_fence_put(fence);
+ +	if (timeout < 0)
+ +		err = timeout;
+ +	else if (!timeout)
+ +		err = -ETIME;
+  exit:
+ -	return ERR_PTR(err);
+ +	return err;
+  }
+  
+  static void write_cs_mi_lri(struct xe_bb *bb, const struct xe_oa_reg *reg_data, u32 n_regs)
+@@ -658,7 +656,6 @@
+  static int xe_oa_modify_ctx_image(struct xe_oa_stream *stream, struct xe_lrc *lrc,
+  				  const struct flex *flex, u32 count)
+  {
+ -	struct dma_fence *fence;
+  	struct xe_bb *bb;
+  	int err;
+  
+@@ -670,16 +667,7 @@
+  
+  	xe_oa_store_flex(stream, lrc, bb, flex, count);
+  
+ -	fence = xe_oa_submit_bb(stream, bb);
+ -	if (IS_ERR(fence)) {
+ -		err = PTR_ERR(fence);
+ -		goto free_bb;
+ -	}
+ -	xe_bb_free(bb, fence);
+ -	dma_fence_put(fence);
+ -
+ -	return 0;
+ -free_bb:
+ +	err = xe_oa_submit_bb(stream, bb);
+  	xe_bb_free(bb, NULL);
+  exit:
+  	return err;
+@@ -687,7 +675,6 @@
+  
+  static int xe_oa_load_with_lri(struct xe_oa_stream *stream, struct xe_oa_reg *reg_lri)
+  {
+ -	struct dma_fence *fence;
+  	struct xe_bb *bb;
+  	int err;
+  
+@@ -699,16 +686,7 @@
+  
+  	write_cs_mi_lri(bb, reg_lri, 1);
+  
+ -	fence = xe_oa_submit_bb(stream, bb);
+ -	if (IS_ERR(fence)) {
+ -		err = PTR_ERR(fence);
+ -		goto free_bb;
+ -	}
+ -	xe_bb_free(bb, fence);
+ -	dma_fence_put(fence);
+ -
+ -	return 0;
+ -free_bb:
+ +	err = xe_oa_submit_bb(stream, bb);
+  	xe_bb_free(bb, NULL);
+  exit:
+  	return err;
+@@ -771,8 +749,7 @@
+  	int err;
+  
+ -	xe_mmio_write32(&stream->gt->mmio, __oa_regs(stream)->oa_ctrl,
+ -			__oa_ccs_select(stream));
+ +	xe_mmio_write32(stream->gt, __oa_regs(stream)->oa_ctrl, __oa_ccs_select(stream));
+  
+  	err = xe_oa_modify_ctx_image(stream, stream->exec_q->lrc[0],
+@@ -808,7 +785,6 @@
+  
+  static void xe_oa_disable_metric_set(struct xe_oa_stream *stream)
+  {
+ -	struct xe_mmio *mmio = &stream->gt->mmio;
+  	u32 sqcnt1;
+  
+@@ -830,13 +806,13 @@
+  		xe_oa_configure_oa_context(stream, false);
+  
+ -	xe_mmio_rmw32(mmio, RPM_CONFIG1, GT_NOA_ENABLE, 0);
+ +	xe_mmio_rmw32(stream->gt, RPM_CONFIG1, GT_NOA_ENABLE, 0);
+  
+  	sqcnt1 = SQCNT1_PMON_ENABLE |
+  		 (HAS_OA_BPC_REPORTING(stream->oa->xe) ? SQCNT1_OABPC : 0);
+  
+ -	xe_mmio_rmw32(mmio, XELPMP_SQCNT1, sqcnt1, 0);
+ +	xe_mmio_rmw32(stream->gt, XELPMP_SQCNT1, sqcnt1, 0);
+  }
+  
+  static void xe_oa_stream_destroy(struct xe_oa_stream *stream)
+@@ -856,7 +832,7 @@
+  
+  	xe_oa_free_oa_buffer(stream);
+  
+ -	xe_force_wake_put(gt_to_fw(gt), XE_FORCEWAKE_ALL);
+ +	XE_WARN_ON(xe_force_wake_put(gt_to_fw(gt), XE_FORCEWAKE_ALL));
+  	xe_pm_runtime_put(stream->oa->xe);
+  
+@@ -938,32 +914,15 @@
+  {
+  #define NOA_PROGRAM_ADDITIONAL_DELAY_US 500
+  	struct xe_oa_config_bo *oa_bo;
+ -	int err = 0, us = NOA_PROGRAM_ADDITIONAL_DELAY_US;
+ -	struct dma_fence *fence;
+ -	long timeout;
+ -
+ -	/* Emit OA configuration batch */
+ +	int err, us = NOA_PROGRAM_ADDITIONAL_DELAY_US;
+ +
+  	oa_bo = xe_oa_alloc_config_buffer(stream, config);
+  	if (IS_ERR(oa_bo)) {
+  		err = PTR_ERR(oa_bo);
+  		goto exit;
+  	}
+  
+ -	fence = xe_oa_submit_bb(stream, oa_bo->bb);
+ -	if (IS_ERR(fence)) {
+ -		err = PTR_ERR(fence);
+ -		goto exit;
+ -	}
+ -
+ -	/* Wait till all previous batches have executed */
+ -	timeout = dma_fence_wait_timeout(fence, false, 5 * HZ);
+ -	dma_fence_put(fence);
+ -	if (timeout < 0)
+ -		err = timeout;
+ -	else if (!timeout)
+ -		err = -ETIME;
+ -	if (err)
+ -		drm_dbg(&stream->oa->xe->drm, "dma_fence_wait_timeout err %d\n", err);
+ +	err = xe_oa_submit_bb(stream, oa_bo->bb);
+  
+  	usleep_range(us, 2 * us);
+@@ -981,7 +940,6 @@
+  
+  static int xe_oa_enable_metric_set(struct xe_oa_stream *stream)
+  {
+ -	struct xe_mmio *mmio = &stream->gt->mmio;
+  	u32 oa_debug, sqcnt1;
+  	int ret;
+  
+@@ -1008,12 +966,12 @@
+  			OAG_OA_DEBUG_DISABLE_START_TRG_2_COUNT_QUAL |
+  			OAG_OA_DEBUG_DISABLE_START_TRG_1_COUNT_QUAL;
+  
+ -	xe_mmio_write32(mmio, __oa_regs(stream)->oa_debug,
+ +	xe_mmio_write32(stream->gt, __oa_regs(stream)->oa_debug,
+  			_MASKED_BIT_ENABLE(oa_debug) |
+  			oag_report_ctx_switches(stream) |
+  			oag_configure_mmio_trigger(stream, true));
+  
+ -	xe_mmio_write32(mmio, __oa_regs(stream)->oa_ctx_ctrl, stream->periodic ?
+ +	xe_mmio_write32(stream->gt, __oa_regs(stream)->oa_ctx_ctrl, stream->periodic ?
+  			(OAG_OAGLBCTXCTRL_COUNTER_RESUME |
+  			 OAG_OAGLBCTXCTRL_TIMER_ENABLE |
+  			 REG_FIELD_PREP(OAG_OAGLBCTXCTRL_TIMER_PERIOD_MASK,
+@@ -1027,7 +985,7 @@
+  	sqcnt1 = SQCNT1_PMON_ENABLE |
+  		 (HAS_OA_BPC_REPORTING(stream->oa->xe) ? SQCNT1_OABPC : 0);
+  
+ -	xe_mmio_rmw32(mmio, XELPMP_SQCNT1, 0, sqcnt1);
+ +	xe_mmio_rmw32(stream->gt, XELPMP_SQCNT1, 0, sqcnt1);
+  
+  	if (stream->exec_q) {
+@@ -1248,9 +1206,11 @@
+  	struct xe_oa_stream *stream = file->private_data;
+  	struct xe_gt *gt = stream->gt;
+  
+ +	xe_pm_runtime_get(gt_to_xe(gt));
+  	mutex_lock(&gt->oa.gt_lock);
+  	xe_oa_destroy_locked(stream);
+  	mutex_unlock(&gt->oa.gt_lock);
+ +	xe_pm_runtime_put(gt_to_xe(gt));
+  
+  	drm_dev_put(&gt_to_xe(gt)->drm);
+@@ -1389,7 +1349,6 @@
+  {
+  	struct xe_oa_unit *u = param->hwe->oa_unit;
+  	struct xe_gt *gt = param->hwe->gt;
+ -	unsigned int fw_ref;
+  	int ret;
+  
+  	stream->exec_q = param->exec_q;
+@@ -1402,9 +1361,6 @@
+  	stream->periodic = param->period_exponent > 0;
+  	stream->period_exponent = param->period_exponent;
+  	stream->no_preempt = param->no_preempt;
+ -
+ -	stream->num_syncs = param->num_syncs;
+ -	stream->syncs = param->syncs;
+  
+  	xe_pm_runtime_get(stream->oa->xe);
+ -	fw_ref = xe_force_wake_get(gt_to_fw(gt), XE_FORCEWAKE_ALL);
+ -	if (!xe_force_wake_ref_has_domain(fw_ref, XE_FORCEWAKE_ALL)) {
+ -		ret = -ETIMEDOUT;
+ -		goto err_fw_put;
+ -	}
+ +	XE_WARN_ON(xe_force_wake_get(gt_to_fw(gt), XE_FORCEWAKE_ALL));
+  
+  	ret = xe_oa_alloc_oa_buffer(stream);
+  	if (ret)
+@@ -1499,7 +1451,7 @@
+  err_free_oa_buf:
+  	xe_oa_free_oa_buffer(stream);
+  err_fw_put:
+ -	xe_force_wake_put(gt_to_fw(gt), fw_ref);
+ +	XE_WARN_ON(xe_force_wake_put(gt_to_fw(gt), XE_FORCEWAKE_ALL));
+  	xe_pm_runtime_put(stream->oa->xe);
+  	if (stream->override_gucrc)
+  		xe_gt_WARN_ON(gt, xe_guc_pc_unset_gucrc_mode(&gt->uc.guc.pc));
+@@ -1583,7 +1535,7 @@
+  	case XE_PVC:
+  	case XE_METEORLAKE:
+  		xe_pm_runtime_get(gt_to_xe(gt));
+ -		reg = xe_mmio_read32(&gt->mmio, RPM_CONFIG0);
+ +		reg = xe_mmio_read32(gt, RPM_CONFIG0);
+  		xe_pm_runtime_put(gt_to_xe(gt));
+  
+  		shift = REG_FIELD_GET(RPM_CONFIG0_CTC_SHIFT_PARAMETER_MASK, reg);
+@@ -1757,20 +1709,6 @@
+  				struct xe_oa_open_param *param)
+  {
+  	param->no_preempt = value;
+ -	return 0;
+ -}
+ -
+ -static int xe_oa_set_prop_num_syncs(struct xe_oa *oa, u64 value,
+ -				    struct xe_oa_open_param *param)
+ -{
+ -	param->num_syncs = value;
+ -	return 0;
+ -}
+ -
+ -static int xe_oa_set_prop_syncs_user(struct xe_oa *oa, u64 value,
+ -				     struct xe_oa_open_param *param)
+ -{
+ -	param->syncs_user = u64_to_user_ptr(value);
+  	return 0;
+  }
+  
+@@ -1786,8 +1724,6 @@
+  	[DRM_XE_OA_PROPERTY_EXEC_QUEUE_ID] = xe_oa_set_prop_exec_queue_id,
+  	[DRM_XE_OA_PROPERTY_OA_ENGINE_INSTANCE] = xe_oa_set_prop_engine_instance,
+  	[DRM_XE_OA_PROPERTY_NO_PREEMPT] = xe_oa_set_no_preempt,
+ -	[DRM_XE_OA_PROPERTY_NUM_SYNCS] = xe_oa_set_prop_num_syncs,
+ -	[DRM_XE_OA_PROPERTY_SYNCS] = xe_oa_set_prop_syncs_user,
+  };
+  
+  static int xe_oa_user_ext_set_property(struct xe_oa *oa, u64 extension,
+@@ -1845,49 +1781,6 @@
+  		return xe_oa_user_extensions(oa, ext.next_extension, ++ext_number, param);
+  
+  	return 0;
+ -}
+ -
+ -static int xe_oa_parse_syncs(struct xe_oa *oa, struct xe_oa_open_param *param)
+ -{
+ -	int ret, num_syncs, num_ufence = 0;
+ -
+ -	if (param->num_syncs && !param->syncs_user) {
+ -		drm_dbg(&oa->xe->drm, "num_syncs specified without sync array\n");
+ -		ret = -EINVAL;
+ -		goto exit;
+ -	}
+ -
+ -	if (param->num_syncs) {
+ -		param->syncs = kcalloc(param->num_syncs, sizeof(*param->syncs), GFP_KERNEL);
+ -		if (!param->syncs) {
+ -			ret = -ENOMEM;
+ -			goto exit;
+ -		}
+ -	}
+ -
+ -	for (num_syncs = 0; num_syncs < param->num_syncs; num_syncs++) {
+ -		ret = xe_sync_entry_parse(oa->xe, param->xef, &param->syncs[num_syncs],
+ -					  &param->syncs_user[num_syncs], 0);
+ -		if (ret)
+ -			goto err_syncs;
+ -
+ -		if (xe_sync_is_ufence(&param->syncs[num_syncs]))
+ -			num_ufence++;
+ -	}
+ -
+ -	if (XE_IOCTL_DBG(oa->xe, num_ufence > 1)) {
+ -		ret = -EINVAL;
+ -		goto err_syncs;
+ -	}
+ -
+ -	return 0;
+ -
+ -err_syncs:
+ -	while (num_syncs--)
+ -		xe_sync_entry_cleanup(&param->syncs[num_syncs]);
+ -	kfree(param->syncs);
+ -exit:
+ -	return ret;
+  }
+  
+ -		xe_mmio_write32(&gt->mmio, u->regs.oa_debug,
+ +		xe_mmio_write32(gt, u->regs.oa_debug,
+  				oag_configure_mmio_trigger(NULL, false));
+  
+
+""""""

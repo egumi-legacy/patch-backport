@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "3c9231ea6497dfc50ac0ef69fff484da27d0df66",
+    "patch_url": "https://github.com/gregkh/linux/commit/3c9231ea6497dfc50ac0ef69fff484da27d0df66.patch",
+    "downstream_sha": "2b484789e937977b873a2e2faa4dee82a3766393",
+    "downstream_message": "net-timestamp: support TCP GSO case for a few missing flags\n\n[ Upstream commit 3c9231ea6497dfc50ac0ef69fff484da27d0df66 ]\n\nWhen I read through the TSO codes, I found out that we probably\nmiss initializing the tx_flags of last seg when TSO is turned\noff, which means at the following points no more timestamp\n(for this last one) will be generated. There are three flags\nto be handled in this patch:\n1. SKBTX_HW_TSTAMP\n2. SKBTX_BPF\n3. SKBTX_SCHED_TSTAMP\nNote that SKBTX_BPF[1] was added in 6.14.0-rc2 by commit\n6b98ec7e882af (\"bpf: Add BPF_SOCK_OPS_TSTAMP_SCHED_CB callback\")\nand only belongs to net-next branch material for now. The common\nissue of the above three flags can be fixed by this single patch.\n\nThis patch initializes the tx_flags to SKBTX_ANY_TSTAMP like what\nthe UDP GSO does to make the newly segmented last skb inherit the\ntx_flags so that requested timestamp will be generated in each\ncertain layer, or else that last one has zero value of tx_flags\nwhich leads to no timestamp at all.\n\nFixes: 4ed2d765dfacc (\"net-timestamp: TCP timestamping\")\nSigned-off-by: Jason Xing <kerneljasonxing@gmail.com>\nReviewed-by: Willem de Bruijn <willemb@google.com>\nSigned-off-by: David S. Miller <davem@davemloft.net>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/3c9231/patches/upstream_3c9231.patch",
+      "timestamp": "2025-03-13T20:50:05.028579"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-13T20:50:05.352457"
+  }
+}

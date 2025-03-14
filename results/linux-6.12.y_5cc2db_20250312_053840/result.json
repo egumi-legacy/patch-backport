@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "5cc2db37124bb33914996d6fdbb2ddb3811f2945",
+    "patch_url": "https://github.com/gregkh/linux/commit/5cc2db37124bb33914996d6fdbb2ddb3811f2945.patch",
+    "downstream_sha": "728dd20c8df74e09a9f34872b26d962a0f31d529",
+    "downstream_message": "x86/static-call: Remove early_boot_irqs_disabled check to fix Xen PVH dom0\n\ncommit 5cc2db37124bb33914996d6fdbb2ddb3811f2945 upstream.\n\n__static_call_update_early() has a check for early_boot_irqs_disabled, but\nis used before early_boot_irqs_disabled is set up in start_kernel().\n\nXen PV has always special cased early_boot_irqs_disabled, but Xen PVH does\nnot and falls over the BUG when booting as dom0.\n\nIt is very suspect that early_boot_irqs_disabled starts as 0, becomes 1 for\na time, then becomes 0 again, but as this needs backporting to fix a\nbreakage in a security fix, dropping the BUG_ON() is the far safer option.\n\nFixes: 0ef8047b737d (\"x86/static-call: provide a way to do very early static-call updates\")\nCloses: https://bugzilla.kernel.org/show_bug.cgi?id=219620\nReported-by: Alex Zenla <alex@edera.dev>\nSuggested-by: Peter Zijlstra <peterz@infradead.org>\nSigned-off-by: Andrew Cooper <andrew.cooper3@citrix.com>\nSigned-off-by: Borislav Petkov (AMD) <bp@alien8.de>\nReviewed-by: Juergen Gross <jgross@suse.com>\nAcked-by: Peter Zijlstra (Intel) <peterz@infradead.org>\nTested-by: Alex Zenla <alex@edera.dev>\nLink: https://lore.kernel.org/r/20241221211046.6475-1-andrew.cooper3@citrix.com\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/5cc2db/patches/upstream_5cc2db.patch",
+      "timestamp": "2025-03-12T05:38:40.424210"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:38:40.718962"
+  }
+}

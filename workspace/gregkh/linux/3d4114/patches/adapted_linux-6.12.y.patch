@@ -1,0 +1,29 @@
+From 2babc1a015922ad787ce792127edba0db84266a8 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Fri, 14 Mar 2025 09:01:13 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/ufs/core/ufshcd.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index bc13133efaa5..7317f47f5fe0 100644
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -10440,6 +10440,12 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)
+ 	hba->irq = irq;
+ 	hba->vps = &ufs_hba_vps;
+ 
++	/*
++	 * Initialize clk_gating.lock early since it is being used in
++	 * ufshcd_setup_clocks()
++	 */
++	spin_lock_init(&hba->clk_gating.lock);
++
+ 	err = ufshcd_hba_init(hba);
+ 	if (err)
+ 		goto out_error;
+-- 
+2.25.1
+

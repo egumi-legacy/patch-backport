@@ -1,0 +1,50 @@
+From 675662d186e1ce2022afea49940e80471b1409e3 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:19:23 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ fs/btrfs/extent_io.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index 872cca54cc6c..7d11fbc092e0 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -1345,6 +1345,7 @@ static noinline_for_stack int extent_writepage_io(struct btrfs_inode *inode,
+ 	struct btrfs_fs_info *fs_info = inode->root->fs_info;
+ 	unsigned long range_bitmap = 0;
+ 	bool submitted_io = false;
++	bool error = false;
+ 	const u64 folio_start = folio_pos(folio);
+ 	u64 cur;
+ 	int bit;
+@@ -1401,8 +1402,11 @@ static noinline_for_stack int extent_writepage_io(struct btrfs_inode *inode,
+ 	 *
+ 	 * Here we set writeback and clear for the range. If the full folio
+ 	 * is no longer dirty then we clear the PAGECACHE_TAG_DIRTY tag.
++	 *
++	 * If we hit any error, the corresponding sector will still be dirty
++	 * thus no need to clear PAGECACHE_TAG_DIRTY.
+ 	 */
+-	if (!submitted_io) {
++	if (!submitted_io && !error) {
+ 		btrfs_folio_set_writeback(fs_info, folio, start, len);
+ 		btrfs_folio_clear_writeback(fs_info, folio, start, len);
+ 	}
+@@ -2229,11 +2233,8 @@ void extent_write_locked_range(struct inode *inode, const struct folio *locked_f
+ 		if (ret == 1)
+ 			goto next_page;
+ 
+-		if (ret) {
+-			btrfs_mark_ordered_io_finished(BTRFS_I(inode), folio,
+-						       cur, cur_len, !ret);
++		if (ret)
+ 			mapping_set_error(mapping, ret);
+-		}
+ 		btrfs_folio_end_writer_lock(fs_info, folio, cur, cur_len);
+ 		if (ret < 0)
+ 			found_error = true;
+-- 
+2.25.1
+

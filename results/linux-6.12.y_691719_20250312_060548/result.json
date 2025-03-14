@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "6917192378c1ce17ba31df51c4e0d8b1c97a453b",
+    "patch_url": "https://github.com/gregkh/linux/commit/6917192378c1ce17ba31df51c4e0d8b1c97a453b.patch",
+    "downstream_sha": "c0ccff7c6da91b18cdea40fc13184886bfbd6ef8",
+    "downstream_message": "ASoC: Intel: bytcr_rt5640: Add DMI quirk for Vexia Edu Atla 10 tablet 5V\n\n[ Upstream commit 6917192378c1ce17ba31df51c4e0d8b1c97a453b ]\n\nThe Vexia EDU ATLA 10 tablet comes in 2 different versions with\nsignificantly different mainboards. The only outward difference is that\nthe charging barrel on one is marked 5V and the other is marked 9V.\n\nThe 5V version mostly works with the BYTCR defaults, except that it is\nmissing a CHAN package in its ACPI tables and the default of using\nSSP0-AIF2 is wrong, instead SSP0-AIF1 must be used. That and its jack\ndetect signal is not inverted as it usually is.\n\nAdd a DMI quirk for the 5V version to fix sound not working.\n\nSigned-off-by: Hans de Goede <hdegoede@redhat.com>\nLink: https://patch.msgid.link/20250123132507.18434-1-hdegoede@redhat.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/691719/patches/upstream_691719.patch",
+      "timestamp": "2025-03-12T06:05:48.064989"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T06:05:48.340503"
+  }
+}

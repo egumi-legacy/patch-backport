@@ -1,0 +1,99 @@
+diff --git a/drivers/cpufreq/amd-pstate.c b/drivers/cpufreq/amd-pstate.c
+--- a/drivers/cpufreq/amd-pstate.c
++++ b/drivers/cpufreq/amd-pstate.c
+@@ -233,7 +233,7 @@
+  return index;
+ }
+ 
+-static void msr_update_perf(struct amd_cpudata *cpudata, u32 min_perf,
++static void pstate_update_perf(struct amd_cpudata *cpudata, u32 min_perf,
+                                u32 des_perf, u32 max_perf, bool fast_switch)
+ {
+  if (fast_switch)
+@@ -243,7 +243,7 @@
+ 			      READ_ONCE(cpudata->cppc_req_cached));
+ }
+ 
+-DEFINE_STATIC_CALL(amd_pstate_update_perf, msr_update_perf);
++DEFINE_STATIC_CALL(amd_pstate_update_perf, pstate_update_perf);
+ 
+ static inline void amd_pstate_update_perf(struct amd_cpudata *cpudata,
+ 					  u32 min_perf, u32 des_perf,
+@@ -306,16 +306,10 @@
+  return ret;
+ }
+ 
+-static inline int msr_cppc_enable(bool enable)
++static inline int pstate_enable(bool enable)
+ {
+  int ret, cpu;
+  unsigned long logical_proc_id_mask = 0;
+-
+-       /*
+-        * MSR_AMD_CPPC_ENABLE is write-once, once set it cannot be cleared.
+-        */
+-	if (!enable)
+-		return 0;
+ 
+  if (enable == cppc_enabled)
+ 		return 0;
+@@ -338,7 +332,7 @@
+  return 0;
+ }
+ 
+-static int shmem_cppc_enable(bool enable)
++static int cppc_enable(bool enable)
+ {
+  int cpu, ret = 0;
+  struct cppc_perf_ctrls perf_ctrls;
+@@ -365,14 +359,14 @@
+  return ret;
+ }
+ 
+-DEFINE_STATIC_CALL(amd_pstate_cppc_enable, msr_cppc_enable);
++DEFINE_STATIC_CALL(amd_pstate_enable, pstate_enable);
+ 
+ static inline int amd_pstate_enable(bool enable)
+ {
+  return static_call(amd_pstate_enable)(enable);
+ }
+ 
+-static int msr_init_perf(struct amd_cpudata *cpudata)
++static int pstate_init_perf(struct amd_cpudata *cpudata)
+ {
+  u64 cap1;
+ 
+@@ -391,7 +385,7 @@
+  return 0;
+ }
+ 
+-static int shmem_init_perf(struct amd_cpudata *cpudata)
++static int cppc_init_perf(struct amd_cpudata *cpudata)
+ {
+  struct cppc_perf_caps cppc_perf;
+ 
+@@ -426,14 +420,14 @@
+  return ret;
+ }
+ 
+-DEFINE_STATIC_CALL(amd_pstate_init_perf, msr_init_perf);
++DEFINE_STATIC_CALL(amd_pstate_init_perf, pstate_init_perf);
+ 
+ static inline int amd_pstate_init_perf(struct amd_cpudata *cpudata)
+ {
+  return static_call(amd_pstate_init_perf)(cpudata);
+ }
+ 
+-static void shmem_update_perf(struct amd_cpudata *cpudata,
++static void cppc_update_perf(struct amd_cpudata *cpudata,
+ 			     u32 min_perf, u32 des_perf,
+ 			     u32 max_perf, bool fast_switch)
+ {
+@@ -1658,6 +1658,7 @@ static void amd_pstate_epp_offline(struct cpufreq_policy *policy)
+ 	 wrmsrl_on_cpu(cpudata->cpu, MSR_AMD_CPPC_REQ, value);
+  } else {
+ 	 perf_ctrls.desired_perf = 0;
++	 perf_ctrls.min_perf = min_perf;
+ 	 perf_ctrls.max_perf = min_perf;
+ 	 cppc_set_perf(cpudata->cpu, &perf_ctrls);
+ 	 perf_ctrls.energy_perf = AMD_CPPC_ENERGY_PERF_PREF(HWP_EPP_BALANCE_POWERSAVE);

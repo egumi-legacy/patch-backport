@@ -1,0 +1,37 @@
+From e8749f2003de26c2085d267a15f0bad0e7ec77ba Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 06:01:07 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/usb/host/xhci-pci.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/usb/host/xhci-pci.c b/drivers/usb/host/xhci-pci.c
+index 3ba9902dd209..deb3c98c9bea 100644
+--- a/drivers/usb/host/xhci-pci.c
++++ b/drivers/usb/host/xhci-pci.c
+@@ -656,8 +656,8 @@ int xhci_pci_common_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ }
+ EXPORT_SYMBOL_NS_GPL(xhci_pci_common_probe, xhci);
+ 
+-static const struct pci_device_id pci_ids_reject[] = {
+-	/* handled by xhci-pci-renesas */
++/* handled by xhci-pci-renesas if enabled */
++static const struct pci_device_id pci_ids_renesas[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, 0x0014) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, 0x0015) },
+ 	{ /* end: all zeroes */ }
+@@ -665,7 +665,8 @@ static const struct pci_device_id pci_ids_reject[] = {
+ 
+ static int xhci_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ {
+-	if (pci_match_id(pci_ids_reject, dev))
++	if (IS_ENABLED(CONFIG_USB_XHCI_PCI_RENESAS) &&
++			pci_match_id(pci_ids_renesas, dev))
+ 		return -ENODEV;
+ 
+ 	return xhci_pci_common_probe(dev, id);
+-- 
+2.25.1
+

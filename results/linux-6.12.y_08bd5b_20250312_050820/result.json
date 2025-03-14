@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "08bd5b7c9a2401faabdaa1472d45c7de0755fd7e",
+    "patch_url": "https://github.com/gregkh/linux/commit/08bd5b7c9a2401faabdaa1472d45c7de0755fd7e",
+    "downstream_sha": "3e179d3f1ada963475395d81bfe91daef4d1a24c",
+    "downstream_message": "Input: synaptics - fix crash when enabling pass-through port\n\n[ Upstream commit 08bd5b7c9a2401faabdaa1472d45c7de0755fd7e ]\n\nWhen enabling a pass-through port an interrupt might come before psmouse\ndriver binds to the pass-through port. However synaptics sub-driver\ntries to access psmouse instance presumably associated with the\npass-through port to figure out if only 1 byte of response or entire\nprotocol packet needs to be forwarded to the pass-through port and may\ncrash if psmouse instance has not been attached to the port yet.\n\nFix the crash by introducing open() and close() methods for the port and\ncheck if the port is open before trying to access psmouse instance.\nBecause psmouse calls serio_open() only after attaching psmouse instance\nto serio port instance this prevents the potential crash.\n\nReported-by: Takashi Iwai <tiwai@suse.de>\nFixes: 100e16959c3c (\"Input: libps2 - attach ps2dev instances as serio port's drvdata\")\nLink: https://bugzilla.suse.com/show_bug.cgi?id=1219522\nCc: stable@vger.kernel.org\nReviewed-by: Takashi Iwai <tiwai@suse.de>\nLink: https://lore.kernel.org/r/Z4qSHORvPn7EU2j1@google.com\nSigned-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/input/mouse/synaptics.c:665\nerror: drivers/input/mouse/synaptics.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/08bd5b/patches/upstream_08bd5b.patch",
+      "timestamp": "2025-03-12T05:07:14.926419"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:08:20.965019"
+  }
+}

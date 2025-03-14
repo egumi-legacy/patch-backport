@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "60b8f711143de7cd9c0f55be0fe7eb94b19eb5c7",
+    "patch_url": "https://github.com/gregkh/linux/commit/60b8f711143de7cd9c0f55be0fe7eb94b19eb5c7",
+    "downstream_sha": "1e6419b1a41da83ed63b98c40e5f4f3781fedd48",
+    "downstream_message": "tracing: Have the error of __tracing_resize_ring_buffer() passed to user\n\n[ Upstream commit 60b8f711143de7cd9c0f55be0fe7eb94b19eb5c7 ]\n\nCurrently if __tracing_resize_ring_buffer() returns an error, the\ntracing_resize_ringbuffer() returns -ENOMEM. But it may not be a memory\nissue that caused the function to fail. If the ring buffer is memory\nmapped, then the resizing of the ring buffer will be disabled. But if the\nuser tries to resize the buffer, it will get an -ENOMEM returned, which is\nconfusing because there is plenty of memory. The actual error returned was\n-EBUSY, which would make much more sense to the user.\n\nCc: stable@vger.kernel.org\nCc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>\nCc: Vincent Donnefort <vdonnefort@google.com>\nLink: https://lore.kernel.org/20250213134132.7e4505d7@gandalf.local.home\nFixes: 117c39200d9d7 (\"ring-buffer: Introducing ring-buffer mapping functions\")\nSigned-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>\nReviewed-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: kernel/trace/trace.c:5977\nerror: kernel/trace/trace.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/60b8f7/patches/upstream_60b8f7.patch",
+      "timestamp": "2025-03-12T04:54:07.429342"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T04:54:30.588852"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "1f566840a82982141f94086061927a90e79440e5",
+    "patch_url": "https://github.com/gregkh/linux/commit/1f566840a82982141f94086061927a90e79440e5.patch",
+    "downstream_sha": "ebf0ac02e2d8e9f9580bc162d09b0c34ead0efc3",
+    "downstream_message": "clocksource: Use pr_info() for \"Checking clocksource synchronization\" message\n\n[ Upstream commit 1f566840a82982141f94086061927a90e79440e5 ]\n\nThe \"Checking clocksource synchronization\" message is normally printed\nwhen clocksource_verify_percpu() is called for a given clocksource if\nboth the CLOCK_SOURCE_UNSTABLE and CLOCK_SOURCE_VERIFY_PERCPU flags\nare set.\n\nIt is an informational message and so pr_info() is the correct choice.\n\nSigned-off-by: Waiman Long <longman@redhat.com>\nSigned-off-by: Thomas Gleixner <tglx@linutronix.de>\nReviewed-by: Paul E. McKenney <paulmck@kernel.org>\nAcked-by: John Stultz <jstultz@google.com>\nLink: https://lore.kernel.org/all/20250125015442.3740588-1-longman@redhat.com\nStable-dep-of: 6bb05a33337b (\"clocksource: Use migrate_disable() to avoid calling get_random_u32() in atomic context\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/1f5668/patches/upstream_1f5668.patch",
+      "timestamp": "2025-03-12T05:51:50.099264"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:51:50.427181"
+  }
+}

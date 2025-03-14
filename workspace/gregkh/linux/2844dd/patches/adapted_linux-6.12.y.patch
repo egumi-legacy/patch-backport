@@ -1,0 +1,75 @@
+From 9c7dabd1c3af018ed203eb80f8650bc5e4a79900 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:55:28 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ arch/s390/pci/pci_bus.c | 20 ++++++++++++++++++++
+ arch/s390/pci/pci_iov.h |  7 +++++++
+ 2 files changed, 27 insertions(+)
+
+diff --git a/arch/s390/pci/pci_bus.c b/arch/s390/pci/pci_bus.c
+index 1b74a000ff64..9e9e13013426 100644
+--- a/arch/s390/pci/pci_bus.c
++++ b/arch/s390/pci/pci_bus.c
+@@ -332,6 +332,17 @@ static int zpci_bus_add_device(struct zpci_bus *zbus, struct zpci_dev *zdev)
+ 	return rc;
+ }
+ 
++static bool zpci_bus_is_isolated_vf(struct zpci_bus *zbus, struct zpci_dev *zdev)
++{
++	struct pci_dev *pdev;
++
++	pdev = zpci_iov_find_parent_pf(zbus, zdev);
++	if (!pdev)
++		return true;
++	pci_dev_put(pdev);
++	return false;
++}
++
+ int zpci_bus_device_register(struct zpci_dev *zdev, struct pci_ops *ops)
+ {
+ 	bool topo_is_tid = zdev->tid_avail;
+@@ -346,6 +357,15 @@ int zpci_bus_device_register(struct zpci_dev *zdev, struct pci_ops *ops)
+ 
+ 	topo = topo_is_tid ? zdev->tid : zdev->pchid;
+ 	zbus = zpci_bus_get(topo, topo_is_tid);
++	/*
++	 * An isolated VF gets its own domain/bus even if there exists
++	 * a matching domain/bus already
++	 */
++	if (zbus && zpci_bus_is_isolated_vf(zbus, zdev)) {
++		zpci_bus_put(zbus);
++		zbus = NULL;
++	}
++
+ 	if (!zbus) {
+ 		zbus = zpci_bus_alloc(topo, topo_is_tid);
+ 		if (!zbus)
+diff --git a/arch/s390/pci/pci_iov.h b/arch/s390/pci/pci_iov.h
+index b2c828003bad..05df728f980c 100644
+--- a/arch/s390/pci/pci_iov.h
++++ b/arch/s390/pci/pci_iov.h
+@@ -17,6 +17,8 @@ void zpci_iov_map_resources(struct pci_dev *pdev);
+ 
+ int zpci_iov_setup_virtfn(struct zpci_bus *zbus, struct pci_dev *virtfn, int vfn);
+ 
++struct pci_dev *zpci_iov_find_parent_pf(struct zpci_bus *zbus, struct zpci_dev *zdev);
++
+ #else /* CONFIG_PCI_IOV */
+ static inline void zpci_iov_remove_virtfn(struct pci_dev *pdev, int vfn) {}
+ 
+@@ -26,5 +28,10 @@ static inline int zpci_iov_setup_virtfn(struct zpci_bus *zbus, struct pci_dev *v
+ {
+ 	return 0;
+ }
++
++static inline struct pci_dev *zpci_iov_find_parent_pf(struct zpci_bus *zbus, struct zpci_dev *zdev)
++{
++	return NULL;
++}
+ #endif /* CONFIG_PCI_IOV */
+ #endif /* __S390_PCI_IOV_h */
+-- 
+2.25.1
+

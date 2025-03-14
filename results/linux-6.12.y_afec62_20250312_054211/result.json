@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "afec62cd0a4191cde6dd3a75382be4d51a38ce9b",
+    "patch_url": "https://github.com/gregkh/linux/commit/afec62cd0a4191cde6dd3a75382be4d51a38ce9b.patch",
+    "downstream_sha": "a575827791918418a9565734d941624775c3de28",
+    "downstream_message": "flow_dissector: use RCU protection to fetch dev_net()\n\n[ Upstream commit afec62cd0a4191cde6dd3a75382be4d51a38ce9b ]\n\n__skb_flow_dissect() can be called from arbitrary contexts.\n\nIt must extend its RCU protection section to include\nthe call to dev_net(), which can become dev_net_rcu().\n\nThis makes sure the net structure can not disappear under us.\n\nFixes: 9b52e3f267a6 (\"flow_dissector: handle no-skb use case\")\nSigned-off-by: Eric Dumazet <edumazet@google.com>\nReviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>\nLink: https://patch.msgid.link/20250205155120.1676781-10-edumazet@google.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/afec62/patches/upstream_afec62.patch",
+      "timestamp": "2025-03-12T05:42:10.798727"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:42:11.243383"
+  }
+}

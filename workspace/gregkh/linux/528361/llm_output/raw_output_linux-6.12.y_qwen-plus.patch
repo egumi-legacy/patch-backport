@@ -1,0 +1,28 @@
+A. Commit message:
+nvme-tcp: fix signedness bug in nvme_tcp_init_connection()
+
+B. Change summary:
+The condition in `nvme_tcp_init_connection()` that checks the return value of `kernel_recvmsg()` was updated to correctly handle negative error codes and avoid treating them as success. The original logic incorrectly promoted the type to unsigned long, leading to potential misinterpretation of errors.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+index 23f11527d29d0..b8a4cdefg5678 100644
+--- a/drivers/nvme/host/tcp.c
++++ b/drivers/nvme/host/tcp.c
+@@ -1518,11 +1518,11 @@ static int nvme_tcp_init_connection(struct nvme_tcp_queue *queue)
+         msg.msg_control = cbuf;
+         msg.msg_controllen = sizeof(cbuf);
+     }
+-    msg.msg_flags = MSG_WAITALL;
+     ret = kernel_recvmsg(queue->sock, &msg, &iov, 1,
+                 iov.iov_len, msg.msg_flags);
+-    if (ret < sizeof(*icresp)) {
++    if (ret >= 0 && ret < sizeof(*icresp))
++        ret = -ECONNRESET;
++    if (ret < 0) {
+         pr_warn("queue %d: failed to receive icresp, error %d\n",
+                 nvme_tcp_queue_id(queue), ret);
+-        if (ret >= 0)

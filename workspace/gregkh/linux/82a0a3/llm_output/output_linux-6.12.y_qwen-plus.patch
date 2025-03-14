@@ -1,0 +1,30 @@
+diff --git a/sound/soc/renesas/rz-ssi.c b/sound/soc/renesas/rz-ssi.c
+new file mode 100644
+index 0000000..3a0af4ca7ab6c
+--- /dev/null
++++ b/sound/soc/renesas/rz-ssi.c
+@@ -0,0 +1,529 @@
++/* ... (other lines of code) ... */
++
++static int rz_ssi_pio_send(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)
++{
++	struct snd_pcm_runtime *runtime = strm->substream->runtime;
++	int frames_left = runtime->buffer_size - strm->pos;
++	int sample_space;
++	u32 ssifsr;
++
++	sample_space = strm->fifo_sample_size;
++	ssifsr = rz_ssi_reg_readl(ssi, SSIFSR);
++	sample_space -= (ssifsr >> SSIFSR_TDC_SHIFT) & SSIFSR_TDC_MASK;
++	if (sample_space < 0)
++		return -EINVAL;
++
++	/* Only add full frames at a time */
++	while (frames_left && (sample_space >= runtime->channels)) {
++		/* ... (rest of the function) ... */
++	}
++
++	/* ... (other lines of code) ... */
++}
++
++/* ... (other lines of code) ... */

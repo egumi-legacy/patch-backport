@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "32966821574cd2917bd60f2554f435fe527f4702",
+    "patch_url": "https://github.com/gregkh/linux/commit/32966821574cd2917bd60f2554f435fe527f4702.patch",
+    "downstream_sha": "3d92aa03900a515ed0c7378192272632c80206e9",
+    "downstream_message": "sched_ext: Fix migration disabled handling in targeted dispatches\n\n[ Upstream commit 32966821574cd2917bd60f2554f435fe527f4702 ]\n\nA dispatch operation that can target a specific local DSQ -\nscx_bpf_dsq_move_to_local() or scx_bpf_dsq_move() - checks whether the task\ncan be migrated to the target CPU using task_can_run_on_remote_rq(). If the\ntask can't be migrated to the targeted CPU, it is bounced through a global\nDSQ.\n\ntask_can_run_on_remote_rq() assumes that the task is on a CPU that's\ndifferent from the targeted CPU but the callers doesn't uphold the\nassumption and may call the function when the task is already on the target\nCPU. When such task has migration disabled, task_can_run_on_remote_rq() ends\nup returning %false incorrectly unnecessarily bouncing the task to a global\nDSQ.\n\nFix it by updating the callers to only call task_can_run_on_remote_rq() when\nthe task is on a different CPU than the target CPU. As this is a bit subtle,\nfor clarity and documentation:\n\n- Make task_can_run_on_remote_rq() trigger SCHED_WARN_ON() if the task is on\n  the same CPU as the target CPU.\n\n- is_migration_disabled() test in task_can_run_on_remote_rq() cannot trigger\n  if the task is on a different CPU than the target CPU as the preceding\n  task_allowed_on_cpu() test should fail beforehand. Convert the test into\n  SCHED_WARN_ON().\n\nSigned-off-by: Tejun Heo <tj@kernel.org>\nFixes: 4c30f5ce4f7a (\"sched_ext: Implement scx_bpf_dispatch[_vtime]_from_dsq()\")\nFixes: 0366017e0973 (\"sched_ext: Use task_can_run_on_remote_rq() test in dispatch_to_local_dsq()\")\nCc: stable@vger.kernel.org # v6.12+\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/329668/patches/upstream_329668.patch",
+      "timestamp": "2025-03-12T04:53:52.036626"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T04:53:52.292769"
+  }
+}

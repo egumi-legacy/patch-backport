@@ -57,17 +57,20 @@ class CompilerModule(BaseModule):
                 self._save_metrics(context)
                 return context
             
+            # logger.info(f"use_docker: {context.config.kernel_compiler.get('use_docker', False)}")
+            # logger.info(f"use_docker: {context.config.module_configs.get('kernel_compiler', {}).get('use_docker', False)}")
+            
             # 调用内核编译模块
             kernel_compiler = KernelCompiler(
                 repo_path=context.config.repo_path,
                 output_dir=context.commit.compilation_dir,
-                use_docker=context.config.kernel_compiler.get('use_docker', True),
-                docker_image=context.config.kernel_compiler.get('docker_image', 'kernel-builder:arm64'),
-                ccache_dir=Path(os.path.expanduser(context.config.kernel_compiler.get('ccache_dir', '~/.ccache')))
+                use_docker=context.config.module_configs.get('kernel_compiler', {}).get('use_docker', False),
+                docker_image=context.config.module_configs.get('kernel_compiler', {}).get('docker_image', 'kernel-builder:arm64'),
+                ccache_dir=Path(os.path.expanduser(context.config.module_configs.get('kernel_compiler', {}).get('ccache_dir', '~/.ccache')))
             )
             
             # 首次运行时构建Docker镜像
-            if context.config.kernel_compiler.get('use_docker', True) and not context.docker_image_built:
+            if context.config.module_configs.get('kernel_compiler', {}).get('use_docker', False) and not context.docker_image_built:
                 logger.info("开始构建Docker镜像")
                 if not kernel_compiler.build_docker_image():
                     logger.error("Docker镜像构建失败，无法继续编译验证")
@@ -131,7 +134,7 @@ class CompilerModule(BaseModule):
                 logger.error(f"详细错误信息: {traceback.format_exc()}")
             
             # 更新上下文和指标
-            context.compiler_result = {
+            context.compilation_result = {
                 'success': False,
                 'error': str(e)
             }

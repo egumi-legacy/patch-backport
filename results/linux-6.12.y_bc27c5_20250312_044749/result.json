@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "bc27c52eea189e8f7492d40739b7746d67b65beb",
+    "patch_url": "https://github.com/gregkh/linux/commit/bc27c52eea189e8f7492d40739b7746d67b65beb",
+    "downstream_sha": "d95607a5f2f9bb08194c9deaf4a5f3e8ba59a9d4",
+    "downstream_message": "bpf: avoid holding freeze_mutex during mmap operation\n\n[ Upstream commit bc27c52eea189e8f7492d40739b7746d67b65beb ]\n\nWe use map->freeze_mutex to prevent races between map_freeze() and\nmemory mapping BPF map contents with writable permissions. The way we\nnaively do this means we'll hold freeze_mutex for entire duration of all\nthe mm and VMA manipulations, which is completely unnecessary. This can\npotentially also lead to deadlocks, as reported by syzbot in [0].\n\nSo, instead, hold freeze_mutex only during writeability checks, bump\n(proactively) \"write active\" count for the map, unlock the mutex and\nproceed with mmap logic. And only if something went wrong during mmap\nlogic, then undo that \"write active\" counter increment.\n\n  [0] https://lore.kernel.org/bpf/678dcbc9.050a0220.303755.0066.GAE@google.com/\n\nFixes: fc9702273e2e (\"bpf: Add mmap() support for BPF_MAP_TYPE_ARRAY\")\nReported-by: syzbot+4dc041c686b7c816a71e@syzkaller.appspotmail.com\nSigned-off-by: Andrii Nakryiko <andrii@kernel.org>\nLink: https://lore.kernel.org/r/20250129012246.1515826-2-andrii@kernel.org\nSigned-off-by: Alexei Starovoitov <ast@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: kernel/bpf/syscall.c:1076\nerror: kernel/bpf/syscall.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/bc27c5/patches/upstream_bc27c5.patch",
+      "timestamp": "2025-03-12T04:47:17.919273"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T04:47:49.286034"
+  }
+}

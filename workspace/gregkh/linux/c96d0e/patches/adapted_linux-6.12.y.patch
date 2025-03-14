@@ -1,0 +1,37 @@
+From edf0af9445b6631944cffb5732d648245eaad641 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:25:53 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ fs/btrfs/extent_io.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index 872cca54cc6c..a3ef1809480d 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -1131,6 +1131,7 @@ static noinline_for_stack int writepage_delalloc(struct btrfs_inode *inode,
+ 	u64 delalloc_end = page_end;
+ 	u64 delalloc_to_write = 0;
+ 	int ret = 0;
++	int bit;
+ 
+ 	/* Save the dirty bitmap as our submission bitmap will be a subset of it. */
+ 	if (btrfs_is_subpage(fs_info, inode->vfs_inode.i_mapping)) {
+@@ -1140,6 +1141,12 @@ static noinline_for_stack int writepage_delalloc(struct btrfs_inode *inode,
+ 		bio_ctrl->submit_bitmap = 1;
+ 	}
+ 
++	for_each_set_bit(bit, &bio_ctrl->submit_bitmap, fs_info->sectors_per_page) {
++		u64 start = page_start + (bit << fs_info->sectorsize_bits);
++
++		btrfs_folio_set_writer_lock(fs_info, folio, start, fs_info->sectorsize);
++	}
++
+ 	/* Lock all (subpage) delalloc ranges inside the folio first. */
+ 	while (delalloc_start < page_end) {
+ 		delalloc_end = page_end;
+-- 
+2.25.1
+

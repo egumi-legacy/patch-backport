@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "b69bb476dee99d564d65d418e9a20acca6f32c3f",
+    "patch_url": "https://github.com/gregkh/linux/commit/b69bb476dee99d564d65d418e9a20acca6f32c3f.patch",
+    "downstream_sha": "edd408444537ecdf89d719acf331cebc0c5b1351",
+    "downstream_message": "cgroup: fix race between fork and cgroup.kill\n\ncommit b69bb476dee99d564d65d418e9a20acca6f32c3f upstream.\n\nTejun reported the following race between fork() and cgroup.kill at [1].\n\nTejun:\n  I was looking at cgroup.kill implementation and wondering whether there\n  could be a race window. So, __cgroup_kill() does the following:\n\n   k1. Set CGRP_KILL.\n   k2. Iterate tasks and deliver SIGKILL.\n   k3. Clear CGRP_KILL.\n\n  The copy_process() does the following:\n\n   c1. Copy a bunch of stuff.\n   c2. Grab siglock.\n   c3. Check fatal_signal_pending().\n   c4. Commit to forking.\n   c5. Release siglock.\n   c6. Call cgroup_post_fork() which puts the task on the css_set and tests\n       CGRP_KILL.\n\n  The intention seems to be that either a forking task gets SIGKILL and\n  terminates on c3 or it sees CGRP_KILL on c6 and kills the child. However, I\n  don't see what guarantees that k3 can't happen before c6. ie. After a\n  forking task passes c5, k2 can take place and then before the forking task\n  reaches c6, k3 can happen. Then, nobody would send SIGKILL to the child.\n  What am I missing?\n\nThis is indeed a race. One way to fix this race is by taking\ncgroup_threadgroup_rwsem in write mode in __cgroup_kill() as the fork()\nside takes cgroup_threadgroup_rwsem in read mode from cgroup_can_fork()\nto cgroup_post_fork(). However that would be heavy handed as this adds\none more potential stall scenario for cgroup.kill which is usually\ncalled under extreme situation like memory pressure.\n\nTo fix this race, let's maintain a sequence number per cgroup which gets\nincremented on __cgroup_kill() call. On the fork() side, the\ncgroup_can_fork() will cache the sequence number locally and recheck it\nagainst the cgroup's sequence number at cgroup_post_fork() site. If the\nsequence numbers mismatch, it means __cgroup_kill() can been called and\nwe should send SIGKILL to the newly created task.\n\nReported-by: Tejun Heo <tj@kernel.org>\nCloses: https://lore.kernel.org/all/Z5QHE2Qn-QZ6M-KW@slm.duckdns.org/ [1]\nFixes: 661ee6280931 (\"cgroup: introduce cgroup.kill\")\nCc: stable@vger.kernel.org # v5.14+\nSigned-off-by: Shakeel Butt <shakeel.butt@linux.dev>\nReviewed-by: Michal Koutn\u00fd <mkoutny@suse.com>\nSigned-off-by: Tejun Heo <tj@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/b69bb4/patches/upstream_b69bb4.patch",
+      "timestamp": "2025-03-12T05:56:02.869786"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:56:03.159965"
+  }
+}

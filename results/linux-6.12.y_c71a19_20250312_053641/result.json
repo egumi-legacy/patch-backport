@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "c71a192976ded2f2f416d03c4f595cdd4478b825",
+    "patch_url": "https://github.com/gregkh/linux/commit/c71a192976ded2f2f416d03c4f595cdd4478b825",
+    "downstream_sha": "2248b8145053eb2ae35ca4cf694b885a086719bb",
+    "downstream_message": "net: ipv6: fix dst refleaks in rpl, seg6 and ioam6 lwtunnels\n\ncommit c71a192976ded2f2f416d03c4f595cdd4478b825 upstream.\n\ndst_cache_get() gives us a reference, we need to release it.\n\nDiscovered by the ioam6.sh test, kmemleak was recently fixed\nto catch per-cpu memory leaks.\n\nFixes: 985ec6f5e623 (\"net: ipv6: rpl_iptunnel: mitigate 2-realloc issue\")\nFixes: 40475b63761a (\"net: ipv6: seg6_iptunnel: mitigate 2-realloc issue\")\nFixes: dce525185bc9 (\"net: ipv6: ioam6_iptunnel: mitigate 2-realloc issue\")\nReviewed-by: Justin Iurman <justin.iurman@uliege.be>\nReviewed-by: Simon Horman <horms@kernel.org>\nLink: https://patch.msgid.link/20250130031519.2716843-1-kuba@kernel.org\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: net/ipv6/ioam6_iptunnel.c:336\nerror: net/ipv6/ioam6_iptunnel.c: patch does not apply\nerror: patch failed: net/ipv6/rpl_iptunnel.c:269\nerror: net/ipv6/rpl_iptunnel.c: patch does not apply\nerror: patch failed: net/ipv6/seg6_iptunnel.c:482\nerror: net/ipv6/seg6_iptunnel.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/c71a19/patches/upstream_c71a19.patch",
+      "timestamp": "2025-03-12T05:35:49.178392"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:36:41.519905"
+  }
+}

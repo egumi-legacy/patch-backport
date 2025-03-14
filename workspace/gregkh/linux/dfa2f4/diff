@@ -1,0 +1,869 @@
+modified file: drivers/misc/cardreader/rtsx_pcr.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/misc/cardreader/rtsx_pcr.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/misc/cardreader/rtsx_pcr.c
+@@ -1057,7 +1057,7 @@
+  	}
+  
+  	pcr->irq = pcr->pci->irq;
+ -	pci_intx_unmanaged(pcr->pci, !pcr->msi_en);
+ +	pci_intx(pcr->pci, !pcr->msi_en);
+  
+  	return 0;
+  }
+
+""""""
+modified file: drivers/misc/tifm_7xx1.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/misc/tifm_7xx1.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/misc/tifm_7xx1.c
+@@ -327,7 +327,7 @@
+  		goto err_out;
+  	}
+  
+ -	pci_intx_unmanaged(dev, 1);
+ +	pci_intx(dev, 1);
+  
+  	fm = tifm_alloc_adapter(dev->device == PCI_DEVICE_ID_TI_XX21_XX11_FM
+  				? 4 : 2, &dev->dev);
+@@ -368,7 +368,7 @@
+  err_out_free:
+  	tifm_free_adapter(fm);
+  err_out_int:
+ -	pci_intx_unmanaged(dev, 0);
+ +	pci_intx(dev, 0);
+  	pci_release_regions(dev);
+  err_out:
+  	if (!pci_dev_busy)
+@@ -392,7 +392,7 @@
+  		tifm_7xx1_sock_power_off(tifm_7xx1_sock_addr(fm->addr, cnt));
+  
+  	iounmap(fm->addr);
+ -	pci_intx_unmanaged(dev, 0);
+ +	pci_intx(dev, 0);
+  	pci_release_regions(dev);
+  
+  	pci_disable_device(dev);
+
+""""""
+modified file: drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -1669,7 +1669,7 @@
+  	REG_WR(bp, IGU_REG_PF_CONFIGURATION, val);
+  
+  	if (val & IGU_PF_CONF_INT_LINE_EN)
+ -		pci_intx_unmanaged(bp->pdev, true);
+ +		pci_intx(bp->pdev, true);
+  
+  	barrier();
+  
+
+""""""
+modified file: drivers/net/ethernet/brocade/bna/bnad.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/net/ethernet/brocade/bna/bnad.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/net/ethernet/brocade/bna/bnad.c
+@@ -2669,7 +2669,7 @@
+  		}
+  	}
+  
+ -	pci_intx_unmanaged(bnad->pcidev, 0);
+ +	pci_intx(bnad->pcidev, 0);
+  
+  	return;
+  
+
+""""""
+modified file: drivers/ntb/hw/amd/ntb_hw_amd.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/ntb/hw/amd/ntb_hw_amd.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/ntb/hw/amd/ntb_hw_amd.c
+@@ -791,7 +791,7 @@
+  err_msi_enable:
+  
+ -	pci_intx_unmanaged(pdev, 1);
+ +	pci_intx(pdev, 1);
+  
+  	rc = request_irq(pdev->irq, ndev_irq_isr, IRQF_SHARED,
+  			 "ndev_irq_isr", ndev);
+@@ -831,7 +831,7 @@
+  		if (pci_dev_msi_enabled(pdev))
+  			pci_disable_msi(pdev);
+  		else
+ -			pci_intx_unmanaged(pdev, 0);
+ +			pci_intx(pdev, 0);
+  	}
+  }
+  
+
+""""""
+modified file: drivers/ntb/hw/intel/ntb_hw_gen1.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/ntb/hw/intel/ntb_hw_gen1.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/ntb/hw/intel/ntb_hw_gen1.c
+@@ -445,7 +445,7 @@
+  
+  
+ -	pci_intx_unmanaged(pdev, 1);
+ +	pci_intx(pdev, 1);
+  
+  	rc = request_irq(pdev->irq, ndev_irq_isr, IRQF_SHARED,
+  			 "ndev_irq_isr", ndev);
+
+""""""
+modified file: drivers/pci/devres.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/pci/devres.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/pci/devres.c
+@@ -101,7 +101,7 @@
+   * @bar: BAR the range is within
+   * @offset: offset from the BAR's start address
+   * @maxlen: length in bytes, beginning at @offset
+ - * @name: name of the driver requesting the resource
+ + * @name: name associated with the request
+   * @req_flags: flags for the request, e.g., for kernel-exclusive requests
+   *
+   * Returns: 0 on success, a negative error code on failure.
+@@ -411,12 +411,31 @@
+  	return mask & BIT(bar);
+  }
+  
+ +/*
+ + * This is a copy of pci_intx() used to bypass the problem of recursive
+ + * function calls due to the hybrid nature of pci_intx().
+ + */
+ +static void __pcim_intx(struct pci_dev *pdev, int enable)
+ +{
+ +	u16 pci_command, new;
+ +
+ +	pci_read_config_word(pdev, PCI_COMMAND, &pci_command);
+ +
+ +	if (enable)
+ +		new = pci_command & ~PCI_COMMAND_INTX_DISABLE;
+ +	else
+ +		new = pci_command | PCI_COMMAND_INTX_DISABLE;
+ +
+ +	if (new != pci_command)
+ +		pci_write_config_word(pdev, PCI_COMMAND, new);
+ +}
+ +
+  static void pcim_intx_restore(struct device *dev, void *data)
+  {
+  	struct pci_dev *pdev = to_pci_dev(dev);
+  	struct pcim_intx_devres *res = data;
+  
+ -	pci_intx_unmanaged(pdev, res->orig_intx);
+ +	__pcim_intx(pdev, res->orig_intx);
+  }
+  
+  static struct pcim_intx_devres *get_or_create_intx_devres(struct device *dev)
+@@ -453,11 +472,10 @@
+  		return -ENOMEM;
+  
+  	res->orig_intx = !enable;
+ -	pci_intx_unmanaged(pdev, enable);
+ +	__pcim_intx(pdev, enable);
+  
+  	return 0;
+  }
+ -EXPORT_SYMBOL_GPL(pcim_intx);
+  
+  static void pcim_disable_device(void *pdev_raw)
+  {
+@@ -705,7 +723,7 @@
+   * pcim_iomap_region - Request and iomap a PCI BAR
+   * @pdev: PCI device to map IO resources for
+   * @bar: Index of a BAR to map
+ - * @name: Name of the driver requesting the resource
+ + * @name: Name associated with the request
+   *
+   * Returns: __iomem pointer on success, an IOMEM_ERR_PTR on failure.
+   *
+@@ -755,7 +773,7 @@
+   * Unmap a BAR and release its region manually. Only pass BARs that were
+   * previously mapped by pcim_iomap_region().
+   */
+ -void pcim_iounmap_region(struct pci_dev *pdev, int bar)
+ +static void pcim_iounmap_region(struct pci_dev *pdev, int bar)
+  {
+  	struct pcim_addr_devres res_searched;
+  
+@@ -766,13 +784,12 @@
+  	devres_release(&pdev->dev, pcim_addr_resource_release,
+  			pcim_addr_resources_match, &res_searched);
+  }
+ -EXPORT_SYMBOL(pcim_iounmap_region);
+  
+ -int pcim_request_all_regions(struct pci_dev *pdev, const char *name)
+ +static int pcim_request_all_regions(struct pci_dev *pdev, const char *name)
+  {
+  	int ret;
+  	int bar;
+@@ -940,17 +957,69 @@
+  
+  	return ret;
+  }
+ -EXPORT_SYMBOL(pcim_request_all_regions);
+ -
+ -/**
+ - * pcim_iounmap_regions - Unmap and release PCI BARs (DEPRECATED)
+ +
+ +/**
+ + * pcim_iomap_regions_request_all - Request all BARs and iomap specified ones
+ + *			(DEPRECATED)
+ + * @pdev: PCI device to map IO resources for
+ + * @mask: Mask of BARs to iomap
+ + * @name: Name associated with the requests
+ + *
+ + * Returns: 0 on success, negative error code on failure.
+ + *
+ + * Request all PCI BARs and iomap regions specified by @mask.
+ + *
+ + * To release these resources manually, call pcim_release_region() for the
+ + * regions and pcim_iounmap() for the mappings.
+ + *
+ + * This function is DEPRECATED. Don't use it in new code. Instead, use one
+ + * of the pcim_* region request functions in combination with a pcim_*
+ + * mapping function.
+ + */
+ +int pcim_iomap_regions_request_all(struct pci_dev *pdev, int mask,
+ +				   const char *name)
+ +{
+ +	int bar;
+ +	int ret;
+ +	void __iomem **legacy_iomap_table;
+ +
+ +	ret = pcim_request_all_regions(pdev, name);
+ +	if (ret != 0)
+ +		return ret;
+ +
+ +	for (bar = 0; bar < PCI_STD_NUM_BARS; bar++) {
+ +		if (!mask_contains_bar(mask, bar))
+ +			continue;
+ +		if (!pcim_iomap(pdev, bar, 0))
+ +			goto err;
+ +	}
+ +
+ +	return 0;
+ +
+ +err:
+ +	/*
+ +	 * If bar is larger than 0, then pcim_iomap() above has most likely
+ +	 * failed because of -EINVAL. If it is equal 0, most likely the table
+ +	 * couldn't be created, indicating -ENOMEM.
+ +	 */
+ +	ret = bar > 0 ? -EINVAL : -ENOMEM;
+ +	legacy_iomap_table = (void __iomem **)pcim_iomap_table(pdev);
+ +
+ +	while (--bar >= 0)
+ +		pcim_iounmap(pdev, legacy_iomap_table[bar]);
+ +
+ +	pcim_release_all_regions(pdev);
+ +
+ +	return ret;
+ +}
+ +EXPORT_SYMBOL(pcim_iomap_regions_request_all);
+ +
+ +/**
+ + * pcim_iounmap_regions - Unmap and release PCI BARs
+   * @pdev: PCI device to map IO resources for
+   * @mask: Mask of BARs to unmap and release
+   *
+   * Unmap and release regions specified by @mask.
+ - *
+ - * This function is DEPRECATED. Do not use it in new code.
+ - * Use pcim_iounmap_region() instead.
+   */
+  void pcim_iounmap_regions(struct pci_dev *pdev, int mask)
+  {
+
+""""""
+modified file: drivers/pci/msi/api.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/pci/msi/api.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/pci/msi/api.c
+@@ -289,7 +289,7 @@
+  			 */
+  			if (affd)
+  				irq_create_affinity_masks(1, affd);
+ -			pci_intx_unmanaged(dev, 1);
+ +			pci_intx(dev, 1);
+  			return 1;
+  		}
+  	}
+
+""""""
+modified file: drivers/pci/msi/msi.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/pci/msi/msi.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/pci/msi/msi.c
+@@ -268,7 +268,7 @@
+  static void pci_intx_for_msi(struct pci_dev *dev, int enable)
+  {
+  	if (!(dev->dev_flags & PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG))
+ -		pci_intx_unmanaged(dev, enable);
+ +		pci_intx(dev, enable);
+  }
+  
+  static void pci_msi_set_enable(struct pci_dev *dev, int enable)
+
+""""""
+modified file: drivers/pci/pci.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/pci/pci.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/pci/pci.c
+@@ -1832,7 +1832,6 @@
+  	pci_save_dpc_state(dev);
+  	pci_save_aer_state(dev);
+  	pci_save_ptm_state(dev);
+ -	pci_save_tph_state(dev);
+  	return pci_save_vc_state(dev);
+  }
+  EXPORT_SYMBOL(pci_save_state);
+@@ -1938,7 +1937,6 @@
+  	pci_restore_rebar_state(dev);
+  	pci_restore_dpc_state(dev);
+  	pci_restore_ptm_state(dev);
+ -	pci_restore_tph_state(dev);
+  
+  	pci_aer_clear_status(dev);
+  	pci_restore_aer_state(dev);
+@@ -3941,14 +3939,15 @@
+   * __pci_request_region - Reserved PCI I/O and memory resource
+   * @pdev: PCI device whose resources are to be reserved
+   * @bar: BAR to be reserved
+ - * @name: name of the driver requesting the resource
+ + * @res_name: Name to be associated with resource.
+   * @exclusive: whether the region access is exclusive or not
+   *
+   * Returns: 0 on success, negative error code on failure.
+   *
+ - * Mark the PCI region associated with PCI device @pdev BAR @bar as being
+ - * reserved by owner @name. Do not access any address inside the PCI regions
+ - * unless this call returns successfully.
+ + * Mark the PCI region associated with PCI device @pdev BAR @bar as
+ + * being reserved by owner @res_name.  Do not access any
+ + * address inside the PCI regions unless this call returns
+ + * successfully.
+   *
+   * If @exclusive is set, then the region is marked so that userspace
+   * is explicitly not allowed to map the resource via /dev/mem or
+@@ -3958,13 +3957,13 @@
+   * message is also printed on failure.
+   */
+  static int __pci_request_region(struct pci_dev *pdev, int bar,
+ -				const char *name, int exclusive)
+ +				const char *res_name, int exclusive)
+  {
+  	if (pci_is_managed(pdev)) {
+  		if (exclusive == IORESOURCE_EXCLUSIVE)
+ -			return pcim_request_region_exclusive(pdev, bar, name);
+ -
+ -		return pcim_request_region(pdev, bar, name);
+ +			return pcim_request_region_exclusive(pdev, bar, res_name);
+ +
+ +		return pcim_request_region(pdev, bar, res_name);
+  	}
+  
+  	if (pci_resource_len(pdev, bar) == 0)
+@@ -3972,11 +3971,11 @@
+  
+  	if (pci_resource_flags(pdev, bar) & IORESOURCE_IO) {
+  		if (!request_region(pci_resource_start(pdev, bar),
+ -			    pci_resource_len(pdev, bar), name))
+ +			    pci_resource_len(pdev, bar), res_name))
+  			goto err_out;
+  	} else if (pci_resource_flags(pdev, bar) & IORESOURCE_MEM) {
+  		if (!__request_mem_region(pci_resource_start(pdev, bar),
+ -					pci_resource_len(pdev, bar), name,
+ +					pci_resource_len(pdev, bar), res_name,
+  					exclusive))
+  			goto err_out;
+  	}
+@@ -3993,13 +3992,14 @@
+   * pci_request_region - Reserve PCI I/O and memory resource
+   * @pdev: PCI device whose resources are to be reserved
+   * @bar: BAR to be reserved
+ - * @name: name of the driver requesting the resource
+ + * @res_name: Name to be associated with resource
+   *
+   * Returns: 0 on success, negative error code on failure.
+   *
+ - * Mark the PCI region associated with PCI device @pdev BAR @bar as being
+ - * reserved by owner @name. Do not access any address inside the PCI regions
+ - * unless this call returns successfully.
+ + * Mark the PCI region associated with PCI device @pdev BAR @bar as
+ + * being reserved by owner @res_name.  Do not access any
+ + * address inside the PCI regions unless this call returns
+ + * successfully.
+   *
+   * Returns 0 on success, or %EBUSY on error.  A warning
+   * message is also printed on failure.
+@@ -4009,9 +4009,9 @@
+   * when pcim_enable_device() has been called in advance. This hybrid feature is
+   * DEPRECATED! If you want managed cleanup, use the pcim_* functions instead.
+   */
+ -int pci_request_region(struct pci_dev *pdev, int bar, const char *name)
+ -{
+ -	return __pci_request_region(pdev, bar, name, 0);
+ +int pci_request_region(struct pci_dev *pdev, int bar, const char *res_name)
+ +{
+ +	return __pci_request_region(pdev, bar, res_name, 0);
+  }
+  EXPORT_SYMBOL(pci_request_region);
+  
+@@ -4034,13 +4034,13 @@
+  EXPORT_SYMBOL(pci_release_selected_regions);
+  
+  static int __pci_request_selected_regions(struct pci_dev *pdev, int bars,
+ -					  const char *name, int excl)
+ +					  const char *res_name, int excl)
+  {
+  	int i;
+  
+  	for (i = 0; i < PCI_STD_NUM_BARS; i++)
+  		if (bars & (1 << i))
+ -			if (__pci_request_region(pdev, i, name, excl))
+ +			if (__pci_request_region(pdev, i, res_name, excl))
+  				goto err_out;
+  	return 0;
+  
+@@ -4057,7 +4057,7 @@
+   * pci_request_selected_regions - Reserve selected PCI I/O and memory resources
+   * @pdev: PCI device whose resources are to be reserved
+   * @bars: Bitmask of BARs to be requested
+ - * @name: Name of the driver requesting the resources
+ + * @res_name: Name to be associated with resource
+   *
+   * Returns: 0 on success, negative error code on failure.
+   *
+@@ -4067,9 +4067,9 @@
+   * DEPRECATED! If you want managed cleanup, use the pcim_* functions instead.
+   */
+  int pci_request_selected_regions(struct pci_dev *pdev, int bars,
+ -				 const char *name)
+ -{
+ -	return __pci_request_selected_regions(pdev, bars, name, 0);
+ +				 const char *res_name)
+ +{
+ +	return __pci_request_selected_regions(pdev, bars, res_name, 0);
+  }
+  EXPORT_SYMBOL(pci_request_selected_regions);
+  
+@@ -4077,7 +4077,7 @@
+   * pci_request_selected_regions_exclusive - Request regions exclusively
+   * @pdev: PCI device to request regions from
+   * @bars: bit mask of BARs to request
+ - * @name: name of the driver requesting the resources
+ + * @res_name: name to be associated with the requests
+   *
+   * Returns: 0 on success, negative error code on failure.
+   *
+@@ -4087,9 +4087,9 @@
+   * DEPRECATED! If you want managed cleanup, use the pcim_* functions instead.
+   */
+  int pci_request_selected_regions_exclusive(struct pci_dev *pdev, int bars,
+ -					   const char *name)
+ -{
+ -	return __pci_request_selected_regions(pdev, bars, name,
+ +					   const char *res_name)
+ +{
+ +	return __pci_request_selected_regions(pdev, bars, res_name,
+  			IORESOURCE_EXCLUSIVE);
+  }
+  EXPORT_SYMBOL(pci_request_selected_regions_exclusive);
+@@ -4112,11 +4112,12 @@
+ -int pci_request_regions(struct pci_dev *pdev, const char *name)
+ +int pci_request_regions(struct pci_dev *pdev, const char *res_name)
+  {
+  	return pci_request_selected_regions(pdev,
+ -			((1 << PCI_STD_NUM_BARS) - 1), name);
+ +			((1 << PCI_STD_NUM_BARS) - 1), res_name);
+  }
+  EXPORT_SYMBOL(pci_request_regions);
+  
+ -int pci_request_regions_exclusive(struct pci_dev *pdev, const char *name)
+ +int pci_request_regions_exclusive(struct pci_dev *pdev, const char *res_name)
+  {
+  	return pci_request_selected_regions_exclusive(pdev,
+ -				((1 << PCI_STD_NUM_BARS) - 1), name);
+ +				((1 << PCI_STD_NUM_BARS) - 1), res_name);
+  }
+  EXPORT_SYMBOL(pci_request_regions_exclusive);
+  
+@@ -4166,7 +4167,7 @@
+   * Record the PCI IO range (expressed as CPU physical address + size).
+   * Return a negative value if an error has occurred, zero otherwise
+   */
+ -int pci_register_io_range(const struct fwnode_handle *fwnode, phys_addr_t addr,
+ +int pci_register_io_range(struct fwnode_handle *fwnode, phys_addr_t addr,
+  			resource_size_t	size)
+  {
+  	int ret = 0;
+@@ -4480,35 +4481,6 @@
+  }
+  
+ -void pci_intx_unmanaged(struct pci_dev *pdev, int enable)
+ -{
+ -	u16 pci_command, new;
+ -
+ -	pci_read_config_word(pdev, PCI_COMMAND, &pci_command);
+ -
+ -	if (enable)
+ -		new = pci_command & ~PCI_COMMAND_INTX_DISABLE;
+ -	else
+ -		new = pci_command | PCI_COMMAND_INTX_DISABLE;
+ -
+ -	if (new == pci_command)
+ -		return;
+ -
+ -	pci_write_config_word(pdev, PCI_COMMAND, new);
+ -}
+ -EXPORT_SYMBOL_GPL(pci_intx_unmanaged);
+ -
+ -/**
+   * pci_intx - enables/disables PCI INTx for device dev
+   * @pdev: the PCI device to operate on
+   * @enable: boolean: whether to enable or disable PCI INTx
+@@ -4772,7 +4744,7 @@
+  	 * to track link speed or width changes made by hardware itself
+  	 * in attempt to correct unreliable link operation.
+  	 */
+ -	pcie_reset_lbms_count(pdev);
+ +	pcie_capability_write_word(pdev, PCI_EXP_LNKSTA, PCI_EXP_LNKSTA_LBMS);
+  	return rc;
+  }
+  
+@@ -5190,8 +5162,6 @@
+  	 */
+  	if (err_handler && err_handler->reset_prepare)
+  		err_handler->reset_prepare(dev);
+ -	else if (dev->driver)
+ -		pci_warn(dev, "resetting");
+  
+  	if (err_handler && err_handler->reset_done)
+  		err_handler->reset_done(dev);
+ -	else if (dev->driver)
+ -		pci_warn(dev, "reset done");
+  }
+  
+@@ -6226,64 +6194,38 @@
+  EXPORT_SYMBOL(pcie_bandwidth_available);
+  
+ -u8 pcie_get_supported_speeds(struct pci_dev *dev)
+ + * Query the PCI device speed capability.  Return the maximum link speed
+ + * supported by the device.
+ + */
+ +enum pci_bus_speed pcie_get_speed_cap(struct pci_dev *dev)
+  {
+  	u32 lnkcap2, lnkcap;
+ -	u8 speeds;
+  
+  	pcie_capability_read_dword(dev, PCI_EXP_LNKCAP2, &lnkcap2);
+ -	speeds = lnkcap2 & PCI_EXP_LNKCAP2_SLS;
+  
+ -	if (speeds)
+ -		return speeds;
+ +	if (lnkcap2)
+ +		return PCIE_LNKCAP2_SLS2SPEED(lnkcap2);
+  
+  	pcie_capability_read_dword(dev, PCI_EXP_LNKCAP, &lnkcap);
+ -
+ -	/* Synthesize from the Max Link Speed field */
+  	if ((lnkcap & PCI_EXP_LNKCAP_SLS) == PCI_EXP_LNKCAP_SLS_5_0GB)
+ -		speeds = PCI_EXP_LNKCAP2_SLS_5_0GB | PCI_EXP_LNKCAP2_SLS_2_5GB;
+ +		return PCIE_SPEED_5_0GT;
+  	else if ((lnkcap & PCI_EXP_LNKCAP_SLS) == PCI_EXP_LNKCAP_SLS_2_5GB)
+ -		speeds = PCI_EXP_LNKCAP2_SLS_2_5GB;
+ -
+ -	return speeds;
+ -}
+ -
+ -/**
+ - * pcie_get_speed_cap - query for the PCI device's link speed capability
+ - * @dev: PCI device to query
+ - *
+ - * Query the PCI device speed capability.
+ - *
+ - * Return: the maximum link speed supported by the device.
+ - */
+ -enum pci_bus_speed pcie_get_speed_cap(struct pci_dev *dev)
+ -{
+ -	return PCIE_LNKCAP2_SLS2SPEED(dev->supported_speeds);
+ +		return PCIE_SPEED_2_5GT;
+ +
+ +	return PCI_SPEED_UNKNOWN;
+  }
+  EXPORT_SYMBOL(pcie_get_speed_cap);
+  
+@@ -6712,7 +6654,8 @@
+  	} else {
+  		r->flags &= ~IORESOURCE_SIZEALIGN;
+  		r->flags |= IORESOURCE_STARTALIGN;
+ -		resource_set_range(r, align, size);
+ +		r->start = align;
+ +		r->end = r->start + size - 1;
+  	}
+  	r->flags |= IORESOURCE_UNSET;
+  }
+@@ -6958,8 +6901,6 @@
+  				pci_no_domains();
+  			} else if (!strncmp(str, "noari", 5)) {
+  				pcie_ari_disabled = true;
+ -			} else if (!strncmp(str, "notph", 5)) {
+ -				pci_no_tph();
+  			} else if (!strncmp(str, "cbiosize=", 9)) {
+  				pci_cardbus_io_size = memparse(str + 9, &str);
+  			} else if (!strncmp(str, "cbmemsize=", 10)) {
+
+""""""
+modified file: drivers/vfio/pci/vfio_pci_core.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/vfio/pci/vfio_pci_core.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/vfio/pci/vfio_pci_core.c
+@@ -498,7 +498,7 @@
+  		if (vfio_pci_nointx(pdev)) {
+  			pci_info(pdev, "Masking broken INTx support\n");
+  			vdev->nointx = true;
+ -			pci_intx_unmanaged(pdev, 0);
+ +			pci_intx(pdev, 0);
+  		} else
+  			vdev->pci_2_3 = pci_intx_mask_supported(pdev);
+  	}
+
+""""""
+modified file: drivers/vfio/pci/vfio_pci_intrs.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/vfio/pci/vfio_pci_intrs.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/vfio/pci/vfio_pci_intrs.c
+@@ -118,7 +118,7 @@
+  	 */
+  	if (unlikely(!is_intx(vdev))) {
+  		if (vdev->pci_2_3)
+ -			pci_intx_unmanaged(pdev, 0);
+ +			pci_intx(pdev, 0);
+  		goto out_unlock;
+  	}
+  
+@@ -132,7 +132,7 @@
+  		 * mask, not just when something is pending.
+  		 */
+  		if (vdev->pci_2_3)
+ -			pci_intx_unmanaged(pdev, 0);
+ +			pci_intx(pdev, 0);
+  		else
+  			disable_irq_nosync(pdev->irq);
+  
+@@ -178,7 +178,7 @@
+  	 */
+  	if (unlikely(!is_intx(vdev))) {
+  		if (vdev->pci_2_3)
+ -			pci_intx_unmanaged(pdev, 1);
+ +			pci_intx(pdev, 1);
+  		goto out_unlock;
+  	}
+  
+@@ -296,7 +296,7 @@
+  	 */
+  	ctx->masked = vdev->virq_disabled;
+  	if (vdev->pci_2_3) {
+ -		pci_intx_unmanaged(pdev, !ctx->masked);
+ +		pci_intx(pdev, !ctx->masked);
+  		irqflags = IRQF_SHARED;
+  	} else {
+  		irqflags = ctx->masked ? IRQF_NO_AUTOEN : 0;
+@@ -569,7 +569,7 @@
+  	 * via their shutdown paths.  Restore for NoINTx devices.
+  	 */
+  	if (vdev->nointx)
+ -		pci_intx_unmanaged(pdev, 0);
+ +		pci_intx(pdev, 0);
+  
+  	vdev->irq_type = VFIO_PCI_NUM_IRQS;
+  }
+
+""""""
+modified file: drivers/xen/xen-pciback/conf_space_header.c
+--- workspace/gregkh/linux/dfa2f4/newer/drivers/xen/xen-pciback/conf_space_header.c
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/drivers/xen/xen-pciback/conf_space_header.c
+@@ -106,7 +106,7 @@
+  
+  	if (dev_data && dev_data->allow_interrupt_control &&
+  	    ((cmd->val ^ value) & PCI_COMMAND_INTX_DISABLE))
+ -		pci_intx_unmanaged(dev, !(value & PCI_COMMAND_INTX_DISABLE));
+ +		pci_intx(dev, !(value & PCI_COMMAND_INTX_DISABLE));
+  
+  	cmd->val = value;
+  
+
+""""""
+modified file: include/linux/pci.h
+--- workspace/gregkh/linux/dfa2f4/newer/include/linux/pci.h
++++ workspace/gregkh/linux/dfa2f4/linux-6.12.y/include/linux/pci.h
+@@ -313,20 +313,12 @@
+  };
+  
+  struct irq_affinity;
+ -struct pcie_bwctrl_data;
+  struct pcie_link_state;
+  struct pci_sriov;
+  struct pci_p2pdma;
+  struct rcec_ea;
+  
+ -/* struct pci_dev - describes a PCI device
+ - *
+ - * @supported_speeds:	PCIe Supported Link Speeds Vector (+ reserved 0 at
+ - *			LSB). 0 when the supported speeds cannot be
+ - *			determined (e.g., for Root Complex Integrated
+ - *			Endpoints without the relevant Capability
+ - *			Registers).
+ - */
+ +/* The pci_dev structure describes PCI devices */
+  struct pci_dev {
+  	struct list_head bus_list;	/* Node in per-bus list */
+  	struct pci_bus	*bus;		/* Bus this device is on */
+@@ -442,7 +434,6 @@
+  	unsigned int	ats_enabled:1;		/* Address Translation Svc */
+  	unsigned int	pasid_enabled:1;	/* Process Address Space ID */
+  	unsigned int	pri_enabled:1;		/* Page Request Interface */
+ -	unsigned int	tph_enabled:1;		/* TLP Processing Hints */
+  	unsigned int	is_managed:1;		/* Managed via devres */
+  	unsigned int	is_msi_managed:1;	/* MSI release via devres installed */
+  	unsigned int	needs_freset:1;		/* Requires fundamental reset */
+@@ -504,7 +495,6 @@
+  	unsigned int	dpc_rp_extensions:1;
+  	u8		dpc_rp_log_size;
+  #endif
+ -	struct pcie_bwctrl_data		*link_bwctrl;
+  #ifdef CONFIG_PCI_ATS
+  	union {
+  		struct pci_sriov	*sriov;		/* PF: SR-IOV info */
+@@ -532,7 +522,6 @@
+  	struct npem	*npem;		/* Native PCIe Enclosure Management */
+  #endif
+  	u16		acs_cap;	/* ACS Capability offset */
+ -	u8		supported_speeds; /* Supported Link Speeds Vector */
+  	phys_addr_t	rom;		/* Physical address if not from BAR */
+  	size_t		romlen;		/* Length if not from BAR */
+  	u8 reset_methods[PCI_NUM_RESET_METHODS]; /* In priority order */
+ -
+ -#ifdef CONFIG_PCIE_TPH
+ -	u16		tph_cap;	/* TPH capability offset */
+ -	u8		tph_mode;	/* TPH mode */
+ -	u8		tph_req_type;	/* TPH requester type */
+ -#endif
+  };
+  
+  static inline struct pci_dev *pci_physfn(struct pci_dev *dev)
+@@ -642,6 +625,27 @@
+  				 void *release_data);
+  
+  int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge);
+ +
+ +/*
+ + * The first PCI_BRIDGE_RESOURCE_NUM PCI bus resources (those that correspond
+ + * to P2P or CardBus bridge windows) go in a table.  Additional ones (for
+ + * buses below host bridges or subtractive decode bridges) go in the list.
+ + * Use pci_bus_for_each_resource() to iterate through all the resources.
+ + */
+ +
+ +/*
+ + * PCI_SUBTRACTIVE_DECODE means the bridge forwards the window implicitly
+ + * and there's no way to program the bridge with the details of the window.
+ + * This does not apply to ACPI _CRS windows, even with the _DEC subtractive-
+ + * decode bit set, because they are explicit and can be programmed with _SRS.
+ + */
+ +#define PCI_SUBTRACTIVE_DECODE	0x1
+ +
+ +struct pci_bus_resource {
+ +	struct list_head	list;
+ +	struct resource		*res;
+ +	unsigned int		flags;
+ +};
+  
+  #define PCI_REGION_FLAG_MASK	0x0fU	/* These bits of resource flags tell us the PCI region flags */
+  
+@@ -1270,7 +1274,6 @@
+  {
+  	switch (pos) {
+  	case PCI_EXP_LNKCTL:
+ -	case PCI_EXP_LNKCTL2:
+  	case PCI_EXP_RTCTL:
+  		return pcie_capability_clear_and_set_word_locked(dev, pos,
+  								 clear, set);
+@@ -1350,7 +1353,6 @@
+  int pci_try_set_mwi(struct pci_dev *dev);
+  void pci_clear_mwi(struct pci_dev *dev);
+  void pci_disable_parity(struct pci_dev *dev);
+ -void pci_intx_unmanaged(struct pci_dev *pdev, int enable);
+  void pci_intx(struct pci_dev *dev, int enable);
+  bool pci_check_and_mask_intx(struct pci_dev *dev);
+  bool pci_check_and_unmask_intx(struct pci_dev *dev);
+@@ -1496,7 +1498,8 @@
+  void pci_add_resource_offset(struct list_head *resources, struct resource *res,
+  			     resource_size_t offset);
+  void pci_free_resource_list(struct list_head *resources);
+ -void pci_bus_add_resource(struct pci_bus *bus, struct resource *res);
+ +void pci_bus_add_resource(struct pci_bus *bus, struct resource *res,
+ +			  unsigned int flags);
+  struct resource *pci_bus_resource_n(const struct pci_bus *bus, int n);
+  void pci_bus_remove_resources(struct pci_bus *bus);
+  void pci_bus_remove_resource(struct pci_bus *bus, struct resource *res);
+@@ -1553,7 +1556,7 @@
+  			void *alignf_data);
+  
+  
+ -int pci_register_io_range(const struct fwnode_handle *fwnode, phys_addr_t addr,
+ +int pci_register_io_range(struct fwnode_handle *fwnode, phys_addr_t addr,
+  			resource_size_t size);
+  unsigned long pci_address_to_pio(phys_addr_t addr);
+  phys_addr_t pci_pio_to_address(unsigned long pio);
+@@ -1620,6 +1623,8 @@
+  
+  void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
+  		  void *userdata);
+ +void pci_walk_bus_locked(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
+ +			 void *userdata);
+  int pci_cfg_space_size(struct pci_dev *dev);
+  unsigned char pci_bus_max_busnr(struct pci_bus *bus);
+  void pci_setup_bridge(struct pci_bus *bus);
+@@ -1781,19 +1786,9 @@
+  #ifdef CONFIG_PCIEPORTBUS
+  extern bool pcie_ports_disabled;
+  extern bool pcie_ports_native;
+ -
+ -int pcie_set_target_speed(struct pci_dev *port, enum pci_bus_speed speed_req,
+ -			  bool use_lt);
+  #else
+  #define pcie_ports_disabled	true
+  #define pcie_ports_native	false
+ -
+ -static inline int pcie_set_target_speed(struct pci_dev *port,
+ -					enum pci_bus_speed speed_req,
+ -					bool use_lt)
+ -{
+ -	return -EOPNOTSUPP;
+ -}
+  #endif
+  
+  #define PCIE_LINK_STATE_L0S		(BIT(0) | BIT(1)) /* Upstr/dwnstr L0s */
+@@ -2024,7 +2019,7 @@
+  { return -EIO; }
+  static inline void pci_release_regions(struct pci_dev *dev) { }
+  
+ -static inline int pci_register_io_range(const struct fwnode_handle *fwnode,
+ +static inline int pci_register_io_range(struct fwnode_handle *fwnode,
+  					phys_addr_t addr, resource_size_t size)
+  { return -EINVAL; }
+  
+@@ -2298,16 +2293,15 @@
+  				    struct pci_dev *dev) { }
+  #endif
+  
+ -int pcim_intx(struct pci_dev *pdev, int enabled);
+ -int pcim_request_all_regions(struct pci_dev *pdev, const char *name);
+  void __iomem *pcim_iomap(struct pci_dev *pdev, int bar, unsigned long maxlen);
+  void __iomem *pcim_iomap_region(struct pci_dev *pdev, int bar,
+  				const char *name);
+ -void pcim_iounmap_region(struct pci_dev *pdev, int bar);
+  void pcim_iounmap(struct pci_dev *pdev, void __iomem *addr);
+  void __iomem * const *pcim_iomap_table(struct pci_dev *pdev);
+  int pcim_request_region(struct pci_dev *pdev, int bar, const char *name);
+  int pcim_iomap_regions(struct pci_dev *pdev, int mask, const char *name);
+ +int pcim_iomap_regions_request_all(struct pci_dev *pdev, int mask,
+ +				   const char *name);
+  void pcim_iounmap_regions(struct pci_dev *pdev, int mask);
+  void __iomem *pcim_iomap_range(struct pci_dev *pdev, int bar,
+  				unsigned long offset, unsigned long len);
+
+""""""

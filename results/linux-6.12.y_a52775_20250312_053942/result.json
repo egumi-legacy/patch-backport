@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "a527750d877fd334de87eef81f1cb5f0f0ca3373",
+    "patch_url": "https://github.com/gregkh/linux/commit/a527750d877fd334de87eef81f1cb5f0f0ca3373.patch",
+    "downstream_sha": "25195f9d5ffcc8079ad743a50c0409dbdc48d98a",
+    "downstream_message": "ipv6: mcast: add RCU protection to mld_newpack()\n\n[ Upstream commit a527750d877fd334de87eef81f1cb5f0f0ca3373 ]\n\nmld_newpack() can be called without RTNL or RCU being held.\n\nNote that we no longer can use sock_alloc_send_skb() because\nipv6.igmp_sk uses GFP_KERNEL allocations which can sleep.\n\nInstead use alloc_skb() and charge the net->ipv6.igmp_sk\nsocket under RCU protection.\n\nFixes: b8ad0cbc58f7 (\"[NETNS][IPV6] mcast - handle several network namespace\")\nSigned-off-by: Eric Dumazet <edumazet@google.com>\nReviewed-by: David Ahern <dsahern@kernel.org>\nLink: https://patch.msgid.link/20250212141021.1663666-1-edumazet@google.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a52775/patches/upstream_a52775.patch",
+      "timestamp": "2025-03-12T05:39:42.210154"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:39:42.441215"
+  }
+}

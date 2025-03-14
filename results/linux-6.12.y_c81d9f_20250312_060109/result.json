@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "c81d9fcd5b9402166048f377d4e5e0ee6f9ef26d",
+    "patch_url": "https://github.com/gregkh/linux/commit/c81d9fcd5b9402166048f377d4e5e0ee6f9ef26d",
+    "downstream_sha": "f3b755022f5c6b6459bc64176e1737df998eccda",
+    "downstream_message": "usb: xhci: Restore xhci_pci support for Renesas HCs\n\ncommit c81d9fcd5b9402166048f377d4e5e0ee6f9ef26d upstream.\n\nSome Renesas HCs require firmware upload to work, this is handled by the\nxhci_pci_renesas driver. Other variants of those chips load firmware from\na SPI flash and are ready to work with xhci_pci alone.\n\nA refactor merged in v6.12 broke the latter configuration so that users\nare finding their hardware ignored by the normal driver and are forced to\nenable the firmware loader which isn't really necessary on their systems.\n\nLet xhci_pci work with those chips as before when the firmware loader is\ndisabled by kernel configuration.\n\nFixes: 25f51b76f90f (\"xhci-pci: Make xhci-pci-renesas a proper modular driver\")\nCc: stable <stable@kernel.org>\nCloses: https://bugzilla.kernel.org/show_bug.cgi?id=219616\nCloses: https://bugzilla.kernel.org/show_bug.cgi?id=219726\nSigned-off-by: Michal Pecio <michal.pecio@gmail.com>\nTested-by: Nicolai Buchwitz <nb@tipi-net.de>\nLink: https://lore.kernel.org/r/20250128104529.58a79bfc@foxbook\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/usb/host/xhci-pci.c:653\nerror: drivers/usb/host/xhci-pci.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/c81d9f/patches/upstream_c81d9f.patch",
+      "timestamp": "2025-03-12T06:00:45.634722"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T06:01:09.010041"
+  }
+}

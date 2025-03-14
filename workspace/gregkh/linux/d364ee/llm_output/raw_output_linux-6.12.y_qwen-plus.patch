@@ -1,0 +1,38 @@
+A. Commit message:
+cpufreq/amd-pstate: Backport patch to remove goto label in amd_pstate_update_limits
+
+B. Change summary:
+This patch removes the goto label in `amd_pstate_update_limits` and replaces it with a direct return statement. This change ensures that scope-based guard/cleanup macros are not used together with goto labels, which can lead to undefined behavior.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+```diff
+diff --git a/drivers/cpufreq/amd-pstate.c b/drivers/cpufreq/amd-pstate.c
+index 7120f035c0be4..b163c16998218 100644
+--- a/drivers/cpufreq/amd-pstate.c
++++ b/drivers/cpufreq/amd-pstate.c
+@@ -838,8 +838,10 @@ static void amd_pstate_update_limits(unsigned int cpu)
+ 	guard(mutex)(&amd_pstate_driver_lock);
+ 
+ 	ret = amd_get_highest_perf(cpu, &cur_high);
+-	if (ret)
+-		goto free_cpufreq_put;
++	if (ret) {
++		cpufreq_cpu_put(policy);
++		return;
++	}
+ 
+ 	prev_high = READ_ONCE(cpudata->prefcore_ranking);
+ 	highest_perf_changed = (prev_high != cur_high);
+@@ -849,8 +851,6 @@ static void amd_pstate_update_limits(unsigned int cpu)
+ 		if (cur_high < CPPC_MAX_PERF)
+ 			sched_set_itmt_core_prio((int)cur_high, cpu);
+ 	}
+-
+-free_cpufreq_put:
+ 	cpufreq_cpu_put(policy);
+ 
+ 	if (!highest_perf_changed)
+```

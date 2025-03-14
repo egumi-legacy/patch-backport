@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "8f62ca9c338aae4f73e9ce0221c3d4668359ddd8",
+    "patch_url": "https://github.com/gregkh/linux/commit/8f62ca9c338aae4f73e9ce0221c3d4668359ddd8.patch",
+    "downstream_sha": "019287b90532eb88fd200ddc3e7b3a9c79a55e34",
+    "downstream_message": "ACPI: x86: Add skip i2c clients quirk for Vexia EDU ATLA 10 tablet 5V\n\n[ Upstream commit 8f62ca9c338aae4f73e9ce0221c3d4668359ddd8 ]\n\nThe Vexia EDU ATLA 10 tablet comes in 2 different versions with\nsignificantly different mainboards. The only outward difference is that\nthe charging barrel on one is marked 5V and the other is marked 9V.\n\nBoth ship with Android 4.4 as factory OS and have the usual broken DSDT\nissues for x86 Android tablets.\n\nAdd a quirk to skip ACPI I2C client enumeration for the 5V version to\ncomplement the existing quirk for the 9V version.\n\nSigned-off-by: Hans de Goede <hdegoede@redhat.com>\nLink: https://patch.msgid.link/20250123132202.18209-1-hdegoede@redhat.com\nSigned-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/8f62ca/patches/upstream_8f62ca.patch",
+      "timestamp": "2025-03-12T06:06:06.358244"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T06:06:06.599897"
+  }
+}

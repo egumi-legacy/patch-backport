@@ -1,0 +1,75 @@
+
+""""""
+modified file: drivers/net/pse-pd/pse_core.c
+--- workspace/gregkh/linux/e0a5e2/newer/drivers/net/pse-pd/pse_core.c
++++ workspace/gregkh/linux/e0a5e2/linux-6.12.y/drivers/net/pse-pd/pse_core.c
+@@ -357,9 +357,6 @@
+  	if (!ops->pi_set_current_limit)
+  		return -EOPNOTSUPP;
+  
+ -	if (max_uA > MAX_PI_CURRENT)
+ -		return -ERANGE;
+ -
+  	id = rdev_get_id(rdev);
+  	mutex_lock(&pcdev->lock);
+  	ret = ops->pi_set_current_limit(pcdev, id, max_uA);
+@@ -406,9 +403,11 @@
+  
+  	rinit_data->constraints.valid_ops_mask = REGULATOR_CHANGE_STATUS;
+  
+ -	if (pcdev->ops->pi_set_current_limit)
+ +	if (pcdev->ops->pi_set_current_limit) {
+  		rinit_data->constraints.valid_ops_mask |=
+  			REGULATOR_CHANGE_CURRENT;
+ +		rinit_data->constraints.max_uA = MAX_PI_CURRENT;
+ +	}
+  
+  	rinit_data->supply_regulator = "vpwr";
+  
+@@ -877,9 +876,6 @@
+  	int uV, uA, ret;
+  	s64 tmp_64;
+  
+ -	if (pw_limit > MAX_PI_PW)
+ -		return -ERANGE;
+ -
+  	ret = regulator_get_voltage(psec->ps);
+  	if (!ret) {
+  		NL_SET_ERR_MSG(extack,
+
+""""""
+modified file: include/linux/pse-pd/pse.h
+--- workspace/gregkh/linux/e0a5e2/newer/include/linux/pse-pd/pse.h
++++ workspace/gregkh/linux/e0a5e2/linux-6.12.y/include/linux/pse-pd/pse.h
+@@ -11,8 +11,6 @@
+  
+  #define MAX_PI_CURRENT 1920000
+ -/* Maximum power in mW according to IEEE 802.3-2022 Table 145-16 */
+ -#define MAX_PI_PW 99900
+  
+  struct phy_device;
+  struct pse_controller_dev;
+@@ -186,6 +184,8 @@
+  int pse_ethtool_set_pw_limit(struct pse_control *psec,
+  			     struct netlink_ext_ack *extack,
+  			     const unsigned int pw_limit);
+ +int pse_ethtool_get_pw_limit(struct pse_control *psec,
+ +			     struct netlink_ext_ack *extack);
+  
+  bool pse_has_podl(struct pse_control *psec);
+  bool pse_has_c33(struct pse_control *psec);
+@@ -222,6 +222,12 @@
+  	return -EOPNOTSUPP;
+  }
+  
+ +static inline int pse_ethtool_get_pw_limit(struct pse_control *psec,
+ +					   struct netlink_ext_ack *extack)
+ +{
+ +	return -EOPNOTSUPP;
+ +}
+ +
+  static inline bool pse_has_podl(struct pse_control *psec)
+  {
+  	return false;
+
+""""""

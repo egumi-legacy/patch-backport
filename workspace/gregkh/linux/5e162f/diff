@@ -1,0 +1,225 @@
+
+""""""
+modified file: drivers/accel/ivpu/ivpu_hw.c
+--- workspace/gregkh/linux/5e162f/newer/drivers/accel/ivpu/ivpu_hw.c
++++ workspace/gregkh/linux/5e162f/linux-6.12.y/drivers/accel/ivpu/ivpu_hw.c
+@@ -249,6 +249,7 @@
+  	platform_init(vdev);
+  	wa_init(vdev);
+  	timeouts_init(vdev);
+ +	atomic_set(&vdev->hw->firewall_irq_counter, 0);
+  
+  	return 0;
+  }
+
+""""""
+modified file: drivers/accel/ivpu/ivpu_ipc.c
+--- workspace/gregkh/linux/5e162f/newer/drivers/accel/ivpu/ivpu_ipc.c
++++ workspace/gregkh/linux/5e162f/linux-6.12.y/drivers/accel/ivpu/ivpu_ipc.c
+@@ -291,14 +291,15 @@
+  	return ret;
+  }
+  
+ -static int
+ +int
+  ivpu_ipc_send_receive_internal(struct ivpu_device *vdev, struct vpu_jsm_msg *req,
+  			       enum vpu_ipc_msg_type expected_resp_type,
+ -			       struct vpu_jsm_msg *resp, u32 channel,
+ -			       unsigned long timeout_ms)
+ +			       struct vpu_jsm_msg *resp, u32 channel, unsigned long timeout_ms)
+  {
+  	struct ivpu_ipc_consumer cons;
+  	int ret;
+ +
+ +	drm_WARN_ON(&vdev->drm, pm_runtime_status_suspended(vdev->drm.dev));
+  
+  	ivpu_ipc_consumer_add(vdev, &cons, channel, NULL);
+  
+@@ -325,19 +326,21 @@
+  	return ret;
+  }
+  
+ -int ivpu_ipc_send_receive_active(struct ivpu_device *vdev, struct vpu_jsm_msg *req,
+ -				 enum vpu_ipc_msg_type expected_resp, struct vpu_jsm_msg *resp,
+ -				 u32 channel, unsigned long timeout_ms)
+ +int ivpu_ipc_send_receive(struct ivpu_device *vdev, struct vpu_jsm_msg *req,
+ +			  enum vpu_ipc_msg_type expected_resp, struct vpu_jsm_msg *resp,
+ +			  u32 channel, unsigned long timeout_ms)
+  {
+  	struct vpu_jsm_msg hb_req = { .type = VPU_JSM_MSG_QUERY_ENGINE_HB };
+  	struct vpu_jsm_msg hb_resp;
+  	int ret, hb_ret;
+  
+ -	drm_WARN_ON(&vdev->drm, pm_runtime_status_suspended(vdev->drm.dev));
+ +	ret = ivpu_rpm_get(vdev);
+ +	if (ret < 0)
+ +		return ret;
+  
+  	ret = ivpu_ipc_send_receive_internal(vdev, req, expected_resp, resp, channel, timeout_ms);
+  	if (ret != -ETIMEDOUT)
+ -		return ret;
+ +		goto rpm_put;
+  
+  	hb_ret = ivpu_ipc_send_receive_internal(vdev, &hb_req, VPU_JSM_MSG_QUERY_ENGINE_HB_DONE,
+  						&hb_resp, VPU_IPC_CHAN_ASYNC_CMD,
+@@ -345,21 +348,7 @@
+  	if (hb_ret == -ETIMEDOUT)
+  		ivpu_pm_trigger_recovery(vdev, "IPC timeout");
+  
+ -	return ret;
+ -}
+ -
+ -int ivpu_ipc_send_receive(struct ivpu_device *vdev, struct vpu_jsm_msg *req,
+ -			  enum vpu_ipc_msg_type expected_resp, struct vpu_jsm_msg *resp,
+ -			  u32 channel, unsigned long timeout_ms)
+ -{
+ -	int ret;
+ -
+ -	ret = ivpu_rpm_get(vdev);
+ -	if (ret < 0)
+ -		return ret;
+ -
+ -	ret = ivpu_ipc_send_receive_active(vdev, req, expected_resp, resp, channel, timeout_ms);
+ -
+ +rpm_put:
+  	ivpu_rpm_put(vdev);
+  	return ret;
+  }
+
+""""""
+modified file: drivers/accel/ivpu/ivpu_ipc.h
+--- workspace/gregkh/linux/5e162f/newer/drivers/accel/ivpu/ivpu_ipc.h
++++ workspace/gregkh/linux/5e162f/linux-6.12.y/drivers/accel/ivpu/ivpu_ipc.h
+@@ -101,10 +101,9 @@
+  int ivpu_ipc_receive(struct ivpu_device *vdev, struct ivpu_ipc_consumer *cons,
+  		     struct ivpu_ipc_hdr *ipc_buf, struct vpu_jsm_msg *jsm_msg,
+  		     unsigned long timeout_ms);
+ -
+ -int ivpu_ipc_send_receive_active(struct ivpu_device *vdev, struct vpu_jsm_msg *req,
+ -				 enum vpu_ipc_msg_type expected_resp, struct vpu_jsm_msg *resp,
+ -				 u32 channel, unsigned long timeout_ms);
+ +int ivpu_ipc_send_receive_internal(struct ivpu_device *vdev, struct vpu_jsm_msg *req,
+ +				   enum vpu_ipc_msg_type expected_resp_type,
+ +				   struct vpu_jsm_msg *resp, u32 channel, unsigned long timeout_ms);
+  int ivpu_ipc_send_receive(struct ivpu_device *vdev, struct vpu_jsm_msg *req,
+  			  enum vpu_ipc_msg_type expected_resp, struct vpu_jsm_msg *resp,
+  			  u32 channel, unsigned long timeout_ms);
+
+""""""
+modified file: drivers/accel/ivpu/ivpu_jsm_msg.c
+--- workspace/gregkh/linux/5e162f/newer/drivers/accel/ivpu/ivpu_jsm_msg.c
++++ workspace/gregkh/linux/5e162f/linux-6.12.y/drivers/accel/ivpu/ivpu_jsm_msg.c
+@@ -48,10 +48,9 @@
+  	IVPU_CASE_TO_STR(VPU_JSM_MSG_HWS_RESUME_ENGINE_DONE);
+  	IVPU_CASE_TO_STR(VPU_JSM_MSG_STATE_DUMP);
+  	IVPU_CASE_TO_STR(VPU_JSM_MSG_STATE_DUMP_RSP);
+ -	IVPU_CASE_TO_STR(VPU_JSM_MSG_BLOB_DEINIT_DEPRECATED);
+ +	IVPU_CASE_TO_STR(VPU_JSM_MSG_BLOB_DEINIT);
+  	IVPU_CASE_TO_STR(VPU_JSM_MSG_DYNDBG_CONTROL);
+  	IVPU_CASE_TO_STR(VPU_JSM_MSG_JOB_DONE);
+ -	IVPU_CASE_TO_STR(VPU_JSM_MSG_NATIVE_FENCE_SIGNALLED);
+  	IVPU_CASE_TO_STR(VPU_JSM_MSG_ENGINE_RESET_DONE);
+  	IVPU_CASE_TO_STR(VPU_JSM_MSG_ENGINE_PREEMPT_DONE);
+  	IVPU_CASE_TO_STR(VPU_JSM_MSG_REGISTER_DB_DONE);
+@@ -271,9 +270,8 @@
+  
+  	req.payload.pwr_d0i3_enter.send_response = 1;
+  
+ -	ret = ivpu_ipc_send_receive_active(vdev, &req, VPU_JSM_MSG_PWR_D0I3_ENTER_DONE,
+ -					   &resp, VPU_IPC_CHAN_GEN_CMD,
+ -					   vdev->timeout.d0i3_entry_msg);
+ +	ret = ivpu_ipc_send_receive_internal(vdev, &req, VPU_JSM_MSG_PWR_D0I3_ENTER_DONE, &resp,
+ +					     VPU_IPC_CHAN_GEN_CMD, vdev->timeout.d0i3_entry_msg);
+  	if (ret)
+  		return ret;
+  
+@@ -431,8 +429,8 @@
+  
+  	req.payload.hws_priority_band_setup.normal_band_percentage = 10;
+  
+ -	ret = ivpu_ipc_send_receive_active(vdev, &req, VPU_JSM_MSG_SET_PRIORITY_BAND_SETUP_RSP,
+ -					   &resp, VPU_IPC_CHAN_ASYNC_CMD, vdev->timeout.jsm);
+ +	ret = ivpu_ipc_send_receive_internal(vdev, &req, VPU_JSM_MSG_SET_PRIORITY_BAND_SETUP_RSP,
+ +					     &resp, VPU_IPC_CHAN_ASYNC_CMD, vdev->timeout.jsm);
+  	if (ret)
+  		ivpu_warn_ratelimited(vdev, "Failed to set priority bands: %d\n", ret);
+  
+@@ -545,9 +543,8 @@
+  	req.payload.pwr_dct_control.dct_active_us = active_us;
+  	req.payload.pwr_dct_control.dct_inactive_us = inactive_us;
+  
+ -	return ivpu_ipc_send_receive_active(vdev, &req, VPU_JSM_MSG_DCT_ENABLE_DONE,
+ -					    &resp, VPU_IPC_CHAN_ASYNC_CMD,
+ -					    vdev->timeout.jsm);
+ +	return ivpu_ipc_send_receive_internal(vdev, &req, VPU_JSM_MSG_DCT_ENABLE_DONE, &resp,
+ +					      VPU_IPC_CHAN_ASYNC_CMD, vdev->timeout.jsm);
+  }
+  
+  int ivpu_jsm_dct_disable(struct ivpu_device *vdev)
+@@ -555,7 +552,6 @@
+  	struct vpu_jsm_msg req = { .type = VPU_JSM_MSG_DCT_DISABLE };
+  	struct vpu_jsm_msg resp;
+  
+ -	return ivpu_ipc_send_receive_active(vdev, &req, VPU_JSM_MSG_DCT_DISABLE_DONE,
+ -					    &resp, VPU_IPC_CHAN_ASYNC_CMD,
+ -					    vdev->timeout.jsm);
+ -}
+ +	return ivpu_ipc_send_receive_internal(vdev, &req, VPU_JSM_MSG_DCT_DISABLE_DONE, &resp,
+ +					      VPU_IPC_CHAN_ASYNC_CMD, vdev->timeout.jsm);
+ +}
+
+""""""
+
+""""""
+modified file: drivers/accel/ivpu/ivpu_pm.c
+--- workspace/gregkh/linux/5e162f/newer/drivers/accel/ivpu/ivpu_pm.c
++++ workspace/gregkh/linux/5e162f/linux-6.12.y/drivers/accel/ivpu/ivpu_pm.c
+@@ -9,18 +9,17 @@
+  #include <linux/pm_runtime.h>
+  #include <linux/reboot.h>
+  
+ -#include "ivpu_coredump.h"
+ +#include "vpu_boot_api.h"
+  #include "ivpu_drv.h"
+ +#include "ivpu_hw.h"
+  #include "ivpu_fw.h"
+  #include "ivpu_fw_log.h"
+ -#include "ivpu_hw.h"
+  #include "ivpu_ipc.h"
+  #include "ivpu_job.h"
+  #include "ivpu_jsm_msg.h"
+  #include "ivpu_mmu.h"
+  #include "ivpu_ms.h"
+  #include "ivpu_pm.h"
+ -#include "vpu_boot_api.h"
+  
+  static bool ivpu_disable_recovery;
+  module_param_named_unsafe(disable_recovery, ivpu_disable_recovery, bool, 0644);
+@@ -38,7 +37,6 @@
+  
+  	ivpu_cmdq_reset_all_contexts(vdev);
+  	ivpu_ipc_reset(vdev);
+ -	ivpu_fw_log_reset(vdev);
+  	ivpu_fw_load(vdev);
+  	fw->entry_point = fw->cold_boot_entry_point;
+  }
+@@ -125,7 +123,7 @@
+  	if (ret)
+  		ivpu_err(vdev, "Failed to resume NPU: %d\n", ret);
+  
+ -	ivpu_dev_coredump(vdev);
+ +	ivpu_fw_log_dump(vdev);
+  
+  	atomic_inc(&vdev->pm->reset_counter);
+  	atomic_set(&vdev->pm->reset_pending, 1);
+@@ -264,7 +262,7 @@
+  	if (!is_idle || ret_d0i3) {
+  		ivpu_err(vdev, "Forcing cold boot due to previous errors\n");
+  		atomic_inc(&vdev->pm->reset_counter);
+ -		ivpu_dev_coredump(vdev);
+ +		ivpu_fw_log_dump(vdev);
+  		ivpu_pm_prepare_cold_boot(vdev);
+  	} else {
+  		ivpu_pm_prepare_warm_boot(vdev);
+
+""""""

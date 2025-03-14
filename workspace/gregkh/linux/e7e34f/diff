@@ -1,0 +1,22 @@
+modified file: net/batman-adv/bat_v_elp.c
+--- workspace/gregkh/linux/e7e34f/newer/net/batman-adv/bat_v_elp.c
++++ workspace/gregkh/linux/e7e34f/linux-6.12.y/net/batman-adv/bat_v_elp.c
+@@ -66,18 +66,11 @@
+  static u32 batadv_v_elp_get_throughput(struct batadv_hardif_neigh_node *neigh)
+  {
+  	struct batadv_hard_iface *hard_iface = neigh->if_incoming;
+ -	struct net_device *soft_iface = hard_iface->soft_iface;
+  	struct ethtool_link_ksettings link_settings;
+  	struct net_device *real_netdev;
+  	struct station_info sinfo;
+  	u32 throughput;
+  	int ret;
+ -
+ -	/* don't query throughput when no longer associated with any
+ -	 * batman-adv interface
+ -	 */
+ -	if (!soft_iface)
+ -		return BATADV_THROUGHPUT_DEFAULT_VALUE;
+  
+
+""""""

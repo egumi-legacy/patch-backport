@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "dce4aab8441d285b9a78b33753e0bf583c1320ee",
+    "patch_url": "https://github.com/gregkh/linux/commit/dce4aab8441d285b9a78b33753e0bf583c1320ee.patch",
+    "downstream_sha": "f71cb6da1366e6dba6dd333e537520d76be2da86",
+    "downstream_message": "kbuild: Use -fzero-init-padding-bits=all\n\n[ Upstream commit dce4aab8441d285b9a78b33753e0bf583c1320ee ]\n\nGCC 15 introduces a regression in \"= { 0 }\" style initialization of\nunions that Linux has depended on for eliminating uninitialized variable\ncontents. GCC does not seem likely to fix it[1], instead suggesting[2]\nthat affected projects start using -fzero-init-padding-bits=unions.\n\nTo avoid future surprises beyond just the current situation with unions,\nenable -fzero-init-padding-bits=all when available (GCC 15+). This will\ncorrectly zero padding bits in unions and structs that might have been\nleft uninitialized, and will make sure there is no immediate regression\nin union initializations. As seen in the stackinit KUnit selftest union\ncases, which were passing before, were failing under GCC 15:\n\n    not ok 18 test_small_start_old_zero\n    ok 29 test_small_start_dynamic_partial # SKIP XFAIL uninit bytes: 63\n    ok 32 test_small_start_assigned_dynamic_partial # SKIP XFAIL uninit bytes: 63\n    ok 67 test_small_start_static_partial # SKIP XFAIL uninit bytes: 63\n    ok 70 test_small_start_static_all # SKIP XFAIL uninit bytes: 56\n    ok 73 test_small_start_dynamic_all # SKIP XFAIL uninit bytes: 56\n    ok 82 test_small_start_assigned_static_partial # SKIP XFAIL uninit bytes: 63\n    ok 85 test_small_start_assigned_static_all # SKIP XFAIL uninit bytes: 56\n    ok 88 test_small_start_assigned_dynamic_all # SKIP XFAIL uninit bytes: 56\n\nThe above all now pass again with -fzero-init-padding-bits=all added.\n\nThis also fixes the following cases for struct initialization that had\nbeen XFAIL until now because there was no compiler support beyond the\nlarger \"-ftrivial-auto-var-init=zero\" option:\n\n    ok 38 test_small_hole_static_all # SKIP XFAIL uninit bytes: 3\n    ok 39 test_big_hole_static_all # SKIP XFAIL uninit bytes: 124\n    ok 40 test_trailing_hole_static_all # SKIP XFAIL uninit bytes: 7\n    ok 42 test_small_hole_dynamic_all # SKIP XFAIL uninit bytes: 3\n    ok 43 test_big_hole_dynamic_all # SKIP XFAIL uninit bytes: 124\n    ok 44 test_trailing_hole_dynamic_all # SKIP XFAIL uninit bytes: 7\n    ok 58 test_small_hole_assigned_static_all # SKIP XFAIL uninit bytes: 3\n    ok 59 test_big_hole_assigned_static_all # SKIP XFAIL uninit bytes: 124\n    ok 60 test_trailing_hole_assigned_static_all # SKIP XFAIL uninit bytes: 7\n    ok 62 test_small_hole_assigned_dynamic_all # SKIP XFAIL uninit bytes: 3\n    ok 63 test_big_hole_assigned_dynamic_all # SKIP XFAIL uninit bytes: 124\n    ok 64 test_trailing_hole_assigned_dynamic_all # SKIP XFAIL uninit bytes: 7\n\nAll of the above now pass when built under GCC 15. Tests can be seen\nwith:\n\n    ./tools/testing/kunit/kunit.py run stackinit --arch=x86_64 \\\n        --make_option CC=gcc-15\n\nClang continues to fully initialize these kinds of variables[3] without\nadditional flags.\n\nSuggested-by: Jakub Jelinek <jakub@redhat.com>\nLink: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=118403 [1]\nLink: https://lore.kernel.org/linux-toolchains/Z0hRrrNU3Q+ro2T7@tucnak/ [2]\nLink: https://github.com/llvm/llvm-project/commit/7a086e1b2dc05f54afae3591614feede727601fa [3]\nReviewed-by: Nathan Chancellor <nathan@kernel.org>\nAcked-by: Masahiro Yamada <masahiroy@kernel.org>\nLink: https://lore.kernel.org/r/20250127191031.245214-3-kees@kernel.org\nSigned-off-by: Kees Cook <kees@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/dce4aa/patches/upstream_dce4aa.patch",
+      "timestamp": "2025-03-12T06:05:43.565582"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T06:05:43.913712"
+  }
+}

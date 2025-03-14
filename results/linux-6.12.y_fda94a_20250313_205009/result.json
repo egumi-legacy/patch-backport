@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "fda94a9919fd632033979ad7765a99ae3cab9289",
+    "patch_url": "https://github.com/gregkh/linux/commit/fda94a9919fd632033979ad7765a99ae3cab9289.patch",
+    "downstream_sha": "611015122d18e1f45647ecfc406fcb097b86cb77",
+    "downstream_message": "exfat: short-circuit zero-byte writes in exfat_file_write_iter\n\n[ Upstream commit fda94a9919fd632033979ad7765a99ae3cab9289 ]\n\nWhen generic_write_checks() returns zero, it means that\niov_iter_count() is zero, and there is no work to do.\n\nSimply return success like all other filesystems do, rather than\nproceeding down the write path, which today yields an -EFAULT in\ngeneric_perform_write() via the\n(fault_in_iov_iter_readable(i, bytes) == bytes) check when bytes\n== 0.\n\nFixes: 11a347fb6cef (\"exfat: change to get file size from DataLength\")\nReported-by: Noah <kernel-org-10@maxgrass.eu>\nSigned-off-by: Eric Sandeen <sandeen@redhat.com>\nReviewed-by: Yuezhang Mo <Yuezhang.Mo@sony.com>\nSigned-off-by: Namjae Jeon <linkinjeon@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/fda94a/patches/upstream_fda94a.patch",
+      "timestamp": "2025-03-13T20:50:09.430895"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-13T20:50:09.763371"
+  }
+}

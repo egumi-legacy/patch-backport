@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "81f64e925c29fe6e99f04b131fac1935ac931e81",
+    "patch_url": "https://github.com/gregkh/linux/commit/81f64e925c29fe6e99f04b131fac1935ac931e81.patch",
+    "downstream_sha": "ce526e1b29c70cff175e3ab8d9cb7e3f24321498",
+    "downstream_message": "PCI: Avoid FLR for Mediatek MT7922 WiFi\n\ncommit 81f64e925c29fe6e99f04b131fac1935ac931e81 upstream.\n\nThe Mediatek MT7922 WiFi device advertises FLR support, but it apparently\ndoes not work, and all subsequent config reads return ~0:\n\n  pci 0000:01:00.0: [14c3:0616] type 00 class 0x028000 PCIe Endpoint\n  pciback 0000:01:00.0: not ready 65535ms after FLR; giving up\n\nAfter an FLR, pci_dev_wait() waits for the device to become ready.  Prior\nto d591f6804e7e (\"PCI: Wait for device readiness with Configuration RRS\"),\nit polls PCI_COMMAND until it is something other that PCI_POSSIBLE_ERROR\n(~0).  If it times out, pci_dev_wait() returns -ENOTTY and\n__pci_reset_function_locked() tries the next available reset method.\nTypically this is Secondary Bus Reset, which does work, so the MT7922 is\neventually usable.\n\nAfter d591f6804e7e, if Configuration Request Retry Status Software\nVisibility (RRS SV) is enabled, pci_dev_wait() polls PCI_VENDOR_ID until it\nis something other than the special 0x0001 Vendor ID that indicates a\ncompletion with RRS status.\n\nWhen RRS SV is enabled, reads of PCI_VENDOR_ID should return either 0x0001,\ni.e., the config read was completed with RRS, or a valid Vendor ID.  On the\nMT7922, it seems that all config reads after FLR return ~0 indefinitely.\nWhen pci_dev_wait() reads PCI_VENDOR_ID and gets 0xffff, it assumes that's\na valid Vendor ID and the device is now ready, so it returns with success.\n\nAfter pci_dev_wait() returns success, we restore config space and continue.\nSince the MT7922 is not actually ready after the FLR, the restore fails and\nthe device is unusable.\n\nWe considered changing pci_dev_wait() to continue polling if a\nPCI_VENDOR_ID read returns either 0x0001 or 0xffff.  This \"works\" as it did\nbefore d591f6804e7e, although we have to wait for the timeout and then fall\nback to SBR.  But it doesn't work for SR-IOV VFs, which *always* return\n0xffff as the Vendor ID.\n\nMark Mediatek MT7922 WiFi devices to avoid the use of FLR completely.  This\nwill cause fallback to another reset method, such as SBR.\n\nLink: https://lore.kernel.org/r/20250212193516.88741-1-helgaas@kernel.org\nFixes: d591f6804e7e (\"PCI: Wait for device readiness with Configuration RRS\")\nLink: https://github.com/QubesOS/qubes-issues/issues/9689#issuecomment-2582927149\nLink: https://lore.kernel.org/r/Z4pHll_6GX7OUBzQ@mail-itl\nSigned-off-by: Bjorn Helgaas <bhelgaas@google.com>\nTested-by: Marek Marczykowski-G\u00f3recki <marmarek@invisiblethingslab.com>\nCc: stable@vger.kernel.org\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/81f64e/patches/upstream_81f64e.patch",
+      "timestamp": "2025-03-12T05:56:31.162602"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:56:31.408608"
+  }
+}

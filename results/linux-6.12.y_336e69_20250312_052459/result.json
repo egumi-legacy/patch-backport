@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "336e69f3025fb70db9d0dfb7f36ac79887bf5341",
+    "patch_url": "https://github.com/gregkh/linux/commit/336e69f3025fb70db9d0dfb7f36ac79887bf5341",
+    "downstream_sha": "e0922986ea6a46e2ab684a292dcb6ed5c339bfba",
+    "downstream_message": "btrfs: unify to use writer locks for subpage locking\n\n[ Upstream commit 336e69f3025fb70db9d0dfb7f36ac79887bf5341 ]\n\nSince commit d7172f52e993 (\"btrfs: use per-buffer locking for\nextent_buffer reading\"), metadata read no longer relies on the subpage\nreader locking.\n\nThis means we do not need to maintain a different metadata/data split\nfor locking, so we can convert the existing reader lock users by:\n\n- add_ra_bio_pages()\n  Convert to btrfs_folio_set_writer_lock()\n\n- end_folio_read()\n  Convert to btrfs_folio_end_writer_lock()\n\n- begin_folio_read()\n  Convert to btrfs_folio_set_writer_lock()\n\n- folio_range_has_eb()\n  Remove the subpage->readers checks, since it is always 0.\n\n- Remove btrfs_subpage_start_reader() and btrfs_subpage_end_reader()\n\nSigned-off-by: Qu Wenruo <wqu@suse.com>\nReviewed-by: David Sterba <dsterba@suse.com>\nSigned-off-by: David Sterba <dsterba@suse.com>\nStable-dep-of: 8bf334beb349 (\"btrfs: fix double accounting race when extent_writepage_io() failed\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: fs/btrfs/subpage.h:95\nerror: fs/btrfs/subpage.h: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/336e69/patches/upstream_336e69.patch",
+      "timestamp": "2025-03-12T05:23:10.387668"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:24:59.326988"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "d555ed45a5a10a813528c7685f432369d536ae3d",
+    "patch_url": "https://github.com/gregkh/linux/commit/d555ed45a5a10a813528c7685f432369d536ae3d",
+    "downstream_sha": "75334c9cd6b21ad5ddf384e7e0be7b84993d66db",
+    "downstream_message": "PCI: Restore original INTX_DISABLE bit by pcim_intx()\n\n[ Upstream commit d555ed45a5a10a813528c7685f432369d536ae3d ]\n\npcim_intx() tries to restore the INTx bit at removal via devres, but there\nis a chance that it restores a wrong value.\n\nBecause the value to be restored is blindly assumed to be the negative of\nthe enable argument, when a driver calls pcim_intx() unnecessarily for the\nalready enabled state, it'll restore to the disabled state in turn.  That\nis, the function assumes the case like:\n\n  // INTx == 1\n  pcim_intx(pdev, 0); // old INTx value assumed to be 1 -> correct\n\nbut it might be like the following, too:\n\n  // INTx == 0\n  pcim_intx(pdev, 0); // old INTx value assumed to be 1 -> wrong\n\nAlso, when a driver calls pcim_intx() multiple times with different enable\nargument values, the last one will win no matter what value it is.  This\ncan lead to inconsistency, e.g.\n\n  // INTx == 1\n  pcim_intx(pdev, 0); // OK\n  ...\n  pcim_intx(pdev, 1); // now old INTx wrongly assumed to be 0\n\nThis patch addresses those inconsistencies by saving the original INTx\nstate at the first pcim_intx() call.  For that, get_or_create_intx_devres()\nis folded into pcim_intx() caller side; it allows us to simply check the\nalready allocated devres and record the original INTx along with the\ndevres_alloc() call.\n\nLink: https://lore.kernel.org/r/20241031134300.10296-1-tiwai@suse.de\nFixes: 25216afc9db5 (\"PCI: Add managed pcim_intx()\")\nLink: https://lore.kernel.org/87v7xk2ps5.wl-tiwai@suse.de\nSigned-off-by: Takashi Iwai <tiwai@suse.de>\nSigned-off-by: Bjorn Helgaas <bhelgaas@google.com>\nReviewed-by: Philipp Stanner <pstanner@redhat.com>\nCc: stable@vger.kernel.org\t# v6.11+\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/pci/devres.c:419\nerror: drivers/pci/devres.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/d555ed/patches/upstream_d555ed.patch",
+      "timestamp": "2025-03-12T05:02:05.626475"
+    },
+    "last_error": "\"ModuleContext\" object has no field \"compiler_result\""
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-12T05:02:29.118434"
+  }
+}

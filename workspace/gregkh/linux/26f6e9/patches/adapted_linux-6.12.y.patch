@@ -1,0 +1,24 @@
+From 95bbf3b8a53a4aa88c03007ce5e73d0aedc979dd Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:01:55 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+index 0a6578aacf82..613a5d202196 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+@@ -1834,6 +1834,7 @@ dsi0: dsi@14014000 {
+ 			resets = <&mmsys MT8183_MMSYS_SW0_RST_B_DISP_DSI0>;
+ 			phys = <&mipi_tx0>;
+ 			phy-names = "dphy";
++			status = "disabled";
+ 		};
+ 
+ 		dpi0: dpi@14015000 {
+-- 
+2.25.1
+

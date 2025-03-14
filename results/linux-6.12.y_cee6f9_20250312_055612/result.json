@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "cee6f9a9c87b6ecfb51845950c28216b231c3610",
+    "patch_url": "https://github.com/gregkh/linux/commit/cee6f9a9c87b6ecfb51845950c28216b231c3610.patch",
+    "downstream_sha": "4166ac7653402bdbfee6b01ffb95896f05a40ab9",
+    "downstream_message": "objtool/rust: add one more `noreturn` Rust function\n\ncommit cee6f9a9c87b6ecfb51845950c28216b231c3610 upstream.\n\nStarting with Rust 1.85.0 (currently in beta, to be released 2025-02-20),\nunder some kernel configurations with `CONFIG_RUST_DEBUG_ASSERTIONS=y`,\none may trigger a new `objtool` warning:\n\n    rust/kernel.o: warning: objtool: _R...securityNtB2_11SecurityCtx8as_bytes()\n    falls through to next function _R...core3ops4drop4Drop4drop()\n\ndue to a call to the `noreturn` symbol:\n\n    core::panicking::assert_failed::<usize, usize>\n\nThus add it to the list so that `objtool` knows it is actually `noreturn`.\nDo so matching with `strstr` since it is a generic.\n\nSee commit 56d680dd23c3 (\"objtool/rust: list `noreturn` Rust functions\")\nfor more details.\n\nCc: stable@vger.kernel.org # Needed in 6.12.y and 6.13.y only (Rust is pinned in older LTSs).\nFixes: 56d680dd23c3 (\"objtool/rust: list `noreturn` Rust functions\")\nReviewed-by: Gary Guo <gary@garyguo.net>\nLink: https://lore.kernel.org/r/20250112143951.751139-1-ojeda@kernel.org\n[ Updated Cc: stable@ to include 6.13.y. - Miguel ]\nSigned-off-by: Miguel Ojeda <ojeda@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/cee6f9/patches/upstream_cee6f9.patch",
+      "timestamp": "2025-03-12T05:56:12.272986"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T05:56:12.568087"
+  }
+}

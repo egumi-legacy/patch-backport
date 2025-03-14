@@ -1,0 +1,47 @@
+From d6e6ba6a30397e4e0562c42f97f7ba814ac1cdc1 Mon Sep 17 00:00:00 2001
+From: root <root@congroo>
+Date: Wed, 12 Mar 2025 05:42:52 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ net/ipv4/route.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 723ac9181558..b7313cd5ddd8 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1001,9 +1001,9 @@ out:	kfree_skb_reason(skb, reason);
+ static void __ip_rt_update_pmtu(struct rtable *rt, struct flowi4 *fl4, u32 mtu)
+ {
+ 	struct dst_entry *dst = &rt->dst;
+-	struct net *net = dev_net(dst->dev);
+ 	struct fib_result res;
+ 	bool lock = false;
++	struct net *net;
+ 	u32 old_mtu;
+ 
+ 	if (ip_mtu_locked(dst))
+@@ -1013,6 +1013,8 @@ static void __ip_rt_update_pmtu(struct rtable *rt, struct flowi4 *fl4, u32 mtu)
+ 	if (old_mtu < mtu)
+ 		return;
+ 
++	rcu_read_lock();
++	net = dev_net_rcu(dst->dev);
+ 	if (mtu < net->ipv4.ip_rt_min_pmtu) {
+ 		lock = true;
+ 		mtu = min(old_mtu, net->ipv4.ip_rt_min_pmtu);
+@@ -1020,9 +1022,8 @@ static void __ip_rt_update_pmtu(struct rtable *rt, struct flowi4 *fl4, u32 mtu)
+ 
+ 	if (rt->rt_pmtu == mtu && !lock &&
+ 	    time_before(jiffies, dst->expires - net->ipv4.ip_rt_mtu_expires / 2))
+-		return;
++		goto out;
+ 
+-	rcu_read_lock();
+ 	if (fib_lookup(net, fl4, &res, 0) == 0) {
+ 		struct fib_nh_common *nhc;
+ 
+-- 
+2.25.1
+

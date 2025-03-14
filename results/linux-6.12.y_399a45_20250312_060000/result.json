@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "399a45e5237ca14037120b1b895bd38a3b4492ea",
+    "patch_url": "https://github.com/gregkh/linux/commit/399a45e5237ca14037120b1b895bd38a3b4492ea.patch",
+    "downstream_sha": "f894448f3904d7ad66fecef8f01fe0172629e091",
+    "downstream_message": "usb: gadget: core: flush gadget workqueue after device removal\n\ncommit 399a45e5237ca14037120b1b895bd38a3b4492ea upstream.\n\ndevice_del() can lead to new work being scheduled in gadget->work\nworkqueue. This is observed, for example, with the dwc3 driver with the\nfollowing call stack:\n  device_del()\n    gadget_unbind_driver()\n      usb_gadget_disconnect_locked()\n        dwc3_gadget_pullup()\n\t  dwc3_gadget_soft_disconnect()\n\t    usb_gadget_set_state()\n\t      schedule_work(&gadget->work)\n\nMove flush_work() after device_del() to ensure the workqueue is cleaned\nup.\n\nFixes: 5702f75375aa9 (\"usb: gadget: udc-core: move sysfs_notify() to a workqueue\")\nCc: stable <stable@kernel.org>\nSigned-off-by: Roy Luo <royluo@google.com>\nReviewed-by: Alan Stern <stern@rowland.harvard.edu>\nReviewed-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>\nLink: https://lore.kernel.org/r/20250204233642.666991-1-royluo@google.com\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/399a45/patches/upstream_399a45.patch",
+      "timestamp": "2025-03-12T06:00:00.046609"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-12T06:00:00.335695"
+  }
+}

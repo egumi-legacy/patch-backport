@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 class ModuleType(str, Enum):
     DIRECT_APPLY = "direct_apply"
+    CHUNK_ANALYZER = "chunk_analyzer"
     LLM_ADAPTER = "llm_adapter"
     PATCH_ADAPTER = "patch_adapter"
     COMPILER = "compiler"
@@ -26,7 +27,7 @@ class BaseConfig(BaseModel):
     response_file: Optional[Path] = None
     
     enabled_modules: List[str] = Field(default_factory=lambda: [
-        "direct_apply", "llm_adapter", "patch_adapter", "compiler"
+        "direct_apply", "chunk_analyzer", "llm_adapter", "patch_adapter", "compiler"
     ])
     
     build_command: str = "make"
@@ -47,7 +48,7 @@ class BaseConfig(BaseModel):
 
     @field_validator("enabled_modules")
     def validate_enabled_modules(cls, v):
-        valid_modules = {"direct_apply", "llm_adapter", "patch_adapter", "compiler"}
+        valid_modules = {"direct_apply", "chunk_analyzer", "llm_adapter", "patch_adapter", "compiler"}
         invalid_modules = set(v) - valid_modules
         if invalid_modules:
             raise ValueError(f"Invalid pipeline modules: {invalid_modules}")
@@ -129,7 +130,7 @@ class Mode2Config(BaseConfig):
     
     @property
     def cached_commits_file_path(self) -> Path:
-        path = Path("workspace") / self.repo_owner / self.repo_name / "cache" / self.commits_file
+        path = Path("workspace") / self.repo_owner / f"{self.repo_name}_cache" / self.commits_file
         path.parent.mkdir(parents=True, exist_ok=True)
         return path
     # def __post_init__(self):
@@ -152,7 +153,8 @@ class CommitContext(BaseModel):
     author: Optional[str] = None
     timestamp: Optional[str] = None
     patch_path: Optional[Path] = None
-
+    optimized_patch_path: Optional[Path] = None
+    
     class Config:
         arbitrary_types_allowed = True
 
@@ -227,6 +229,7 @@ class ModuleContext(BaseModel):
     # adapted_patches: List[Dict[str, Any]] = Field(default_factory=list)
     compilation_result: List[Dict[str, Any]] = Field(default_factory=list)
     patch_adapter_result: List[Dict[str, Any]] = Field(default_factory=list)
+    chunk_analyzer_result: List[Dict[str, Any]] = Field(default_factory=list)
 
     # 内核编译器配置
     docker_image_built: bool = True
@@ -252,7 +255,7 @@ class ModuleContext(BaseModel):
     @property
     def cache_dir(self) -> Path:
         """获取直接应用成功的缓存目录"""
-        path = Path("workspace") / self.commit.repo_owner / self.commit.repo_name / "cache"
+        path = Path("workspace") / self.commit.repo_owner / f"{self.commit.repo_name}_cache"
         path.mkdir(parents=True, exist_ok=True)
         return path
 

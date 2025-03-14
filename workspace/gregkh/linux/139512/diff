@@ -1,0 +1,511 @@
+modified file: net/ipv4/route.c
+--- workspace/gregkh/linux/139512/newer/net/ipv4/route.c
++++ workspace/gregkh/linux/139512/linux-6.12.y/net/ipv4/route.c
+@@ -390,13 +390,7 @@
+  
+  static inline bool rt_is_expired(const struct rtable *rth)
+  {
+ -	bool res;
+ -
+ -	rcu_read_lock();
+ -	res = rth->rt_genid != rt_genid_ipv4(dev_net_rcu(rth->dst.dev));
+ -	rcu_read_unlock();
+ -
+ -	return res;
+ +	return rth->rt_genid != rt_genid_ipv4(dev_net(rth->dst.dev));
+  }
+  
+  void rt_cache_flush(struct net *net)
+@@ -876,11 +870,11 @@
+  	}
+  	log_martians = IN_DEV_LOG_MARTIANS(in_dev);
+  	vif = l3mdev_master_ifindex_rcu(rt->dst.dev);
+ +	rcu_read_unlock();
+  
+  	net = dev_net(rt->dst.dev);
+ -	peer = inet_getpeer_v4(net->ipv4.peers, ip_hdr(skb)->saddr, vif);
+ +	peer = inet_getpeer_v4(net->ipv4.peers, ip_hdr(skb)->saddr, vif, 1);
+  	if (!peer) {
+ -		rcu_read_unlock();
+  		icmp_send(skb, ICMP_REDIRECT, ICMP_REDIR_HOST,
+  			  rt_nexthop(rt, ip_hdr(skb)->daddr));
+  		return;
+@@ -899,7 +893,7 @@
+  	 */
+  	if (peer->n_redirects >= ip_rt_redirect_number) {
+  		peer->rate_last = jiffies;
+ -		goto out_unlock;
+ +		goto out_put_peer;
+  	}
+  
+  		nhc = FIB_RES_NHC(res);
+  		update_or_create_fnhe(nhc, fl4->daddr, 0, mtu, lock,
+  				      jiffies + net->ipv4.ip_rt_mtu_expires);
+@@ -1283,7 +1263,7 @@
+  		struct flowi4 fl4 = {
+  			.daddr = iph->daddr,
+  			.saddr = iph->saddr,
+ -			.flowi4_tos = inet_dscp_to_dsfield(ip4h_dscp(iph)),
+ +			.flowi4_tos = iph->tos & INET_DSCP_MASK,
+  			.flowi4_oif = rt->dst.dev->ifindex,
+  			.flowi4_iif = skb->dev->ifindex,
+  			.flowi4_mark = skb->mark,
+@@ -1313,15 +1293,10 @@
+  
+  static unsigned int ipv4_default_advmss(const struct dst_entry *dst)
+  {
+ +	struct net *net = dev_net(dst->dev);
+  	unsigned int header_size = sizeof(struct tcphdr) + sizeof(struct iphdr);
+ -	unsigned int advmss;
+ -	struct net *net;
+ -
+ -	rcu_read_lock();
+ -	net = dev_net_rcu(dst->dev);
+ -	advmss = max_t(unsigned int, ipv4_mtu(dst) - header_size,
+ -				   net->ipv4.ip_rt_min_advmss);
+ -	rcu_read_unlock();
+ +	unsigned int advmss = max_t(unsigned int, ipv4_mtu(dst) - header_size,
+ +				    net->ipv4.ip_rt_min_advmss);
+  
+  	return min(advmss, IPV4_MAX_PMTU - header_size);
+  }
+@@ -1690,54 +1665,49 @@
+  EXPORT_SYMBOL(rt_dst_clone);
+  
+ -enum skb_drop_reason
+ -ip_mc_validate_source(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ -		      dscp_t dscp, struct net_device *dev,
+ -		      struct in_device *in_dev, u32 *itag)
+ -{
+ -	enum skb_drop_reason reason;
+ +int ip_mc_validate_source(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ +			  u8 tos, struct net_device *dev,
+ +			  struct in_device *in_dev, u32 *itag)
+ +{
+ +	int err;
+  
+  	if (!in_dev)
+ -		return SKB_DROP_REASON_NOT_SPECIFIED;
+ -
+ -	if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr))
+ -		return SKB_DROP_REASON_IP_INVALID_SOURCE;
+ -
+ -	if (skb->protocol != htons(ETH_P_IP))
+ -		return SKB_DROP_REASON_INVALID_PROTO;
+ +		return -EINVAL;
+ +
+ +	if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr) ||
+ +	    skb->protocol != htons(ETH_P_IP))
+ +		return -EINVAL;
+  
+  	if (ipv4_is_loopback(saddr) && !IN_DEV_ROUTE_LOCALNET(in_dev))
+ -		return SKB_DROP_REASON_IP_LOCALNET;
+ +		return -EINVAL;
+  
+  	if (ipv4_is_zeronet(saddr)) {
+  		if (!ipv4_is_local_multicast(daddr) &&
+  		    ip_hdr(skb)->protocol != IPPROTO_IGMP)
+ -			return SKB_DROP_REASON_IP_INVALID_SOURCE;
+ +			return -EINVAL;
+  	} else {
+ -		reason = fib_validate_source_reason(skb, saddr, 0, dscp, 0,
+ -						    dev, in_dev, itag);
+ -		if (reason)
+ -			return reason;
+ -	}
+ -	return SKB_NOT_DROPPED_YET;
+ +		err = fib_validate_source(skb, saddr, 0, tos, 0, dev,
+ +					  in_dev, itag);
+ +		if (err < 0)
+ +			return err;
+ +	}
+ +	return 0;
+  }
+  
+ -static enum skb_drop_reason
+ -ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ -		  dscp_t dscp, struct net_device *dev, int our)
+ +static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ +			     u8 tos, struct net_device *dev, int our)
+  {
+  	struct in_device *in_dev = __in_dev_get_rcu(dev);
+  	unsigned int flags = RTCF_MULTICAST;
+ -	enum skb_drop_reason reason;
+  	struct rtable *rth;
+  	u32 itag = 0;
+ -
+ -	reason = ip_mc_validate_source(skb, daddr, saddr, dscp, dev, in_dev,
+ -				       &itag);
+ -	if (reason)
+ -		return reason;
+ +	int err;
+ +
+ +	err = ip_mc_validate_source(skb, daddr, saddr, tos, dev, in_dev, &itag);
+ +	if (err)
+ +		return err;
+  
+  	if (our)
+  		flags |= RTCF_LOCAL;
+@@ -1748,7 +1718,7 @@
+  	rth = rt_dst_alloc(dev_net(dev)->loopback_dev, flags, RTN_MULTICAST,
+  			   false);
+  	if (!rth)
+ -		return SKB_DROP_REASON_NOMEM;
+ +		return -ENOBUFS;
+  
+  #ifdef CONFIG_IP_ROUTE_CLASSID
+  	rth->dst.tclassid = itag;
+@@ -1764,7 +1734,7 @@
+  
+  	skb_dst_drop(skb);
+  	skb_dst_set(skb, &rth->dst);
+ -	return SKB_NOT_DROPPED_YET;
+ +	return 0;
+  }
+  
+  
+@@ -1794,12 +1764,11 @@
+  }
+  
+ -static enum skb_drop_reason
+ -__mkroute_input(struct sk_buff *skb, const struct fib_result *res,
+ -		struct in_device *in_dev, __be32 daddr,
+ -		__be32 saddr, dscp_t dscp)
+ -{
+ -	enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ +static int __mkroute_input(struct sk_buff *skb,
+ +			   const struct fib_result *res,
+ +			   struct in_device *in_dev,
+ +			   __be32 daddr, __be32 saddr, u32 tos)
+ +{
+  	struct fib_nh_common *nhc = FIB_RES_NHC(*res);
+  	struct net_device *dev = nhc->nhc_dev;
+  	struct fib_nh_exception *fnhe;
+@@ -1813,13 +1782,12 @@
+  	out_dev = __in_dev_get_rcu(dev);
+  	if (!out_dev) {
+  		net_crit_ratelimited("Bug in ip_route_input_slow(). Please report.\n");
+ -		return reason;
+ -	}
+ -
+ -	err = fib_validate_source(skb, saddr, daddr, dscp, FIB_RES_OIF(*res),
+ +		return -EINVAL;
+ +	}
+ +
+ +	err = fib_validate_source(skb, saddr, daddr, tos, FIB_RES_OIF(*res),
+  				  in_dev->dev, in_dev, &itag);
+  	if (err < 0) {
+ -		reason = -err;
+  		ip_handle_martian_source(in_dev->dev, in_dev, skb, daddr,
+  					 saddr);
+  
+@@ -1847,7 +1815,7 @@
+  		 */
+  		if (out_dev == in_dev &&
+  		    IN_DEV_PROXY_ARP_PVLAN(in_dev) == 0) {
+ -			reason = SKB_DROP_REASON_ARP_PVLAN_DISABLE;
+ +			err = -EINVAL;
+  			goto cleanup;
+  		}
+  	}
+@@ -1870,7 +1838,7 @@
+  	rth = rt_dst_alloc(out_dev->dev, 0, res->type,
+  			   IN_DEV_ORCONF(out_dev, NOXFRM));
+  	if (!rth) {
+ -		reason = SKB_DROP_REASON_NOMEM;
+ +		err = -ENOBUFS;
+  		goto cleanup;
+  	}
+  
+@@ -1884,9 +1852,9 @@
+  	lwtunnel_set_redirect(&rth->dst);
+  	skb_dst_set(skb, &rth->dst);
+  out:
+ -	reason = SKB_NOT_DROPPED_YET;
+ -cleanup:
+ -	return reason;
+ +	err = 0;
+ + cleanup:
+ +	return err;
+  }
+  
+  #ifdef CONFIG_IP_ROUTE_MULTIPATH
+@@ -2144,10 +2112,11 @@
+  }
+  #endif /* CONFIG_IP_ROUTE_MULTIPATH */
+  
+ -static enum skb_drop_reason
+ -ip_mkroute_input(struct sk_buff *skb, struct fib_result *res,
+ -		 struct in_device *in_dev, __be32 daddr,
+ -		 __be32 saddr, dscp_t dscp, struct flow_keys *hkeys)
+ +static int ip_mkroute_input(struct sk_buff *skb,
+ +			    struct fib_result *res,
+ +			    struct in_device *in_dev,
+ +			    __be32 daddr, __be32 saddr, u32 tos,
+ +			    struct flow_keys *hkeys)
+  {
+  #ifdef CONFIG_IP_ROUTE_MULTIPATH
+  	if (res->fi && fib_info_num_path(res->fi) > 1) {
+@@ -2159,57 +2128,50 @@
+  #endif
+  
+ -	return __mkroute_input(skb, res, in_dev, daddr, saddr, dscp);
+ +	return __mkroute_input(skb, res, in_dev, daddr, saddr, tos);
+  }
+  
+ -enum skb_drop_reason
+ -ip_route_use_hint(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ -		  dscp_t dscp, struct net_device *dev,
+ -		  const struct sk_buff *hint)
+ -{
+ -	enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ +int ip_route_use_hint(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ +		      u8 tos, struct net_device *dev,
+ +		      const struct sk_buff *hint)
+ +{
+  	struct in_device *in_dev = __in_dev_get_rcu(dev);
+  	struct rtable *rt = skb_rtable(hint);
+  	struct net *net = dev_net(dev);
+ +	int err = -EINVAL;
+  	u32 tag = 0;
+  
+  	if (!in_dev)
+ -		return reason;
+ -
+ -	if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr)) {
+ -		reason = SKB_DROP_REASON_IP_INVALID_SOURCE;
+ +		return -EINVAL;
+ +
+ +	if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr))
+  		goto martian_source;
+ -	}
+ -
+ -	if (ipv4_is_zeronet(saddr)) {
+ -		reason = SKB_DROP_REASON_IP_INVALID_SOURCE;
+ +
+ +	if (ipv4_is_zeronet(saddr))
+  		goto martian_source;
+ -	}
+ -
+ -	if (ipv4_is_loopback(saddr) && !IN_DEV_NET_ROUTE_LOCALNET(in_dev, net)) {
+ -		reason = SKB_DROP_REASON_IP_LOCALNET;
+ +
+ +	if (ipv4_is_loopback(saddr) && !IN_DEV_NET_ROUTE_LOCALNET(in_dev, net))
+  		goto martian_source;
+ -	}
+  
+  	if (rt->rt_type != RTN_LOCAL)
+  		goto skip_validate_source;
+  
+ -	reason = fib_validate_source_reason(skb, saddr, daddr, dscp, 0, dev,
+ -					    in_dev, &tag);
+ -	if (reason)
+ +	tos &= INET_DSCP_MASK;
+ +	err = fib_validate_source(skb, saddr, daddr, tos, 0, dev, in_dev, &tag);
+ +	if (err < 0)
+  		goto martian_source;
+  
+  skip_validate_source:
+  	skb_dst_copy(skb, hint);
+ -	return SKB_NOT_DROPPED_YET;
+ +	return 0;
+  
+  martian_source:
+  	ip_handle_martian_source(dev, in_dev, skb, daddr, saddr);
+ -	return reason;
+ +	return err;
+  }
+  
+@@ -2238,12 +2200,10 @@
+   *	called with rcu_read_lock()
+   */
+  
+ -static enum skb_drop_reason
+ -ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ -		    dscp_t dscp, struct net_device *dev,
+ -		    struct fib_result *res)
+ -{
+ -	enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ +static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ +			       u8 tos, struct net_device *dev,
+ +			       struct fib_result *res)
+ +{
+  	struct in_device *in_dev = __in_dev_get_rcu(dev);
+  	struct flow_keys *flkeys = NULL, _flkeys;
+  	struct net    *net = dev_net(dev);
+@@ -2271,10 +2231,8 @@
+  		fl4.flowi4_tun_key.tun_id = 0;
+  	skb_dst_drop(skb);
+  
+ -	if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr)) {
+ -		reason = SKB_DROP_REASON_IP_INVALID_SOURCE;
+ +	if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr))
+  		goto martian_source;
+ -	}
+  
+  	res->fi = NULL;
+  	res->table = NULL;
+@@ -2284,29 +2242,21 @@
+ -	if (ipv4_is_zeronet(saddr)) {
+ -		reason = SKB_DROP_REASON_IP_INVALID_SOURCE;
+ +	if (ipv4_is_zeronet(saddr))
+  		goto martian_source;
+ -	}
+ -
+ -	if (ipv4_is_zeronet(daddr)) {
+ -		reason = SKB_DROP_REASON_IP_INVALID_DEST;
+ +
+ +	if (ipv4_is_zeronet(daddr))
+  		goto martian_destination;
+ -	}
+  
+  	if (ipv4_is_loopback(daddr)) {
+ -		if (!IN_DEV_NET_ROUTE_LOCALNET(in_dev, net)) {
+ -			reason = SKB_DROP_REASON_IP_LOCALNET;
+ +		if (!IN_DEV_NET_ROUTE_LOCALNET(in_dev, net))
+  			goto martian_destination;
+ -		}
+  	} else if (ipv4_is_loopback(saddr)) {
+ -		if (!IN_DEV_NET_ROUTE_LOCALNET(in_dev, net)) {
+ -			reason = SKB_DROP_REASON_IP_LOCALNET;
+ +		if (!IN_DEV_NET_ROUTE_LOCALNET(in_dev, net))
+  			goto martian_source;
+ -		}
+  	}
+  
+ -static enum skb_drop_reason
+ -ip_route_input_rcu(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ -		   dscp_t dscp, struct net_device *dev,
+ -		   struct fib_result *res)
+ +static int ip_route_input_rcu(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ +			      u8 tos, struct net_device *dev, struct fib_result *res)
+  {
+  	if (ipv4_is_multicast(daddr)) {
+ -		enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
+  		struct in_device *in_dev = __in_dev_get_rcu(dev);
+  		int our = 0;
+ +		int err = -EINVAL;
+  
+  		if (!in_dev)
+ -			return reason;
+ -
+ +			return err;
+  		our = ip_check_mc_rcu(in_dev, daddr, saddr,
+  				      ip_hdr(skb)->protocol);
+  
+@@ -2513,27 +2455,27 @@
+  		     IN_DEV_MFORWARD(in_dev))
+  #endif
+  		   ) {
+ -			reason = ip_route_input_mc(skb, daddr, saddr, dscp,
+ -						   dev, our);
+ -		}
+ -		return reason;
+ -	}
+ -
+ -	return ip_route_input_slow(skb, daddr, saddr, dscp, dev, res);
+ -}
+ -
+ -enum skb_drop_reason ip_route_input_noref(struct sk_buff *skb, __be32 daddr,
+ -					  __be32 saddr, dscp_t dscp,
+ -					  struct net_device *dev)
+ -{
+ -	enum skb_drop_reason reason;
+ +			err = ip_route_input_mc(skb, daddr, saddr,
+ +						tos, dev, our);
+ +		}
+ +		return err;
+ +	}
+ +
+ +	return ip_route_input_slow(skb, daddr, saddr, tos, dev, res);
+ +}
+ +
+ +int ip_route_input_noref(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ +			 u8 tos, struct net_device *dev)
+ +{
+  	struct fib_result res;
+ -
+ +	int err;
+ +
+ +	tos &= INET_DSCP_MASK;
+  	rcu_read_lock();
+ -	reason = ip_route_input_rcu(skb, daddr, saddr, dscp, dev, &res);
+ +	err = ip_route_input_rcu(skb, daddr, saddr, tos, dev, &res);
+  	rcu_read_unlock();
+  
+ -	return reason;
+ +	return err;
+  }
+  EXPORT_SYMBOL(ip_route_input_noref);
+  
+@@ -3281,7 +3223,6 @@
+  	struct flowi4 fl4 = {};
+  	__be32 dst = 0;
+  	__be32 src = 0;
+ -	dscp_t dscp;
+  	kuid_t uid;
+  	u32 iif;
+  	int err;
+@@ -3292,11 +3233,10 @@
+  		return err;
+  
+  	rtm = nlmsg_data(nlh);
+ -	src = nla_get_in_addr_default(tb[RTA_SRC], 0);
+ -	dst = nla_get_in_addr_default(tb[RTA_DST], 0);
+ -	iif = nla_get_u32_default(tb[RTA_IIF], 0);
+ -	mark = nla_get_u32_default(tb[RTA_MARK], 0);
+ -	dscp = inet_dsfield_to_dscp(rtm->rtm_tos);
+ +	src = tb[RTA_SRC] ? nla_get_in_addr(tb[RTA_SRC]) : 0;
+ +	dst = tb[RTA_DST] ? nla_get_in_addr(tb[RTA_DST]) : 0;
+ +	iif = tb[RTA_IIF] ? nla_get_u32(tb[RTA_IIF]) : 0;
+ +	mark = tb[RTA_MARK] ? nla_get_u32(tb[RTA_MARK]) : 0;
+  	if (tb[RTA_UID])
+  		uid = make_kuid(current_user_ns(), nla_get_u32(tb[RTA_UID]));
+  	else
+@@ -3321,8 +3261,8 @@
+  
+  	fl4.daddr = dst;
+  	fl4.saddr = src;
+ -	fl4.flowi4_tos = inet_dscp_to_dsfield(dscp);
+ -	fl4.flowi4_oif = nla_get_u32_default(tb[RTA_OIF], 0);
+ +	fl4.flowi4_tos = rtm->rtm_tos & INET_DSCP_MASK;
+ +	fl4.flowi4_oif = tb[RTA_OIF] ? nla_get_u32(tb[RTA_OIF]) : 0;
+  	fl4.flowi4_mark = mark;
+  	fl4.flowi4_uid = uid;
+  	if (sport)
+@@ -3345,8 +3285,9 @@
+  		fl4.flowi4_iif = iif; /* for rt_fill_info */
+  		skb->dev	= dev;
+  		skb->mark	= mark;
+ -		err = ip_route_input_rcu(skb, dst, src, dscp, dev,
+ -					 &res) ? -EINVAL : 0;
+ +		err = ip_route_input_rcu(skb, dst, src,
+ +					 rtm->rtm_tos & INET_DSCP_MASK, dev,
+ +					 &res);
+  
+  		rt = skb_rtable(skb);
+  		if (err == 0 && rt->dst.error)
+@@ -3693,11 +3634,6 @@
+  struct ip_rt_acct __percpu *ip_rt_acct __read_mostly;
+  #endif /* CONFIG_IP_ROUTE_CLASSID */
+  
+ -static const struct rtnl_msg_handler ip_rt_rtnl_msg_handlers[] __initconst = {
+ -	{.protocol = PF_INET, .msgtype = RTM_GETROUTE,
+ -	 .doit = inet_rtm_getroute, .flags = RTNL_FLAG_DOIT_UNLOCKED},
+ -};
+ -
+  int __init ip_rt_init(void)
+  {
+  	void *idents_hash;
+@@ -3755,7 +3691,8 @@
+  	xfrm_init();
+  	xfrm4_init();
+  #endif
+ -	rtnl_register_many(ip_rt_rtnl_msg_handlers);
+ +	rtnl_register(PF_INET, RTM_GETROUTE, inet_rtm_getroute, NULL,
+ +		      RTNL_FLAG_DOIT_UNLOCKED);
+  
+  #ifdef CONFIG_SYSCTL
+  	register_pernet_subsys(&sysctl_route_ops);
+
+""""""
