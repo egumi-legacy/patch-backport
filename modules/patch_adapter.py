@@ -522,3 +522,59 @@ class PatchAdapterModule(BaseModule):
             return "file_not_found"
         else:
             return "unknown"
+
+    def _merge_patches(self, simple_patch_path: Path, llm_patch_path: Path, context: ModuleContext) -> Optional[Path]:
+        """
+        合并两个补丁文件
+        
+        Args:
+            simple_patch_path: 简单行号修改的补丁路径
+            llm_patch_path: LLM处理的复杂补丁路径
+            context: 模块上下文
+            
+        Returns:
+            合并后的补丁路径，失败则返回None
+        """
+        try:
+            # 创建临时目录存放合并结果
+            output_dir = context.commit.base_dir / "patch_adapter"
+            output_dir.mkdir(parents=True, exist_ok=True)
+            
+            merged_patch_path = output_dir / f"merged_patch_{datetime.now().strftime('%Y%m%d_%H%M%S')}.patch"
+            
+            # 读取两个补丁文件内容
+            with open(simple_patch_path, 'r', encoding='utf-8') as f:
+                simple_patch_content = f.read()
+                
+            with open(llm_patch_path, 'r', encoding='utf-8') as f:
+                llm_patch_content = f.read()
+            
+            # 解析两个补丁的文件修改
+            simple_files = self._parse_patch_files(simple_patch_content)
+            llm_files = self._parse_patch_files(llm_patch_content)
+            
+            # 合并两个补丁的文件修改
+            merged_files = {**simple_files, **llm_files}  # LLM补丁优先
+            
+            # 提取补丁头信息
+            patch_header = ""
+            for line in llm_patch_content.splitlines():
+                if line.startswith('diff --git'):
+                    break
+                patch_header += line + "\n"
+            
+            # 写入合并后的补丁
+            with open(merged_patch_path, 'w', encoding='utf-8') as f:
+                f.write(patch_header)
+                
+                # 写入每个文件的修改
+                for file_path, content in merged_files.items():
+                    f.write(content)
+            
+            return merged_patch_path
+        
+        except Exception as e:
+            logger.error(f"合并补丁时出错: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return None
