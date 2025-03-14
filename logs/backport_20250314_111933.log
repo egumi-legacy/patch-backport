@@ -1,0 +1,76 @@
+2025-03-14 11:19:33.503 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250314_111933.log
+2025-03-14 11:19:33.504 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-14 11:19:33.504 | INFO     | __main__:_get_commits_list:227 - commits_file:workspace/gregkh/linux_cache/branch_linux-6.12.y_commits.json
+2025-03-14 11:19:33.504 | INFO     | __main__:_get_commits_list:228 - use_cached_commits:True
+2025-03-14 11:19:33.505 | INFO     | __main__:_get_commits_list:231 - 从缓存文件加载commits信息
+2025-03-14 11:19:33.511 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-03-14 11:19:33.512 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: direct_apply
+2025-03-14 11:19:33.512 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: chunk_analyzer
+2025-03-14 11:19:33.513 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: llm_adapter
+2025-03-14 11:19:33.513 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: patch_adapter
+2025-03-14 11:19:33.513 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: compiler
+2025-03-14 11:19:33.513 | INFO     | __main__:_process_mode2:188 - 处理提交 156/230: 3d4114
+2025-03-14 11:19:33.514 | INFO     | core.adaptation_pipeline:process_patch:68 - 开始处理补丁: 3d4114a1d34413dfffa0094c2eb7b95e61087abd
+2025-03-14 11:19:33.514 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: direct_apply
+2025-03-14 11:19:33.541 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: patch failed: drivers/ufs/core/ufshcd.c:2120\nerror: drivers/ufs/core/ufshcd.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/3d4114/patches/upstream_3d4114.patch', 'success': False, 'timestamp': '2025-03-14T06:47:46.260359'}
+2025-03-14 11:19:33.541 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: chunk_analyzer
+2025-03-14 11:19:33.542 | INFO     | modules.chunk_analyzer:execute:43 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/3d4114/patches/upstream_3d4114.patch
+2025-03-14 11:19:33.543 | INFO     | modules.chunk_analyzer:execute:47 - 补丁被分解为 2 个块
+2025-03-14 11:19:33.543 | INFO     | modules.chunk_analyzer:execute:51 - 有价值的块: 2, 跳过的块: 0
+2025-03-14 11:19:33.544 | INFO     | modules.chunk_analyzer:_generate_optimized_patch:305 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/3d4114/patches/upstream_3d4114.patch
+2025-03-14 11:19:33.545 | INFO     | modules.chunk_analyzer:_generate_optimized_patch:342 - 生成优化后的补丁文件: workspace/gregkh/linux/3d4114/chunk_analyzer/optimized_20250314_111933.patch
+2025-03-14 11:19:33.546 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/3d4114/evaluations/chunk_analyzer/metrics_3d4114_20250314_111933.json
+2025-03-14 11:19:33.546 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: llm_adapter
+2025-03-14 11:19:33.546 | INFO     | modules.llm_adapter:execute:49 - 使用优化后的补丁文件: workspace/gregkh/linux/3d4114/chunk_analyzer/optimized_20250314_111933.patch
+2025-03-14 11:19:33.584 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-03-14 11:19:33.585 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/gregkh/linux/3d4114/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-14 11:19:33.585 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-03-14 11:19:33.586 | INFO     | modules.llm_adapter:_call_llm:312 - llm.run() result:{'openai_responses': ['diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c\nindex 356e1be33f534..db20b1d505b79 100644\n--- a/drivers/ufs/core/ufshcd.c\n+++ b/drivers/ufs/core/ufshcd.c\n@@ -2120,8 +2120,6 @@ static void ufshcd_init_clk_gating(struct ufs_hba *hba)\n \tINIT_DELAYED_WORK(&hba->clk_gating.gate_work, ufshcd_gate_work);\n \tINIT_WORK(&hba->clk_gating.ungate_work, ufshcd_ungate_work);\n \n-\tspin_lock_init(&hba->clk_gating.lock);\n-\n \thba->clk_gating.clk_gating_workq = alloc_ordered_workqueue(\n \t\t"ufs_clk_gating_%d", WQ_MEM_RECLAIM | WQ_HIGHPRI,\n \t\thba->host->host_no);\n@@ -10411,6 +10409,12 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)\n \thba->irq = irq;\n \thba->vps = &ufs_hba_vps;\n \n+\t/*\n+\t * Initialize clk_gating.lock early since it is being used in\n+\t * ufshcd_setup_clocks()\n+\t */\n+\tspin_lock_init(&hba->clk_gating.lock);\n+\n \terr = ufshcd_hba_init(hba);\n \tif (err)\n \t\tgoto out_error;\n'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-03-14 11:19:33.586 | INFO     | modules.llm_adapter:_parse_llm_response:394 - 原始LLM响应(前100字符): diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index 356e1be33f534..db20b1d505b7...
+2025-03-14 11:19:33.587 | INFO     | modules.llm_adapter:_parse_llm_response:417 - 找到diff --git格式，内容前100字符: diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index 356e1be33f534..db20b1d505b7...
+2025-03-14 11:19:33.588 | INFO     | modules.llm_adapter:_save_llm_response:447 - LLM响应已保存到: workspace/gregkh/linux/3d4114/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-14 11:19:33.588 | INFO     | modules.llm_adapter:_save_llm_response:448 - 原始LLM响应已保存到: workspace/gregkh/linux/3d4114/llm_output/raw_output_linux-6.12.y_qwen-plus.patch
+2025-03-14 11:19:33.589 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/3d4114/evaluations/llm_adapter/metrics_3d4114_20250314_111933.json
+2025-03-14 11:19:33.589 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: patch_adapter
+2025-03-14 11:19:33.589 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/gregkh/linux/3d4114/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-14 11:19:33.593 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_linux-6.12.y_20250314_111933
+2025-03-14 11:19:33.778 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: Command '['git', 'checkout', 'linux-6.12.y']' returned non-zero exit status 1.
+2025-03-14 11:19:33.781 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 58, in execute
+    branch_name = self._prepare_test_branch(context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 165, in _prepare_test_branch
+    subprocess.run(
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'checkout', 'linux-6.12.y']' returned non-zero exit status 1.
+
+2025-03-14 11:19:33.782 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/gregkh/linux/3d4114/metrics/patch_adapter_metrics.json
+2025-03-14 11:19:33.782 | INFO     | modules.base_module:_should_run:65 - 适配补丁失败，跳过编译
+2025-03-14 11:19:33.782 | INFO     | core.adaptation_pipeline:process_patch:105 - 补丁处理完成，耗时: 0.27秒
+2025-03-14 11:19:33.785 | INFO     | __main__:_save_results:400 - 结果已保存到: results/linux-6.12.y_3d4114_20250314_111933/result.json
+2025-03-14 11:19:33.785 | INFO     | __main__:_print_summary:410 - context.patch_adapter_result: {'success': False, 'error': "Command '['git', 'checkout', 'linux-6.12.y']' returned non-zero exit status 1."}
+2025-03-14 11:19:33.785 | INFO     | __main__:_print_summary:428 - ==================================================
+2025-03-14 11:19:33.785 | INFO     | __main__:_print_summary:429 - 处理摘要 - 提交: 3d4114
+2025-03-14 11:19:33.786 | INFO     | __main__:_print_summary:430 - 结果: 处理失败 (方法: failed)
+2025-03-14 11:19:33.786 | INFO     | __main__:_print_summary:435 - ==================================================
+2025-03-14 11:19:33.922 | INFO     | __main__:_print_mode2_statistics:473 - ============================================================
+2025-03-14 11:19:33.922 | INFO     | __main__:_print_mode2_statistics:474 - 模式2处理统计
+2025-03-14 11:19:33.922 | INFO     | __main__:_print_mode2_statistics:475 - ============================================================
+2025-03-14 11:19:33.923 | INFO     | __main__:_print_mode2_statistics:476 - 总提交数: 230
+2025-03-14 11:19:33.923 | INFO     | __main__:_print_mode2_statistics:477 - 直接应用成功: 245
+2025-03-14 11:19:33.923 | INFO     | __main__:_print_mode2_statistics:478 - 需要适配数量: -15
+2025-03-14 11:19:33.923 | INFO     | __main__:_print_mode2_statistics:479 - 适配成功数量: 0
+2025-03-14 11:19:33.923 | INFO     | __main__:_print_mode2_statistics:480 - - 补丁适配成功: 0
+2025-03-14 11:19:33.924 | INFO     | __main__:_print_mode2_statistics:481 - - LLM适配成功: 0
+2025-03-14 11:19:33.924 | INFO     | __main__:_print_mode2_statistics:482 - 适配失败数量: 1
+2025-03-14 11:19:33.924 | INFO     | __main__:_print_mode2_statistics:483 - 总体成功率: 0.00%
+2025-03-14 11:19:33.924 | INFO     | __main__:_print_mode2_statistics:484 - 适配成功率: 0.00%
+2025-03-14 11:19:33.924 | INFO     | __main__:_print_mode2_statistics:487 - 
+失败的提交:
+2025-03-14 11:19:33.925 | INFO     | __main__:_print_mode2_statistics:489 -   - 3d4114: None
+2025-03-14 11:19:33.925 | INFO     | __main__:_print_mode2_statistics:491 - ============================================================
+2025-03-14 11:19:33.926 | INFO     | __main__:_print_mode2_statistics:518 - 统计结果已保存到: statistics/mode2_stats_linux-6.12.y_20250314_111933.json
+2025-03-14 11:19:33.926 | INFO     | __main__:run:122 - 处理完成

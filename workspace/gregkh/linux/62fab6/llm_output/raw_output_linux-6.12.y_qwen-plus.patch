@@ -1,14 +1,3 @@
-A. Commit message:
-geneve: Suppress list corruption splat in geneve_destroy_tunnels()
-
-B. Change summary:
-Removed the for_each_netdev() iteration in geneve_destroy_tunnels() to prevent triggering geneve_dellink() twice for the same device, which could cause list corruption when CONFIG_DEBUG_LIST is enabled. Delegated that part to default_device_exit_batch().
-
-C. Compatibility Risk:
-Low
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
 index a1f674539965d..dbb3960126ee7 100644
 --- a/drivers/net/geneve.c
@@ -28,4 +17,3 @@ index a1f674539965d..dbb3960126ee7 100644
  	list_for_each_entry_safe(geneve, next, &gn->geneve_list, next)
  		geneve_dellink(geneve->dev, head);
  }
-```

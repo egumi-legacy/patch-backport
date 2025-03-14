@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "sha": "3d4114a1d34413dfffa0094c2eb7b95e61087abd",
+    "patch_url": "https://github.com/gregkh/linux/commit/3d4114a1d34413dfffa0094c2eb7b95e61087abd.patch",
+    "downstream_sha": "13129b1fbfff5f94291f98c8fec7875e099a2ae6",
+    "downstream_message": "scsi: ufs: core: Ensure clk_gating.lock is used only after initialization\n\ncommit 3d4114a1d34413dfffa0094c2eb7b95e61087abd upstream.\n\nAddress a lockdep warning triggered by the use of the clk_gating.lock before\nit is properly initialized. The warning is as follows:\n\n[    4.388838] INFO: trying to register non-static key.\n[    4.395673] The code is fine but needs lockdep annotation, or maybe\n[    4.402118] you didn't initialize this object before use?\n[    4.407673] turning off the locking correctness validator.\n[    4.413334] CPU: 5 UID: 0 PID: 58 Comm: kworker/u32:1 Not tainted 6.12-rc1 #185\n[    4.413343] Hardware name: Qualcomm Technologies, Inc. Robotics RB5 (DT)\n[    4.413362] Call trace:\n[    4.413364]  show_stack+0x18/0x24 (C)\n[    4.413374]  dump_stack_lvl+0x90/0xd0\n[    4.413384]  dump_stack+0x18/0x24\n[    4.413392]  register_lock_class+0x498/0x4a8\n[    4.413400]  __lock_acquire+0xb4/0x1b90\n[    4.413406]  lock_acquire+0x114/0x310\n[    4.413413]  _raw_spin_lock_irqsave+0x60/0x88\n[    4.413423]  ufshcd_setup_clocks+0x2c0/0x490\n[    4.413433]  ufshcd_init+0x198/0x10ec\n[    4.413437]  ufshcd_pltfrm_init+0x600/0x7c0\n[    4.413444]  ufs_qcom_probe+0x20/0x58\n[    4.413449]  platform_probe+0x68/0xd8\n[    4.413459]  really_probe+0xbc/0x268\n[    4.413466]  __driver_probe_device+0x78/0x12c\n[    4.413473]  driver_probe_device+0x40/0x11c\n[    4.413481]  __device_attach_driver+0xb8/0xf8\n[    4.413489]  bus_for_each_drv+0x84/0xe4\n[    4.413495]  __device_attach+0xfc/0x18c\n[    4.413502]  device_initial_probe+0x14/0x20\n[    4.413510]  bus_probe_device+0xb0/0xb4\n[    4.413517]  deferred_probe_work_func+0x8c/0xc8\n[    4.413524]  process_scheduled_works+0x250/0x658\n[    4.413534]  worker_thread+0x15c/0x2c8\n[    4.413542]  kthread+0x134/0x200\n[    4.413550]  ret_from_fork+0x10/0x20\n\nTo fix this issue, ensure that the spinlock is only used after it has been\nproperly initialized before using it in ufshcd_setup_clocks().  Do that\nunconditionally as initializing a spinlock is a fast operation.\n\nFixes: 209f4e43b806 (\"scsi: ufs: core: Introduce a new clock_gating lock\")\nReported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>\nTested-by: Geert Uytterhoeven <geert+renesas@glider.be>\nSigned-off-by: Avri Altman <avri.altman@wdc.com>\nLink: https://lore.kernel.org/r/20250128071207.75494-2-avri.altman@wdc.com\nReviewed-by: Bean Huo <beanhuo@micron.com>\nReviewed-by: Bart Van Assche <bvanassche@acm.org>\nSigned-off-by: Martin K. Petersen <martin.petersen@oracle.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": "error: patch failed: drivers/ufs/core/ufshcd.c:2120\nerror: drivers/ufs/core/ufshcd.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/3d4114/patches/upstream_3d4114.patch",
+      "success": false,
+      "timestamp": "2025-03-14T06:47:46.260359"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "llm_adapted",
+    "timestamp": "2025-03-14T11:30:37.090459"
+  }
+}

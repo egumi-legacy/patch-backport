@@ -1,0 +1,36 @@
+{
+  "commit": {
+    "sha": "675d0e3cacc3ae7c29294a5f6a820187f862ad8b",
+    "patch_url": "https://github.com/gregkh/linux/commit/675d0e3cacc3ae7c29294a5f6a820187f862ad8b.patch",
+    "downstream_sha": "414ce1853b8dbe8712af56b6119aa472595640f4",
+    "downstream_message": "net: pse-pd: Avoid setting max_uA in regulator constraints\n\n[ Upstream commit 675d0e3cacc3ae7c29294a5f6a820187f862ad8b ]\n\nSetting the max_uA constraint in the regulator API imposes a current\nlimit during the regulator registration process. This behavior conflicts\nwith preserving the maximum PI power budget configuration across reboots.\n\nInstead, compare the desired current limit to MAX_PI_CURRENT in the\npse_pi_set_current_limit() function to ensure proper handling of the\npower budget.\n\nAcked-by: Oleksij Rempel <o.rempel@pengutronix.de>\nSigned-off-by: Kory Maincent <kory.maincent@bootlin.com>\nSigned-off-by: Paolo Abeni <pabeni@redhat.com>\nStable-dep-of: f6093c5ec74d (\"net: pse-pd: pd692x0: Fix power limit retrieval\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/675d0e/patches/upstream_675d0e.patch",
+      "timestamp": "2025-03-14T13:10:20.205719"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-14T13:10:20.372208"
+  }
+}

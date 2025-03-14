@@ -68,8 +68,8 @@ class LLMAdapterModule(BaseModule):
             # 保存LLM响应
             response_path = self._save_llm_response(context, parsed_response)
             
-            # # 测试LLM生成的补丁是否可以应用
-            # apply_result = self._test_patch_apply(context, response_path)
+            # 测试LLM生成的补丁是否可以应用
+            apply_result = self._test_patch_apply(context, response_path)
             
             # 更新上下文
             context.llm_output = {
@@ -77,7 +77,7 @@ class LLMAdapterModule(BaseModule):
                 'content': parsed_response,
                 'prompt': prompt_data,
                 'response_path': str(response_path),
-                # 'apply_result': apply_result,
+                'apply_result': apply_result,
                 'timestamp': datetime.now().isoformat(),
                 'retry_count': context.retry_count
             }

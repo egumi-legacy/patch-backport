@@ -1,14 +1,3 @@
-A. Commit message:
-vsock/bpf: Warn on socket without transport for older version
-
-B. Change summary:
-This patch backports the warning for sockets without transport to the older version of the vsock codebase. It ensures that cases where a socket does not have a transport are guarded with WARN_ON_ONCE and return -ENODEV to prevent potential null pointer dereferences.
-
-C. Compatibility Risk:
-Low
-
-D. Fixed Code:
-```diff
 diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
 index 53a081d49d28a..7e3db87ae4333 100644
 --- a/net/vmw_vsock/af_vsock.c
@@ -51,4 +40,3 @@ index f201d9eca1df2..07b96d56f3a57 100644
  		copied = -ENODEV;
  		goto out;
  	}
-```

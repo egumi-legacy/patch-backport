@@ -1,0 +1,139 @@
+2025-03-14 13:19:05.654 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250314_131905.log
+2025-03-14 13:19:05.654 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-14 13:19:05.654 | INFO     | __main__:_get_commits_list:255 - commits_file:workspace/gregkh/linux_cache/branch_linux-6.12.y_commits.json
+2025-03-14 13:19:05.655 | INFO     | __main__:_get_commits_list:256 - use_cached_commits:True
+2025-03-14 13:19:05.655 | INFO     | __main__:_get_commits_list:259 - 从缓存文件加载commits信息
+2025-03-14 13:19:05.657 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-03-14 13:19:05.657 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: direct_apply
+2025-03-14 13:19:05.658 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: chunk_analyzer
+2025-03-14 13:19:05.658 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: llm_adapter
+2025-03-14 13:19:05.659 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: patch_adapter
+2025-03-14 13:19:05.659 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: compiler
+2025-03-14 13:19:05.659 | INFO     | __main__:_process_mode2:197 - 处理提交 89/1: 4ccacf
+2025-03-14 13:19:05.660 | INFO     | core.adaptation_pipeline:process_patch:68 - 开始处理补丁: 4ccacf86491d33d2486b62d4d44864d7101b299d
+2025-03-14 13:19:05.660 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: direct_apply
+2025-03-14 13:19:05.661 | INFO     | modules.direct_apply:_download_patch:215 - 下游补丁文件已存在: workspace/gregkh/linux/4ccacf/patches/downstream_ff81b1.patch
+2025-03-14 13:19:05.661 | INFO     | modules.direct_apply:_download_patch:228 - 上游补丁文件已存在: workspace/gregkh/linux/4ccacf/patches/upstream_4ccacf.patch
+2025-03-14 13:19:05.662 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-03-14 13:19:05.662 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/patches/upstream_4ccacf.patch
+2025-03-14 13:19:05.864 | INFO     | modules.direct_apply:_prepare_test_branch:342 - 创建测试分支: test_patch_linux-6.12.y
+2025-03-14 13:19:06.371 | ERROR    | modules.direct_apply:_apply_patch:282 - 补丁应用失败: error: patch failed: drivers/net/gtp.c:2481
+error: drivers/net/gtp.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-03-14 13:19:06.656 | INFO     | modules.direct_apply:_save_to_cache:200 - 已将直接应用结果保存到缓存: 4ccacf86491d33d2486b62d4d44864d7101b299d_linux-6.12.y
+2025-03-14 13:19:06.804 | INFO     | modules.direct_apply:_cleanup_test_branch:433 - 清理测试分支: test_patch_linux-6.12.y
+2025-03-14 13:19:06.804 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: chunk_analyzer
+2025-03-14 13:19:06.804 | INFO     | modules.chunk_analyzer:execute:43 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/patches/upstream_4ccacf.patch
+2025-03-14 13:19:06.805 | INFO     | modules.chunk_analyzer:execute:47 - 补丁被分解为 1 个块
+2025-03-14 13:19:06.805 | INFO     | modules.chunk_analyzer:execute:51 - 有价值的块: 1, 跳过的块: 0
+2025-03-14 13:19:06.806 | INFO     | modules.chunk_analyzer:_generate_optimized_patch:305 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/patches/upstream_4ccacf.patch
+2025-03-14 13:19:06.806 | INFO     | modules.chunk_analyzer:_generate_optimized_patch:342 - 生成优化后的补丁文件: workspace/gregkh/linux/4ccacf/chunk_analyzer/optimized_20250314_131906.patch
+2025-03-14 13:19:06.807 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/4ccacf/evaluations/chunk_analyzer/metrics_4ccacf_20250314_131906.json
+2025-03-14 13:19:06.807 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: llm_adapter
+2025-03-14 13:19:06.808 | INFO     | modules.llm_adapter:execute:49 - 使用优化后的补丁文件: workspace/gregkh/linux/4ccacf/chunk_analyzer/optimized_20250314_131906.patch
+2025-03-14 13:19:06.839 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-03-14 13:19:06.839 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/gregkh/linux/4ccacf/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-14 13:19:06.839 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-03-14 13:19:06.839 | INFO     | modules.llm_adapter:_call_llm:312 - llm.run() result:{'openai_responses': ['diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c\nindex d64740bf44ed3..b7b46c5e6399a 100644\n--- a/drivers/net/gtp.c\n+++ b/drivers/net/gtp.c\n@@ -2481,11 +2481,6 @@ static void __net_exit gtp_net_exit_batch_rtnl(struct list_head *net_list,\n \tlist_for_each_entry(net, net_list, exit_list) {\n \t\tstruct gtp_net *gn = net_generic(net, gtp_net_id);\n \t\tstruct gtp_dev *gtp, *gtp_next;\n-\t\tstruct net_device *dev;\n-\n-\t\tfor_each_netdev(net, dev)\n-\t\t\tif (dev->rtnl_link_ops == &gtp_link_ops)\n-\t\t\t\tgtp_dellink(dev, dev_to_kill);\n \n \t\tlist_for_each_entry_safe(gtp, gtp_next, &gn->gtp_dev_list, list)\n \t\t\tgtp_dellink(gtp->dev, dev_to_kill);'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-03-14 13:19:06.840 | INFO     | modules.llm_adapter:_parse_llm_response:394 - 原始LLM响应(前100字符): diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index d64740bf44ed3..b7b46c5e6399a 100644
+--- a/d...
+2025-03-14 13:19:06.840 | INFO     | modules.llm_adapter:_parse_llm_response:417 - 找到diff --git格式，内容前100字符: diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index d64740bf44ed3..b7b46c5e6399a 100644
+--- a/d...
+2025-03-14 13:19:06.841 | INFO     | modules.llm_adapter:_save_llm_response:447 - LLM响应已保存到: workspace/gregkh/linux/4ccacf/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-14 13:19:06.841 | INFO     | modules.llm_adapter:_save_llm_response:448 - 原始LLM响应已保存到: workspace/gregkh/linux/4ccacf/llm_output/raw_output_linux-6.12.y_qwen-plus.patch
+2025-03-14 13:19:06.844 | INFO     | modules.llm_adapter:_prepare_test_branch:492 - 切换到分支: linux-6.12.y
+2025-03-14 13:19:06.988 | INFO     | modules.llm_adapter:_prepare_test_branch:502 - 创建测试分支: test_llm_patch_linux-6.12.y
+2025-03-14 13:19:07.033 | ERROR    | modules.llm_adapter:_apply_patch:553 - LLM补丁应用失败: Patch format detection failed.
+
+2025-03-14 13:19:07.077 | INFO     | modules.llm_adapter:_cleanup_test_branch:583 - 清理测试分支: test_llm_patch_linux-6.12.y
+2025-03-14 13:19:09.812 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/4ccacf/evaluations/llm_adapter/metrics_4ccacf_20250314_131909.json
+2025-03-14 13:19:09.813 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: patch_adapter
+2025-03-14 13:19:09.813 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/gregkh/linux/4ccacf/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-14 13:19:09.814 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_linux-6.12.y_20250314_131909
+2025-03-14 13:19:14.217 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index d64740bf44ed3..b7b46c5e6399a 100644
+--- a/drivers/net/gtp.c
++++ b/drivers/net/gtp.c
+@@ -2481,11 +2481,6 @@ static void __net_exit gtp_net_exit_batch_rtnl(struct list_head *net_list,
+ 	list_for_each_entry(net, net_list, exit_list) {
+ 		struct gtp_net *gn = net_generic(net, gtp_net_id);
+ 		struct gtp_dev *gtp, *gtp_next;
+-		struct net_device *dev;
+-
+-		for_each_netdev(net, dev)
+-			if (dev->rtnl_link_ops == >p_link_ops)
+-				gtp_dellink(dev, dev_to_kill);
+ 
+ 		list_for_each_entry_safe(gtp, gtp_next, &gn->gtp_dev_list, list)
+ 			gtp_dellink(gtp->dev, dev_to_kill);
+2025-03-14 13:19:14.218 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -2481,11 +2481,6 @@ static void __net_exit gtp_net_exit_batch_rtnl(struct list_head *net_list,
+ 	list_for_each_entry(net, net_list, exit_list) {
+ 		struct gtp_net *gn = net_generic(net, gtp_net_id);
+ 		struct gtp_dev *gtp, *gtp_next;
+-		struct net_device *dev;
+-
+-		for_each_netdev(net, dev)
+-			if (dev->rtnl_link_ops == >p_link_ops)
+-				gtp_dellink(dev, dev_to_kill);
+ 
+ 		list_for_each_entry_safe(gtp, gtp_next, &gn->gtp_dev_list, list)
+ 			gtp_dellink(gtp->dev, dev_to_kill);
+2025-03-14 13:19:14.219 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -2481,11 +2481,6 @@ static void __net_exit gtp_net_exit_batch_rtnl(struct list_head *net_list,
+ 	list_for_each_entry(net, net_list, exit_list) {
+ 		struct gtp_net *gn = net_generic(net, gtp_net_id);
+ 		struct gtp_dev *gtp, *gtp_next;
+-		struct net_device *dev;
+-
+-		for_each_netdev(net, dev)
+-			if (dev->rtnl_link_ops == >p_link_ops)
+-				gtp_dellink(dev, dev_to_kill);
+ 
+ 		list_for_each_entry_safe(gtp, gtp_next, &gn->gtp_dev_list, list)
+ 			gtp_dellink(gtp->dev, dev_to_kill);
+2025-03-14 13:19:14.219 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 2481, 'old_count': 11, 'new_start': 2481, 'new_count': 6}, 'lines': [('context', '\tlist_for_each_entry(net, net_list, exit_list) {'), ('context', '\t\tstruct gtp_net *gn = net_generic(net, gtp_net_id);'), ('context', '\t\tstruct gtp_dev *gtp, *gtp_next;'), ('remove', '\t\tstruct net_device *dev;'), ('remove', ''), ('remove', '\t\tfor_each_netdev(net, dev)'), ('remove', '\t\t\tif (dev->rtnl_link_ops == >p_link_ops)'), ('remove', '\t\t\t\tgtp_dellink(dev, dev_to_kill);'), ('context', ''), ('context', '\t\tlist_for_each_entry_safe(gtp, gtp_next, &gn->gtp_dev_list, list)'), ('context', '\t\t\tgtp_dellink(gtp->dev, dev_to_kill);')]}
+2025-03-14 13:19:14.226 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-03-14 13:19:14.226 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 2481, 'old_count': 11, 'new_start': 2481, 'new_count': 6}, 'lines': [('context', '\tlist_for_each_entry(net, net_list, exit_list) {'), ('context', '\t\tstruct gtp_net *gn = net_generic(net, gtp_net_id);'), ('context', '\t\tstruct gtp_dev *gtp, *gtp_next;'), ('remove', '\t\tstruct net_device *dev;'), ('remove', ''), ('remove', '\t\tfor_each_netdev(net, dev)'), ('remove', '\t\t\tif (dev->rtnl_link_ops == >p_link_ops)'), ('remove', '\t\t\t\tgtp_dellink(dev, dev_to_kill);'), ('context', ''), ('context', '\t\tlist_for_each_entry_safe(gtp, gtp_next, &gn->gtp_dev_list, list)'), ('context', '\t\t\tgtp_dellink(gtp->dev, dev_to_kill);')]}
+2025-03-14 13:19:14.227 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: drivers/net/gtp.c
+2025-03-14 13:19:14.228 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/workspace/sow/backport-test/linux/drivers/net/gtp.c
+2025-03-14 13:19:14.228 | INFO     | modules.patch_adapter:_generate_adapted_patch:271 - 文件未修改: drivers/net/gtp.c
+2025-03-14 13:19:14.229 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-03-14 13:19:14.229 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_linux-6.12.y_20250314_131909
+2025-03-14 13:19:14.385 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-03-14 13:19:14.386 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-03-14 13:19:14.387 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/gregkh/linux/4ccacf/metrics/patch_adapter_metrics.json
+2025-03-14 13:19:14.387 | INFO     | modules.base_module:_should_run:65 - 适配补丁失败，跳过编译
+2025-03-14 13:19:14.387 | INFO     | core.adaptation_pipeline:process_patch:105 - 补丁处理完成，耗时: 8.73秒
+2025-03-14 13:19:14.388 | INFO     | __main__:_save_results:437 - 结果已保存到: results/linux-6.12.y_4ccacf_20250314_131914/result.json
+2025-03-14 13:19:14.388 | INFO     | __main__:_print_summary:447 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-03-14 13:19:14.389 | INFO     | __main__:_print_summary:468 - ==================================================
+2025-03-14 13:19:14.389 | INFO     | __main__:_print_summary:469 - 处理摘要 - 提交: 4ccacf
+2025-03-14 13:19:14.389 | INFO     | __main__:_print_summary:470 - 结果: 处理失败 (方法: failed)
+2025-03-14 13:19:14.390 | INFO     | __main__:_print_summary:475 - ==================================================
+2025-03-14 13:19:14.390 | INFO     | __main__:_print_mode2_statistics:518 - ============================================================
+2025-03-14 13:19:14.390 | INFO     | __main__:_print_mode2_statistics:519 - 模式2处理统计
+2025-03-14 13:19:14.390 | INFO     | __main__:_print_mode2_statistics:520 - ============================================================
+2025-03-14 13:19:14.391 | INFO     | __main__:_print_mode2_statistics:521 - 总提交数: 1
+2025-03-14 13:19:14.391 | INFO     | __main__:_print_mode2_statistics:522 - 直接应用成功: 0
+2025-03-14 13:19:14.391 | INFO     | __main__:_print_mode2_statistics:523 - 需要适配数量: 1
+2025-03-14 13:19:14.391 | INFO     | __main__:_print_mode2_statistics:524 - 适配成功数量: 0
+2025-03-14 13:19:14.392 | INFO     | __main__:_print_mode2_statistics:525 - - LLM适配成功: 0
+2025-03-14 13:19:14.392 | INFO     | __main__:_print_mode2_statistics:526 - - 补丁适配成功: 0
+2025-03-14 13:19:14.392 | INFO     | __main__:_print_mode2_statistics:527 - - 编译成功: 0
+2025-03-14 13:19:14.392 | INFO     | __main__:_print_mode2_statistics:528 - 适配失败数量: 1
+2025-03-14 13:19:14.393 | INFO     | __main__:_print_mode2_statistics:530 - 适配成功率: 0.00%
+2025-03-14 13:19:14.393 | INFO     | __main__:_print_mode2_statistics:533 - 
+失败的提交:
+2025-03-14 13:19:14.393 | INFO     | __main__:_print_mode2_statistics:535 -   - 4ccacf: None
+2025-03-14 13:19:14.393 | INFO     | __main__:_print_mode2_statistics:537 - ============================================================
+2025-03-14 13:19:14.394 | INFO     | __main__:_print_mode2_statistics:565 - 统计结果已保存到: statistics/mode2_stats_linux-6.12.y_20250314_131914.json
+2025-03-14 13:19:14.394 | INFO     | __main__:run:122 - 处理完成

@@ -1,14 +1,3 @@
-A. Commit message:
-gtp: Suppress list corruption splat in gtp_net_exit_batch_rtnl()
-
-B. Change summary:
-Removed the for_each_netdev() loop from gtp_net_exit_batch_rtnl() to prevent calling gtp_dellink() multiple times on the same device, which can cause list corruption. Delegated the destruction of devices to default_device_exit_batch().
-
-C. Compatibility Risk:
-Low
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
 index d64740bf44ed3..b7b46c5e6399a 100644
 --- a/drivers/net/gtp.c
@@ -25,4 +14,3 @@ index d64740bf44ed3..b7b46c5e6399a 100644
  
  		list_for_each_entry_safe(gtp, gtp_next, &gn->gtp_dev_list, list)
  			gtp_dellink(gtp->dev, dev_to_kill);
-```

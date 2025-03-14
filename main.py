@@ -175,16 +175,25 @@ class PatchBackportTool:
         
         # 统计变量
         start = 65 # 30
-        end = len(commits_list) - 1 # 65
+        end = 100 # 65
         total_commits = len(commits_list[start:end])
+        # total_commits = end - start + 1
         successful_commits = 0
+        direct_success_count = 0
+        llm_success_count = 0
+        patch_adapter_success_count = 0
+        compiler_success_count = 0
         failed_commits = []
         
         # 处理每个提交
         for idx, commit_info in enumerate(commits_list[start:end], start+1):
             upstream_sha = commit_info['upstream_sha']
-            if upstream_sha != "3d4114a1d34413dfffa0094c2eb7b95e61087abd":
+            # 单个测试
+            if upstream_sha != "4ccacf86491d33d2486b62d4d44864d7101b299d":
                 continue
+            else:
+                total_commits = 1
+
             logger.info(f"处理提交 {idx}/{total_commits}: {upstream_sha[:6]}")
             
             # 创建提交上下文
@@ -207,9 +216,23 @@ class PatchBackportTool:
             
             # 更新统计
             direct_success = bool(context.direct_apply_result and context.direct_apply_result.get('success'))
-            llm_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
+            if direct_success:
+                direct_success_count += 1
+                continue
+            llm_success = bool(context.llm_output.get('apply_result') and context.llm_output.get('apply_result').get('success'))
+            patch_adapter_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
+            compilation_success = bool(context.compilation_result and context.compilation_result.get('success'))
             
-            if direct_success or llm_success:
+            
+            # if direct_success:
+            #     direct_success_count += 1
+            if llm_success:
+                llm_success_count += 1
+            if patch_adapter_success:
+                patch_adapter_success_count += 1
+            if compilation_success:
+                compiler_success_count += 1
+            if direct_success or llm_success or patch_adapter_success or compilation_success:
                 successful_commits += 1
             else:
                 failed_commits.append({
@@ -218,7 +241,12 @@ class PatchBackportTool:
                 })
         
         # 打印总体统计
-        self._print_mode2_statistics(total_commits, successful_commits, failed_commits)
+        self._print_mode2_statistics(total_commits, 
+                                     direct_success_count, 
+                                     llm_success_count, 
+                                     patch_adapter_success_count, 
+                                     compiler_success_count, 
+                                     failed_commits)
     
     def _get_commits_list(self) -> List[Dict[str, str]]:
         """获取上游提交信息"""
@@ -359,6 +387,8 @@ class PatchBackportTool:
             },
             'results': {
                 'direct_apply': context.direct_apply_result,
+                'llm_adapter': context.llm_output,
+                'patch_adapter': context.patch_adapter_result,
                 # 'llm_response': {
                 #     'status': context.llm_response.get('status') if context.llm_response else None,
                 #     'timestamp': context.llm_response.get('timestamp') if context.llm_response else None,
@@ -375,8 +405,15 @@ class PatchBackportTool:
             'summary': {
                 'success': bool(context.direct_apply_result and context.direct_apply_result.get('success')) or
                           bool(context.patch_adapter_result and context.patch_adapter_result.get('success')),
-                'method': 'direct_apply' if (context.direct_apply_result and 
-                                           context.direct_apply_result.get('success')) else 'llm_adapted',
+                'method': next(
+                    method for method, condition in [
+                        ('direct_apply', context.direct_apply_result and context.direct_apply_result.get('success')),
+                        ('compiler', context.compilation_result and context.compilation_result.get('success')),
+                        ('llm_adapter', context.llm_output and context.llm_output.get('success')),
+                        ('patch_adapter', context.patch_adapter_result and context.patch_adapter_result.get('success')),
+                        ('failed', True)
+                    ] if condition
+                ),
                 'timestamp': datetime.now().isoformat()
             }
         }
@@ -409,7 +446,7 @@ class PatchBackportTool:
         llm_success = bool(context.llm_output and context.llm_output.get('success'))
         logger.info(f"context.patch_adapter_result: {context.patch_adapter_result}")
         patch_adapter_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
-        
+        compilation_success = bool(context.compilation_result and context.compilation_result.get('success'))
         
         if direct_success:
             result = "直接应用成功"
@@ -420,6 +457,9 @@ class PatchBackportTool:
         elif patch_adapter_success:
             result = "补丁适配成功"
             method = "patch_adapter"
+        elif compilation_success:
+            result = "编译成功"
+            method = "compiler"
         else:
             result = "处理失败"
             method = "failed"
@@ -434,53 +474,59 @@ class PatchBackportTool:
         
         logger.info("=" * 50)
 
-    def _print_mode2_statistics(self, total, successful, failed_commits):
+    def _print_mode2_statistics(self, total, direct_success_count, llm_success_count, patch_adapter_success_count, compiler_success_count, failed_commits):
         """打印模式2的统计信息"""
-        success_rate = (successful / total) * 100 if total > 0 else 0
+        # success_rate = (compiler_success_count) / total * 100 if total > 0 else 0
         
         # 从上下文中提取处理方法信息 (不使用不存在的self.processed_commits属性)
         direct_apply_count = 0
         patch_adapter_count = 0
         llm_adapter_count = 0
+        compiler_count = 0
         failed_count = len(failed_commits)
         
         # 从result.json文件中获取详细信息
         results_dir = Path("results")
-        if results_dir.exists():
-            # 遍历results目录下的所有结果文件
-            for result_dir in results_dir.iterdir():
-                if not result_dir.is_dir() or not (result_dir / "result.json").exists():
-                    continue
+        # if results_dir.exists():
+        #     # 遍历results目录下的所有结果文件
+        #     for result_dir in results_dir.iterdir():
+        #         logger.info(f"result_dir: {result_dir.resolve()}")
+        #         if not result_dir.is_dir() or not (result_dir / "result.json").exists():
+        #             continue
                     
-                with open(result_dir / "result.json", "r") as f:
-                    result_data = json.load(f)
+        #         with open(result_dir / "result.json", "r") as f:
+        #             result_data = json.load(f)
                     
-                # 检查处理方法
-                if "summary" in result_data and "method" in result_data["summary"]:
-                    method = result_data["summary"]["method"]
-                    if method == "direct_apply":
-                        direct_apply_count += 1
-                    elif method == "patch_adapter":
-                        patch_adapter_count += 1
-                    elif method == "llm_adapter":
-                        llm_adapter_count += 1
+        #         # 检查处理方法
+        #         if "summary" in result_data and "method" in result_data["summary"]:
+        #             method = result_data["summary"]["method"]
+        #             logger.info(f"method: {method}")
+        #             if method == "direct_apply":
+        #                 direct_apply_count += 1
+        #             elif method == "patch_adapter":
+        #                 patch_adapter_count += 1
+        #             elif method == "llm_adapter":
+        #                 llm_adapter_count += 1
+        #             elif method == "compiler":
+        #                 compiler_count += 1
         
         # 计算适配成功率（排除直接应用成功的情况）
-        adapt_required = total - direct_apply_count
-        adapt_successful = patch_adapter_count + llm_adapter_count
+        adapt_required = total - direct_success_count
+        adapt_successful = compiler_success_count
         adapt_success_rate = (adapt_successful / adapt_required) * 100 if adapt_required > 0 else 0
         
         logger.info("=" * 60)
         logger.info(f"模式2处理统计")
         logger.info("=" * 60)
         logger.info(f"总提交数: {total}")
-        logger.info(f"直接应用成功: {direct_apply_count}")
+        logger.info(f"直接应用成功: {direct_success_count}")
         logger.info(f"需要适配数量: {adapt_required}")
         logger.info(f"适配成功数量: {adapt_successful}")
-        logger.info(f"- 补丁适配成功: {patch_adapter_count}")
-        logger.info(f"- LLM适配成功: {llm_adapter_count}")
+        logger.info(f"- LLM适配成功: {llm_success_count}")
+        logger.info(f"- 补丁适配成功: {patch_adapter_success_count}")
+        logger.info(f"- 编译成功: {compiler_success_count}")
         logger.info(f"适配失败数量: {failed_count}")
-        logger.info(f"总体成功率: {success_rate:.2f}%")
+        # logger.info(f"总体成功率: {success_rate:.2f}%")
         logger.info(f"适配成功率: {adapt_success_rate:.2f}%")
         
         if failed_commits:
@@ -501,13 +547,14 @@ class PatchBackportTool:
             'timestamp': datetime.now().isoformat(),
             'target_version': self.config.target_version,
             'total_commits': total,
-            'direct_apply_success': direct_apply_count,
+            'direct_apply_success': direct_success_count,
             'adaptation_required': adapt_required,
             'adaptation_successful': adapt_successful,
-            'patch_adapter_success': patch_adapter_count,
-            'llm_adapter_success': llm_adapter_count,
+            'patch_adapter_success': patch_adapter_success_count,
+            'llm_adapter_success': llm_success_count,
+            'compiler_success': compiler_success_count,
             'failed_commits': failed_count,
-            'overall_success_rate': success_rate,
+            # 'overall_success_rate': success_rate,
             'adaptation_success_rate': adapt_success_rate,
             'failed_details': failed_commits
         }

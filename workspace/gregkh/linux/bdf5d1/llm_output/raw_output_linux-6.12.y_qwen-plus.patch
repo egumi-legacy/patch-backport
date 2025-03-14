@@ -1,14 +1,3 @@
-A. Commit message:
-ibmvnic: Prevent skb reference after sending to VIOS in older version
-
-B. Change summary:
-The patch ensures that the skb length is captured before sending the buffer to VIOS, avoiding a potential use-after-free bug. This change prevents accessing the skb memory after it has been sent to VIOS, which could lead to race conditions and memory corruption.
-
-C. Compatibility Risk:
-Low
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
 index 6c9d3e4..e95ae0d 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.c
@@ -49,4 +38,3 @@ index 6c9d3e4..e95ae0d 100644
  	txq_trans_cond_update(txq);
  	ret = NETDEV_TX_OK;
  	goto out;
-```

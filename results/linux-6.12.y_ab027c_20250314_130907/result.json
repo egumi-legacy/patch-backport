@@ -1,0 +1,36 @@
+{
+  "commit": {
+    "sha": "ab027c488fc4a1fff0a5b712d4bdb2d2d324e8f8",
+    "patch_url": "https://github.com/gregkh/linux/commit/ab027c488fc4a1fff0a5b712d4bdb2d2d324e8f8.patch",
+    "downstream_sha": "f3adf0094b6ead9f87d3fa5677c97f1c176b75ca",
+    "downstream_message": "firmware: arm_scmi: imx: Correct tx size of scmi_imx_misc_ctrl_set\n\n[ Upstream commit ab027c488fc4a1fff0a5b712d4bdb2d2d324e8f8 ]\n\n'struct scmi_imx_misc_ctrl_set_in' has a zero length array in the end,\nThe sizeof will not count 'value[]', and hence Tx size will be smaller\nthan actual size for Tx,and SCMI firmware will flag this as protocol\nerror.\n\nFix this by enlarge the Tx size with 'num * sizeof(__le32)' to count in\nthe size of data.\n\nFixes: 61c9f03e22fc (\"firmware: arm_scmi: Add initial support for i.MX MISC protocol\")\nReviewed-by: Jacky Bai <ping.bai@nxp.com>\nTested-by: Shengjiu Wang <shengjiu.wang@nxp.com>\nAcked-by: Jason Liu <jason.hui.liu@nxp.com>\nSigned-off-by: Peng Fan <peng.fan@nxp.com>\nMessage-Id: <20250123063441.392555-1-peng.fan@oss.nxp.com>\n(sudeep.holla: Commit rewording and replace hardcoded sizeof(__le32) value)\nSigned-off-by: Sudeep Holla <sudeep.holla@arm.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": null,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/ab027c/patches/upstream_ab027c.patch",
+      "success": true,
+      "timestamp": "2025-03-13T20:56:27.682342"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-14T13:09:07.193914"
+  }
+}

@@ -1,13 +1,3 @@
-A. Commit message:
-net: pse-pd: Backport power limit driver side changes to older kernel version
-
-B. Change summary:
-Backported the patch which switches the PSE driver from using current limits to power limits. This includes renaming functions from _current_limit to _pw_limit and removing the now unnecessary _pse_ethtool_get_status function. Adjustments were made to ensure compatibility with the older kernel version, including retaining MAX_PI_CURRENT and handling missing MAX_PI_PW.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
 diff --git a/drivers/net/pse-pd/pd692x0.c b/drivers/net/pse-pd/pd692x0.c
 index 0af7db80b2f88..9f00538f7e450 100644
 --- a/drivers/net/pse-pd/pd692x0.c

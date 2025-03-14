@@ -1,0 +1,36 @@
+{
+  "commit": {
+    "sha": "98380110bd48fbfd6a798ee11fffff893d36062c",
+    "patch_url": "https://github.com/gregkh/linux/commit/98380110bd48fbfd6a798ee11fffff893d36062c.patch",
+    "downstream_sha": "ae11d93046a0a99d1294b99ad4782a1d2b8e1b9c",
+    "downstream_message": "power: supply: axp20x_battery: Fix fault handling for AXP717\n\n[ Upstream commit 98380110bd48fbfd6a798ee11fffff893d36062c ]\n\nCorrect the fault handling for the AXP717 by changing the i2c write\nfrom regmap_update_bits() to regmap_write_bits(). The update bits\nfunction does not work properly on a RW1C register where we must\nwrite a 1 back to an existing register to clear it.\n\nAdditionally, as part of this testing I confirmed the behavior of\nerrors reappearing, so remove comment about assumptions.\n\nFixes: 6625767049c2 (\"power: supply: axp20x_battery: add support for AXP717\")\nSigned-off-by: Chris Morgan <macromorgan@hotmail.com>\nReviewed-by: Chen-Yu Tsai <wens@csie.org>\nLink: https://lore.kernel.org/r/20250131231455.153447-2-macroalpha82@gmail.com\nSigned-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": null,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/983801/patches/upstream_983801.patch",
+      "success": true,
+      "timestamp": "2025-03-13T20:56:47.916947"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-14T13:09:17.268853"
+  }
+}
