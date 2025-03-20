@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "071d8012869b6af352acca346ade13e7be90a49f",
+    "patch_url": "https://github.com/gregkh/linux/commit/071d8012869b6af352acca346ade13e7be90a49f.patch",
+    "downstream_sha": "dfe542e745fcedbe46f964d5fb6c954aada823b1",
+    "downstream_message": "ipv4: use RCU protection in ip_dst_mtu_maybe_forward()\n\n[ Upstream commit 071d8012869b6af352acca346ade13e7be90a49f ]\n\nip_dst_mtu_maybe_forward() must use RCU protection to make\nsure the net structure it reads does not disappear.\n\nFixes: f87c10a8aa1e8 (\"ipv4: introduce ip_dst_mtu_maybe_forward and protect forwarding path against pmtu spoofing\")\nSigned-off-by: Eric Dumazet <edumazet@google.com>\nReviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>\nLink: https://patch.msgid.link/20250205155120.1676781-4-edumazet@google.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/071d80/patches/upstream_071d80.patch",
+      "timestamp": "2025-03-20T07:58:47.243923"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:58:47.824931"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "361a2ebb5cad211732ec3c5d962de49b21895590",
+    "patch_url": "https://github.com/gregkh/linux/commit/361a2ebb5cad211732ec3c5d962de49b21895590.patch",
+    "downstream_sha": "6c4dcdbe513705585b0198349c097233c0a604a1",
+    "downstream_message": "drm/tidss: Clear the interrupt status for interrupts being disabled\n\ncommit 361a2ebb5cad211732ec3c5d962de49b21895590 upstream.\n\nThe driver does not touch the irqstatus register when it is disabling\ninterrupts.  This might cause an interrupt to trigger for an interrupt\nthat was just disabled.\n\nTo fix the issue, clear the irqstatus registers right after disabling\nthe interrupts.\n\nFixes: 32a1795f57ee (\"drm/tidss: New driver for TI Keystone platform Display SubSystem\")\nCc: stable@vger.kernel.org\nReported-by: Jonathan Cormier <jcormier@criticallink.com>\nCloses: https://e2e.ti.com/support/processors-group/processors/f/processors-forum/1394222/am625-issue-about-tidss-rcu_preempt-self-detected-stall-on-cpu/5424479#5424479\nSigned-off-by: Devarsh Thakkar <devarsht@ti.com>\n[Tomi: mostly rewrote the patch]\nReviewed-by: Jonathan Cormier <jcormier@criticallink.com>\nTested-by: Jonathan Cormier <jcormier@criticallink.com>\nReviewed-by: Aradhya Bhatia <aradhya.bhatia@linux.dev>\nSigned-off-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>\nLink: https://patchwork.freedesktop.org/patch/msgid/20241021-tidss-irq-fix-v1-5-82ddaec94e4a@ideasonboard.com\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/361a2e/patches/upstream_361a2e.patch",
+      "timestamp": "2025-03-20T07:55:58.139348"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:55:58.718850"
+  }
+}

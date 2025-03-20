@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "36b62df5683c315ba58c950f1a9c771c796c30ec",
+    "patch_url": "https://github.com/gregkh/linux/commit/36b62df5683c315ba58c950f1a9c771c796c30ec.patch",
+    "downstream_sha": "6798f428d8f82244faa4fd196ab17c6630615eb0",
+    "downstream_message": "bpf: Fix wrong copied_seq calculation\n\n[ Upstream commit 36b62df5683c315ba58c950f1a9c771c796c30ec ]\n\n'sk->copied_seq' was updated in the tcp_eat_skb() function when the action\nof a BPF program was SK_REDIRECT. For other actions, like SK_PASS, the\nupdate logic for 'sk->copied_seq' was moved to tcp_bpf_recvmsg_parser()\nto ensure the accuracy of the 'fionread' feature.\n\nIt works for a single stream_verdict scenario, as it also modified\nsk_data_ready->sk_psock_verdict_data_ready->tcp_read_skb\nto remove updating 'sk->copied_seq'.\n\nHowever, for programs where both stream_parser and stream_verdict are\nactive (strparser purpose), tcp_read_sock() was used instead of\ntcp_read_skb() (sk_data_ready->strp_data_ready->tcp_read_sock).\ntcp_read_sock() now still updates 'sk->copied_seq', leading to duplicate\nupdates.\n\nIn summary, for strparser + SK_PASS, copied_seq is redundantly calculated\nin both tcp_read_sock() and tcp_bpf_recvmsg_parser().\n\nThe issue causes incorrect copied_seq calculations, which prevent\ncorrect data reads from the recv() interface in user-land.\n\nWe do not want to add new proto_ops to implement a new version of\ntcp_read_sock, as this would introduce code complexity [1].\n\nWe could have added noack and copied_seq to desc, and then called\nops->read_sock. However, unfortunately, other modules didn\u2019t fully\ninitialize desc to zero. So, for now, we are directly calling\ntcp_read_sock_noack() in tcp_bpf.c.\n\n[1]: https://lore.kernel.org/bpf/20241218053408.437295-1-mrpre@163.com\n\nFixes: e5c6de5fa025 (\"bpf, sockmap: Incorrectly handling copied_seq\")\nSuggested-by: Jakub Sitnicki <jakub@cloudflare.com>\nSigned-off-by: Jiayuan Chen <mrpre@163.com>\nSigned-off-by: Martin KaFai Lau <martin.lau@kernel.org>\nReviewed-by: Jakub Sitnicki <jakub@cloudflare.com>\nAcked-by: John Fastabend <john.fastabend@gmail.com>\nLink: https://patch.msgid.link/20250122100917.49845-3-mrpre@163.com\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": null,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/36b62d/patches/upstream_36b62d.patch",
+      "success": true,
+      "timestamp": "2025-03-14T14:29:23.978816"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-19T02:02:54.113887"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "07089083a526ea19daa72a1edf9d6e209615b77c",
+    "patch_url": "https://github.com/gregkh/linux/commit/07089083a526ea19daa72a1edf9d6e209615b77c.patch",
+    "downstream_sha": "62cd174616ae3bf8a6cf468718f1ae74e5a07727",
+    "downstream_message": "drm/xe/tracing: Fix a potential TP_printk UAF\n\ncommit 07089083a526ea19daa72a1edf9d6e209615b77c upstream.\n\nThe commit\nafd2627f727b (\"tracing: Check \"%s\" dereference via the field and not the TP_printk format\")\nexposes potential UAFs in the xe_bo_move trace event.\n\nFix those by avoiding dereferencing the\nxe_mem_type_to_name[] array at TP_printk time.\n\nSince some code refactoring has taken place, explicit backporting may\nbe needed for kernels older than 6.10.\n\nFixes: e46d3f813abd (\"drm/xe/trace: Extract bo, vm, vma traces\")\nCc: Gustavo Sousa <gustavo.sousa@intel.com>\nCc: Lucas De Marchi <lucas.demarchi@intel.com>\nCc: Radhakrishna Sripada <radhakrishna.sripada@intel.com>\nCc: Matt Roper <matthew.d.roper@intel.com>\nCc: \"Thomas Hellstr\u00f6m\" <thomas.hellstrom@linux.intel.com>\nCc: Rodrigo Vivi <rodrigo.vivi@intel.com>\nCc: intel-xe@lists.freedesktop.org\nCc: <stable@vger.kernel.org> # v6.11+\nSigned-off-by: Thomas Hellstr\u00f6m <thomas.hellstrom@linux.intel.com>\nReviewed-by: Jonathan Cavitt <jonathan.cavitt@intel.com>\nLink: https://patchwork.freedesktop.org/patch/msgid/20241223134250.14345-1-thomas.hellstrom@linux.intel.com\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/070890/patches/upstream_070890.patch",
+      "timestamp": "2025-03-20T07:55:18.331966"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:55:18.896182"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "3e5796862c692ea608d96f0a1437f9290f44953a",
+    "patch_url": "https://github.com/gregkh/linux/commit/3e5796862c692ea608d96f0a1437f9290f44953a.patch",
+    "downstream_sha": "90c7f5cd592009ba469610dc618b045a40a5ed12",
+    "downstream_message": "flow_dissector: Fix handling of mixed port and port-range keys\n\n[ Upstream commit 3e5796862c692ea608d96f0a1437f9290f44953a ]\n\nThis patch fixes a bug in TC flower filter where rules combining a\nspecific destination port with a source port range weren't working\ncorrectly.\n\nThe specific case was when users tried to configure rules like:\n\ntc filter add dev ens38 ingress protocol ip flower ip_proto udp \\\ndst_port 5000 src_port 2000-3000 action drop\n\nThe root cause was in the flow dissector code. While both\nFLOW_DISSECTOR_KEY_PORTS and FLOW_DISSECTOR_KEY_PORTS_RANGE flags\nwere being set correctly in the classifier, the __skb_flow_dissect_ports()\nfunction was only populating one of them: whichever came first in\nthe enum check. This meant that when the code needed both a specific\nport and a port range, one of them would be left as 0, causing the\nfilter to not match packets as expected.\n\nFix it by removing the either/or logic and instead checking and\npopulating both key types independently when they're in use.\n\nFixes: 8ffb055beae5 (\"cls_flower: Fix the behavior using port ranges with hw-offload\")\nReported-by: Qiang Zhang <dtzq01@gmail.com>\nCloses: https://lore.kernel.org/netdev/CAPx+-5uvFxkhkz4=j_Xuwkezjn9U6kzKTD5jz4tZ9msSJ0fOJA@mail.gmail.com/\nCc: Yoshiki Komachi <komachi.yoshiki@gmail.com>\nCc: Jamal Hadi Salim <jhs@mojatatu.com>\nCc: Jiri Pirko <jiri@resnulli.us>\nSigned-off-by: Cong Wang <xiyou.wangcong@gmail.com>\nReviewed-by: Ido Schimmel <idosch@nvidia.com>\nLink: https://patch.msgid.link/20250218043210.732959-2-xiyou.wangcong@gmail.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": null,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/3e5796/patches/upstream_3e5796.patch",
+      "success": true,
+      "timestamp": "2025-03-14T14:30:13.762711"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-19T02:03:05.593008"
+  }
+}

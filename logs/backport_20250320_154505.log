@@ -1,0 +1,56 @@
+2025-03-20 15:45:05.509 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250320_154505.log
+2025-03-20 15:45:05.511 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-20 15:45:05.513 | INFO     | __main__:_get_commits_list:255 - commits_file:workspace/gregkh/linux_cache/branch_linux-6.12.y_commits.json
+2025-03-20 15:45:05.514 | INFO     | __main__:_get_commits_list:256 - use_cached_commits:True
+2025-03-20 15:45:05.516 | INFO     | __main__:_get_commits_list:259 - 从缓存文件加载commits信息
+2025-03-20 15:45:05.530 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-03-20 15:45:05.531 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: direct_apply
+2025-03-20 15:45:05.532 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: backtrack_apply
+2025-03-20 15:45:05.534 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: llm_adapter
+2025-03-20 15:45:05.536 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: patch_adapter
+2025-03-20 15:45:05.538 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: compiler
+2025-03-20 15:45:05.540 | INFO     | __main__:_process_mode2:197 - 处理提交 128/1: 82a0a3
+2025-03-20 15:45:05.542 | INFO     | core.adaptation_pipeline:process_patch:69 - 开始处理补丁: 82a0a3e6f8c02b3236b55e784a083fa4ee07c321
+2025-03-20 15:45:05.544 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: direct_apply
+2025-03-20 15:45:05.930 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: sound/soc/renesas/rz-ssi.c: does not exist in index\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/82a0a3/patches/upstream_82a0a3.patch', 'success': False, 'timestamp': '2025-03-20T07:49:20.620370'}
+2025-03-20 15:45:05.931 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: backtrack_apply
+2025-03-20 15:45:05.933 | INFO     | modules.backtrack_apply:execute:46 - 补丁文件路径: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/82a0a3/patches/upstream_82a0a3.patch
+2025-03-20 15:45:05.935 | INFO     | modules.backtrack_apply:_find_modified_files:145 - 从补丁中找到 1 个修改的文件
+2025-03-20 15:45:05.937 | INFO     | modules.backtrack_apply:execute:59 - 找到修改的文件: ['sound/soc/renesas/rz-ssi.c']
+2025-03-20 15:45:05.947 | INFO     | modules.backtrack_apply:_backtrack_apply:310 - 当前分支: linux-6.12.y
+2025-03-20 15:45:06.087 | INFO     | modules.backtrack_apply:_map_file_paths:196 - 文件路径映射: sound/soc/renesas/rz-ssi.c -> sound/soc/sh/rz-ssi.c
+2025-03-20 15:45:06.088 | INFO     | modules.backtrack_apply:_backtrack_apply:320 - 文件路径映射: {'sound/soc/renesas/rz-ssi.c': 'sound/soc/sh/rz-ssi.c'}
+2025-03-20 15:45:13.487 | INFO     | modules.backtrack_apply:_get_file_history:450 - 文件 sound/soc/sh/rz-ssi.c 有 28 个历史提交
+2025-03-20 15:45:13.488 | INFO     | modules.backtrack_apply:_backtrack_apply:349 - 找到 28 个历史提交
+2025-03-20 15:45:13.489 | INFO     | modules.backtrack_apply:_backtrack_apply:359 - 尝试应用补丁到 4f8cd05a (尝试 1/28)
+2025-03-20 15:45:30.070 | INFO     | modules.backtrack_apply:_create_temp_branch:469 - 创建临时分支 backtrack_82a0a3_20250320_154505 指向 4f8cd05a
+2025-03-20 15:45:30.375 | ERROR    | modules.backtrack_apply:_apply_patch:511 - 补丁应用失败: error: sound/soc/renesas/rz-ssi.c: does not exist in index
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-03-20 15:45:38.518 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:552 - 清理临时分支 backtrack_82a0a3_20250320_154505 并切回 linux-6.12.y
+2025-03-20 15:45:38.519 | INFO     | modules.backtrack_apply:_backtrack_apply:377 - 补丁无法应用于 4f8cd05a: error: sound/soc/renesas/rz-ssi.c: does not exist in index
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-03-20 15:45:38.520 | INFO     | modules.backtrack_apply:_backtrack_apply:359 - 尝试应用补丁到 c75ed9f5 (尝试 2/28)
+2025-03-20 15:46:26.597 | INFO     | modules.backtrack_apply:_create_temp_branch:469 - 创建临时分支 backtrack_82a0a3_20250320_154505 指向 c75ed9f5
+2025-03-20 15:46:26.835 | ERROR    | modules.backtrack_apply:_apply_patch:511 - 补丁应用失败: error: sound/soc/renesas/rz-ssi.c: does not exist in index
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-03-20 15:46:56.699 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:552 - 清理临时分支 backtrack_82a0a3_20250320_154505 并切回 linux-6.12.y
+2025-03-20 15:46:56.701 | INFO     | modules.backtrack_apply:_backtrack_apply:377 - 补丁无法应用于 c75ed9f5: error: sound/soc/renesas/rz-ssi.c: does not exist in index
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-03-20 15:46:56.703 | INFO     | modules.backtrack_apply:_backtrack_apply:359 - 尝试应用补丁到 e42c903e (尝试 3/28)
+2025-03-20 15:47:26.320 | INFO     | modules.backtrack_apply:_create_temp_branch:469 - 创建临时分支 backtrack_82a0a3_20250320_154505 指向 e42c903e
+2025-03-20 15:47:26.524 | ERROR    | modules.backtrack_apply:_apply_patch:511 - 补丁应用失败: error: sound/soc/renesas/rz-ssi.c: does not exist in index
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-03-20 15:47:54.116 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:552 - 清理临时分支 backtrack_82a0a3_20250320_154505 并切回 linux-6.12.y
+2025-03-20 15:47:54.118 | INFO     | modules.backtrack_apply:_backtrack_apply:377 - 补丁无法应用于 e42c903e: error: sound/soc/renesas/rz-ssi.c: does not exist in index
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-03-20 15:47:54.119 | INFO     | modules.backtrack_apply:_backtrack_apply:359 - 尝试应用补丁到 f712ff57 (尝试 4/28)
+2025-03-20 15:48:16.518 | INFO     | modules.backtrack_apply:_create_temp_branch:469 - 创建临时分支 backtrack_82a0a3_20250320_154505 指向 f712ff57
+2025-03-20 15:48:16.764 | ERROR    | modules.backtrack_apply:_apply_patch:511 - 补丁应用失败: error: sound/soc/renesas/rz-ssi.c: does not exist in index
+hint: Use 'git am --show-current-patch' to see the failed patch
+

@@ -1,14 +1,3 @@
-A. Commit message:
-Reallocate buffer lists on upgrade for io_uring/kbuf to fix stability issues
-
-B. Change summary:
-This patch ensures that the `io_buffer_list` is always reallocated instead of reused when upgrading, which prevents violations of the requirement that most fields should stay stable after publish. Additionally, it introduces a helper function `io_destroy_bl` to handle the destruction of buffer lists properly.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/io_uring/kbuf.c b/io_uring/kbuf.c
 index 04bf493eecae0..8e72de7712ac9 100644
 --- a/io_uring/kbuf.c
@@ -45,4 +34,3 @@ index 04bf493eecae0..8e72de7712ac9 100644
  	mmap_offset = (unsigned long)reg.bgid << IORING_OFF_PBUF_SHIFT;
  	ring_size = flex_array_size(br, bufs, reg.ring_entries);
  
-```

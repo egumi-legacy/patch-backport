@@ -25,6 +25,8 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir -p /ccache \
     && chmod 777 /ccache
 
+RUN git clone --depth=1 https://github.com/gregkh/linux.git /kernel
+
 # 设置工作目录
 WORKDIR /kernel
 

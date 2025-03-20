@@ -1,14 +1,3 @@
-A. Commit message:
-net: ipv6: fix dst refleaks in rpl, seg6 and ioam6 lwtunnels
-
-B. Change summary:
-This patch addresses reference leaks in the `dst_cache_get()` calls within the `ioam6_output`, `rpl_output`, and `seg6_input_core` functions. The changes ensure that any obtained destination cache references are properly released using `dst_release()` when no longer needed or in case of error paths.
-
-C. Compatibility Risk:
-Low
-
-D. Fixed Code:
-```diff
 diff --git a/net/ipv6/ioam6_iptunnel.c b/net/ipv6/ioam6_iptunnel.c
 index 28e5a89dc2557..3936c137a5727 100644
 --- a/net/ipv6/ioam6_iptunnel.c
@@ -105,4 +94,3 @@ index 4bf937bfc2633..eacc4e91b48ef 100644
  	kfree_skb(skb);
  	return err;
  }
-```

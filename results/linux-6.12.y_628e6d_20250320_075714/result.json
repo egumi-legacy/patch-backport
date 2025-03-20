@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "628e6d18930bbd21f2d4562228afe27694f66da9",
+    "patch_url": "https://github.com/gregkh/linux/commit/628e6d18930bbd21f2d4562228afe27694f66da9.patch",
+    "downstream_sha": "bbec88e4108e8d6fb468d3817fa652140a44ff28",
+    "downstream_message": "ndisc: use RCU protection in ndisc_alloc_skb()\n\n[ Upstream commit 628e6d18930bbd21f2d4562228afe27694f66da9 ]\n\nndisc_alloc_skb() can be called without RTNL or RCU being held.\n\nAdd RCU protection to avoid possible UAF.\n\nFixes: de09334b9326 (\"ndisc: Introduce ndisc_alloc_skb() helper.\")\nSigned-off-by: Eric Dumazet <edumazet@google.com>\nReviewed-by: David Ahern <dsahern@kernel.org>\nReviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>\nLink: https://patch.msgid.link/20250207135841.1948589-3-edumazet@google.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/628e6d/patches/upstream_628e6d.patch",
+      "timestamp": "2025-03-20T07:57:14.231747"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:57:14.813993"
+  }
+}

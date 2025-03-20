@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "dddcb19ad4d4bbe943a72a1fb3266c6e8aa8d541",
+    "patch_url": "https://github.com/gregkh/linux/commit/dddcb19ad4d4bbe943a72a1fb3266c6e8aa8d541.patch",
+    "downstream_sha": "49db780464ef786e650eeb895ef17de49044e513",
+    "downstream_message": "drm/xe/oa: Separate batch submission from waiting for completion\n\n[ Upstream commit dddcb19ad4d4bbe943a72a1fb3266c6e8aa8d541 ]\n\nWhen we introduce xe_syncs, we don't wait for internal OA programming\nbatches to complete. That is, xe_syncs are signaled asynchronously. In\nanticipation for this, separate out batch submission from waiting for\ncompletion of those batches.\n\nv2: Change return type of xe_oa_submit_bb to \"struct dma_fence *\" (Matt B)\nv3: Retain init \"int err = 0;\" in xe_oa_submit_bb (Jose)\n\nReviewed-by: Jonathan Cavitt <jonathan.cavitt@intel.com>\nSigned-off-by: Ashutosh Dixit <ashutosh.dixit@intel.com>\nLink: https://patchwork.freedesktop.org/patch/msgid/20241022200352.1192560-2-ashutosh.dixit@intel.com\nStable-dep-of: f0ed39830e60 (\"xe/oa: Fix query mode of operation for OAR/OAC\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/dddcb1/patches/upstream_dddcb1.patch",
+      "timestamp": "2025-03-20T07:53:27.681843"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:53:28.171839"
+  }
+}

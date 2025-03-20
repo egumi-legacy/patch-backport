@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "4ab37fcb42832cdd3e9d5e50653285ca84d6686f",
+    "patch_url": "https://github.com/gregkh/linux/commit/4ab37fcb42832cdd3e9d5e50653285ca84d6686f.patch",
+    "downstream_sha": "e9fec6f42c45db2f62dc373fb1a10d2488c04e79",
+    "downstream_message": "USB: gadget: f_midi: f_midi_complete to call queue_work\n\n[ Upstream commit 4ab37fcb42832cdd3e9d5e50653285ca84d6686f ]\n\nWhen using USB MIDI, a lock is attempted to be acquired twice through a\nre-entrant call to f_midi_transmit, causing a deadlock.\n\nFix it by using queue_work() to schedule the inner f_midi_transmit() via\na high priority work queue from the completion handler.\n\nLink: https://lore.kernel.org/all/CAArt=LjxU0fUZOj06X+5tkeGT+6RbXzpWg1h4t4Fwa_KGVAX6g@mail.gmail.com/\nFixes: d5daf49b58661 (\"USB: gadget: midi: add midi function driver\")\nCc: stable <stable@kernel.org>\nSigned-off-by: Jill Donahue <jilliandonahue58@gmail.com>\nLink: https://lore.kernel.org/r/20250211174805.1369265-1-jdonahue@fender.com\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ab37f/patches/upstream_4ab37f.patch",
+      "timestamp": "2025-03-20T07:44:55.694884"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:44:56.142828"
+  }
+}

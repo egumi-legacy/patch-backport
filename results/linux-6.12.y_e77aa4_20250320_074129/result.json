@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "e77aa4b2eaa7fb31b2a7a50214ecb946b2a8b0f6",
+    "patch_url": "https://github.com/gregkh/linux/commit/e77aa4b2eaa7fb31b2a7a50214ecb946b2a8b0f6.patch",
+    "downstream_sha": "4da5a3547d69480caad478ef5d84682b69e1c5a6",
+    "downstream_message": "ALSA: seq: Drop UMP events when no UMP-conversion is set\n\n[ Upstream commit e77aa4b2eaa7fb31b2a7a50214ecb946b2a8b0f6 ]\n\nWhen a destination client is a user client in the legacy MIDI mode and\nit sets the no-UMP-conversion flag, currently the all UMP events are\nstill passed as-is.  But this may confuse the user-space, because the\nevent packet size is different from the legacy mode.\n\nSince we cannot handle UMP events in user clients unless it's running\nin the UMP client mode, we should filter out those events instead of\naccepting blindly.  This patch addresses it by slightly adjusting the\nconditions for UMP event handling at the event delivery time.\n\nFixes: 329ffe11a014 (\"ALSA: seq: Allow suppressing UMP conversions\")\nLink: https://lore.kernel.org/b77a2cd6-7b59-4eb0-a8db-22d507d3af5f@gmail.com\nLink: https://patch.msgid.link/20250217170034.21930-1-tiwai@suse.de\nSigned-off-by: Takashi Iwai <tiwai@suse.de>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": null,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/e77aa4/patches/upstream_e77aa4.patch",
+      "success": true,
+      "timestamp": "2025-03-14T14:31:47.685546"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:41:29.705535"
+  }
+}

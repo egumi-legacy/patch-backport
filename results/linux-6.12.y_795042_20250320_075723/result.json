@@ -1,0 +1,56 @@
+{
+  "commit": {
+    "sha": "79504249d7e27cad4a3eeb9afc6386e418728ce0",
+    "patch_url": "https://github.com/gregkh/linux/commit/79504249d7e27cad4a3eeb9afc6386e418728ce0.patch",
+    "downstream_sha": "3e38cbbfa0a128a9d64773240a9eb3bc7bae3b1a",
+    "downstream_message": "HID: hid-steam: Move hidraw input (un)registering to work\n\n[ Upstream commit 79504249d7e27cad4a3eeb9afc6386e418728ce0 ]\n\nDue to an interplay between locking in the input and hid transport subsystems,\nattempting to register or deregister the relevant input devices during the\nhidraw open/close events can lead to a lock ordering issue. Though this\nshouldn't cause a deadlock, this commit moves the input device manipulation to\ndeferred work to sidestep the issue.\n\nFixes: 385a4886778f6 (\"HID: steam: remove input device when a hid client is running.\")\nSigned-off-by: Vicki Pfau <vi@endrift.com>\nSigned-off-by: Jiri Kosina <jkosina@suse.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/hid/hid-steam.c:1307\nerror: drivers/hid/hid-steam.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/patches/upstream_795042.patch",
+      "timestamp": "2025-03-20T07:57:16.787780"
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/drivers/hid/hid-steam.c b/drivers/hid/hid-steam.c\nindex 7f5a4b2..b008fd0 100644\n--- a/drivers/hid/hid-steam.c\n+++ b/drivers/hid/hid-steam.c\n@@ -313,6 +313,7 @@ struct steam_device {\n \tu16 rumble_left;\n \tu16 rumble_right;\n \tunsigned int sensor_timestamp_us;\n+\tstruct work_struct unregister_work;\n };\n \n static int steam_recv_report(struct steam_device *steam,\n@@ -1072,6 +1073,31 @@ static void steam_mode_switch_cb(struct work_struct *work)\n \t}\n }\n \n+static void steam_work_unregister_cb(struct work_struct *work)\n+{\n+\tstruct steam_device *steam = container_of(work, struct steam_device,\n+\t\t\t\t\t\t\tunregister_work);\n+\tunsigned long flags;\n+\tbool connected;\n+\tbool opened;\n+\n+\tspin_lock_irqsave(&steam->lock, flags);\n+\topened = steam->client_opened;\n+\tconnected = steam->connected;\n+\tspin_unlock_irqrestore(&steam->lock, flags);\n+\n+\tif (connected) {\n+\t\tif (opened) {\n+\t\t\tsteam_sensors_unregister(steam);\n+\t\t\tsteam_input_unregister(steam);\n+\t\t} else {\n+\t\t\tsteam_set_lizard_mode(steam, lizard_mode);\n+\t\t\tsteam_input_register(steam);\n+\t\t\tsteam_sensors_register(steam);\n+\t\t}\n+\t}\n+}\n+\n static bool steam_is_valve_interface(struct hid_device *hdev)\n {\n \tstruct hid_report_enum *rep_enum;\n@@ -1117,8 +1143,7 @@ static int steam_client_ll_open(struct hid_device *hdev)\n \tsteam->client_opened++;\n \tspin_unlock_irqrestore(&steam->lock, flags);\n \n-\tsteam_sensors_unregister(steam);\n-\tsteam_input_unregister(steam);\n+\tschedule_work(&steam->unregister_work);\n \n \treturn 0;\n }\n@@ -1135,11 +1160,7 @@ static void steam_client_ll_close(struct hid_device *hdev)\n \tconnected = steam->connected && !steam->client_opened;\n \tspin_unlock_irqrestore(&steam->lock, flags);\n \n-\tif (connected) {\n-\t\tsteam_set_lizard_mode(steam, lizard_mode);\n-\t\tsteam_input_register(steam);\n-\t\tsteam_sensors_register(steam);\n-\t}\n+\tschedule_work(&steam->unregister_work);\n }\n \n static int steam_client_ll_raw_request(struct hid_device *hdev,\n@@ -1231,6 +1252,7 @@ static int steam_probe(struct hid_device *hdev,\n \tINIT_LIST_HEAD(&steam->list);\n \tINIT_WORK(&steam->rumble_work, steam_haptic_rumble_cb);\n \tsteam->sensor_timestamp_us = 0;\n+\tINIT_WORK(&steam->unregister_work, steam_work_unregister_cb);\n \n \t/*\n \t * With the real steam controller interface, do not connect hidraw.\n@@ -1291,6 +1313,7 @@ static int steam_probe(struct hid_device *hdev,\n \tcancel_work_sync(&steam->work_connect);\n \tcancel_delayed_work_sync(&steam->mode_switch);\n \tcancel_work_sync(&steam->rumble_work);\n+\tcancel_work_sync(&steam->unregister_work);\n \n \treturn ret;\n }\n@@ -1307,6 +1330,7 @@ static void steam_remove(struct hid_device *hdev)\n \tcancel_delayed_work_sync(&steam->mode_switch);\n \tcancel_work_sync(&steam->work_connect);\n \tcancel_work_sync(&steam->rumble_work);\n+\tcancel_work_sync(&steam->unregister_work);\n \thid_destroy_device(steam->client_hdev);\n \tsteam->client_hdev = NULL;\n \tsteam->client_opened = 0;",
+      "prompt": {
+        "patch_content": "From 79504249d7e27cad4a3eeb9afc6386e418728ce0 Mon Sep 17 00:00:00 2001\nFrom: Vicki Pfau <vi@endrift.com>\nDate: Tue, 4 Feb 2025 19:55:27 -0800\nSubject: [PATCH] HID: hid-steam: Move hidraw input (un)registering to work\n\nDue to an interplay between locking in the input and hid transport subsystems,\nattempting to register or deregister the relevant input devices during the\nhidraw open/close events can lead to a lock ordering issue. Though this\nshouldn't cause a deadlock, this commit moves the input device manipulation to\ndeferred work to sidestep the issue.\n\nFixes: 385a4886778f6 (\"HID: steam: remove input device when a hid client is running.\")\nSigned-off-by: Vicki Pfau <vi@endrift.com>\nSigned-off-by: Jiri Kosina <jkosina@suse.com>\n---\n drivers/hid/hid-steam.c | 38 +++++++++++++++++++++++++++++++-------\n 1 file changed, 31 insertions(+), 7 deletions(-)\n\ndiff --git a/drivers/hid/hid-steam.c b/drivers/hid/hid-steam.c\nindex b008fd0834b94..5a17714fedea0 100644\n--- a/drivers/hid/hid-steam.c\n+++ b/drivers/hid/hid-steam.c\n@@ -313,6 +313,7 @@ struct steam_device {\n \tu16 rumble_left;\n \tu16 rumble_right;\n \tunsigned int sensor_timestamp_us;\n+\tstruct work_struct unregister_work;\n };\n \n static int steam_recv_report(struct steam_device *steam,\n@@ -1072,6 +1073,31 @@ static void steam_mode_switch_cb(struct work_struct *work)\n \t}\n }\n \n+static void steam_work_unregister_cb(struct work_struct *work)\n+{\n+\tstruct steam_device *steam = container_of(work, struct steam_device,\n+\t\t\t\t\t\t\tunregister_work);\n+\tunsigned long flags;\n+\tbool connected;\n+\tbool opened;\n+\n+\tspin_lock_irqsave(&steam->lock, flags);\n+\topened = steam->client_opened;\n+\tconnected = steam->connected;\n+\tspin_unlock_irqrestore(&steam->lock, flags);\n+\n+\tif (connected) {\n+\t\tif (opened) {\n+\t\t\tsteam_sensors_unregister(steam);\n+\t\t\tsteam_input_unregister(steam);\n+\t\t} else {\n+\t\t\tsteam_set_lizard_mode(steam, lizard_mode);\n+\t\t\tsteam_input_register(steam);\n+\t\t\tsteam_sensors_register(steam);\n+\t\t}\n+\t}\n+}\n+\n static bool steam_is_valve_interface(struct hid_device *hdev)\n {\n \tstruct hid_report_enum *rep_enum;\n@@ -1117,8 +1143,7 @@ static int steam_client_ll_open(struct hid_device *hdev)\n \tsteam->client_opened++;\n \tspin_unlock_irqrestore(&steam->lock, flags);\n \n-\tsteam_sensors_unregister(steam);\n-\tsteam_input_unregister(steam);\n+\tschedule_work(&steam->unregister_work);\n \n \treturn 0;\n }\n@@ -1135,11 +1160,7 @@ static void steam_client_ll_close(struct hid_device *hdev)\n \tconnected = steam->connected && !steam->client_opened;\n \tspin_unlock_irqrestore(&steam->lock, flags);\n \n-\tif (connected) {\n-\t\tsteam_set_lizard_mode(steam, lizard_mode);\n-\t\tsteam_input_register(steam);\n-\t\tsteam_sensors_register(steam);\n-\t}\n+\tschedule_work(&steam->unregister_work);\n }\n \n static int steam_client_ll_raw_request(struct hid_device *hdev,\n@@ -1231,6 +1252,7 @@ static int steam_probe(struct hid_device *hdev,\n \tINIT_LIST_HEAD(&steam->list);\n \tINIT_WORK(&steam->rumble_work, steam_haptic_rumble_cb);\n \tsteam->sensor_timestamp_us = 0;\n+\tINIT_WORK(&steam->unregister_work, steam_work_unregister_cb);\n \n \t/*\n \t * With the real steam controller interface, do not connect hidraw.\n@@ -1291,6 +1313,7 @@ static int steam_probe(struct hid_device *hdev,\n \tcancel_work_sync(&steam->work_connect);\n \tcancel_delayed_work_sync(&steam->mode_switch);\n \tcancel_work_sync(&steam->rumble_work);\n+\tcancel_work_sync(&steam->unregister_work);\n \n \treturn ret;\n }\n@@ -1307,6 +1330,7 @@ static void steam_remove(struct hid_device *hdev)\n \tcancel_delayed_work_sync(&steam->mode_switch);\n \tcancel_work_sync(&steam->work_connect);\n \tcancel_work_sync(&steam->rumble_work);\n+\tcancel_work_sync(&steam->unregister_work);\n \thid_destroy_device(steam->client_hdev);\n \tsteam->client_hdev = NULL;\n \tsteam->client_opened = 0;\n",
+        "target_version": "linux-6.12.y",
+        "context_diff": "modified file: drivers/hid/hid-steam.c\n--- workspace/gregkh/linux/795042/newer/drivers/hid/hid-steam.c\n+++ workspace/gregkh/linux/795042/linux-6.12.y/drivers/hid/hid-steam.c\n@@ -253,7 +253,7 @@\n  \tID_CONTROLLER_DECK_STATE = 9\n  };\n  \n -/* String attribute identifiers */\n +/* String attribute idenitifiers */\n  enum {\n  \tATTRIB_STR_BOARD_SERIAL,\n  \tATTRIB_STR_UNIT_SERIAL,\n@@ -1050,10 +1050,10 @@\n  \t\t\t\t\t\t\tstruct steam_device, mode_switch);\n  \tunsigned long flags;\n  \tbool client_opened;\n +\tsteam->gamepad_mode = !steam->gamepad_mode;\n  \tif (!lizard_mode)\n  \t\treturn;\n  \n -\tsteam->gamepad_mode = !steam->gamepad_mode;\n  \tif (steam->gamepad_mode)\n  \t\tsteam_set_lizard_mode(steam, false);\n  \telse {\n@@ -1306,7 +1306,6 @@\n  \n  \tcancel_delayed_work_sync(&steam->mode_switch);\n  \tcancel_work_sync(&steam->work_connect);\n -\tcancel_work_sync(&steam->rumble_work);\n  \thid_destroy_device(steam->client_hdev);\n  \tsteam->client_hdev = NULL;\n  \tsteam->client_opened = 0;\n@@ -1599,7 +1598,7 @@\n  \t\tschedule_delayed_work(&steam->mode_switch, 45 * HZ / 100);\n  \t}\n  \n -\tif (!steam->gamepad_mode && lizard_mode)\n +\tif (!steam->gamepad_mode)\n  \t\treturn;\n  \n  \tlpad_touched = b10 & BIT(3);\n@@ -1669,7 +1668,7 @@\n  \t */\n  \tsteam->sensor_timestamp_us += 4000;\n  \n -\tif (!steam->gamepad_mode && lizard_mode)\n +\tif (!steam->gamepad_mode)\n  \t\treturn;\n  \n  \tinput_event(sensors, EV_MSC, MSC_TIMESTAMP, steam->sensor_timestamp_us);\n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/gregkh/linux/795042/llm_output/output_linux-6.12.y_qwen-plus.patch",
+      "timestamp": "2025-03-20T07:57:17.385887",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": true,
+      "adapted_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/patches/adapted_linux-6.12.y.patch",
+      "apply_result": {
+        "success": true,
+        "error": null,
+        "error_type": null,
+        "output": "Applying: Applied adapted patch for linux-6.12.y\n"
+      }
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "compiler",
+    "timestamp": "2025-03-20T07:57:23.344790"
+  }
+}

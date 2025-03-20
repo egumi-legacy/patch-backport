@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "90b2f49a502fa71090d9f4fe29a2f51fe5dff76d",
+    "patch_url": "https://github.com/gregkh/linux/commit/90b2f49a502fa71090d9f4fe29a2f51fe5dff76d.patch",
+    "downstream_sha": "a849a10de5e04d798f7f286a2f1ca174719a617a",
+    "downstream_message": "openvswitch: use RCU protection in ovs_vport_cmd_fill_info()\n\n[ Upstream commit 90b2f49a502fa71090d9f4fe29a2f51fe5dff76d ]\n\novs_vport_cmd_fill_info() can be called without RTNL or RCU.\n\nUse RCU protection and dev_net_rcu() to avoid potential UAF.\n\nFixes: 9354d4520342 (\"openvswitch: reliable interface indentification in port dumps\")\nSigned-off-by: Eric Dumazet <edumazet@google.com>\nReviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>\nLink: https://patch.msgid.link/20250207135841.1948589-6-edumazet@google.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/90b2f4/patches/upstream_90b2f4.patch",
+      "timestamp": "2025-03-20T07:56:53.044530"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:56:53.607745"
+  }
+}

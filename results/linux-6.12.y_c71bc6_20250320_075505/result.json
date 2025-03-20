@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "c71bc6da6198a6d88df86094f1052bb581951d65",
+    "patch_url": "https://github.com/gregkh/linux/commit/c71bc6da6198a6d88df86094f1052bb581951d65.patch",
+    "downstream_sha": "adbf808f590156fae4cf4af01497f92691a947e0",
+    "downstream_message": "netdevsim: print human readable IP address\n\ncommit c71bc6da6198a6d88df86094f1052bb581951d65 upstream.\n\nCurrently, IPSec addresses are printed in hexadecimal format, which is\nnot user-friendly. e.g.\n\n  # cat /sys/kernel/debug/netdevsim/netdevsim0/ports/0/ipsec\n  SA count=2 tx=20\n  sa[0] rx ipaddr=0x00000000 00000000 00000000 0100a8c0\n  sa[0]    spi=0x00000101 proto=0x32 salt=0x0adecc3a crypt=1\n  sa[0]    key=0x3167608a ca4f1397 43565909 941fa627\n  sa[1] tx ipaddr=0x00000000 00000000 00000000 00000000\n  sa[1]    spi=0x00000100 proto=0x32 salt=0x0adecc3a crypt=1\n  sa[1]    key=0x3167608a ca4f1397 43565909 941fa627\n\nThis patch updates the code to print the IPSec address in a human-readable\nformat for easier debug. e.g.\n\n # cat /sys/kernel/debug/netdevsim/netdevsim0/ports/0/ipsec\n SA count=4 tx=40\n sa[0] tx ipaddr=0.0.0.0\n sa[0]    spi=0x00000100 proto=0x32 salt=0x0adecc3a crypt=1\n sa[0]    key=0x3167608a ca4f1397 43565909 941fa627\n sa[1] rx ipaddr=192.168.0.1\n sa[1]    spi=0x00000101 proto=0x32 salt=0x0adecc3a crypt=1\n sa[1]    key=0x3167608a ca4f1397 43565909 941fa627\n sa[2] tx ipaddr=::\n sa[2]    spi=0x00000100 proto=0x32 salt=0x0adecc3a crypt=1\n sa[2]    key=0x3167608a ca4f1397 43565909 941fa627\n sa[3] rx ipaddr=2000::1\n sa[3]    spi=0x00000101 proto=0x32 salt=0x0adecc3a crypt=1\n sa[3]    key=0x3167608a ca4f1397 43565909 941fa627\n\nReviewed-by: Simon Horman <horms@kernel.org>\nSigned-off-by: Hangbin Liu <liuhangbin@gmail.com>\nLink: https://patch.msgid.link/20241010040027.21440-2-liuhangbin@gmail.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>\nSigned-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/c71bc6/patches/upstream_c71bc6.patch",
+      "timestamp": "2025-03-20T07:55:04.878233"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:55:05.457983"
+  }
+}

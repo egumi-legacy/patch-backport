@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "482ad2a4ace2740ca0ff1cbc8f3c7f862f3ab507",
+    "patch_url": "https://github.com/gregkh/linux/commit/482ad2a4ace2740ca0ff1cbc8f3c7f862f3ab507.patch",
+    "downstream_sha": "ec9af76451095b82680012bb6d3575e34a6ee205",
+    "downstream_message": "net: add dev_net_rcu() helper\n\n[ Upstream commit 482ad2a4ace2740ca0ff1cbc8f3c7f862f3ab507 ]\n\ndev->nd_net can change, readers should either\nuse rcu_read_lock() or RTNL.\n\nWe currently use a generic helper, dev_net() with\nno debugging support. We probably have many hidden bugs.\n\nAdd dev_net_rcu() helper for callers using rcu_read_lock()\nprotection.\n\nSigned-off-by: Eric Dumazet <edumazet@google.com>\nReviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>\nLink: https://patch.msgid.link/20250205155120.1676781-2-edumazet@google.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nStable-dep-of: 71b8471c93fa (\"ipv4: use RCU protection in ipv4_default_advmss()\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/482ad2/patches/upstream_482ad2.patch",
+      "timestamp": "2025-03-20T07:58:40.868396"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:58:41.449443"
+  }
+}

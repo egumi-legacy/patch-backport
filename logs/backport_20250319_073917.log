@@ -1,0 +1,53 @@
+2025-03-19 07:39:17.103 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250319_073917.log
+2025-03-19 07:39:17.104 | INFO     | __main__:run:113 - 开始执行 模式1
+2025-03-19 07:39:17.106 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: direct_apply
+2025-03-19 07:39:17.107 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: llm_adapter
+2025-03-19 07:39:17.108 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: patch_adapter
+2025-03-19 07:39:17.108 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: compiler
+2025-03-19 07:39:17.108 | INFO     | core.adaptation_pipeline:process_patch:68 - 开始处理补丁: fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-03-19 07:39:17.109 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: direct_apply
+2025-03-19 07:39:17.111 | ERROR    | modules.direct_apply:execute:103 - 直接应用过程发生错误: 'NoneType' object is not subscriptable
+2025-03-19 07:39:17.112 | ERROR    | modules.direct_apply:execute:105 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 57, in execute
+    patch_path = self._download_patch(context)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 211, in _download_patch
+    downstream_patch_path = patch_dir / f"downstream_{context.commit.downstream_sha[:6]}.patch"
+                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2025-03-19 07:39:17.113 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: llm_adapter
+2025-03-19 07:39:17.113 | INFO     | modules.llm_adapter:execute:53 - context.commit.patch_path: None
+2025-03-19 07:39:17.113 | ERROR    | modules.llm_adapter:execute:97 - LLM处理过程发生错误: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-03-19 07:39:17.115 | ERROR    | modules.llm_adapter:execute:98 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 54, in execute
+    patch_path = Path(context.commit.patch_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 1162, in __init__
+    super().__init__(*args)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+2025-03-19 07:39:17.117 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/rails/rails/fb493b/evaluations/llm_adapter/metrics_fb493b_20250319_073917.json
+2025-03-19 07:39:17.117 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: patch_adapter
+2025-03-19 07:39:17.118 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 找不到LLM响应文件
+2025-03-19 07:39:17.118 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 46, in execute
+    llm_response_path = self._get_llm_response_path(context)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 129, in _get_llm_response_path
+    raise ValueError("找不到LLM响应文件")
+ValueError: 找不到LLM响应文件
+
+2025-03-19 07:39:17.121 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/rails/rails/fb493b/metrics/patch_adapter_metrics.json
+2025-03-19 07:39:17.121 | INFO     | modules.base_module:_should_run:65 - 适配补丁失败，跳过编译
+2025-03-19 07:39:17.122 | INFO     | core.adaptation_pipeline:process_patch:105 - 补丁处理完成，耗时: 0.01秒
+2025-03-19 07:39:17.124 | INFO     | __main__:_save_results:437 - 结果已保存到: results/5.2.7_fb493b_20250319_073917/result.json
+2025-03-19 07:39:17.125 | INFO     | __main__:_print_summary:447 - context.patch_adapter_result: {'success': False, 'error': '找不到LLM响应文件'}
+2025-03-19 07:39:17.125 | INFO     | __main__:_print_summary:468 - ==================================================
+2025-03-19 07:39:17.125 | INFO     | __main__:_print_summary:469 - 处理摘要 - 提交: fb493b
+2025-03-19 07:39:17.126 | INFO     | __main__:_print_summary:470 - 结果: 处理失败 (方法: failed)
+2025-03-19 07:39:17.126 | INFO     | __main__:_print_summary:473 - 最后错误: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-03-19 07:39:17.126 | INFO     | __main__:_print_summary:475 - ==================================================
+2025-03-19 07:39:17.126 | INFO     | __main__:run:122 - 处理完成

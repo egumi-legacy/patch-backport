@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "61bcc752d1b81fde3cae454ff20c1d3c359df500",
+    "patch_url": "https://github.com/gregkh/linux/commit/61bcc752d1b81fde3cae454ff20c1d3c359df500.patch",
+    "downstream_sha": "d57a90c83d696369da16e9755e524732bda4c2d9",
+    "downstream_message": "powerpc/64s: Rewrite __real_pte() and __rpte_to_hidx() as static inline\n\n[ Upstream commit 61bcc752d1b81fde3cae454ff20c1d3c359df500 ]\n\nRewrite __real_pte() and __rpte_to_hidx() as static inline in order to\navoid following warnings/errors when building with 4k page size:\n\n\t  CC      arch/powerpc/mm/book3s64/hash_tlb.o\n\tarch/powerpc/mm/book3s64/hash_tlb.c: In function 'hpte_need_flush':\n\tarch/powerpc/mm/book3s64/hash_tlb.c:49:16: error: variable 'offset' set but not used [-Werror=unused-but-set-variable]\n\t   49 |         int i, offset;\n\t      |                ^~~~~~\n\n\t  CC      arch/powerpc/mm/book3s64/hash_native.o\n\tarch/powerpc/mm/book3s64/hash_native.c: In function 'native_flush_hash_range':\n\tarch/powerpc/mm/book3s64/hash_native.c:782:29: error: variable 'index' set but not used [-Werror=unused-but-set-variable]\n\t  782 |         unsigned long hash, index, hidx, shift, slot;\n\t      |                             ^~~~~\n\nReported-by: kernel test robot <lkp@intel.com>\nCloses: https://lore.kernel.org/oe-kbuild-all/202501081741.AYFwybsq-lkp@intel.com/\nFixes: ff31e105464d (\"powerpc/mm/hash64: Store the slot information at the right offset for hugetlb\")\nSigned-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>\nReviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>\nSigned-off-by: Madhavan Srinivasan <maddy@linux.ibm.com>\nLink: https://patch.msgid.link/e0d340a5b7bd478ecbf245d826e6ab2778b74e06.1736706263.git.christophe.leroy@csgroup.eu\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/61bcc7/patches/upstream_61bcc7.patch",
+      "timestamp": "2025-03-20T07:44:16.521868"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:44:16.919832"
+  }
+}

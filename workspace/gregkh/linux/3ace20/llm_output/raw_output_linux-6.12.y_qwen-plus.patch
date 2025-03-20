@@ -1,14 +1,3 @@
-A. Commit message:
-cpufreq/amd-pstate: Backport cpufreq_policy ref counting fix for older version
-
-B. Change summary:
-This patch backports the fix for a reference counting issue in the `amd_pstate_update_limits` function. The original code takes a `cpufreq_policy` reference but fails to decrement the refcount in one of the exit paths. This patch ensures that the refcount is properly decremented, preventing potential memory leaks or dangling references.
-
-C. Compatibility Risk:
-Low
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/cpufreq/amd-pstate.c b/drivers/cpufreq/amd-pstate.c
 index 9dc3933bc3261..313550fa62d41 100644
 --- a/drivers/cpufreq/amd-pstate.c
@@ -47,4 +36,3 @@ index 9dc3933bc3261..313550fa62d41 100644
  	cpufreq_cpu_put(policy);
  
  	if (!highest_perf_changed)
-```

@@ -1,14 +1,3 @@
-A. Commit message:
-wifi: rtw89: pci: disable PCIE wake bit when PCIE deinit for older version
-
-B. Change summary:
-This patch backports the changes to disable the PCIE wake bit during PCIE deinitialization, ensuring that the host is not woken up unexpectedly. The changes include renaming and refactoring the `rtw89_pci_power_wake` function, adding a new `rtw89_pci_ops_mac_pre_deinit_ax` function, and updating the `rtw89_pci_gen_def` structure.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/net/wireless/realtek/rtw89/pci.c b/drivers/net/wireless/realtek/rtw89/pci.c
 index f923bec03d410..c3a027735d0f9 100644
 --- a/drivers/net/wireless/realtek/rtw89/pci.c
@@ -107,4 +96,3 @@ index 34154506f5d46..cd39eebe81861 100644
 +	.power_wake = _patch_pcie_power_wake_be,
  };
  EXPORT_SYMBOL(rtw89_pci_gen_be);
-```

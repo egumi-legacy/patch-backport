@@ -1,14 +1,3 @@
-A. Commit message:
-btrfs: fix stale page cache after race between readahead and direct IO write
-
-B. Change summary:
-This patch addresses a race condition that can occur between a direct IO write and readahead operations in the Btrfs filesystem. The race results in tasks getting stale data when they attempt to perform buffered reads. The issue is fixed by ensuring that the extent range is locked before reusing a cached extent map, preventing concurrent direct IO writes from interfering with readahead operations.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
 index 6f64ee16744d6..d8ded597edada 100644
 --- a/fs/btrfs/extent_io.c
@@ -76,4 +65,3 @@ index 6f64ee16744d6..d8ded597edada 100644
  	if (em_cached)
  		free_extent_map(em_cached);
  	submit_one_bio(&bio_ctrl);
-```

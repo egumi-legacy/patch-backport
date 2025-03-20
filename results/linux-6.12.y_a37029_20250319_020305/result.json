@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "a370295367b55662a32a4be92565fe72a5aa79bb",
+    "patch_url": "https://github.com/gregkh/linux/commit/a370295367b55662a32a4be92565fe72a5aa79bb.patch",
+    "downstream_sha": "83539bfbc1196f82b55d92265028d880486ecfb8",
+    "downstream_message": "net: axienet: Set mac_managed_pm\n\n[ Upstream commit a370295367b55662a32a4be92565fe72a5aa79bb ]\n\nThe external PHY will undergo a soft reset twice during the resume process\nwhen it wake up from suspend. The first reset occurs when the axienet\ndriver calls phylink_of_phy_connect(), and the second occurs when\nmdio_bus_phy_resume() invokes phy_init_hw(). The second soft reset of the\nexternal PHY does not reinitialize the internal PHY, which causes issues\nwith the internal PHY, resulting in the PHY link being down. To prevent\nthis, setting the mac_managed_pm flag skips the mdio_bus_phy_resume()\nfunction.\n\nFixes: a129b41fe0a8 (\"Revert \"net: phy: dp83867: perform soft reset and retain established link\"\")\nSigned-off-by: Nick Hu <nick.hu@sifive.com>\nReviewed-by: Jacob Keller <jacob.e.keller@intel.com>\nLink: https://patch.msgid.link/20250217055843.19799-1-nick.hu@sifive.com\nSigned-off-by: Paolo Abeni <pabeni@redhat.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": null,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a37029/patches/upstream_a37029.patch",
+      "success": true,
+      "timestamp": "2025-03-14T14:29:57.727410"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-19T02:03:05.487593"
+  }
+}

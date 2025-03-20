@@ -1,0 +1,50 @@
+{
+  "commit": {
+    "sha": "78dafe1cf3afa02ed71084b350713b07e72a18fb",
+    "patch_url": "https://github.com/gregkh/linux/commit/78dafe1cf3afa02ed71084b350713b07e72a18fb.patch",
+    "downstream_sha": "3a866f8376f0a5c848dcb59cd26df845fffbe6d8",
+    "downstream_message": "vsock: Orphan socket after transport release\n\ncommit 78dafe1cf3afa02ed71084b350713b07e72a18fb upstream.\n\nDuring socket release, sock_orphan() is called without considering that it\nsets sk->sk_wq to NULL. Later, if SO_LINGER is enabled, this leads to a\nnull pointer dereferenced in virtio_transport_wait_close().\n\nOrphan the socket only after transport release.\n\nPartially reverts the 'Fixes:' commit.\n\nKASAN: null-ptr-deref in range [0x0000000000000018-0x000000000000001f]\n lock_acquire+0x19e/0x500\n _raw_spin_lock_irqsave+0x47/0x70\n add_wait_queue+0x46/0x230\n virtio_transport_release+0x4e7/0x7f0\n __vsock_release+0xfd/0x490\n vsock_release+0x90/0x120\n __sock_release+0xa3/0x250\n sock_close+0x14/0x20\n __fput+0x35e/0xa90\n __x64_sys_close+0x78/0xd0\n do_syscall_64+0x93/0x1b0\n entry_SYSCALL_64_after_hwframe+0x76/0x7e\n\nReported-by: syzbot+9d55b199192a4be7d02c@syzkaller.appspotmail.com\nCloses: https://syzkaller.appspot.com/bug?extid=9d55b199192a4be7d02c\nFixes: fcdd2242c023 (\"vsock: Keep the binding until socket destruction\")\nTested-by: Luigi Leonardi <leonardi@redhat.com>\nReviewed-by: Luigi Leonardi <leonardi@redhat.com>\nSigned-off-by: Michal Luczaj <mhal@rbox.co>\nLink: https://patch.msgid.link/20250210-vsock-linger-nullderef-v3-1-ef6244d02b54@rbox.co\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: net/vmw_vsock/af_vsock.c:824\nerror: net/vmw_vsock/af_vsock.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/78dafe/patches/upstream_78dafe.patch",
+      "timestamp": "2025-03-20T07:53:30.198164"
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c\nindex 075695173648d..53a081d49d28a 100644\n--- a/net/vmw_vsock/af_vsock.c\n+++ b/net/vmw_vsock/af_vsock.c\n@@ -824,13 +824,19 @@ static void __vsock_release(struct sock *sk, int level)\n \t */\n \tlock_sock_nested(sk, level);\n \n-\tsock_orphan(sk);\n+\t/* Indicate to vsock_remove_sock() that the socket is being released and\n+\t * can be removed from the bound_table. Unlike transport reassignment\n+\t * case, where the socket must remain bound despite vsock_remove_sock()\n+\t * being called from the transport release() callback.\n+\t */\n+\tsock_set_flag(sk, SOCK_DEAD);\n \n \tif (vsk->transport)\n \t\tvsk->transport->release(vsk);\n \telse if (sock_type_connectible(sk->sk_type))\n \t\tvsock_remove_sock(vsk);\n \n+\tsock_orphan(sk);\n \tsk->sk_shutdown = SHUTDOWN_MASK;\n \n \tskb_queue_purge(&sk->sk_receive_queue);",
+      "prompt": {
+        "patch_content": "From 78dafe1cf3afa02ed71084b350713b07e72a18fb Mon Sep 17 00:00:00 2001\nFrom: Michal Luczaj <mhal@rbox.co>\nDate: Mon, 10 Feb 2025 13:15:00 +0100\nSubject: [PATCH] vsock: Orphan socket after transport release\n\nDuring socket release, sock_orphan() is called without considering that it\nsets sk->sk_wq to NULL. Later, if SO_LINGER is enabled, this leads to a\nnull pointer dereferenced in virtio_transport_wait_close().\n\nOrphan the socket only after transport release.\n\nPartially reverts the 'Fixes:' commit.\n\nKASAN: null-ptr-deref in range [0x0000000000000018-0x000000000000001f]\n lock_acquire+0x19e/0x500\n _raw_spin_lock_irqsave+0x47/0x70\n add_wait_queue+0x46/0x230\n virtio_transport_release+0x4e7/0x7f0\n __vsock_release+0xfd/0x490\n vsock_release+0x90/0x120\n __sock_release+0xa3/0x250\n sock_close+0x14/0x20\n __fput+0x35e/0xa90\n __x64_sys_close+0x78/0xd0\n do_syscall_64+0x93/0x1b0\n entry_SYSCALL_64_after_hwframe+0x76/0x7e\n\nReported-by: syzbot+9d55b199192a4be7d02c@syzkaller.appspotmail.com\nCloses: https://syzkaller.appspot.com/bug?extid=9d55b199192a4be7d02c\nFixes: fcdd2242c023 (\"vsock: Keep the binding until socket destruction\")\nTested-by: Luigi Leonardi <leonardi@redhat.com>\nReviewed-by: Luigi Leonardi <leonardi@redhat.com>\nSigned-off-by: Michal Luczaj <mhal@rbox.co>\nLink: https://patch.msgid.link/20250210-vsock-linger-nullderef-v3-1-ef6244d02b54@rbox.co\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\n---\n net/vmw_vsock/af_vsock.c | 8 +++++++-\n 1 file changed, 7 insertions(+), 1 deletion(-)\n\ndiff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c\nindex 075695173648d..53a081d49d28a 100644\n--- a/net/vmw_vsock/af_vsock.c\n+++ b/net/vmw_vsock/af_vsock.c\n@@ -824,13 +824,19 @@ static void __vsock_release(struct sock *sk, int level)\n \t */\n \tlock_sock_nested(sk, level);\n \n-\tsock_orphan(sk);\n+\t/* Indicate to vsock_remove_sock() that the socket is being released and\n+\t * can be removed from the bound_table. Unlike transport reassignment\n+\t * case, where the socket must remain bound despite vsock_remove_sock()\n+\t * being called from the transport release() callback.\n+\t */\n+\tsock_set_flag(sk, SOCK_DEAD);\n \n \tif (vsk->transport)\n \t\tvsk->transport->release(vsk);\n \telse if (sock_type_connectible(sk->sk_type))\n \t\tvsock_remove_sock(vsk);\n \n+\tsock_orphan(sk);\n \tsk->sk_shutdown = SHUTDOWN_MASK;\n \n \tskb_queue_purge(&sk->sk_receive_queue);\n",
+        "target_version": "linux-6.12.y",
+        "context_diff": "modified file: net/vmw_vsock/af_vsock.c\n--- workspace/gregkh/linux/78dafe/newer/net/vmw_vsock/af_vsock.c\n+++ workspace/gregkh/linux/78dafe/linux-6.12.y/net/vmw_vsock/af_vsock.c\n@@ -337,10 +337,7 @@\n  \n  void vsock_remove_sock(struct vsock_sock *vsk)\n  {\n -\t/* Transport reassignment must not remove the binding. */\n -\tif (sock_flag(sk_vsock(vsk), SOCK_DEAD))\n -\t\tvsock_remove_bound(vsk);\n -\n +\tvsock_remove_bound(vsk);\n  \tvsock_remove_connected(vsk);\n  }\n  EXPORT_SYMBOL_GPL(vsock_remove_sock);\n@@ -494,15 +491,6 @@\n  \t\t */\n  \t\tvsk->transport->release(vsk);\n  \t\tvsock_deassign_transport(vsk);\n -\n -\t\t/* transport's release() and destruct() can touch some socket\n -\t\t * state, since we are reassigning the socket to a new transport\n -\t\t * during vsock_connect(), let's reset these fields to have a\n -\t\t * clean state.\n -\t\t */\n -\t\tsock_reset_flag(sk, SOCK_DONE);\n -\t\tsk->sk_state = TCP_CLOSE;\n -\t\tvsk->peer_shutdown = 0;\n  \t}\n  \n  \tlock_sock_nested(sk, level);\n  \n -\tsock_orphan(sk);\n -\n  \tif (vsk->transport)\n  \t\tvsk->transport->release(vsk);\n  \telse if (sock_type_connectible(sk->sk_type))\n  \t\tvsock_remove_sock(vsk);\n  \n +\tsock_orphan(sk);\n  \tsk->sk_shutdown = SHUTDOWN_MASK;\n  \n  \tskb_queue_purge(&sk->sk_receive_queue);\n@@ -883,9 +870,6 @@\n  \n  s64 vsock_stream_has_data(struct vsock_sock *vsk)\n  {\n -\tif (WARN_ON(!vsk->transport))\n -\t\treturn 0;\n -\n  \treturn vsk->transport->stream_has_data(vsk);\n  }\n  EXPORT_SYMBOL_GPL(vsock_stream_has_data);\n@@ -893,9 +877,6 @@\n  s64 vsock_connectible_has_data(struct vsock_sock *vsk)\n  {\n  \tstruct sock *sk = sk_vsock(vsk);\n -\n -\tif (WARN_ON(!vsk->transport))\n -\t\treturn 0;\n  \n  \tif (sk->sk_type == SOCK_SEQPACKET)\n  \t\treturn vsk->transport->seqpacket_has_data(vsk);\n@@ -906,9 +887,6 @@\n  \n  s64 vsock_stream_has_space(struct vsock_sock *vsk)\n  {\n -\tif (WARN_ON(!vsk->transport))\n -\t\treturn 0;\n -\n  \treturn vsk->transport->stream_has_space(vsk);\n  }\n  EXPORT_SYMBOL_GPL(vsock_stream_has_space);\n@@ -1522,11 +1500,6 @@\n  \t\terr = transport->connect(vsk);\n  \t\tif (err < 0)\n  \t\t\tgoto out;\n -\n -\t\t/* sk_err might have been set as a result of an earlier\n -\t\t * (failed) connect attempt.\n -\t\t */\n -\t\tsk->sk_err = 0;\n  \n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/gregkh/linux/78dafe/llm_output/output_linux-6.12.y_qwen-plus.patch",
+      "timestamp": "2025-03-20T07:53:30.906928",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": false,
+    "method": "failed",
+    "timestamp": "2025-03-20T07:53:32.245393"
+  }
+}

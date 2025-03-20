@@ -1,0 +1,62 @@
+{
+  "commit": {
+    "sha": "8546cfd08aa4b982acd2357403a1f15495d622ec",
+    "patch_url": "https://github.com/gregkh/linux/commit/8546cfd08aa4b982acd2357403a1f15495d622ec.patch",
+    "downstream_sha": "df072331325598d7706223f4d8d93f828bb3d020",
+    "downstream_message": "arm64: dts: rockchip: adjust SMMU interrupt type on rk3588\n\n[ Upstream commit 8546cfd08aa4b982acd2357403a1f15495d622ec ]\n\nThe SMMU architecture requires wired interrupts to be edge triggered,\nwhich does not align with the DT description for the RK3588.  This leads\nto interrupt storms, as the SMMU continues to hold the pin high and only\npulls it down for a short amount when issuing an IRQ.  Update the DT\ndescription to be in line with the spec and perceived reality.\n\nSigned-off-by: Patrick Wildt <patrick@blueri.se>\nFixes: cd81d3a0695c (\"arm64: dts: rockchip: add rk3588 pcie and php IOMMUs\")\nReviewed-by: Niklas Cassel <cassel@kernel.org>\nLink: https://lore.kernel.org/r/Z6pxme2Chmf3d3uK@windev.fritz.box\nSigned-off-by: Heiko Stuebner <heiko@sntech.de>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: arch/arm64/boot/dts/rockchip/rk3588-base.dtsi:549\nerror: arch/arm64/boot/dts/rockchip/rk3588-base.dtsi: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/8546cf/patches/upstream_8546cf.patch",
+      "timestamp": "2025-03-20T07:38:25.228205"
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi\nindex 978de506d4348..c3abdfb04f8f4 100644\n--- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi\n+++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi\n@@ -549,10 +549,10 @@\n \tmmu600_pcie: iommu@fc900000 {\n \t\tcompatible = \"arm,smmu-v3\";\n \t\treg = <0x0 0xfc900000 0x0 0x200000>;\n-\t\tinterrupts = <GIC_SPI 369 IRQ_TYPE_LEVEL_HIGH 0>,\n-\t\t\t     <GIC_SPI 371 IRQ_TYPE_LEVEL_HIGH 0>,\n-\t\t\t     <GIC_SPI 374 IRQ_TYPE_LEVEL_HIGH 0>,\n-\t\t\t     <GIC_SPI 367 IRQ_TYPE_LEVEL_HIGH 0>;\n+\t\tinterrupts = <GIC_SPI 369 IRQ_TYPE_EDGE_RISING 0>,\n+\t\t\t     <GIC_SPI 371 IRQ_TYPE_EDGE_RISING 0>,\n+\t\t\t     <GIC_SPI 374 IRQ_TYPE_EDGE_RISING 0>,\n+\t\t\t     <GIC_SPI 367 IRQ_TYPE_EDGE_RISING 0>;\n \t\tinterrupt-names = \"eventq\", \"gerror\", \"priq\", \"cmdq-sync\";\n \t\t#iommu-cells = <1>;\n \t};\n@@ -560,10 +560,10 @@\n \tmmu600_php: iommu@fcb00000 {\n \t\tcompatible = \"arm,smmu-v3\";\n \t\treg = <0x0 0xfcb00000 0x0 0x200000>;\n-\t\tinterrupts = <GIC_SPI 381 IRQ_TYPE_LEVEL_HIGH 0>,\n-\t\t\t     <GIC_SPI 383 IRQ_TYPE_LEVEL_HIGH 0>,\n-\t\t\t     <GIC_SPI 386 IRQ_TYPE_LEVEL_HIGH 0>,\n-\t\t\t     <GIC_SPI 379 IRQ_TYPE_LEVEL_HIGH 0>;\n+\t\tinterrupts = <GIC_SPI 381 IRQ_TYPE_EDGE_RISING 0>,\n+\t\t\t     <GIC_SPI 383 IRQ_TYPE_EDGE_RISING 0>,\n+\t\t\t     <GIC_SPI 386 IRQ_TYPE_EDGE_RISING 0>,\n+\t\t\t     <GIC_SPI 379 IRQ_TYPE_EDGE_RISING 0>;\n \t\tinterrupt-names = \"eventq\", \"gerror\", \"priq\", \"cmdq-sync\";\n \t\t#iommu-cells = <1>;\n \t\tstatus = \"disabled\";",
+      "prompt": {
+        "patch_content": "From 8546cfd08aa4b982acd2357403a1f15495d622ec Mon Sep 17 00:00:00 2001\nFrom: Patrick Wildt <patrick@blueri.se>\nDate: Mon, 10 Feb 2025 22:37:29 +0100\nSubject: [PATCH] arm64: dts: rockchip: adjust SMMU interrupt type on rk3588\n\nThe SMMU architecture requires wired interrupts to be edge triggered,\nwhich does not align with the DT description for the RK3588.  This leads\nto interrupt storms, as the SMMU continues to hold the pin high and only\npulls it down for a short amount when issuing an IRQ.  Update the DT\ndescription to be in line with the spec and perceived reality.\n\nSigned-off-by: Patrick Wildt <patrick@blueri.se>\nFixes: cd81d3a0695c (\"arm64: dts: rockchip: add rk3588 pcie and php IOMMUs\")\nReviewed-by: Niklas Cassel <cassel@kernel.org>\nLink: https://lore.kernel.org/r/Z6pxme2Chmf3d3uK@windev.fritz.box\nSigned-off-by: Heiko Stuebner <heiko@sntech.de>\n---\n arch/arm64/boot/dts/rockchip/rk3588-base.dtsi | 16 ++++++++--------\n 1 file changed, 8 insertions(+), 8 deletions(-)\n\ndiff --git a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi\nindex 978de506d4348..c3abdfb04f8f4 100644\n--- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi\n+++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi\n@@ -549,10 +549,10 @@\n \tmmu600_pcie: iommu@fc900000 {\n \t\tcompatible = \"arm,smmu-v3\";\n \t\treg = <0x0 0xfc900000 0x0 0x200000>;\n-\t\tinterrupts = <GIC_SPI 369 IRQ_TYPE_LEVEL_HIGH 0>,\n-\t\t\t     <GIC_SPI 371 IRQ_TYPE_LEVEL_HIGH 0>,\n-\t\t\t     <GIC_SPI 374 IRQ_TYPE_LEVEL_HIGH 0>,\n-\t\t\t     <GIC_SPI 367 IRQ_TYPE_LEVEL_HIGH 0>;\n+\t\tinterrupts = <GIC_SPI 369 IRQ_TYPE_EDGE_RISING 0>,\n+\t\t\t     <GIC_SPI 371 IRQ_TYPE_EDGE_RISING 0>,\n+\t\t\t     <GIC_SPI 374 IRQ_TYPE_EDGE_RISING 0>,\n+\t\t\t     <GIC_SPI 367 IRQ_TYPE_EDGE_RISING 0>;\n \t\tinterrupt-names = \"eventq\", \"gerror\", \"priq\", \"cmdq-sync\";\n \t\t#iommu-cells = <1>;\n \t};\n@@ -560,10 +560,10 @@\n \tmmu600_php: iommu@fcb00000 {\n \t\tcompatible = \"arm,smmu-v3\";\n \t\treg = <0x0 0xfcb00000 0x0 0x200000>;\n-\t\tinterrupts = <GIC_SPI 381 IRQ_TYPE_LEVEL_HIGH 0>,\n-\t\t\t     <GIC_SPI 383 IRQ_TYPE_LEVEL_HIGH 0>,\n-\t\t\t     <GIC_SPI 386 IRQ_TYPE_LEVEL_HIGH 0>,\n-\t\t\t     <GIC_SPI 379 IRQ_TYPE_LEVEL_HIGH 0>;\n+\t\tinterrupts = <GIC_SPI 381 IRQ_TYPE_EDGE_RISING 0>,\n+\t\t\t     <GIC_SPI 383 IRQ_TYPE_EDGE_RISING 0>,\n+\t\t\t     <GIC_SPI 386 IRQ_TYPE_EDGE_RISING 0>,\n+\t\t\t     <GIC_SPI 379 IRQ_TYPE_EDGE_RISING 0>;\n \t\tinterrupt-names = \"eventq\", \"gerror\", \"priq\", \"cmdq-sync\";\n \t\t#iommu-cells = <1>;\n \t\tstatus = \"disabled\";\n",
+        "target_version": "linux-6.12.y",
+        "context_diff": "modified file: arch/arm64/boot/dts/rockchip/rk3588-base.dtsi\n--- workspace/gregkh/linux/8546cf/newer/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi\n+++ workspace/gregkh/linux/8546cf/linux-6.12.y/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi\n@@ -555,6 +555,7 @@\n  \t\t\t     <GIC_SPI 367 IRQ_TYPE_LEVEL_HIGH 0>;\n  \t\tinterrupt-names = \"eventq\", \"gerror\", \"priq\", \"cmdq-sync\";\n  \t\t#iommu-cells = <1>;\n +\t\tstatus = \"disabled\";\n  \t};\n  \n  \tmmu600_php: iommu@fcb00000 {\n@@ -1369,47 +1370,6 @@\n  \t\tstatus = \"disabled\";\n  \t};\n  \n -\thdmi0: hdmi@fde80000 {\n -\t\tcompatible = \"rockchip,rk3588-dw-hdmi-qp\";\n -\t\treg = <0x0 0xfde80000 0x0 0x20000>;\n -\t\tclocks = <&cru PCLK_HDMITX0>,\n -\t\t\t <&cru CLK_HDMITX0_EARC>,\n -\t\t\t <&cru CLK_HDMITX0_REF>,\n -\t\t\t <&cru MCLK_I2S5_8CH_TX>,\n -\t\t\t <&cru CLK_HDMIHDP0>,\n -\t\t\t <&cru HCLK_VO1>;\n -\t\tclock-names = \"pclk\", \"earc\", \"ref\", \"aud\", \"hdp\", \"hclk_vo1\";\n -\t\tinterrupts = <GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH 0>,\n -\t\t\t     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH 0>,\n -\t\t\t     <GIC_SPI 171 IRQ_TYPE_LEVEL_HIGH 0>,\n -\t\t\t     <GIC_SPI 172 IRQ_TYPE_LEVEL_HIGH 0>,\n -\t\t\t     <GIC_SPI 360 IRQ_TYPE_LEVEL_HIGH 0>;\n -\t\tinterrupt-names = \"avp\", \"cec\", \"earc\", \"main\", \"hpd\";\n -\t\tphys = <&hdptxphy_hdmi0>;\n -\t\tpinctrl-names = \"default\";\n -\t\tpinctrl-0 = <&hdmim0_tx0_cec &hdmim0_tx0_hpd\n -\t\t\t     &hdmim0_tx0_scl &hdmim0_tx0_sda>;\n -\t\tpower-domains = <&power RK3588_PD_VO1>;\n -\t\tresets = <&cru SRST_HDMITX0_REF>, <&cru SRST_HDMIHDP0>;\n -\t\treset-names = \"ref\", \"hdp\";\n -\t\trockchip,grf = <&sys_grf>;\n -\t\trockchip,vo-grf = <&vo1_grf>;\n -\t\tstatus = \"disabled\";\n -\n -\t\tports {\n -\t\t\t#address-cells = <1>;\n -\t\t\t#size-cells = <0>;\n -\n -\t\t\thdmi0_in: port@0 {\n -\t\t\t\treg = <0>;\n -\t\t\t};\n -\n -\t\t\thdmi0_out: port@1 {\n -\t\t\t\treg = <1>;\n -\t\t\t};\n -\t\t};\n -\t};\n -\n  \tqos_gpu_m0: qos@fdf35000 {\n  \t\tcompatible = \"rockchip,rk3588-qos\", \"syscon\";\n  \t\treg = <0x0 0xfdf35000 0x0 0x20>;\n@@ -1685,7 +1645,6 @@\n  \t\tlinux,pci-domain = <3>;\n  \t\tmax-link-speed = <2>;\n  \t\tmsi-map = <0x3000 &its0 0x3000 0x1000>;\n -\t\tiommu-map = <0x3000 &mmu600_pcie 0x3000 0x1000>;\n  \t\tnum-lanes = <1>;\n  \t\tphys = <&combphy2_psu PHY_TYPE_PCIE>;\n  \t\tphy-names = \"pcie-phy\";\n@@ -1737,7 +1696,6 @@\n  \t\tlinux,pci-domain = <4>;\n  \t\tmax-link-speed = <2>;\n  \t\tmsi-map = <0x4000 &its0 0x4000 0x1000>;\n -\t\tiommu-map = <0x4000 &mmu600_pcie 0x4000 0x1000>;\n  \t\tnum-lanes = <1>;\n  \t\tphys = <&combphy0_ps PHY_TYPE_PCIE>;\n  \t\tphy-names = \"pcie-phy\";\n@@ -2668,9 +2626,9 @@\n  \t\trockchip,hw-tshut-temp = <120000>;\n  \t\trockchip,hw-tshut-mode = <0>; /* tshut mode 0:CRU 1:GPIO */\n  \t\trockchip,hw-tshut-polarity = <0>; /* tshut polarity 0:LOW 1:HIGH */\n -\t\tpinctrl-0 = <&tsadc_shut_org>;\n -\t\tpinctrl-1 = <&tsadc_gpio_func>;\n -\t\tpinctrl-names = \"default\", \"sleep\";\n +\t\tpinctrl-0 = <&tsadc_gpio_func>;\n +\t\tpinctrl-1 = <&tsadc_shut>;\n +\t\tpinctrl-names = \"gpio\", \"otpout\";\n  \t\t#thermal-sensor-cells = <1>;\n  \t\tstatus = \"disabled\";\n  \t};\n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/gregkh/linux/8546cf/llm_output/output_linux-6.12.y_qwen-plus.patch",
+      "apply_result": {
+        "success": false,
+        "error": "Patch format detection failed.\n",
+        "error_type": "other",
+        "output": null
+      },
+      "timestamp": "2025-03-20T07:38:33.046751",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": true,
+      "adapted_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/8546cf/patches/adapted_linux-6.12.y.patch",
+      "apply_result": {
+        "success": true,
+        "error": null,
+        "error_type": null,
+        "output": "Applying: Applied adapted patch for linux-6.12.y\n"
+      }
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "compiler",
+    "timestamp": "2025-03-20T07:38:45.102445"
+  }
+}

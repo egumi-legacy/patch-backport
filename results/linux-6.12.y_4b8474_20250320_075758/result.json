@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "4b8474a0951e605d2a27a2c483da4eb4b8c63760",
+    "patch_url": "https://github.com/gregkh/linux/commit/4b8474a0951e605d2a27a2c483da4eb4b8c63760.patch",
+    "downstream_sha": "3c925321a574362f6065dd97e6e764fc5985f0d5",
+    "downstream_message": "ipv4: icmp: convert to dev_net_rcu()\n\n[ Upstream commit 4b8474a0951e605d2a27a2c483da4eb4b8c63760 ]\n\n__icmp_send() must ensure rcu_read_lock() is held, as spotted\nby Jakub.\n\nOther ICMP uses of dev_net() seem safe, change them to dev_net_rcu()\nto get LOCKDEP support.\n\nFixes: dde1bc0e6f86 (\"[NETNS]: Add namespace for ICMP replying code.\")\nCloses: https://lore.kernel.org/netdev/20250203153633.46ce0337@kernel.org/\nReported-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Eric Dumazet <edumazet@google.com>\nLink: https://patch.msgid.link/20250205155120.1676781-9-edumazet@google.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4b8474/patches/upstream_4b8474.patch",
+      "timestamp": "2025-03-20T07:57:57.987873"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:57:58.517241"
+  }
+}

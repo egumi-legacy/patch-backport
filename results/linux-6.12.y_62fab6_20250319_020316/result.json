@@ -1,0 +1,62 @@
+{
+  "commit": {
+    "sha": "62fab6eef61f245dc8797e3a6a5b890ef40e8628",
+    "patch_url": "https://github.com/gregkh/linux/commit/62fab6eef61f245dc8797e3a6a5b890ef40e8628.patch",
+    "downstream_sha": "4b02b06daf7964a6aa4afc34825d44cc854498a9",
+    "downstream_message": "geneve: Suppress list corruption splat in geneve_destroy_tunnels().\n\n[ Upstream commit 62fab6eef61f245dc8797e3a6a5b890ef40e8628 ]\n\nAs explained in the previous patch, iterating for_each_netdev() and\ngn->geneve_list during ->exit_batch_rtnl() could trigger ->dellink()\ntwice for the same device.\n\nIf CONFIG_DEBUG_LIST is enabled, we will see a list_del() corruption\nsplat in the 2nd call of geneve_dellink().\n\nLet's remove for_each_netdev() in geneve_destroy_tunnels() and delegate\nthat part to default_device_exit_batch().\n\nFixes: 9593172d93b9 (\"geneve: Fix use-after-free in geneve_find_dev().\")\nSigned-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>\nLink: https://patch.msgid.link/20250217203705.40342-3-kuniyu@amazon.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": "error: patch failed: drivers/net/geneve.c:1902\nerror: drivers/net/geneve.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/62fab6/patches/upstream_62fab6.patch",
+      "success": false,
+      "timestamp": "2025-03-14T14:30:15.252189"
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c\nindex a1f674539965d..dbb3960126ee7 100644\n--- a/drivers/net/geneve.c\n+++ b/drivers/net/geneve.c\n@@ -1902,14 +1902,7 @@ static void geneve_destroy_tunnels(struct net *net, struct list_head *head)\n {\n \tstruct geneve_net *gn = net_generic(net, geneve_net_id);\n \tstruct geneve_dev *geneve, *next;\n-\tstruct net_device *dev, *aux;\n \n-\t/* gather any geneve devices that were moved into this ns */\n-\tfor_each_netdev_safe(net, dev, aux)\n-\t\tif (dev->rtnl_link_ops == &geneve_link_ops)\n-\t\t\tgeneve_dellink(dev, head);\n-\n-\t/* now gather any other geneve devices that were created in this ns */\n \tlist_for_each_entry_safe(geneve, next, &gn->geneve_list, next)\n \t\tgeneve_dellink(geneve->dev, head);\n }",
+      "prompt": {
+        "patch_content": "From 62fab6eef61f245dc8797e3a6a5b890ef40e8628 Mon Sep 17 00:00:00 2001\nFrom: Kuniyuki Iwashima <kuniyu@amazon.com>\nDate: Mon, 17 Feb 2025 12:37:05 -0800\nSubject: [PATCH] geneve: Suppress list corruption splat in\n geneve_destroy_tunnels().\n\nAs explained in the previous patch, iterating for_each_netdev() and\ngn->geneve_list during ->exit_batch_rtnl() could trigger ->dellink()\ntwice for the same device.\n\nIf CONFIG_DEBUG_LIST is enabled, we will see a list_del() corruption\nsplat in the 2nd call of geneve_dellink().\n\nLet's remove for_each_netdev() in geneve_destroy_tunnels() and delegate\nthat part to default_device_exit_batch().\n\nFixes: 9593172d93b9 (\"geneve: Fix use-after-free in geneve_find_dev().\")\nSigned-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>\nLink: https://patch.msgid.link/20250217203705.40342-3-kuniyu@amazon.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\n---\n drivers/net/geneve.c | 7 -------\n 1 file changed, 7 deletions(-)\n\ndiff --git a/drivers/net/geneve.c b/drivers/net/geneve.c\nindex a1f674539965d..dbb3960126ee7 100644\n--- a/drivers/net/geneve.c\n+++ b/drivers/net/geneve.c\n@@ -1902,14 +1902,7 @@ static void geneve_destroy_tunnels(struct net *net, struct list_head *head)\n {\n \tstruct geneve_net *gn = net_generic(net, geneve_net_id);\n \tstruct geneve_dev *geneve, *next;\n-\tstruct net_device *dev, *aux;\n \n-\t/* gather any geneve devices that were moved into this ns */\n-\tfor_each_netdev_safe(net, dev, aux)\n-\t\tif (dev->rtnl_link_ops == &geneve_link_ops)\n-\t\t\tgeneve_dellink(dev, head);\n-\n-\t/* now gather any other geneve devices that were created in this ns */\n \tlist_for_each_entry_safe(geneve, next, &gn->geneve_list, next)\n \t\tgeneve_dellink(geneve->dev, head);\n }\n",
+        "target_version": "linux-6.12.y",
+        "context_diff": "modified file: drivers/net/geneve.c\n--- workspace/gregkh/linux/62fab6/newer/drivers/net/geneve.c\n+++ workspace/gregkh/linux/62fab6/linux-6.12.y/drivers/net/geneve.c\n@@ -235,7 +235,7 @@\n  \t\t\t\t\t vni_to_tunnel_id(gnvh->vni),\n  \t\t\t\t\t gnvh->opt_len * 4);\n  \t\tif (!tun_dst) {\n -\t\t\tdev_dstats_rx_dropped(geneve->dev);\n +\t\t\tDEV_STATS_INC(geneve->dev, rx_dropped);\n  \t\t\tgoto drop;\n  \t\t}\n@@ -322,7 +322,7 @@\n  \tlen = skb->len;\n  \terr = gro_cells_receive(&geneve->gro_cells, skb);\n  \tif (likely(err == NET_RX_SUCCESS))\n -\t\tdev_dstats_rx_add(geneve->dev, len);\n +\t\tdev_sw_netstats_rx_add(geneve->dev, len);\n  \n  \treturn;\n  drop:\n@@ -387,14 +387,14 @@\n  \n  \tif (unlikely((!geneve->cfg.inner_proto_inherit &&\n  \t\t      inner_proto != htons(ETH_P_TEB)))) {\n -\t\tdev_dstats_rx_dropped(geneve->dev);\n +\t\tDEV_STATS_INC(geneve->dev, rx_dropped);\n  \t\tgoto drop;\n  \t}\n  \n  \topts_len = geneveh->opt_len * 4;\n  \tif (iptunnel_pull_header(skb, GENEVE_BASE_HLEN + opts_len, inner_proto,\n  \t\t\t\t !net_eq(geneve->net, dev_net(geneve->dev)))) {\n -\t\tdev_dstats_rx_dropped(geneve->dev);\n +\t\tDEV_STATS_INC(geneve->dev, rx_dropped);\n  \t\tgoto drop;\n  \t}\n  \n@@ -827,7 +827,7 @@\n  \t__be16 sport;\n  \tint err;\n  \n -\tif (skb_vlan_inet_prepare(skb, inner_proto_inherit))\n +\tif (!skb_vlan_inet_prepare(skb, inner_proto_inherit))\n  \t\treturn -EINVAL;\n  \n  \tif (!gs4)\n@@ -937,7 +937,7 @@\n  \t__be16 sport;\n  \tint err;\n  \n -\tif (skb_vlan_inet_prepare(skb, inner_proto_inherit))\n +\tif (!skb_vlan_inet_prepare(skb, inner_proto_inherit))\n  \t\treturn -EINVAL;\n  \n  \tif (!gs6)\n@@ -1023,7 +1023,7 @@\n  \t\tif (unlikely(!info || !(info->mode & IP_TUNNEL_INFO_TX))) {\n  \t\t\tnetdev_dbg(dev, \"no tunnel metadata\\n\");\n  \t\t\tdev_kfree_skb(skb);\n -\t\t\tdev_dstats_tx_dropped(dev);\n +\t\t\tDEV_STATS_INC(dev, tx_dropped);\n  \t\t\treturn NETDEV_TX_OK;\n  \t\t}\n  \t} else {\n@@ -1202,7 +1202,7 @@\n  \tdev->hw_features |= NETIF_F_RXCSUM;\n  \tdev->hw_features |= NETIF_F_GSO_SOFTWARE;\n  \n -\tdev->pcpu_stat_type = NETDEV_PCPU_STAT_DSTATS;\n +\tdev->pcpu_stat_type = NETDEV_PCPU_STAT_TSTATS;\n  \tdev->min_mtu = ETH_MIN_MTU;\n  \tfor_each_netdev_safe(net, dev, aux)\n  \t\tif (dev->rtnl_link_ops == &geneve_link_ops)\n -\t\t\tgeneve_dellink(dev, head);\n +\t\t\tunregister_netdevice_queue(dev, head);\n  \n -\tlist_for_each_entry_safe(geneve, next, &gn->geneve_list, next)\n -\t\tgeneve_dellink(geneve->dev, head);\n +\tlist_for_each_entry_safe(geneve, next, &gn->geneve_list, next) {\n +\t\t/* If geneve->dev is in the same netns, it was already added\n +\t\t * to the list by the previous loop.\n +\t\t */\n +\t\tif (!net_eq(dev_net(geneve->dev), net))\n +\t\t\tunregister_netdevice_queue(geneve->dev, head);\n +\t}\n  }\n  \n  static void __net_exit geneve_exit_batch_rtnl(struct list_head *net_list,\n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/gregkh/linux/62fab6/llm_output/output_linux-6.12.y_qwen-plus.patch",
+      "apply_result": {
+        "success": false,
+        "error": "Patch format detection failed.\n",
+        "error_type": "other",
+        "output": null
+      },
+      "timestamp": "2025-03-19T02:03:08.764516",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": true,
+      "adapted_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/62fab6/patches/adapted_linux-6.12.y.patch",
+      "apply_result": {
+        "success": true,
+        "error": null,
+        "error_type": null,
+        "output": "Applying: Applied adapted patch for linux-6.12.y\n"
+      }
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "compiler",
+    "timestamp": "2025-03-19T02:03:16.044025"
+  }
+}

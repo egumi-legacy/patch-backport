@@ -15,6 +15,7 @@ from .base_module import BaseModule, ModuleType
 from core.parameter_manager import ModuleContext
 from .patch_adapter import PatchAdapterModule
 
+# TODO: 简化逻辑
 
 class ChunkAnalyzerModule(BaseModule):
     """补丁分块分析和优化模块"""

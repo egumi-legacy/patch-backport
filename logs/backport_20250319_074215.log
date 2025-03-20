@@ -1,0 +1,93 @@
+2025-03-19 07:42:15.309 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250319_074215.log
+2025-03-19 07:42:15.310 | INFO     | __main__:run:113 - 开始执行 模式1
+2025-03-19 07:42:15.310 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: direct_apply
+2025-03-19 07:42:15.311 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: llm_adapter
+2025-03-19 07:42:15.311 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: patch_adapter
+2025-03-19 07:42:15.311 | INFO     | core.adaptation_pipeline:_load_modules:56 - 已加载模块: compiler
+2025-03-19 07:42:15.312 | INFO     | core.adaptation_pipeline:process_patch:68 - 开始处理补丁: fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-03-19 07:42:15.312 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: direct_apply
+2025-03-19 07:42:15.313 | INFO     | modules.direct_apply:_download_patch:236 - 上游补丁文件不存在，下载补丁
+2025-03-19 07:42:15.313 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'rails', 'rails', 'commit', 'fb493bebae1a9b83e494fe7edbf01f6167d606fd']
+2025-03-19 07:42:15.314 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/rails/rails/commits/fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-03-19 07:42:16.625 | INFO     | patch_utils:download_patch:104 - 下载补丁成功，补丁已保存到: workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-03-19 07:42:16.627 | INFO     | modules.direct_apply:_download_patch:240 - 上游补丁下载成功: workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-03-19 07:42:16.628 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-03-19 07:42:16.629 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-03-19 07:42:16.676 | ERROR    | modules.direct_apply:_prepare_test_branch:366 - 准备测试分支失败: error: pathspec '5.2.7' did not match any file(s) known to git
+
+2025-03-19 07:42:16.677 | ERROR    | modules.direct_apply:execute:103 - 直接应用过程发生错误: DirectApplyModule._cleanup_test_branch() missing 1 required positional argument: 'branch_name'
+2025-03-19 07:42:16.678 | ERROR    | modules.direct_apply:execute:105 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 316, in _prepare_test_branch
+    subprocess.run(
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'checkout', '5.2.7']' returned non-zero exit status 1.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 66, in execute
+    branch_name = self._prepare_test_branch(context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 368, in _prepare_test_branch
+    self._cleanup_test_branch(branch_name)
+TypeError: DirectApplyModule._cleanup_test_branch() missing 1 required positional argument: 'branch_name'
+
+2025-03-19 07:42:16.679 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: llm_adapter
+2025-03-19 07:42:16.679 | INFO     | modules.llm_adapter:execute:53 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-03-19 07:42:16.679 | INFO     | modules.llm_adapter:execute:55 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-03-19 07:42:16.680 | ERROR    | modules.llm_adapter:_get_context_diff:250 - 获取上下文差异失败: 'Mode1Config' object has no attribute 'use_cached_commits'
+2025-03-19 07:42:16.687 | ERROR    | modules.llm_adapter:_get_context_diff:252 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 213, in _get_context_diff
+    patch_processor = PatchProcessor(context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/patch_processor.py", line 36, in __init__
+    self.git_operations = GitOperations(context)
+                          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/git_operations.py", line 50, in __init__
+    self.use_cached_commits = context.config.use_cached_commits if context else False
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/site-packages/pydantic/main.py", line 828, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'Mode1Config' object has no attribute 'use_cached_commits'. Did you mean: 'use_cached_patches'?
+
+2025-03-19 07:42:16.721 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-03-19 07:42:16.722 | WARNING  | llm_assistant:run:290 - 无法获取缓存响应: 缓存文件不存在: workspace/rails/rails/fb493b/llm_output/output_5.2.7_qwen-plus.patch，将使用LLM生成输出
+2025-03-19 07:42:24.620 | INFO     | llm_assistant:run:298 - ---responses in run: [{'prompt': [{'role': 'system', 'content': 'You are a senior software engineer who is best in the world at fixing vulnerabilities and patch porting between versions.\nUsers will give you 1. a patch based on a newer version 2. the diff info between the newer version and and older version. \nAnd you will generate a fix patch to the older version in the form of git diff based on the provided INSTRUCTION.\nINSTRUCTION:\nOnly reterun the final result after patch and diff information are entered. When all the information is entered, it will be identified with \u200d\u200d```===end===\u200d\u200d```\nOnly respond with the patch info, do not add any comments or change the indentation.\nThe patch should have no errors, it should compile and user should be able to use the fixed code as a direct replacement of the vulnerable code. The code should not introduce any new dependencies or use API calls that are not present in the code.\nIf you can generate a backport patch for the patch, do a brief change impact analysis to assess how these modifications might affect the overall system, considering both immediate and potential long-term compatibility issues.\nLow: Code diff will be applied to the code base and automatically merged without review.\nMedium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.\nHigh: Code diff will be offered as a suggestion to the developer to review and then apply to the code base. There are likely other changes that need to be done by the developer before the change can be implemented.\nPlease provide a response only in the following format:\n\nA. Commit message:\n<brief summary of the diff>\n\nB. Change summary:\n<description of the changes made in the diff>\n\nC. Compatibility Risk:\n<Low, Medium, High>\n\nD. Fixed Code:\n<original patch info with now backported>\n\n'}, {'role': 'system', 'content': '1. a patch based on a newer version: \nFrom fb493bebae1a9b83e494fe7edbf01f6167d606fd Mon Sep 17 00:00:00 2001\nFrom: John Hawthorn <john@hawthorn.email>\nDate: Thu, 10 Oct 2024 20:41:33 -0700\nSubject: [PATCH] Avoid backtracking in filtered_query_string\n\nThanks scyoon for the patch\n\nCVE-2024-41128\n---\n .../lib/action_dispatch/http/filter_parameters.rb   | 13 +++++++++----\n 1 file changed, 9 insertions(+), 4 deletions(-)\n\ndiff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb\nindex 7ad1ba3e0eb0e..b02f0d6f85341 100644\n--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:\n         ActiveSupport::ParameterFilter.new(filters)\n       end\n \n-      KV_RE   = "[^&;=]+"\n-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}\n       def filtered_query_string # :doc:\n-        query_string.gsub(PAIR_RE) do |_|\n-          parameter_filter.filter($1 => $2).first.join("=")\n+        parts = query_string.split(/([&;])/)\n+        filtered_parts = parts.map do |part|\n+          if part.include?("=")\n+            key, value = part.split("=", 2)\n+            parameter_filter.filter(key => value).first.join("=")\n+          else\n+            part\n+          end\n         end\n+        filtered_parts.join("")\n       end\n     end\n   end\n'}, {'role': 'system', 'content': '2. the diff info between the newer version and and older version: \n获取上下文差异时出错，使用patch内容作为差异：\nFrom fb493bebae1a9b83e494fe7edbf01f6167d606fd Mon Sep 17 00:00:00 2001\nFrom: John Hawthorn <john@hawthorn.email>\nDate: Thu, 10 Oct 2024 20:41:33 -0700\nSubject: [PATCH] Avoid backtracking in filtered_query_string\n\nThanks scyoon for the patch\n\nCVE-2024-41128\n---\n .../lib/action_dispatch/http/filter_parameters.rb   | 13 +++++++++----\n 1 file changed, 9 insertions(+), 4 deletions(-)\n\ndiff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb\nindex 7ad1ba3e0eb0e..b02f0d6f85341 100644\n--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:\n         ActiveSupport::ParameterFilter.new(filters)\n       end\n \n-      KV_RE   = "[^&;=]+"\n-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}\n       def filtered_query_string # :doc:\n-        query_string.gsub(PAIR_RE) do |_|\n-          parameter_filter.filter($1 => $2).first.join("=")\n+        parts = query_string.split(/([&;])/)\n+        filtered_parts = parts.map do |part|\n+          if part.include?("=")\n+            key, value = part.split("=", 2)\n+            parameter_filter.filter(key => value).first.join("=")\n+          else\n+            part\n+          end\n         end\n+        filtered_parts.join("")\n       end\n     end\n   end\n\n===end==='}, {'role': 'user', 'content': 'Please return the final result.'}], 'response': 'A. Commit message:\nAvoid backtracking in filtered_query_string\n\nB. Change summary:\nReplaced the usage of regular expressions with a split and map approach to prevent backtracking issues in the `filtered_query_string` method.\n\nC. Compatibility Risk:\nLow\n\nD. Fixed Code:\ndiff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb\nindex 7ad1ba3e0eb0e..b02f0d6f85341 100644\n--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:\n         ActiveSupport::ParameterFilter.new(filters)\n       end\n \n-      KV_RE   = "[^&;=]+"\n-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}\n       def filtered_query_string # :doc:\n-        query_string.gsub(PAIR_RE) do |_|\n-          parameter_filter.filter($1 => $2).first.join("=")\n+        parts = query_string.split(/([&;])/)\n+        filtered_parts = parts.map do |part|\n+          if part.include?("=")\n+            key, value = part.split("=", 2)\n+            parameter_filter.filter(key => value).first.join("=")\n+          else\n+            part\n+          end\n         end\n+        filtered_parts.join("")\n       end\n     end\n   end', 'request_token': 0, 'response_token': 0}]
+2025-03-19 07:42:24.623 | INFO     | modules.llm_adapter:_call_llm:317 - llm.run() result:{'openai_responses': ['A. Commit message:\nAvoid backtracking in filtered_query_string\n\nB. Change summary:\nReplaced the usage of regular expressions with a split and map approach to prevent backtracking issues in the `filtered_query_string` method.\n\nC. Compatibility Risk:\nLow\n\nD. Fixed Code:\ndiff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb\nindex 7ad1ba3e0eb0e..b02f0d6f85341 100644\n--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:\n         ActiveSupport::ParameterFilter.new(filters)\n       end\n \n-      KV_RE   = "[^&;=]+"\n-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}\n       def filtered_query_string # :doc:\n-        query_string.gsub(PAIR_RE) do |_|\n-          parameter_filter.filter($1 => $2).first.join("=")\n+        parts = query_string.split(/([&;])/)\n+        filtered_parts = parts.map do |part|\n+          if part.include?("=")\n+            key, value = part.split("=", 2)\n+            parameter_filter.filter(key => value).first.join("=")\n+          else\n+            part\n+          end\n         end\n+        filtered_parts.join("")\n       end\n     end\n   end'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-03-19 07:42:24.623 | INFO     | modules.llm_adapter:_parse_llm_response:399 - 原始LLM响应(前100字符): A. Commit message:
+Avoid backtracking in filtered_query_string
+
+B. Change summary:
+Replaced the usag...
+2025-03-19 07:42:24.624 | INFO     | modules.llm_adapter:_parse_llm_response:422 - 找到diff --git格式，内容前100字符: diff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispat...
+2025-03-19 07:42:24.625 | INFO     | modules.llm_adapter:_save_llm_response:452 - LLM响应已保存到: workspace/rails/rails/fb493b/llm_output/output_5.2.7_qwen-plus.patch
+2025-03-19 07:42:24.626 | INFO     | modules.llm_adapter:_save_llm_response:453 - 原始LLM响应已保存到: workspace/rails/rails/fb493b/llm_output/raw_output_5.2.7_qwen-plus.patch
+2025-03-19 07:42:24.630 | INFO     | modules.llm_adapter:_prepare_test_branch:497 - 切换到分支: 5.2.7
+2025-03-19 07:42:24.663 | ERROR    | modules.llm_adapter:_prepare_test_branch:518 - 准备测试分支失败: error: pathspec '5.2.7' did not match any file(s) known to git
+
+2025-03-19 07:42:24.666 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/rails/rails/fb493b/evaluations/llm_adapter/metrics_fb493b_20250319_074224.json
+2025-03-19 07:42:24.666 | INFO     | core.adaptation_pipeline:process_patch:83 - 执行模块: patch_adapter
+2025-03-19 07:42:24.667 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/rails/rails/fb493b/llm_output/output_5.2.7_qwen-plus.patch
+2025-03-19 07:42:24.667 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_5.2.7_20250319_074224
+2025-03-19 07:42:24.684 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: Command '['git', 'checkout', '5.2.7']' returned non-zero exit status 1.
+2025-03-19 07:42:24.684 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 58, in execute
+    branch_name = self._prepare_test_branch(context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 165, in _prepare_test_branch
+    subprocess.run(
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'checkout', '5.2.7']' returned non-zero exit status 1.
+
+2025-03-19 07:42:24.685 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/rails/rails/fb493b/metrics/patch_adapter_metrics.json
+2025-03-19 07:42:24.686 | INFO     | modules.base_module:_should_run:65 - 适配补丁失败，跳过编译
+2025-03-19 07:42:24.686 | INFO     | core.adaptation_pipeline:process_patch:105 - 补丁处理完成，耗时: 9.37秒
+2025-03-19 07:42:24.688 | INFO     | __main__:_save_results:437 - 结果已保存到: results/5.2.7_fb493b_20250319_074224/result.json
+2025-03-19 07:42:24.688 | INFO     | __main__:_print_summary:447 - context.patch_adapter_result: {'success': False, 'error': "Command '['git', 'checkout', '5.2.7']' returned non-zero exit status 1."}
+2025-03-19 07:42:24.688 | INFO     | __main__:_print_summary:468 - ==================================================
+2025-03-19 07:42:24.689 | INFO     | __main__:_print_summary:469 - 处理摘要 - 提交: fb493b
+2025-03-19 07:42:24.689 | INFO     | __main__:_print_summary:470 - 结果: 处理失败 (方法: failed)
+2025-03-19 07:42:24.689 | INFO     | __main__:_print_summary:475 - ==================================================
+2025-03-19 07:42:24.690 | INFO     | __main__:run:122 - 处理完成

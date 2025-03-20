@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "5459cce6bf49e72ee29be21865869c2ac42419f5",
+    "patch_url": "https://github.com/gregkh/linux/commit/5459cce6bf49e72ee29be21865869c2ac42419f5.patch",
+    "downstream_sha": "f91716d5fa0b6f91919ac088b4400f7bf18aaef1",
+    "downstream_message": "bpf: Disable non stream socket for strparser\n\n[ Upstream commit 5459cce6bf49e72ee29be21865869c2ac42419f5 ]\n\nCurrently, only TCP supports strparser, but sockmap doesn't intercept\nnon-TCP connections to attach strparser. For example, with UDP, although\nthe read/write handlers are replaced, strparser is not executed due to\nthe lack of a read_sock operation.\n\nFurthermore, in udp_bpf_recvmsg(), it checks whether the psock has data,\nand if not, it falls back to the native UDP read interface, making\nUDP + strparser appear to read correctly. According to its commit history,\nthis behavior is unexpected.\n\nMoreover, since UDP lacks the concept of streams, we intercept it directly.\n\nFixes: 1fa1fe8ff161 (\"bpf, sockmap: Test shutdown() correctly exits epoll and recv()=0\")\nSigned-off-by: Jiayuan Chen <mrpre@163.com>\nSigned-off-by: Martin KaFai Lau <martin.lau@kernel.org>\nAcked-by: Jakub Sitnicki <jakub@cloudflare.com>\nAcked-by: John Fastabend <john.fastabend@gmail.com>\nLink: https://patch.msgid.link/20250122100917.49845-4-mrpre@163.com\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": null,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/5459cc/patches/upstream_5459cc.patch",
+      "success": true,
+      "timestamp": "2025-03-14T14:20:02.403969"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:39:30.733408"
+  }
+}

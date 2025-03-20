@@ -7,10 +7,12 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 class ModuleType(str, Enum):
     DIRECT_APPLY = "direct_apply"
+    BACKTRACK_APPLY = "backtrack_apply"
     CHUNK_ANALYZER = "chunk_analyzer"
     LLM_ADAPTER = "llm_adapter"
     PATCH_ADAPTER = "patch_adapter"
     COMPILER = "compiler"
+    
 
 class BaseConfig(BaseModel):
     """基础配置类 - 只包含共同的可选参数"""
@@ -27,7 +29,7 @@ class BaseConfig(BaseModel):
     response_file: Optional[Path] = None
     
     enabled_modules: List[str] = Field(default_factory=lambda: [
-        "direct_apply", "chunk_analyzer", "llm_adapter", "patch_adapter", "compiler"
+        "direct_apply", "backtrack_apply", "chunk_analyzer", "llm_adapter", "patch_adapter", "compiler"
     ])
     
     build_command: str = "make"
@@ -48,7 +50,7 @@ class BaseConfig(BaseModel):
 
     @field_validator("enabled_modules")
     def validate_enabled_modules(cls, v):
-        valid_modules = {"direct_apply", "chunk_analyzer", "llm_adapter", "patch_adapter", "compiler"}
+        valid_modules = {"direct_apply", "backtrack_apply", "chunk_analyzer", "llm_adapter", "patch_adapter", "compiler"}
         invalid_modules = set(v) - valid_modules
         if invalid_modules:
             raise ValueError(f"Invalid pipeline modules: {invalid_modules}")
@@ -72,9 +74,9 @@ class Mode1Config(BaseConfig):
     @model_validator(mode='before')
     def process_field(cls, data: Any) -> Dict[str, str]:
         if isinstance(data, dict):
-            info = parse_github_url(data['repo_url'])
+            info = parse_github_url(data['patch_url'])
             if not info:
-                raise ValueError(f"无法解析补丁URL: {data['repo_url']}")
+                raise ValueError(f"无法解析补丁URL: {data['patch_url']}")
             repo_name = info['repo']
             repo_owner = info['owner']
             commit_sha = info['commit_sha']
@@ -231,6 +233,7 @@ class ModuleContext(BaseModel):
     compiler_branch: Optional[str] = None
     patch_adapter_result: List[Dict[str, Any]] = Field(default_factory=list)
     chunk_analyzer_result: List[Dict[str, Any]] = Field(default_factory=list)
+    backtrack_result: Optional[Dict[str, Any]] = None
 
     # 内核编译器配置
     docker_image_built: bool = True

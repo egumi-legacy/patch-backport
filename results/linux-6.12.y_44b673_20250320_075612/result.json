@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "44b6730ab53ef04944fbaf6da0e77397531517b7",
+    "patch_url": "https://github.com/gregkh/linux/commit/44b6730ab53ef04944fbaf6da0e77397531517b7.patch",
+    "downstream_sha": "c5dcd3f421d038cfde8ed3127b0eb07f41154167",
+    "downstream_message": "drm/tidss: Fix issue in irq handling causing irq-flood issue\n\ncommit 44b6730ab53ef04944fbaf6da0e77397531517b7 upstream.\n\nIt has been observed that sometimes DSS will trigger an interrupt and\nthe top level interrupt (DISPC_IRQSTATUS) is not zero, but the VP and\nVID level interrupt-statuses are zero.\n\nAs the top level irqstatus is supposed to tell whether we have VP/VID\ninterrupts, the thinking of the driver authors was that this particular\ncase could never happen. Thus the driver only clears the DISPC_IRQSTATUS\nbits which has corresponding interrupts in VP/VID status. So when this\nissue happens, the driver will not clear DISPC_IRQSTATUS, and we get an\ninterrupt flood.\n\nIt is unclear why the issue happens. It could be a race issue in the\ndriver, but no such race has been found. It could also be an issue with\nthe HW. However a similar case can be easily triggered by manually\nwriting to DISPC_IRQSTATUS_RAW. This will forcibly set a bit in the\nDISPC_IRQSTATUS and trigger an interrupt, and as the driver never clears\nthe bit, we get an interrupt flood.\n\nTo fix the issue, always clear DISPC_IRQSTATUS. The concern with this\nsolution is that if the top level irqstatus is the one that triggers the\ninterrupt, always clearing DISPC_IRQSTATUS might leave some interrupts\nunhandled if VP/VID interrupt statuses have bits set. However, testing\nshows that if any of the irqstatuses is set (i.e. even if\nDISPC_IRQSTATUS == 0, but a VID irqstatus has a bit set), we will get an\ninterrupt.\n\nCo-developed-by: Bin Liu <b-liu@ti.com>\nSigned-off-by: Bin Liu <b-liu@ti.com>\nCo-developed-by: Devarsh Thakkar <devarsht@ti.com>\nSigned-off-by: Devarsh Thakkar <devarsht@ti.com>\nCo-developed-by: Jonathan Cormier <jcormier@criticallink.com>\nSigned-off-by: Jonathan Cormier <jcormier@criticallink.com>\nFixes: 32a1795f57ee (\"drm/tidss: New driver for TI Keystone platform Display SubSystem\")\nCc: stable@vger.kernel.org\nTested-by: Jonathan Cormier <jcormier@criticallink.com>\nReviewed-by: Aradhya Bhatia <aradhya.bhatia@linux.dev>\nSigned-off-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>\nLink: https://patchwork.freedesktop.org/patch/msgid/20241021-tidss-irq-fix-v1-1-82ddaec94e4a@ideasonboard.com\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/44b673/patches/upstream_44b673.patch",
+      "timestamp": "2025-03-20T07:56:11.798209"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:56:12.328594"
+  }
+}

@@ -1,0 +1,85 @@
+2025-03-20 15:58:43.091 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250320_155843.log
+2025-03-20 15:58:43.092 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-20 15:58:43.093 | INFO     | __main__:_get_commits_list:255 - commits_file:workspace/gregkh/linux_cache/branch_linux-6.12.y_commits.json
+2025-03-20 15:58:43.094 | INFO     | __main__:_get_commits_list:256 - use_cached_commits:True
+2025-03-20 15:58:43.097 | INFO     | __main__:_get_commits_list:259 - 从缓存文件加载commits信息
+2025-03-20 15:58:43.110 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-03-20 15:58:43.112 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: direct_apply
+2025-03-20 15:58:43.113 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: backtrack_apply
+2025-03-20 15:58:43.116 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: llm_adapter
+2025-03-20 15:58:43.117 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: patch_adapter
+2025-03-20 15:58:43.118 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: compiler
+2025-03-20 15:58:43.119 | INFO     | __main__:_process_mode2:197 - 处理提交 128/1: 82a0a3
+2025-03-20 15:58:43.120 | INFO     | core.adaptation_pipeline:process_patch:69 - 开始处理补丁: 82a0a3e6f8c02b3236b55e784a083fa4ee07c321
+2025-03-20 15:58:43.122 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: direct_apply
+2025-03-20 15:58:43.347 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: sound/soc/renesas/rz-ssi.c: does not exist in index\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/82a0a3/patches/upstream_82a0a3.patch', 'success': False, 'timestamp': '2025-03-20T07:49:20.620370'}
+2025-03-20 15:58:43.348 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: backtrack_apply
+2025-03-20 15:58:43.348 | INFO     | modules.backtrack_apply:execute:46 - 补丁文件路径: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/82a0a3/patches/upstream_82a0a3.patch
+2025-03-20 15:58:43.349 | INFO     | modules.backtrack_apply:_find_modified_files:179 - 从补丁中找到 1 个修改的文件
+2025-03-20 15:58:43.350 | INFO     | modules.backtrack_apply:execute:60 - 找到修改的文件: ['sound/soc/renesas/rz-ssi.c']
+2025-03-20 15:58:43.357 | INFO     | modules.backtrack_apply:_try_adaptive_apply:624 - 当前分支: backtrack_82a0a3_20250320_154505
+2025-03-20 15:58:43.420 | INFO     | modules.backtrack_apply:_map_file_paths:230 - 文件路径映射: sound/soc/renesas/rz-ssi.c -> sound/soc/sh/rz-ssi.c
+2025-03-20 15:58:43.421 | INFO     | modules.backtrack_apply:_try_adaptive_apply:634 - 文件路径映射: {'sound/soc/renesas/rz-ssi.c': 'sound/soc/sh/rz-ssi.c'}
+2025-03-20 15:58:43.425 | INFO     | modules.backtrack_apply:_adapt_patch_paths:756 - 路径适配补丁已创建: workspace/gregkh/linux/82a0a3/patches/adapted_82a0a3.patch
+2025-03-20 15:58:44.176 | INFO     | modules.backtrack_apply:_create_temp_branch:503 - 创建临时分支 adaptive_82a0a3_20250320_155843 指向 HEAD
+2025-03-20 15:58:44.798 | INFO     | modules.backtrack_apply:_apply_patch:541 - 补丁应用成功: workspace/gregkh/linux/82a0a3/patches/adapted_82a0a3.patch
+2025-03-20 15:58:44.911 | INFO     | modules.backtrack_apply:_try_adaptive_apply:675 - 路径自适应应用成功: b82cb8a5
+2025-03-20 15:58:45.747 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:586 - 清理临时分支 adaptive_82a0a3_20250320_155843 并切回 backtrack_82a0a3_20250320_154505
+2025-03-20 15:58:45.749 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/82a0a3/evaluations/backtrack_apply/metrics_82a0a3_20250320_155845.json
+2025-03-20 15:58:45.750 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: llm_adapter
+2025-03-20 15:58:45.752 | INFO     | modules.llm_adapter:execute:53 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/82a0a3/patches/upstream_82a0a3.patch
+2025-03-20 15:58:45.753 | INFO     | modules.llm_adapter:execute:55 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/82a0a3/patches/upstream_82a0a3.patch
+2025-03-20 15:58:45.872 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-03-20 15:58:45.873 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/gregkh/linux/82a0a3/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-20 15:58:45.882 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-03-20 15:58:45.883 | INFO     | modules.llm_adapter:_call_llm:317 - llm.run() result:{'openai_responses': ['diff --git a/sound/soc/renesas/rz-ssi.c b/sound/soc/renesas/rz-ssi.c\nnew file mode 100644\nindex 0000000..3a0af4ca7ab6c\n--- /dev/null\n+++ b/sound/soc/renesas/rz-ssi.c\n@@ -0,0 +1,529 @@\n+/* ... (other lines of code) ... */\n+\n+static int rz_ssi_pio_send(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)\n+{\n+\tstruct snd_pcm_runtime *runtime = strm->substream->runtime;\n+\tint frames_left = runtime->buffer_size - strm->pos;\n+\tint sample_space;\n+\tu32 ssifsr;\n+\n+\tsample_space = strm->fifo_sample_size;\n+\tssifsr = rz_ssi_reg_readl(ssi, SSIFSR);\n+\tsample_space -= (ssifsr >> SSIFSR_TDC_SHIFT) & SSIFSR_TDC_MASK;\n+\tif (sample_space < 0)\n+\t\treturn -EINVAL;\n+\n+\t/* Only add full frames at a time */\n+\twhile (frames_left && (sample_space >= runtime->channels)) {\n+\t\t/* ... (rest of the function) ... */\n+\t}\n+\n+\t/* ... (other lines of code) ... */\n+}\n+\n+/* ... (other lines of code) ... */'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-03-20 15:58:45.884 | INFO     | modules.llm_adapter:_parse_llm_response:399 - 原始LLM响应(前100字符): diff --git a/sound/soc/renesas/rz-ssi.c b/sound/soc/renesas/rz-ssi.c
+new file mode 100644
+index 0000...
+2025-03-20 15:58:45.887 | INFO     | modules.llm_adapter:_parse_llm_response:422 - 找到diff --git格式，内容前100字符: diff --git a/sound/soc/renesas/rz-ssi.c b/sound/soc/renesas/rz-ssi.c
+new file mode 100644
+index 0000...
+2025-03-20 15:58:45.890 | INFO     | modules.llm_adapter:_save_llm_response:452 - LLM响应已保存到: workspace/gregkh/linux/82a0a3/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-20 15:58:45.890 | INFO     | modules.llm_adapter:_save_llm_response:453 - 原始LLM响应已保存到: workspace/gregkh/linux/82a0a3/llm_output/raw_output_linux-6.12.y_qwen-plus.patch
+2025-03-20 15:58:45.896 | INFO     | modules.base_module:_save_metrics:115 - 评测指标已保存到: workspace/gregkh/linux/82a0a3/evaluations/llm_adapter/metrics_82a0a3_20250320_155845.json
+2025-03-20 15:58:45.899 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: patch_adapter
+2025-03-20 15:58:45.900 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/gregkh/linux/82a0a3/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-20 15:58:45.904 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_linux-6.12.y_20250320_155845
+2025-03-20 15:58:48.508 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: Command '['git', 'checkout', 'linux-6.12.y']' returned non-zero exit status 1.
+2025-03-20 15:58:48.513 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 58, in execute
+    branch_name = self._prepare_test_branch(context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 165, in _prepare_test_branch
+    subprocess.run(
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'checkout', 'linux-6.12.y']' returned non-zero exit status 1.
+
+2025-03-20 15:58:48.515 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/gregkh/linux/82a0a3/metrics/patch_adapter_metrics.json
+2025-03-20 15:58:48.516 | INFO     | modules.base_module:_should_run:65 - 适配补丁失败，跳过编译
+2025-03-20 15:58:48.517 | INFO     | core.adaptation_pipeline:process_patch:106 - 补丁处理完成，耗时: 5.39秒
+2025-03-20 15:58:48.522 | INFO     | __main__:_save_results:437 - 结果已保存到: results/linux-6.12.y_82a0a3_20250320_155848/result.json
+2025-03-20 15:58:48.524 | INFO     | __main__:_print_summary:447 - context.patch_adapter_result: {'success': False, 'error': "Command '['git', 'checkout', 'linux-6.12.y']' returned non-zero exit status 1."}
+2025-03-20 15:58:48.525 | INFO     | __main__:_print_summary:468 - ==================================================
+2025-03-20 15:58:48.526 | INFO     | __main__:_print_summary:469 - 处理摘要 - 提交: 82a0a3
+2025-03-20 15:58:48.526 | INFO     | __main__:_print_summary:470 - 结果: 处理失败 (方法: failed)
+2025-03-20 15:58:48.527 | INFO     | __main__:_print_summary:475 - ==================================================
+2025-03-20 15:58:48.528 | INFO     | __main__:_print_mode2_statistics:518 - ============================================================
+2025-03-20 15:58:48.528 | INFO     | __main__:_print_mode2_statistics:519 - 模式2处理统计
+2025-03-20 15:58:48.529 | INFO     | __main__:_print_mode2_statistics:520 - ============================================================
+2025-03-20 15:58:48.530 | INFO     | __main__:_print_mode2_statistics:521 - 总提交数: 1
+2025-03-20 15:58:48.530 | INFO     | __main__:_print_mode2_statistics:522 - 直接应用成功: 0
+2025-03-20 15:58:48.531 | INFO     | __main__:_print_mode2_statistics:523 - 需要适配数量: 1
+2025-03-20 15:58:48.531 | INFO     | __main__:_print_mode2_statistics:524 - 适配成功数量: 0
+2025-03-20 15:58:48.532 | INFO     | __main__:_print_mode2_statistics:525 - - LLM适配成功: 0
+2025-03-20 15:58:48.532 | INFO     | __main__:_print_mode2_statistics:526 - - 补丁适配成功: 0
+2025-03-20 15:58:48.533 | INFO     | __main__:_print_mode2_statistics:527 - - 编译成功: 0
+2025-03-20 15:58:48.533 | INFO     | __main__:_print_mode2_statistics:528 - 适配失败数量: 1
+2025-03-20 15:58:48.534 | INFO     | __main__:_print_mode2_statistics:530 - 适配成功率: 0.00%
+2025-03-20 15:58:48.534 | INFO     | __main__:_print_mode2_statistics:533 - 
+失败的提交:
+2025-03-20 15:58:48.535 | INFO     | __main__:_print_mode2_statistics:535 -   - 82a0a3: None
+2025-03-20 15:58:48.535 | INFO     | __main__:_print_mode2_statistics:537 - ============================================================
+2025-03-20 15:58:48.537 | INFO     | __main__:_print_mode2_statistics:565 - 统计结果已保存到: statistics/mode2_stats_linux-6.12.y_20250320_155848.json
+2025-03-20 15:58:48.538 | INFO     | __main__:run:122 - 处理完成

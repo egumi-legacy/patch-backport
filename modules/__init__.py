@@ -1,4 +1,5 @@
 from .direct_apply import DirectApplyModule
+from .backtrack_apply import BacktrackApplyModule
 from .chunk_analyzer import ChunkAnalyzerModule
 from .llm_adapter import LLMAdapterModule
 from .patch_adapter import PatchAdapterModule
@@ -8,6 +9,7 @@ from .compiler import CompilerModule
 
 module_registry = {
     "direct_apply": DirectApplyModule,
+    "backtrack_apply": BacktrackApplyModule,
     "chunk_analyzer": ChunkAnalyzerModule,
     "llm_adapter": LLMAdapterModule,
     "patch_adapter": PatchAdapterModule,

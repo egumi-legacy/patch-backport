@@ -208,28 +208,32 @@ class DirectApplyModule(BaseModule):
         # patch_dir.mkdir(parents=True, exist_ok=True)
         
         patch_path = patch_dir / f"upstream_{context.commit.commit_sha[:6]}.patch"
-        downstream_patch_path = patch_dir / f"downstream_{context.commit.downstream_sha[:6]}.patch"
-        from patch_utils import download_patch
         
-        if downstream_patch_path.exists():
-            logger.info(f"下游补丁文件已存在: {downstream_patch_path}")
-        else:
-            logger.info(f"下游补丁文件不存在，下载补丁: {downstream_patch_path}")
-            # logger.info(f": {downstream_patch_path}")
-            download_patch_url = f"https://github.com/{context.commit.repo_owner}/{context.commit.repo_name}/commit/{context.commit.downstream_sha}.patch"
-            success = download_patch(download_patch_url, downstream_patch_path).exists()
-            if success:
-                logger.info(f"下游补丁下载成功: {downstream_patch_path}")
+        # 检查是否有downstream_sha（模式1可能没有）
+        if hasattr(context.commit, 'downstream_sha') and context.commit.downstream_sha:
+            downstream_patch_path = patch_dir / f"downstream_{context.commit.downstream_sha[:6]}.patch"
+            from patch_utils import download_patch
+            
+            if downstream_patch_path.exists():
+                logger.info(f"下游补丁文件已存在: {downstream_patch_path}")
             else:
-                # logger.error(f"下游补丁下载失败: {downstream_patch_path}")
-                raise ValueError(f"下游补丁下载失败: {downstream_patch_path}")
+                logger.info(f"下游补丁文件不存在，下载补丁: {downstream_patch_path}")
+                # logger.info(f": {downstream_patch_path}")
+                download_patch_url = f"https://github.com/{context.commit.repo_owner}/{context.commit.repo_name}/commit/{context.commit.downstream_sha}.patch"
+                success = download_patch(download_patch_url, downstream_patch_path).exists()
+                if success:
+                    logger.info(f"下游补丁下载成功: {downstream_patch_path}")
+                else:
+                    # logger.error(f"下游补丁下载失败: {downstream_patch_path}")
+                    raise ValueError(f"下游补丁下载失败: {downstream_patch_path}")
 
         if patch_path.exists():
             logger.info(f"上游补丁文件已存在: {patch_path}")
             # 确保返回绝对路径
             return patch_path.absolute()
         else:
-            logger.info(f"上游补丁文件不存在，下载补丁: {downstream_patch_path}")
+            from patch_utils import download_patch
+            logger.info(f"上游补丁文件不存在，下载补丁")
             success = download_patch(context.commit.patch_url, patch_path).exists()
             
             if success:

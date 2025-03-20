@@ -1,0 +1,62 @@
+{
+  "commit": {
+    "sha": "857ae05549ee2542317e7084ecaa5f8536634dd9",
+    "patch_url": "https://github.com/gregkh/linux/commit/857ae05549ee2542317e7084ecaa5f8536634dd9.patch",
+    "downstream_sha": "478a46f1122f0830392bef2a46a8d91d8abc354e",
+    "downstream_message": "vsock/bpf: Warn on socket without transport\n\n[ Upstream commit 857ae05549ee2542317e7084ecaa5f8536634dd9 ]\n\nIn the spirit of commit 91751e248256 (\"vsock: prevent null-ptr-deref in\nvsock_*[has_data|has_space]\"), armorize the \"impossible\" cases with a\nwarning.\n\nFixes: 634f1a7110b4 (\"vsock: support sockmap\")\nSigned-off-by: Michal Luczaj <mhal@rbox.co>\nReviewed-by: Stefano Garzarella <sgarzare@redhat.com>\nSigned-off-by: Paolo Abeni <pabeni@redhat.com>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": "error: patch failed: net/vmw_vsock/vsock_bpf.c:87\nerror: net/vmw_vsock/vsock_bpf.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/857ae0/patches/upstream_857ae0.patch",
+      "success": false,
+      "timestamp": "2025-03-14T14:31:10.844683"
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c\nindex 53a081d49d28a..7e3db87ae4333 100644\n--- a/net/vmw_vsock/af_vsock.c\n+++ b/net/vmw_vsock/af_vsock.c\n@@ -889,6 +889,9 @@ s64 vsock_stream_has_data(struct vsock_sock *vsk)\n {\n+\tif (WARN_ON_ONCE(!vsk->transport))\n+\t\treturn -ENODEV;\n+\n \treturn vsk->transport->stream_has_data(vsk);\n }\n EXPORT_SYMBOL_GPL(vsock_stream_has_data);\n@@ -900,6 +903,9 @@ s64 vsock_connectible_has_data(struct vsock_sock *vsk)\n {\n \tstruct sock *sk = sk_vsock(vsk);\n \n+\tif (WARN_ON_ONCE(!vsk->transport))\n+\t\treturn -ENODEV;\n+\n \tif (sk->sk_type == SOCK_SEQPACKET)\n \t\treturn vsk->transport->seqpacket_has_data(vsk);\n@@ -913,6 +919,9 @@ s64 vsock_stream_has_space(struct vsock_sock *vsk)\n {\n+\tif (WARN_ON_ONCE(!vsk->transport))\n+\t\treturn -ENODEV;\n+\n \treturn vsk->transport->stream_has_space(vsk);\n }\n EXPORT_SYMBOL_GPL(vsock_stream_has_space);\ndiff --git a/net/vmw_vsock/vsock_bpf.c b/net/vmw_vsock/vsock_bpf.c\nindex f201d9eca1df2..07b96d56f3a57 100644\n--- a/net/vmw_vsock/vsock_bpf.c\n+++ b/net/vmw_vsock/vsock_bpf.c\n@@ -87,7 +87,7 @@ static int vsock_bpf_recvmsg(struct sock *sk, struct msghdr *msg,\n \tlock_sock(sk);\n \tvsk = vsock_sk(sk);\n \n-\tif (!vsk->transport) {\n+\tif (WARN_ON_ONCE(!vsk->transport)) {\n \t\tcopied = -ENODEV;\n \t\tgoto out;\n \t}",
+      "prompt": {
+        "patch_content": "From 857ae05549ee2542317e7084ecaa5f8536634dd9 Mon Sep 17 00:00:00 2001\nFrom: Michal Luczaj <mhal@rbox.co>\nDate: Thu, 13 Feb 2025 12:58:50 +0100\nSubject: [PATCH] vsock/bpf: Warn on socket without transport\n\nIn the spirit of commit 91751e248256 (\"vsock: prevent null-ptr-deref in\nvsock_*[has_data|has_space]\"), armorize the \"impossible\" cases with a\nwarning.\n\nFixes: 634f1a7110b4 (\"vsock: support sockmap\")\nSigned-off-by: Michal Luczaj <mhal@rbox.co>\nReviewed-by: Stefano Garzarella <sgarzare@redhat.com>\nSigned-off-by: Paolo Abeni <pabeni@redhat.com>\n---\n net/vmw_vsock/af_vsock.c  | 3 +++\n net/vmw_vsock/vsock_bpf.c | 2 +-\n 2 files changed, 4 insertions(+), 1 deletion(-)\n\ndiff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c\nindex 53a081d49d28a..7e3db87ae4333 100644\n--- a/net/vmw_vsock/af_vsock.c\n+++ b/net/vmw_vsock/af_vsock.c\n@@ -1189,6 +1189,9 @@ static int vsock_read_skb(struct sock *sk, skb_read_actor_t read_actor)\n {\n \tstruct vsock_sock *vsk = vsock_sk(sk);\n \n+\tif (WARN_ON_ONCE(!vsk->transport))\n+\t\treturn -ENODEV;\n+\n \treturn vsk->transport->read_skb(vsk, read_actor);\n }\n \ndiff --git a/net/vmw_vsock/vsock_bpf.c b/net/vmw_vsock/vsock_bpf.c\nindex f201d9eca1df2..07b96d56f3a57 100644\n--- a/net/vmw_vsock/vsock_bpf.c\n+++ b/net/vmw_vsock/vsock_bpf.c\n@@ -87,7 +87,7 @@ static int vsock_bpf_recvmsg(struct sock *sk, struct msghdr *msg,\n \tlock_sock(sk);\n \tvsk = vsock_sk(sk);\n \n-\tif (!vsk->transport) {\n+\tif (WARN_ON_ONCE(!vsk->transport)) {\n \t\tcopied = -ENODEV;\n \t\tgoto out;\n \t}\n",
+        "target_version": "linux-6.12.y",
+        "context_diff": "modified file: net/vmw_vsock/af_vsock.c\n--- workspace/gregkh/linux/857ae0/newer/net/vmw_vsock/af_vsock.c\n+++ workspace/gregkh/linux/857ae0/linux-6.12.y/net/vmw_vsock/af_vsock.c\n@@ -337,10 +337,7 @@\n  \n  void vsock_remove_sock(struct vsock_sock *vsk)\n  {\n -\t/* Transport reassignment must not remove the binding. */\n -\tif (sock_flag(sk_vsock(vsk), SOCK_DEAD))\n -\t\tvsock_remove_bound(vsk);\n -\n +\tvsock_remove_bound(vsk);\n  \tvsock_remove_connected(vsk);\n  }\n  EXPORT_SYMBOL_GPL(vsock_remove_sock);\n@@ -494,15 +491,6 @@\n  \t\t */\n  \t\tvsk->transport->release(vsk);\n  \t\tvsock_deassign_transport(vsk);\n -\n -\t\t/* transport's release() and destruct() can touch some socket\n -\t\t * state, since we are reassigning the socket to a new transport\n -\t\t * during vsock_connect(), let's reset these fields to have a\n -\t\t * clean state.\n -\t\t */\n -\t\tsock_reset_flag(sk, SOCK_DONE);\n -\t\tsk->sk_state = TCP_CLOSE;\n -\t\tvsk->peer_shutdown = 0;\n  \t}\n  \n  \tlock_sock_nested(sk, level);\n  \n -\t/* Indicate to vsock_remove_sock() that the socket is being released and\n -\t * can be removed from the bound_table. Unlike transport reassignment\n -\t * case, where the socket must remain bound despite vsock_remove_sock()\n -\t * being called from the transport release() callback.\n -\t */\n -\tsock_set_flag(sk, SOCK_DEAD);\n -\n  \tif (vsk->transport)\n  \t\tvsk->transport->release(vsk);\n  \telse if (sock_type_connectible(sk->sk_type))\n@@ -889,9 +870,6 @@\n  \n  s64 vsock_stream_has_data(struct vsock_sock *vsk)\n  {\n -\tif (WARN_ON(!vsk->transport))\n -\t\treturn 0;\n -\n  \treturn vsk->transport->stream_has_data(vsk);\n  }\n  EXPORT_SYMBOL_GPL(vsock_stream_has_data);\n@@ -899,9 +877,6 @@\n  s64 vsock_connectible_has_data(struct vsock_sock *vsk)\n  {\n  \tstruct sock *sk = sk_vsock(vsk);\n -\n -\tif (WARN_ON(!vsk->transport))\n -\t\treturn 0;\n  \n  \tif (sk->sk_type == SOCK_SEQPACKET)\n  \t\treturn vsk->transport->seqpacket_has_data(vsk);\n@@ -912,9 +887,6 @@\n  \n  s64 vsock_stream_has_space(struct vsock_sock *vsk)\n  {\n -\tif (WARN_ON(!vsk->transport))\n -\t\treturn 0;\n -\n  \treturn vsk->transport->stream_has_space(vsk);\n  }\n  EXPORT_SYMBOL_GPL(vsock_stream_has_space);\n@@ -1528,11 +1500,6 @@\n  \t\terr = transport->connect(vsk);\n  \t\tif (err < 0)\n  \t\t\tgoto out;\n -\n -\t\t/* sk_err might have been set as a result of an earlier\n -\t\t * (failed) connect attempt.\n -\t\t */\n -\t\tsk->sk_err = 0;\n  \n\n\"\"\"\"\"\"\nmodified file: net/vmw_vsock/vsock_bpf.c\n--- workspace/gregkh/linux/857ae0/newer/net/vmw_vsock/vsock_bpf.c\n+++ workspace/gregkh/linux/857ae0/linux-6.12.y/net/vmw_vsock/vsock_bpf.c\n@@ -77,7 +77,6 @@\n  \t\t\t     size_t len, int flags, int *addr_len)\n  {\n  \tstruct sk_psock *psock;\n -\tstruct vsock_sock *vsk;\n  \tint copied;\n  \n  \tpsock = sk_psock_get(sk);\n@@ -85,13 +84,6 @@\n  \t\treturn __vsock_recvmsg(sk, msg, len, flags);\n  \n  \tlock_sock(sk);\n -\tvsk = vsock_sk(sk);\n -\n -\tif (!vsk->transport) {\n -\t\tcopied = -ENODEV;\n -\t\tgoto out;\n -\t}\n -\n  \tif (vsock_has_data(sk, psock) && sk_psock_queue_empty(psock)) {\n  \t\trelease_sock(sk);\n  \t\tsk_psock_put(sk, psock);\n@@ -116,7 +108,6 @@\n  \t\tcopied = sk_msg_recvmsg(sk, psock, msg, len, flags);\n  \t}\n  \n -out:\n  \trelease_sock(sk);\n  \tsk_psock_put(sk, psock);\n  \n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/gregkh/linux/857ae0/llm_output/output_linux-6.12.y_qwen-plus.patch",
+      "apply_result": {
+        "success": false,
+        "error": "Patch format detection failed.\n",
+        "error_type": "other",
+        "output": null
+      },
+      "timestamp": "2025-03-20T07:41:00.084968",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": true,
+      "adapted_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/857ae0/patches/adapted_linux-6.12.y.patch",
+      "apply_result": {
+        "success": true,
+        "error": null,
+        "error_type": null,
+        "output": "Applying: Applied adapted patch for linux-6.12.y\n"
+      }
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "compiler",
+    "timestamp": "2025-03-20T07:41:12.936374"
+  }
+}

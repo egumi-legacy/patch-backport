@@ -1,0 +1,92 @@
+2025-03-20 16:58:06.903 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250320_165806.log
+2025-03-20 16:58:06.904 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-20 16:58:06.905 | INFO     | __main__:_get_commits_list:256 - commits_file:workspace/gregkh/linux_cache/branch_linux-6.12.y_commits.json
+2025-03-20 16:58:06.905 | INFO     | __main__:_get_commits_list:257 - use_cached_commits:True
+2025-03-20 16:58:06.906 | INFO     | __main__:_get_commits_list:260 - 从缓存文件加载commits信息
+2025-03-20 16:58:06.914 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-03-20 16:58:06.914 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: direct_apply
+2025-03-20 16:58:06.915 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: backtrack_apply
+2025-03-20 16:58:06.918 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: llm_adapter
+2025-03-20 16:58:06.919 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: patch_adapter
+2025-03-20 16:58:06.920 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: compiler
+2025-03-20 16:58:06.920 | INFO     | __main__:_process_mode2:198 - 处理提交 132/1: a2fad2
+2025-03-20 16:58:06.921 | INFO     | core.adaptation_pipeline:process_patch:69 - 开始处理补丁: a2fad248947d702ed3dcb52b8377c1a3ae201e44
+2025-03-20 16:58:06.921 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: direct_apply
+2025-03-20 16:58:07.117 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: patch failed: drivers/bluetooth/btqca.c:909\nerror: drivers/bluetooth/btqca.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/patches/upstream_a2fad2.patch', 'success': False, 'timestamp': '2025-03-20T07:49:51.335345'}
+2025-03-20 16:58:07.118 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: backtrack_apply
+2025-03-20 16:58:07.118 | INFO     | modules.backtrack_apply:execute:46 - 补丁文件路径: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/patches/upstream_a2fad2.patch
+2025-03-20 16:58:07.119 | INFO     | modules.backtrack_apply:_find_modified_files:179 - 从补丁中找到 1 个修改的文件
+2025-03-20 16:58:07.120 | INFO     | modules.backtrack_apply:execute:60 - 找到修改的文件: ['drivers/bluetooth/btqca.c']
+2025-03-20 16:58:07.125 | INFO     | modules.backtrack_apply:_try_adaptive_apply:701 - 当前分支: linux-6.12.y
+2025-03-20 16:58:07.126 | INFO     | modules.backtrack_apply:_map_file_paths:203 - 文件直接存在: drivers/bluetooth/btqca.c
+2025-03-20 16:58:07.127 | INFO     | modules.backtrack_apply:_try_adaptive_apply:721 - 文件路径映射: {'drivers/bluetooth/btqca.c': 'drivers/bluetooth/btqca.c'}
+2025-03-20 16:58:07.129 | INFO     | modules.backtrack_apply:_adapt_patch_paths:879 - 路径适配补丁已创建: workspace/gregkh/linux/a2fad2/patches/adapted_a2fad2.patch
+2025-03-20 16:58:07.860 | INFO     | modules.backtrack_apply:_create_temp_branch:553 - 创建临时分支 adaptive_a2fad2_20250320_165807 指向 HEAD
+2025-03-20 16:58:08.210 | ERROR    | modules.backtrack_apply:_apply_patch:605 - 应用补丁时发生错误: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 16:58:09.408 | INFO     | modules.backtrack_apply:_apply_patch:621 - 清理 git am 状态
+2025-03-20 16:58:09.409 | WARNING  | modules.backtrack_apply:_try_adaptive_apply:763 - 路径自适应应用失败: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 16:58:09.942 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:652 - 切回原始分支: linux-6.12.y
+2025-03-20 16:58:09.974 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:672 - 删除临时分支: adaptive_a2fad2_20250320_165807
+2025-03-20 16:58:10.004 | INFO     | modules.backtrack_apply:execute:92 - 路径自适应应用失败，尝试回溯方法
+2025-03-20 16:58:10.020 | INFO     | modules.backtrack_apply:_backtrack_apply:341 - 当前分支: linux-6.12.y
+2025-03-20 16:58:10.022 | INFO     | modules.backtrack_apply:_map_file_paths:203 - 文件直接存在: drivers/bluetooth/btqca.c
+2025-03-20 16:58:10.023 | INFO     | modules.backtrack_apply:_backtrack_apply:360 - 文件路径映射: {'drivers/bluetooth/btqca.c': 'drivers/bluetooth/btqca.c'}
+2025-03-20 16:58:34.172 | INFO     | modules.backtrack_apply:_get_file_history:534 - 文件 drivers/bluetooth/btqca.c 有 55 个历史提交
+2025-03-20 16:58:34.173 | INFO     | modules.backtrack_apply:_backtrack_apply:389 - 找到 55 个历史提交
+2025-03-20 16:58:34.174 | INFO     | modules.backtrack_apply:_backtrack_apply:400 - 尝试应用补丁到 dd336649 (尝试 1/55)
+2025-03-20 16:59:13.362 | INFO     | modules.backtrack_apply:_create_temp_branch:553 - 创建临时分支 backtrack_a2fad2_20250320_165810 指向 dd336649
+2025-03-20 16:59:13.673 | ERROR    | modules.backtrack_apply:_apply_patch:605 - 应用补丁时发生错误: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 16:59:14.316 | INFO     | modules.backtrack_apply:_apply_patch:621 - 清理 git am 状态
+2025-03-20 16:59:14.317 | INFO     | modules.backtrack_apply:_backtrack_apply:421 - 补丁无法应用于 dd336649: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 16:59:29.792 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:652 - 切回原始分支: linux-6.12.y
+2025-03-20 16:59:29.807 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:672 - 删除临时分支: backtrack_a2fad2_20250320_165810
+2025-03-20 16:59:29.808 | INFO     | modules.backtrack_apply:_backtrack_apply:400 - 尝试应用补丁到 010376ab (尝试 2/55)
+2025-03-20 17:00:19.367 | INFO     | modules.backtrack_apply:_create_temp_branch:553 - 创建临时分支 backtrack_a2fad2_20250320_165810 指向 010376ab
+2025-03-20 17:00:19.539 | ERROR    | modules.backtrack_apply:_apply_patch:605 - 应用补丁时发生错误: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:00:20.002 | INFO     | modules.backtrack_apply:_apply_patch:621 - 清理 git am 状态
+2025-03-20 17:00:20.003 | INFO     | modules.backtrack_apply:_backtrack_apply:421 - 补丁无法应用于 010376ab: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:00:58.839 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:652 - 切回原始分支: linux-6.12.y
+2025-03-20 17:00:58.849 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:672 - 删除临时分支: backtrack_a2fad2_20250320_165810
+2025-03-20 17:00:58.850 | INFO     | modules.backtrack_apply:_backtrack_apply:400 - 尝试应用补丁到 059924fd (尝试 3/55)
+2025-03-20 17:01:29.514 | INFO     | modules.backtrack_apply:_create_temp_branch:553 - 创建临时分支 backtrack_a2fad2_20250320_165810 指向 059924fd
+2025-03-20 17:01:30.133 | ERROR    | modules.backtrack_apply:_apply_patch:605 - 应用补丁时发生错误: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:01:31.566 | INFO     | modules.backtrack_apply:_apply_patch:621 - 清理 git am 状态
+2025-03-20 17:01:31.566 | INFO     | modules.backtrack_apply:_backtrack_apply:421 - 补丁无法应用于 059924fd: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:02:02.651 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:652 - 切回原始分支: linux-6.12.y
+2025-03-20 17:02:02.665 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:672 - 删除临时分支: backtrack_a2fad2_20250320_165810
+2025-03-20 17:02:02.666 | INFO     | modules.backtrack_apply:_backtrack_apply:400 - 尝试应用补丁到 83d8e815 (尝试 4/55)
+2025-03-20 17:02:16.674 | INFO     | modules.backtrack_apply:_create_temp_branch:553 - 创建临时分支 backtrack_a2fad2_20250320_165810 指向 83d8e815
+2025-03-20 17:02:16.940 | ERROR    | modules.backtrack_apply:_apply_patch:605 - 应用补丁时发生错误: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:02:17.720 | INFO     | modules.backtrack_apply:_apply_patch:621 - 清理 git am 状态
+2025-03-20 17:02:17.720 | INFO     | modules.backtrack_apply:_backtrack_apply:421 - 补丁无法应用于 83d8e815: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:02:31.671 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:652 - 切回原始分支: linux-6.12.y
+2025-03-20 17:02:31.744 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:672 - 删除临时分支: backtrack_a2fad2_20250320_165810
+2025-03-20 17:02:31.745 | INFO     | modules.backtrack_apply:_backtrack_apply:400 - 尝试应用补丁到 77f45cca (尝试 5/55)
+2025-03-20 17:02:45.983 | INFO     | modules.backtrack_apply:_create_temp_branch:553 - 创建临时分支 backtrack_a2fad2_20250320_165810 指向 77f45cca
+2025-03-20 17:02:46.369 | ERROR    | modules.backtrack_apply:_apply_patch:605 - 应用补丁时发生错误: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:02:47.051 | INFO     | modules.backtrack_apply:_apply_patch:621 - 清理 git am 状态
+2025-03-20 17:02:47.052 | INFO     | modules.backtrack_apply:_backtrack_apply:421 - 补丁无法应用于 77f45cca: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:03:01.642 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:652 - 切回原始分支: linux-6.12.y
+2025-03-20 17:03:01.658 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:672 - 删除临时分支: backtrack_a2fad2_20250320_165810
+2025-03-20 17:03:01.658 | INFO     | modules.backtrack_apply:_backtrack_apply:400 - 尝试应用补丁到 590deccf (尝试 6/55)
+2025-03-20 17:03:25.637 | INFO     | modules.backtrack_apply:_create_temp_branch:553 - 创建临时分支 backtrack_a2fad2_20250320_165810 指向 590deccf
+2025-03-20 17:03:26.283 | ERROR    | modules.backtrack_apply:_apply_patch:605 - 应用补丁时发生错误: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:03:26.730 | INFO     | modules.backtrack_apply:_apply_patch:621 - 清理 git am 状态
+2025-03-20 17:03:26.731 | INFO     | modules.backtrack_apply:_backtrack_apply:421 - 补丁无法应用于 590deccf: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:03:58.714 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:652 - 切回原始分支: linux-6.12.y
+2025-03-20 17:03:58.727 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:672 - 删除临时分支: backtrack_a2fad2_20250320_165810
+2025-03-20 17:03:58.727 | INFO     | modules.backtrack_apply:_backtrack_apply:400 - 尝试应用补丁到 c7c5ae29 (尝试 7/55)
+2025-03-20 17:04:23.052 | INFO     | modules.backtrack_apply:_create_temp_branch:553 - 创建临时分支 backtrack_a2fad2_20250320_165810 指向 c7c5ae29
+2025-03-20 17:04:23.433 | ERROR    | modules.backtrack_apply:_apply_patch:605 - 应用补丁时发生错误: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:04:24.247 | INFO     | modules.backtrack_apply:_apply_patch:621 - 清理 git am 状态
+2025-03-20 17:04:24.249 | INFO     | modules.backtrack_apply:_backtrack_apply:421 - 补丁无法应用于 c7c5ae29: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:04:55.814 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:652 - 切回原始分支: linux-6.12.y
+2025-03-20 17:04:55.836 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:672 - 删除临时分支: backtrack_a2fad2_20250320_165810
+2025-03-20 17:04:55.837 | INFO     | modules.backtrack_apply:_backtrack_apply:400 - 尝试应用补丁到 8059ba0b (尝试 8/55)
+2025-03-20 17:05:17.371 | INFO     | modules.backtrack_apply:_create_temp_branch:553 - 创建临时分支 backtrack_a2fad2_20250320_165810 指向 8059ba0b
+2025-03-20 17:05:17.662 | ERROR    | modules.backtrack_apply:_apply_patch:605 - 应用补丁时发生错误: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:05:18.500 | INFO     | modules.backtrack_apply:_apply_patch:621 - 清理 git am 状态
+2025-03-20 17:05:18.501 | INFO     | modules.backtrack_apply:_backtrack_apply:421 - 补丁无法应用于 8059ba0b: 'BacktrackApplyModule' object has no attribute '_categorize_error'
+2025-03-20 17:05:47.335 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:652 - 切回原始分支: linux-6.12.y
+2025-03-20 17:05:47.348 | INFO     | modules.backtrack_apply:_cleanup_temp_branch:672 - 删除临时分支: backtrack_a2fad2_20250320_165810
+2025-03-20 17:05:47.349 | INFO     | modules.backtrack_apply:_backtrack_apply:400 - 尝试应用补丁到 2e4edfa1 (尝试 9/55)

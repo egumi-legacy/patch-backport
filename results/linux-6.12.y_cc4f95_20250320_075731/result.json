@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "cc4f952427aaa44ecfd92542e10a65cce67bd6f4",
+    "patch_url": "https://github.com/gregkh/linux/commit/cc4f952427aaa44ecfd92542e10a65cce67bd6f4.patch",
+    "downstream_sha": "2152b417be1652fe5ce590fd08ae9be8f0acd220",
+    "downstream_message": "HID: hid-steam: Make sure rumble work is canceled on removal\n\n[ Upstream commit cc4f952427aaa44ecfd92542e10a65cce67bd6f4 ]\n\nWhen a force feedback command is sent from userspace, work is scheduled to pass\nthis data to the controller without blocking userspace itself. However, in\ntheory, this work might not be properly canceled if the controller is removed\nat the exact right time. This patch ensures the work is properly canceled when\nthe device is removed.\n\nSigned-off-by: Vicki Pfau <vi@endrift.com>\nSigned-off-by: Jiri Kosina <jkosina@suse.com>\nStable-dep-of: 79504249d7e2 (\"HID: hid-steam: Move hidraw input (un)registering to work\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/cc4f95/patches/upstream_cc4f95.patch",
+      "timestamp": "2025-03-20T07:57:30.683299"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:57:31.226449"
+  }
+}

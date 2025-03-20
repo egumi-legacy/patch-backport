@@ -1,0 +1,55 @@
+{
+  "commit": {
+    "sha": "fb493bebae1a9b83e494fe7edbf01f6167d606fd",
+    "patch_url": "https://github.com/rails/rails/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd",
+    "downstream_sha": null,
+    "downstream_message": null
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "5.2.7",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u5904\u7406\u8fc7\u7a0b\u53d1\u751f\u9519\u8bef",
+      "error": "DirectApplyModule._cleanup_test_branch() missing 1 required positional argument: 'branch_name'",
+      "timestamp": "2025-03-19T07:42:16.679269"
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb\nindex 7ad1ba3e0eb0e..b02f0d6f85341 100644\n--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:\n         ActiveSupport::ParameterFilter.new(filters)\n       end\n \n-      KV_RE   = \"[^&;=]+\"\n-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}\n       def filtered_query_string # :doc:\n-        query_string.gsub(PAIR_RE) do |_|\n-          parameter_filter.filter($1 => $2).first.join(\"=\")\n+        parts = query_string.split(/([&;])/)\n+        filtered_parts = parts.map do |part|\n+          if part.include?(\"=\")\n+            key, value = part.split(\"=\", 2)\n+            parameter_filter.filter(key => value).first.join(\"=\")\n+          else\n+            part\n+          end\n         end\n+        filtered_parts.join(\"\")\n       end\n     end\n   end",
+      "prompt": {
+        "patch_content": "From fb493bebae1a9b83e494fe7edbf01f6167d606fd Mon Sep 17 00:00:00 2001\nFrom: John Hawthorn <john@hawthorn.email>\nDate: Thu, 10 Oct 2024 20:41:33 -0700\nSubject: [PATCH] Avoid backtracking in filtered_query_string\n\nThanks scyoon for the patch\n\nCVE-2024-41128\n---\n .../lib/action_dispatch/http/filter_parameters.rb   | 13 +++++++++----\n 1 file changed, 9 insertions(+), 4 deletions(-)\n\ndiff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb\nindex 7ad1ba3e0eb0e..b02f0d6f85341 100644\n--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:\n         ActiveSupport::ParameterFilter.new(filters)\n       end\n \n-      KV_RE   = \"[^&;=]+\"\n-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}\n       def filtered_query_string # :doc:\n-        query_string.gsub(PAIR_RE) do |_|\n-          parameter_filter.filter($1 => $2).first.join(\"=\")\n+        parts = query_string.split(/([&;])/)\n+        filtered_parts = parts.map do |part|\n+          if part.include?(\"=\")\n+            key, value = part.split(\"=\", 2)\n+            parameter_filter.filter(key => value).first.join(\"=\")\n+          else\n+            part\n+          end\n         end\n+        filtered_parts.join(\"\")\n       end\n     end\n   end\n",
+        "target_version": "5.2.7",
+        "context_diff": "\u83b7\u53d6\u4e0a\u4e0b\u6587\u5dee\u5f02\u65f6\u51fa\u9519\uff0c\u4f7f\u7528patch\u5185\u5bb9\u4f5c\u4e3a\u5dee\u5f02\uff1a\nFrom fb493bebae1a9b83e494fe7edbf01f6167d606fd Mon Sep 17 00:00:00 2001\nFrom: John Hawthorn <john@hawthorn.email>\nDate: Thu, 10 Oct 2024 20:41:33 -0700\nSubject: [PATCH] Avoid backtracking in filtered_query_string\n\nThanks scyoon for the patch\n\nCVE-2024-41128\n---\n .../lib/action_dispatch/http/filter_parameters.rb   | 13 +++++++++----\n 1 file changed, 9 insertions(+), 4 deletions(-)\n\ndiff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb\nindex 7ad1ba3e0eb0e..b02f0d6f85341 100644\n--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:\n         ActiveSupport::ParameterFilter.new(filters)\n       end\n \n-      KV_RE   = \"[^&;=]+\"\n-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}\n       def filtered_query_string # :doc:\n-        query_string.gsub(PAIR_RE) do |_|\n-          parameter_filter.filter($1 => $2).first.join(\"=\")\n+        parts = query_string.split(/([&;])/)\n+        filtered_parts = parts.map do |part|\n+          if part.include?(\"=\")\n+            key, value = part.split(\"=\", 2)\n+            parameter_filter.filter(key => value).first.join(\"=\")\n+          else\n+            part\n+          end\n         end\n+        filtered_parts.join(\"\")\n       end\n     end\n   end\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/rails/rails/fb493b/llm_output/output_5.2.7_qwen-plus.patch",
+      "apply_result": {
+        "success": false,
+        "error": "\u521b\u5efa\u6d4b\u8bd5\u5206\u652f\u5931\u8d25: test_llm_patch_5.2.7",
+        "error_type": "branch_creation_failed",
+        "output": null
+      },
+      "timestamp": "2025-03-19T07:42:24.666079",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "Command '['git', 'checkout', '5.2.7']' returned non-zero exit status 1."
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": false,
+    "method": "failed",
+    "timestamp": "2025-03-19T07:42:24.687264"
+  }
+}

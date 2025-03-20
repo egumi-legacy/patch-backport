@@ -1,14 +1,3 @@
-A. Commit message:
-Backport cpufreq/amd-pstate: convert mutex use to guard() for older kernel version
-
-B. Change summary:
-This patch backports the conversion of mutex usage to scoped guard declarations in the AMD P-State driver for older kernel versions. This ensures that mutexes are automatically unlocked, reducing the risk of deadlocks and improving code readability.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/cpufreq/amd-pstate.c b/drivers/cpufreq/amd-pstate.c
 index 20d52bce18821..bcb9367aa9ca0 100644
 --- a/drivers/cpufreq/amd-pstate.c
@@ -121,4 +110,3 @@ index 20d52bce18821..bcb9367aa9ca0 100644
  		cpudata->suspended = false;
  	}
  
-```

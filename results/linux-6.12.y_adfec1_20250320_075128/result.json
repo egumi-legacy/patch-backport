@@ -1,0 +1,56 @@
+{
+  "commit": {
+    "sha": "adfec1f4591cf8c69664104eaf41e06b2e7b767e",
+    "patch_url": "https://github.com/gregkh/linux/commit/adfec1f4591cf8c69664104eaf41e06b2e7b767e.patch",
+    "downstream_sha": "9d5034a35c3adc76a1c937fdf88e54cf70ac490d",
+    "downstream_message": "KVM: x86: Inline kvm_get_apic_mode() in lapic.h\n\n[ Upstream commit adfec1f4591cf8c69664104eaf41e06b2e7b767e ]\n\nInline kvm_get_apic_mode() in lapic.h to avoid a CALL+RET as well as an\nexport.  The underlying kvm_apic_mode() helper is public information, i.e.\nthere is no state/information that needs to be hidden from vendor modules.\n\nNo functional change intended.\n\nReviewed-by: Kai Huang <kai.huang@intel.com>\nReviewed-by: Paolo Bonzini <pbonzini@redhat.com>\nLink: https://lore.kernel.org/r/20241009181742.1128779-5-seanjc@google.com\nLink: https://lore.kernel.org/r/20241101183555.1794700-5-seanjc@google.com\nSigned-off-by: Sean Christopherson <seanjc@google.com>\nStable-dep-of: 04bc93cf49d1 (\"KVM: nVMX: Defer SVI update to vmcs01 on EOI when L2 is active w/o VID\")\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: arch/x86/kvm/x86.c:668\nerror: arch/x86/kvm/x86.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/adfec1/patches/upstream_adfec1.patch",
+      "timestamp": "2025-03-20T07:51:20.214411"
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/arch/x86/kvm/lapic.h b/arch/x86/kvm/lapic.h\nindex 441abc4f4afd9..fc4bd36d44cfc 100644\n--- a/arch/x86/kvm/lapic.h\n+++ b/arch/x86/kvm/lapic.h\n@@ -120,7 +120,6 @@ void kvm_apic_send_ipi(struct kvm_lapic *apic, u32 icr_low, u32 icr_high);\n int kvm_set_apic_base(struct kvm_vcpu *vcpu, struct msr_data *msr_info);\n int kvm_apic_get_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s);\n int kvm_apic_set_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s);\n-enum lapic_mode kvm_get_apic_mode(struct kvm_vcpu *vcpu);\n int kvm_lapic_find_highest_irr(struct kvm_vcpu *vcpu);\n \n u64 kvm_get_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu);\n@@ -270,6 +269,11 @@ static inline enum lapic_mode kvm_apic_mode(u64 apic_base)\n \treturn apic_base & (MSR_IA32_APICBASE_ENABLE | X2APIC_ENABLE);\n }\n \n+static inline enum lapic_mode kvm_get_apic_mode(struct kvm_vcpu *vcpu)\n+{\n+\treturn kvm_apic_mode(vcpu->arch.apic_base);\n+}\n+\n static inline u8 kvm_xapic_id(struct kvm_lapic *apic)\n {\n \treturn kvm_lapic_get_reg(apic, APIC_ID) >> 24;\ndiff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c\nindex f4edb29c69abd..6d4fd165081a5 100644\n--- a/arch/x86/kvm/x86.c\n+++ b/arch/x86/kvm/x86.c\n@@ -668,12 +668,6 @@ static void drop_user_return_notifiers(void)\n \t\tkvm_on_user_return(&msrs->urn);\n }\n \n-enum lapic_mode kvm_get_apic_mode(struct kvm_vcpu *vcpu)\n-{\n-\treturn kvm_apic_mode(vcpu->arch.apic_base);\n-}\n-EXPORT_SYMBOL_GPL(kvm_get_apic_mode);\n-\n int kvm_set_apic_base(struct kvm_vcpu *vcpu, struct msr_data *msr_info)\n {\n \tenum lapic_mode old_mode = kvm_get_apic_mode(vcpu);",
+      "prompt": {
+        "patch_content": "From adfec1f4591cf8c69664104eaf41e06b2e7b767e Mon Sep 17 00:00:00 2001\nFrom: Sean Christopherson <seanjc@google.com>\nDate: Fri, 1 Nov 2024 11:35:50 -0700\nSubject: [PATCH] KVM: x86: Inline kvm_get_apic_mode() in lapic.h\n\nInline kvm_get_apic_mode() in lapic.h to avoid a CALL+RET as well as an\nexport.  The underlying kvm_apic_mode() helper is public information, i.e.\nthere is no state/information that needs to be hidden from vendor modules.\n\nNo functional change intended.\n\nReviewed-by: Kai Huang <kai.huang@intel.com>\nReviewed-by: Paolo Bonzini <pbonzini@redhat.com>\nLink: https://lore.kernel.org/r/20241009181742.1128779-5-seanjc@google.com\nLink: https://lore.kernel.org/r/20241101183555.1794700-5-seanjc@google.com\nSigned-off-by: Sean Christopherson <seanjc@google.com>\n---\n arch/x86/kvm/lapic.h | 6 +++++-\n arch/x86/kvm/x86.c   | 6 ------\n 2 files changed, 5 insertions(+), 7 deletions(-)\n\ndiff --git a/arch/x86/kvm/lapic.h b/arch/x86/kvm/lapic.h\nindex 441abc4f4afd9..fc4bd36d44cfc 100644\n--- a/arch/x86/kvm/lapic.h\n+++ b/arch/x86/kvm/lapic.h\n@@ -120,7 +120,6 @@ void kvm_apic_send_ipi(struct kvm_lapic *apic, u32 icr_low, u32 icr_high);\n int kvm_set_apic_base(struct kvm_vcpu *vcpu, struct msr_data *msr_info);\n int kvm_apic_get_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s);\n int kvm_apic_set_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s);\n-enum lapic_mode kvm_get_apic_mode(struct kvm_vcpu *vcpu);\n int kvm_lapic_find_highest_irr(struct kvm_vcpu *vcpu);\n \n u64 kvm_get_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu);\n@@ -270,6 +269,11 @@ static inline enum lapic_mode kvm_apic_mode(u64 apic_base)\n \treturn apic_base & (MSR_IA32_APICBASE_ENABLE | X2APIC_ENABLE);\n }\n \n+static inline enum lapic_mode kvm_get_apic_mode(struct kvm_vcpu *vcpu)\n+{\n+\treturn kvm_apic_mode(vcpu->arch.apic_base);\n+}\n+\n static inline u8 kvm_xapic_id(struct kvm_lapic *apic)\n {\n \treturn kvm_lapic_get_reg(apic, APIC_ID) >> 24;\ndiff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c\nindex f4edb29c69abd..6d4fd165081a5 100644\n--- a/arch/x86/kvm/x86.c\n+++ b/arch/x86/kvm/x86.c\n@@ -668,12 +668,6 @@ static void drop_user_return_notifiers(void)\n \t\tkvm_on_user_return(&msrs->urn);\n }\n \n-enum lapic_mode kvm_get_apic_mode(struct kvm_vcpu *vcpu)\n-{\n-\treturn kvm_apic_mode(vcpu->arch.apic_base);\n-}\n-EXPORT_SYMBOL_GPL(kvm_get_apic_mode);\n-\n int kvm_set_apic_base(struct kvm_vcpu *vcpu, struct msr_data *msr_info)\n {\n \tenum lapic_mode old_mode = kvm_get_apic_mode(vcpu);\n",
+        "target_version": "linux-6.12.y",
+        "context_diff": "modified file: arch/x86/kvm/lapic.h\n--- workspace/gregkh/linux/adfec1/newer/arch/x86/kvm/lapic.h\n+++ workspace/gregkh/linux/adfec1/linux-6.12.y/arch/x86/kvm/lapic.h\n@@ -117,6 +117,7 @@\n  \t\tstruct kvm_lapic_irq *irq, int *r, struct dest_map *dest_map);\n  void kvm_apic_send_ipi(struct kvm_lapic *apic, u32 icr_low, u32 icr_high);\n  \n +u64 kvm_get_apic_base(struct kvm_vcpu *vcpu);\n  int kvm_set_apic_base(struct kvm_vcpu *vcpu, struct msr_data *msr_info);\n  int kvm_apic_get_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s);\n  int kvm_apic_set_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s);\n\n\"\"\"\"\"\"\nmodified file: arch/x86/kvm/x86.c\n--- workspace/gregkh/linux/adfec1/newer/arch/x86/kvm/x86.c\n+++ workspace/gregkh/linux/adfec1/linux-6.12.y/arch/x86/kvm/x86.c\n@@ -451,7 +451,6 @@\n  \tMSR_IA32_UCODE_REV,\n  \tMSR_IA32_ARCH_CAPABILITIES,\n  \tMSR_IA32_PERF_CAPABILITIES,\n -\tMSR_PLATFORM_INFO,\n  };\n  \n  static u32 msr_based_features[ARRAY_SIZE(msr_based_features_all_except_vmx) +\n@@ -668,9 +667,14 @@\n  \t\tkvm_on_user_return(&msrs->urn);\n  }\n  \n +u64 kvm_get_apic_base(struct kvm_vcpu *vcpu)\n +{\n +\treturn vcpu->arch.apic_base;\n +}\n +\n  enum lapic_mode kvm_get_apic_mode(struct kvm_vcpu *vcpu)\n  {\n -\treturn kvm_apic_mode(vcpu->arch.apic_base);\n +\treturn kvm_apic_mode(kvm_get_apic_base(vcpu));\n  }\n  EXPORT_SYMBOL_GPL(kvm_get_apic_mode);\n  \n@@ -1850,7 +1854,7 @@\n  \tcase MSR_KERNEL_GS_BASE:\n  \tcase MSR_CSTAR:\n  \tcase MSR_LSTAR:\n -\t\tif (is_noncanonical_msr_address(data, vcpu))\n +\t\tif (is_noncanonical_address(data, vcpu))\n  \t\t\treturn 1;\n  \t\tbreak;\n  \tcase MSR_IA32_SYSENTER_EIP:\n@@ -1867,7 +1871,7 @@\n  \t\t * value, and that something deterministic happens if the guest\n  \t\t * invokes 64-bit SYSENTER.\n  \t\t */\n -\t\tdata = __canonical_address(data, max_host_virt_addr_bits());\n +\t\tdata = __canonical_address(data, vcpu_virt_addr_bits(vcpu));\n  \t\tbreak;\n  \tcase MSR_TSC_AUX:\n  \t\tif (!kvm_is_supported_user_return_msr(MSR_TSC_AUX))\n@@ -2140,9 +2144,8 @@\n  static inline bool kvm_vcpu_exit_request(struct kvm_vcpu *vcpu)\n  {\n  \txfer_to_guest_mode_prepare();\n -\n -\treturn READ_ONCE(vcpu->mode) == EXITING_GUEST_MODE ||\n -\t       kvm_request_pending(vcpu) || xfer_to_guest_mode_work_pending();\n +\treturn vcpu->mode == EXITING_GUEST_MODE || kvm_request_pending(vcpu) ||\n +\t\txfer_to_guest_mode_work_pending();\n  }\n  \n -\t\tvcpu->arch.preempted_in_kernel = vcpu->arch.guest_state_protected ||\n -\t\t\t\t\t\t !kvm_x86_call(get_cpl_no_cache)(vcpu);\n +\t\tvcpu->arch.preempted_in_kernel = kvm_arch_vcpu_in_kernel(vcpu);\n  \n  \t\tif ((!pcid_enabled && (operand.pcid != 0)) ||\n -\t\t    is_noncanonical_invlpg_address(operand.gla, vcpu)) {\n +\t\t    is_noncanonical_address(operand.gla, vcpu)) {\n  \t\t\tkvm_inject_gp(vcpu, 0);\n  \t\t\treturn 1;\n  \t\t}\n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/gregkh/linux/adfec1/llm_output/output_linux-6.12.y_qwen-plus.patch",
+      "timestamp": "2025-03-20T07:51:20.730536",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": true,
+      "adapted_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/adfec1/patches/adapted_linux-6.12.y.patch",
+      "apply_result": {
+        "success": true,
+        "error": null,
+        "error_type": null,
+        "output": "Applying: Applied adapted patch for linux-6.12.y\n"
+      }
+    },
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "compiler",
+    "timestamp": "2025-03-20T07:51:28.701104"
+  }
+}

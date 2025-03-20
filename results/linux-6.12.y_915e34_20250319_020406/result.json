@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "915e34d5ad35a6a9e56113f852ade4a730fb88f0",
+    "patch_url": "https://github.com/gregkh/linux/commit/915e34d5ad35a6a9e56113f852ade4a730fb88f0.patch",
+    "downstream_sha": "0505ff2936f166405d81d0d454a81d9c14124344",
+    "downstream_message": "s390/ism: add release function for struct device\n\n[ Upstream commit 915e34d5ad35a6a9e56113f852ade4a730fb88f0 ]\n\nAccording to device_release() in /drivers/base/core.c,\na device without a release function is a broken device\nand must be fixed.\n\nThe current code directly frees the device after calling device_add()\nwithout waiting for other kernel parts to release their references.\nThus, a reference could still be held to a struct device,\ne.g., by sysfs, leading to potential use-after-free\nissues if a proper release function is not set.\n\nFixes: 8c81ba20349d (\"net/smc: De-tangle ism and smc device initialization\")\nReviewed-by: Alexandra Winter <wintera@linux.ibm.com>\nReviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>\nSigned-off-by: Julian Ruess <julianr@linux.ibm.com>\nSigned-off-by: Alexandra Winter <wintera@linux.ibm.com>\nReviewed-by: Simon Horman <horms@kernel.org>\nLink: https://patch.msgid.link/20250214120137.563409-1-wintera@linux.ibm.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\nSigned-off-by: Sasha Levin <sashal@kernel.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "error": null,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/915e34/patches/upstream_915e34.patch",
+      "success": true,
+      "timestamp": "2025-03-14T14:31:44.049389"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-19T02:04:06.652559"
+  }
+}

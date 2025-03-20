@@ -1,14 +1,3 @@
-A. Commit message:
-HID: hid-steam: Move hidraw input (un)registering to work
-
-B. Change summary:
-This patch moves the registration and unregistration of input devices to deferred work to avoid potential lock ordering issues between the input and HID transport subsystems. This change ensures that these operations are performed outside of the critical path, reducing the risk of deadlocks.
-
-C. Compatibility Risk:
-Medium
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/hid/hid-steam.c b/drivers/hid/hid-steam.c
 index 7f5a4b2..b008fd0 100644
 --- a/drivers/hid/hid-steam.c
@@ -100,4 +89,3 @@ index 7f5a4b2..b008fd0 100644
  	hid_destroy_device(steam->client_hdev);
  	steam->client_hdev = NULL;
  	steam->client_opened = 0;
-```

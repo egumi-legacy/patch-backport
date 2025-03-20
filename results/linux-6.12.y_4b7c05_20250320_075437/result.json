@@ -1,0 +1,35 @@
+{
+  "commit": {
+    "sha": "4b7c05598a644782b8451e415bb56f31e5c9d3ee",
+    "patch_url": "https://github.com/gregkh/linux/commit/4b7c05598a644782b8451e415bb56f31e5c9d3ee.patch",
+    "downstream_sha": "d5c8ffaa9d532974d5e48d4ac267be5e7b1d9d5d",
+    "downstream_message": "selftests/bpf: Fix uprobe consumer test\n\ncommit 4b7c05598a644782b8451e415bb56f31e5c9d3ee upstream.\n\nWith newly merged code the uprobe behaviour is slightly different\nand affects uprobe consumer test.\n\nWe no longer need to check if the uprobe object is still preserved\nafter removing last uretprobe, because it stays as long as there's\npending/installed uretprobe instance.\n\nThis allows to run uretprobe consumers registered 'after' uprobe was\nhit even if previous uretprobe got unregistered before being hit.\n\nThe uprobe object will be now removed after the last uprobe ref is\nreleased and in such case it's held by ri->uprobe (return instance)\nwhich is released after the uretprobe is hit.\n\nReported-by: Ihor Solodrai <ihor.solodrai@pm.me>\nSigned-off-by: Jiri Olsa <jolsa@kernel.org>\nSigned-off-by: Daniel Borkmann <daniel@iogearbox.net>\nTested-by: Ihor Solodrai <ihor.solodrai@pm.me>\nCloses: https://lore.kernel.org/bpf/w6U8Z9fdhjnkSp2UaFaV1fGqJXvfLEtDKEUyGDkwmoruDJ_AgF_c0FFhrkeKW18OqiP-05s9yDKiT6X-Ns-avN_ABf0dcUkXqbSJN1TQSXo=@pm.me/\nSigned-off-by: Alexei Starovoitov <ast@kernel.org>\nCc: Alan Maguire <alan.maguire@oracle.com>\nSigned-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
+  },
+  "config": {
+    "mode": 2,
+    "target_version": "linux-6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "llm_adapter",
+      "patch_adapter",
+      "compiler"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": true,
+      "message": "\u8865\u4e01\u76f4\u63a5\u5e94\u7528\u6210\u529f",
+      "error": null,
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4b7c05/patches/upstream_4b7c05.patch",
+      "timestamp": "2025-03-20T07:54:36.898218"
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "last_error": null
+  },
+  "summary": {
+    "success": true,
+    "method": "direct_apply",
+    "timestamp": "2025-03-20T07:54:37.377079"
+  }
+}

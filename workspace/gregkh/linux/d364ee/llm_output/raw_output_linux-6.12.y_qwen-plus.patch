@@ -1,14 +1,3 @@
-A. Commit message:
-cpufreq/amd-pstate: Backport patch to remove goto label in amd_pstate_update_limits
-
-B. Change summary:
-This patch removes the goto label in `amd_pstate_update_limits` and replaces it with a direct return statement. This change ensures that scope-based guard/cleanup macros are not used together with goto labels, which can lead to undefined behavior.
-
-C. Compatibility Risk:
-Low
-
-D. Fixed Code:
-```diff
 diff --git a/drivers/cpufreq/amd-pstate.c b/drivers/cpufreq/amd-pstate.c
 index 7120f035c0be4..b163c16998218 100644
 --- a/drivers/cpufreq/amd-pstate.c
@@ -35,4 +24,3 @@ index 7120f035c0be4..b163c16998218 100644
  	cpufreq_cpu_put(policy);
  
  	if (!highest_perf_changed)
-```

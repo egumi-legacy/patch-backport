@@ -31,7 +31,8 @@ class AdaptationPipeline:
         # 模块映射
         module_mapping = {
             "direct_apply": "modules.direct_apply.DirectApplyModule",
-            "chunk_analyzer": "modules.chunk_analyzer.ChunkAnalyzerModule",
+            "backtrack_apply": "modules.backtrack_apply.BacktrackApplyModule",
+            # "chunk_analyzer": "modules.chunk_analyzer.ChunkAnalyzerModule",
             "llm_adapter": "modules.llm_adapter.LLMAdapterModule",
             "patch_adapter": "modules.patch_adapter.PatchAdapterModule",
             "compiler": "modules.compiler.CompilerModule"

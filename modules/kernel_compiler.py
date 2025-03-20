@@ -206,6 +206,10 @@ class KernelCompiler:
                 
                 # 运行容器
                 try:
+                    logger.info(f"运行容器: {self.docker_image}")
+                    logger.info(f"work_dir: {work_dir}")
+                    logger.info(f"cmd: {' '.join(cmd)}")
+                    logger.info(f"command=f'bash -c 'cd {work_dir} && {' '.join(cmd)} > {stdout_file.name} 2> {stderr_file.name}; echo $? > /tmp/exit_code''")
                     container = self.docker_client.containers.run(
                         self.docker_image,
                         command=f"bash -c 'cd {work_dir} && {' '.join(cmd)} > {stdout_file.name} 2> {stderr_file.name}; echo $? > /tmp/exit_code'",
