@@ -12,8 +12,8 @@ common:
   
   enabled_modules:  # 启用的管道模块
     - "direct_apply"
-    - "backtrack_apply"
-    # - "chunk_analyzer"
+    # - "backtrack_apply"
+    - "chunk_analyzer"
     - "llm_adapter"
     - "patch_adapter"
     - "compiler"
@@ -22,7 +22,7 @@ common:
   retry_with_feedback: false
   module_configs:  # 各模块的特定配置
     llm_adapter:
-      use_enhanced_prompt: true
+      use_enhanced_prompt: false
       temperature: 0.7
     compiler:
       extra_flags: "-j4"

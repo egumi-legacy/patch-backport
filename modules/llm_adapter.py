@@ -174,11 +174,11 @@ class LLMAdapterModule(BaseModule):
         
         if use_enhanced_prompt:
             # 使用函数级上下文和完整文件内容的增强模式
-            logger.info("使用函数级上下文和完整文件内容的增强模式")
+            logger.info("使用函数级上下文和完整文件内容的增强模式") #1.PATCH CHUNK 函数上下文 2.旧版本完整文件
             prompt_data = self._prepare_enhanced_prompt(context, patch_content)
         else:
             # 获取传统的上下文差异
-            logger.info("使用传统上下文差异")
+            logger.info("使用传统上下文差异") #1.PATCH 2.DIFF
             context_diff = self._get_context_diff(context, patch_content)
             
             # 构建标准提示数据

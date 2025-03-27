@@ -50,7 +50,7 @@ class DirectApplyModule(BaseModule):
                 if cache_result:
                     logger.info(f"从缓存中获取到直接应用结果: {cache_result}")
                     context.direct_apply_result = cache_result
-                    context.commit.patch_path = cache_result.get('patch_path')
+                    context.commit.patch_path = Path(cache_result.get('patch_path'))
                     return context
             
             # 下载补丁文件
@@ -230,7 +230,7 @@ class DirectApplyModule(BaseModule):
         if patch_path.exists():
             logger.info(f"上游补丁文件已存在: {patch_path}")
             # 确保返回绝对路径
-            return patch_path.absolute()
+            return Path(patch_path.absolute())
         else:
             from patch_utils import download_patch
             logger.info(f"上游补丁文件不存在，下载补丁")
@@ -240,7 +240,7 @@ class DirectApplyModule(BaseModule):
                 logger.info(f"上游补丁下载成功: {patch_path}")
                 # self.context.commit.patch_path = patch_path
                 # 确保返回绝对路径
-                return patch_path.absolute()
+                return Path(patch_path.absolute())
             else:
                 logger.error(f"补丁下载失败: {context.commit.patch_url}")
                 return None

@@ -1,0 +1,64 @@
+2025-03-20 18:13:18.854 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250320_181318.log
+2025-03-20 18:13:18.855 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-20 18:13:18.855 | INFO     | __main__:_get_commits_list:257 - commits_file:workspace/gregkh/linux_cache/branch_linux-6.12.y_commits.json
+2025-03-20 18:13:18.856 | INFO     | __main__:_get_commits_list:258 - use_cached_commits:True
+2025-03-20 18:13:18.856 | INFO     | __main__:_get_commits_list:261 - 从缓存文件加载commits信息
+2025-03-20 18:13:18.860 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-03-20 18:13:18.861 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: direct_apply
+2025-03-20 18:13:18.861 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: chunk_analyzer
+2025-03-20 18:13:18.862 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: llm_adapter
+2025-03-20 18:13:18.862 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: patch_adapter
+2025-03-20 18:13:18.862 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: compiler
+2025-03-20 18:13:18.863 | INFO     | __main__:_process_mode2:199 - 处理提交 89/1: 4ccacf
+2025-03-20 18:13:18.863 | INFO     | core.adaptation_pipeline:process_patch:69 - 开始处理补丁: 4ccacf86491d33d2486b62d4d44864d7101b299d
+2025-03-20 18:13:18.863 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: direct_apply
+2025-03-20 18:13:18.983 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: patch failed: drivers/net/gtp.c:2481\nerror: drivers/net/gtp.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/patches/upstream_4ccacf.patch', 'success': False, 'timestamp': '2025-03-14T14:30:27.976329'}
+2025-03-20 18:13:18.984 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: chunk_analyzer
+2025-03-20 18:13:18.987 | INFO     | modules.chunk_analyzer:execute:51 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/patches/upstream_4ccacf.patch
+2025-03-20 18:13:18.988 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:155 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/patches/upstream_4ccacf.patch
+2025-03-20 18:13:18.989 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:160 - 补丁文件包含 114 行内容
+2025-03-20 18:13:18.989 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 发现修改文件: drivers/net/gtp.c
+2025-03-20 18:13:18.990 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:226 - 发现修改块: drivers/net/gtp.c @@ -2481,11 +2481,6 @@ (modification)
+2025-03-20 18:13:18.990 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 补丁分解完成，共找到 1 个修改块
+2025-03-20 18:13:18.991 | INFO     | modules.chunk_analyzer:execute:55 - 补丁被分解为 1 个块
+2025-03-20 18:13:18.992 | INFO     | modules.chunk_analyzer:_create_chunk_patches:265 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/patches/upstream_4ccacf.patch
+2025-03-20 18:13:18.993 | INFO     | modules.chunk_analyzer:_create_chunk_patches:291 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/chunk_patches/chunk_001_20250320_181318.patch (修改文件: drivers/net/gtp.c)
+2025-03-20 18:13:18.994 | INFO     | modules.chunk_analyzer:execute:59 - 已为 1 个块创建单独的补丁文件
+2025-03-20 18:13:18.994 | INFO     | modules.chunk_analyzer:_run_git_command:1007 - 运行git命令: rev-parse --abbrev-ref HEAD
+2025-03-20 18:13:18.997 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:308 - 当前分支: linux-6.12.y
+2025-03-20 18:13:18.998 | INFO     | modules.chunk_analyzer:_run_git_command:1007 - 运行git命令: checkout -b chunk_test_20250320_181318_74358d
+2025-03-20 18:13:19.010 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:316 - 创建测试分支: chunk_test_20250320_181318_74358d
+2025-03-20 18:13:19.011 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:322 - 尝试应用补丁块: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/chunk_patches/chunk_001_20250320_181318.patch
+2025-03-20 18:13:19.011 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:326 - 方法1: 尝试 git apply --ignore-space-change
+2025-03-20 18:13:19.011 | INFO     | modules.chunk_analyzer:_run_git_command:1007 - 运行git命令: apply --ignore-space-change --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/chunk_patches/chunk_001_20250320_181318.patch
+2025-03-20 18:13:19.015 | ERROR    | modules.chunk_analyzer:_run_git_command:1018 - Git命令执行失败: error: patch failed: drivers/net/gtp.c:2481
+error: drivers/net/gtp.c: patch does not apply
+
+2025-03-20 18:13:19.016 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:338 - 方法1失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/chunk_patches/chunk_001_20250320_181318.patch']' returned non-zero exit status 1.
+2025-03-20 18:13:19.016 | INFO     | modules.chunk_analyzer:_run_git_command:1007 - 运行git命令: reset --hard
+2025-03-20 18:13:19.658 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:344 - 方法2: 尝试 git apply --reject
+2025-03-20 18:13:19.658 | INFO     | modules.chunk_analyzer:_run_git_command:1007 - 运行git命令: apply --reject --ignore-whitespace --ignore-space-change /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/chunk_patches/chunk_001_20250320_181318.patch
+2025-03-20 18:13:19.662 | ERROR    | modules.chunk_analyzer:_run_git_command:1018 - Git命令执行失败: Checking patch drivers/net/gtp.c...
+error: while searching for:
+	list_for_each_entry(net, net_list, exit_list) {
+		struct gtp_net *gn = net_generic(net, gtp_net_id);
+		struct gtp_dev *gtp, *gtp_next;
+		struct net_device *dev;
+
+		for_each_netdev(net, dev)
+			if (dev->rtnl_link_ops == &gtp_link_ops)
+				gtp_dellink(dev, dev_to_kill);
+
+		list_for_each_entry_safe(gtp, gtp_next, &gn->gtp_dev_list, list)
+			gtp_dellink(gtp->dev, dev_to_kill);
+
+error: patch failed: drivers/net/gtp.c:2481
+Applying patch drivers/net/gtp.c with 1 reject...
+Rejected hunk #1.
+
+2025-03-20 18:13:19.663 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:367 - 方法2失败: Command '['git', 'apply', '--reject', '--ignore-whitespace', '--ignore-space-change', '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/4ccacf/chunk_patches/chunk_001_20250320_181318.patch']' returned non-zero exit status 1.
+2025-03-20 18:13:19.663 | INFO     | modules.chunk_analyzer:_run_git_command:1007 - 运行git命令: reset --hard
+2025-03-20 18:13:20.121 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:373 - 方法3: 尝试 git am --3way
+2025-03-20 18:13:20.445 | INFO     | modules.chunk_analyzer:_run_git_command:1007 - 运行git命令: checkout linux-6.12.y
+2025-03-20 18:13:20.679 | INFO     | modules.chunk_analyzer:_run_git_command:1007 - 运行git命令: branch -D chunk_test_20250320_181318_74358d
+2025-03-20 18:13:20.684 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:926 - 清理测试分支: chunk_test_20250320_181318_74358d
