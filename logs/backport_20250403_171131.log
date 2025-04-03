@@ -1,0 +1,182 @@
+2025-04-03 17:11:31.357 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250403_171131.log
+2025-04-03 17:11:31.357 | INFO     | __main__:run:113 - 开始执行 模式1
+2025-04-03 17:11:31.358 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: direct_apply
+2025-04-03 17:11:31.358 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: chunk_analyzer
+2025-04-03 17:11:31.359 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: llm_adapter
+2025-04-03 17:11:31.359 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: patch_adapter
+2025-04-03 17:11:31.360 | INFO     | core.adaptation_pipeline:process_patch:69 - 开始处理补丁: fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-04-03 17:11:31.360 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: direct_apply
+2025-04-03 17:11:31.362 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: actionpack/lib/action_dispatch/http/filter_parameters.rb: does not exist in index\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch', 'success': False, 'timestamp': '2025-03-19T07:43:59.050397'}
+2025-04-03 17:11:31.362 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: chunk_analyzer
+2025-04-03 17:11:31.362 | INFO     | modules.chunk_analyzer:execute:51 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-04-03 17:11:31.363 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:158 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-04-03 17:11:31.363 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:163 - 补丁文件包含 38 行内容
+2025-04-03 17:11:31.364 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:178 - 发现修改文件: actionpack/lib/action_dispatch/http/filter_parameters.rb
+2025-04-03 17:11:31.364 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:229 - 发现修改块: actionpack/lib/action_dispatch/http/filter_parameters.rb @@ -73,12 +73,17 @@ (modification)
+2025-04-03 17:11:31.365 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 补丁分解完成，共找到 1 个修改块
+2025-04-03 17:11:31.366 | INFO     | modules.chunk_analyzer:execute:55 - 补丁被分解为 1 个块
+2025-04-03 17:11:31.366 | INFO     | modules.chunk_analyzer:_create_chunk_patches:268 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-04-03 17:11:31.367 | INFO     | modules.chunk_analyzer:_create_chunk_patches:294 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250403_171131.patch (修改文件: actionpack/lib/action_dispatch/http/filter_parameters.rb)
+2025-04-03 17:11:31.368 | INFO     | modules.chunk_analyzer:execute:59 - 已为 1 个块创建单独的补丁文件
+2025-04-03 17:11:31.368 | INFO     | modules.chunk_analyzer:_run_git_command:1314 - 运行git命令: rev-parse --abbrev-ref HEAD
+2025-04-03 17:11:31.371 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:311 - 当前分支: HEAD
+2025-04-03 17:11:31.371 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:314 - 当前分支不是目标版本，切换到目标版本: v5.2.7
+2025-04-03 17:11:31.371 | INFO     | modules.chunk_analyzer:_run_git_command:1314 - 运行git命令: checkout v5.2.7
+2025-04-03 17:11:31.395 | INFO     | modules.chunk_analyzer:_run_git_command:1314 - 运行git命令: checkout -b chunk_test_20250403_171131_f154f1
+2025-04-03 17:11:31.402 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:334 - 创建测试分支: chunk_test_20250403_171131_f154f1
+2025-04-03 17:11:31.402 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:340 - 尝试应用补丁块: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250403_171131.patch
+2025-04-03 17:11:31.402 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:344 - 方法1: 尝试 git apply --ignore-space-change
+2025-04-03 17:11:31.403 | INFO     | modules.chunk_analyzer:_run_git_command:1314 - 运行git命令: apply --ignore-space-change --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250403_171131.patch
+2025-04-03 17:11:31.406 | ERROR    | modules.chunk_analyzer:_run_git_command:1325 - Git命令执行失败: error: patch failed: actionpack/lib/action_dispatch/http/filter_parameters.rb:73
+error: actionpack/lib/action_dispatch/http/filter_parameters.rb: patch does not apply
+
+2025-04-03 17:11:31.406 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:356 - 方法1失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250403_171131.patch']' returned non-zero exit status 1.
+2025-04-03 17:11:31.406 | INFO     | modules.chunk_analyzer:_run_git_command:1314 - 运行git命令: reset --hard
+2025-04-03 17:11:31.428 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:362 - 方法2: 尝试 git apply --reject
+2025-04-03 17:11:31.429 | INFO     | modules.chunk_analyzer:_run_git_command:1314 - 运行git命令: apply --reject --ignore-whitespace --ignore-space-change /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250403_171131.patch
+2025-04-03 17:11:31.433 | ERROR    | modules.chunk_analyzer:_run_git_command:1325 - Git命令执行失败: Checking patch actionpack/lib/action_dispatch/http/filter_parameters.rb...
+error: while searching for:
+        ActiveSupport::ParameterFilter.new(filters)
+      end
+
+      KV_RE   = "[^&;=]+"
+      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}
+      def filtered_query_string # :doc:
+        query_string.gsub(PAIR_RE) do |_|
+          parameter_filter.filter($1 => $2).first.join("=")
+        end
+      end
+    end
+  end
+
+error: patch failed: actionpack/lib/action_dispatch/http/filter_parameters.rb:73
+Applying patch actionpack/lib/action_dispatch/http/filter_parameters.rb with 1 reject...
+Rejected hunk #1.
+
+2025-04-03 17:11:31.433 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:385 - 方法2失败: Command '['git', 'apply', '--reject', '--ignore-whitespace', '--ignore-space-change', '/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250403_171131.patch']' returned non-zero exit status 1.
+2025-04-03 17:11:31.434 | INFO     | modules.chunk_analyzer:_run_git_command:1314 - 运行git命令: reset --hard
+2025-04-03 17:11:31.455 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - 方法3: 尝试 git am --3way
+2025-04-03 17:11:31.509 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:402 - 成功应用块补丁(方法3): chunk_001_20250403_171131.patch
+2025-04-03 17:11:31.510 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:1228 - 切换回目标版本分支: v5.2.7
+2025-04-03 17:11:31.510 | INFO     | modules.chunk_analyzer:_run_git_command:1314 - 运行git命令: checkout v5.2.7
+2025-04-03 17:11:31.526 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:1232 - 清理临时分支: chunk_test_20250403_171131_f154f1
+2025-04-03 17:11:31.527 | INFO     | modules.chunk_analyzer:_run_git_command:1314 - 运行git命令: branch -D chunk_test_20250403_171131_f154f1
+2025-04-03 17:11:31.531 | ERROR    | modules.chunk_analyzer:execute:104 - 补丁分析过程发生错误: object of type 'NoneType' has no len()
+2025-04-03 17:11:31.533 | ERROR    | modules.chunk_analyzer:execute:106 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 63, in execute
+    logger.info(f"成功应用了 {len(applied_chunks)} 个块补丁，总共 {len(chunk_patches)} 个")
+                              ^^^^^^^^^^^^^^^^^^^
+TypeError: object of type 'NoneType' has no len()
+
+2025-04-03 17:11:31.534 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/metrics_fb493b_20250403_171131.json
+2025-04-03 17:11:31.536 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250403_171131
+2025-04-03 17:11:31.538 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: llm_adapter
+2025-04-03 17:11:31.539 | INFO     | modules.llm_adapter:execute:55 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-04-03 17:11:31.539 | INFO     | modules.llm_adapter:execute:57 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-04-03 17:11:31.539 | INFO     | modules.llm_adapter:_prepare_prompt_data:177 - 使用函数级上下文和完整文件内容的增强模式
+2025-04-03 17:11:31.540 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:220 - 补丁修改的文件: ['actionpack/lib/action_dispatch/http/filter_parameters.rb']
+2025-04-03 17:11:31.566 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:383 - 获取上游文件内容时出错: Command '['git', 'checkout', '-b', 'temp_upstream_check_20250403_171131', 'origin/master']' returned non-zero exit status 128.
+2025-04-03 17:11:31.568 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:384 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 348, in _get_file_content_from_upstream
+    subprocess.run(
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'checkout', '-b', 'temp_upstream_check_20250403_171131', 'origin/master']' returned non-zero exit status 128.
+
+2025-04-03 17:11:31.591 | INFO     | modules.backtrack_apply:_map_file_paths:203 - 文件直接存在: actionpack/lib/action_dispatch/http/filter_parameters.rb
+2025-04-03 17:11:31.612 | ERROR    | modules.llm_adapter:_get_context_diff:667 - 获取上下文差异失败: 'Mode1Config' object has no attribute 'use_cached_commits'
+2025-04-03 17:11:31.620 | ERROR    | modules.llm_adapter:_get_context_diff:669 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 630, in _get_context_diff
+    patch_processor = PatchProcessor(context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/patch_processor.py", line 36, in __init__
+    self.git_operations = GitOperations(context)
+                          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/git_operations.py", line 50, in __init__
+    self.use_cached_commits = context.config.use_cached_commits if context else False
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/site-packages/pydantic/main.py", line 828, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'Mode1Config' object has no attribute 'use_cached_commits'. Did you mean: 'use_cached_patches'?
+
+2025-04-03 17:11:31.659 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-04-03 17:11:31.659 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/rails/rails/fb493b/llm_output/output_v5.2.7_qwen-plus.patch
+2025-04-03 17:11:31.660 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-04-03 17:11:31.660 | INFO     | modules.llm_adapter:_call_llm:734 - llm.run() result:{'openai_responses': ['diff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb\nindex 7ad1ba3e0eb0e..b02f0d6f85341 100644\n--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:\n         ActiveSupport::ParameterFilter.new(filters)\n       end\n \n-      KV_RE   = "[^&;=]+"\n-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}\n       def filtered_query_string # :doc:\n-        query_string.gsub(PAIR_RE) do |_|\n-          parameter_filter.filter($1 => $2).first.join("=")\n+        parts = query_string.split(/([&;])/)\n+        filtered_parts = parts.map do |part|\n+          if part.include?("=")\n+            key, value = part.split("=", 2)\n+            parameter_filter.filter(key => value).first.join("=")\n+          else\n+            part\n+          end\n         end\n+        filtered_parts.join("")\n       end\n     end\n   end'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-04-03 17:11:31.661 | INFO     | modules.llm_adapter:_parse_llm_response:816 - 原始LLM响应(前100字符): diff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispat...
+2025-04-03 17:11:31.662 | INFO     | modules.llm_adapter:_parse_llm_response:850 - 找到diff --git格式，内容前100字符: diff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispat...
+2025-04-03 17:11:31.663 | INFO     | modules.llm_adapter:_save_llm_response:985 - LLM响应已保存到: workspace/rails/rails/fb493b/llm_output/output_v5.2.7_qwen-plus.patch
+2025-04-03 17:11:31.664 | INFO     | modules.llm_adapter:_save_llm_response:986 - 原始LLM响应已保存到: workspace/rails/rails/fb493b/llm_output/raw_output_v5.2.7_qwen-plus.patch
+2025-04-03 17:11:31.665 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/rails/rails/fb493b/evaluations/llm_adapter/metrics_fb493b_20250403_171131.json
+2025-04-03 17:11:31.666 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: patch_adapter
+2025-04-03 17:11:31.666 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/rails/rails/fb493b/llm_output/output_v5.2.7_qwen-plus.patch
+2025-04-03 17:11:31.668 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_v5.2.7_20250403_171131
+2025-04-03 17:11:31.723 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb
+index 7ad1ba3e0eb0e..b02f0d6f85341 100644
+--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb
++++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb
+@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:
+         ActiveSupport::ParameterFilter.new(filters)
+       end
+ 
+-      KV_RE   = "[^&;=]+"
+-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}
+       def filtered_query_string # :doc:
+-        query_string.gsub(PAIR_RE) do |_|
+-          parameter_filter.filter($1 => $2).first.join("=")
++        parts = query_string.split(/([&;])/)
++        filtered_parts = parts.map do |part|
++          if part.include?("=")
++            key, value = part.split("=", 2)
++            parameter_filter.filter(key => value).first.join("=")
++          else
++            part
++          end
+         end
++        filtered_parts.join("")
+       end
+     end
+   end
+2025-04-03 17:11:31.723 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:
+         ActiveSupport::ParameterFilter.new(filters)
+       end
+ 
+-      KV_RE   = "[^&;=]+"
+-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}
+       def filtered_query_string # :doc:
+-        query_string.gsub(PAIR_RE) do |_|
+-          parameter_filter.filter($1 => $2).first.join("=")
++        parts = query_string.split(/([&;])/)
++        filtered_parts = parts.map do |part|
++          if part.include?("=")
++            key, value = part.split("=", 2)
++            parameter_filter.filter(key => value).first.join("=")
++          else
++            part
++          end
+         end
++        filtered_parts.join("")
+       end
+     end
+   end
+2025-04-03 17:11:31.723 | ERROR    | patch_adapter_utils:generate_adapted_file:873 - 源文件不存在: workspace/rails/rails/fb493b/v5.2.7/actionpack/lib/action_dispatch/http/filter_parameters.rb, 已跳过
+2025-04-03 17:11:31.724 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-04-03 17:11:31.724 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_v5.2.7_20250403_171131
+2025-04-03 17:11:31.746 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-04-03 17:11:31.751 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-04-03 17:11:31.752 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/rails/rails/fb493b/metrics/patch_adapter_metrics.json
+2025-04-03 17:11:31.754 | INFO     | core.adaptation_pipeline:process_patch:106 - 补丁处理完成，耗时: 0.39秒
+2025-04-03 17:11:31.758 | INFO     | __main__:_save_results:441 - 结果已保存到: results/v5.2.7_fb493b_20250403_171131/result.json
+2025-04-03 17:11:31.760 | INFO     | __main__:_print_summary:451 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-04-03 17:11:31.761 | INFO     | __main__:_print_summary:472 - ==================================================
+2025-04-03 17:11:31.762 | INFO     | __main__:_print_summary:473 - 处理摘要 - 提交: fb493b
+2025-04-03 17:11:31.763 | INFO     | __main__:_print_summary:474 - 结果: 处理失败 (方法: failed)
+2025-04-03 17:11:31.764 | INFO     | __main__:_print_summary:477 - 最后错误: object of type 'NoneType' has no len()
+2025-04-03 17:11:31.766 | INFO     | __main__:_print_summary:479 - ==================================================
+2025-04-03 17:11:31.768 | INFO     | __main__:run:122 - 处理完成

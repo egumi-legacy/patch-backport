@@ -1,0 +1,54 @@
+From 79504249d7e27cad4a3eeb9afc6386e418728ce0 Mon Sep 17 00:00:00 2001
+From: Vicki Pfau <vi@endrift.com>
+Date: Tue, 4 Feb 2025 19:55:27 -0800
+Subject: [PATCH] HID: hid-steam: Move hidraw input (un)registering to work
+
+Due to an interplay between locking in the input and hid transport subsystems,
+attempting to register or deregister the relevant input devices during the
+hidraw open/close events can lead to a lock ordering issue. Though this
+shouldn't cause a deadlock, this commit moves the input device manipulation to
+deferred work to sidestep the issue.
+
+Fixes: 385a4886778f6 ("HID: steam: remove input device when a hid client is running.")
+Signed-off-by: Vicki Pfau <vi@endrift.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.com>
+---
+ drivers/hid/hid-steam.c | 38 +++++++++++++++++++++++++++++++-------
+ 1 file changed, 31 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/hid/hid-steam.c b/drivers/hid/hid-steam.c
+index b008fd0834b94..5a17714fedea0 100644
+--- a/drivers/hid/hid-steam.c
++++ b/drivers/hid/hid-steam.c
+@@ -1072,6 +1073,31 @@ static void steam_mode_switch_cb(struct work_struct *work)
+ 	}
+ }
+ 
++static void steam_work_unregister_cb(struct work_struct *work)
++{
++	struct steam_device *steam = container_of(work, struct steam_device,
++							unregister_work);
++	unsigned long flags;
++	bool connected;
++	bool opened;
++
++	spin_lock_irqsave(&steam->lock, flags);
++	opened = steam->client_opened;
++	connected = steam->connected;
++	spin_unlock_irqrestore(&steam->lock, flags);
++
++	if (connected) {
++		if (opened) {
++			steam_sensors_unregister(steam);
++			steam_input_unregister(steam);
++		} else {
++			steam_set_lizard_mode(steam, lizard_mode);
++			steam_input_register(steam);
++			steam_sensors_register(steam);
++		}
++	}
++}
++
+ static bool steam_is_valve_interface(struct hid_device *hdev)
+ {
+ 	struct hid_report_enum *rep_enum;

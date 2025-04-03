@@ -1,0 +1,47 @@
+From 2844ddbd540fc84d7571cca65d6c43088e4d6952 Mon Sep 17 00:00:00 2001
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+Date: Fri, 7 Feb 2025 13:30:17 +0100
+Subject: [PATCH] s390/pci: Fix handling of isolated VFs
+
+In contrast to the commit message of the fixed commit VFs whose parent
+PF is not configured are not always isolated, that is put on their own
+PCI domain. This is because for VFs to be added to an existing PCI
+domain it is enough for that PCI domain to share the same topology ID or
+PCHID. Such a matching PCI domain without a parent PF may exist when
+a PF from the same PCI card created the domain with the VF being a child
+of a different, non accessible, PF. While not causing technical issues
+it makes the rules which VFs are isolated inconsistent.
+
+Fix this by explicitly checking that the parent PF exists on the PCI
+domain determined by the topology ID or PCHID before registering the VF.
+This works because a parent PF which is under control of this Linux
+instance must be enabled and configured at the point where its child VFs
+appear because otherwise SR-IOV could not have been enabled on the
+parent.
+
+Fixes: 25f39d3dcb48 ("s390/pci: Ignore RID for isolated VFs")
+Cc: stable@vger.kernel.org
+Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+---
+ arch/s390/pci/pci_bus.c | 20 ++++++++++++++++++++
+ arch/s390/pci/pci_iov.c |  2 +-
+ arch/s390/pci/pci_iov.h |  7 +++++++
+ 3 files changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/arch/s390/pci/pci_iov.h b/arch/s390/pci/pci_iov.h
+index e3fa4e77fc867..d2c2793eb0f34 100644
+--- a/arch/s390/pci/pci_iov.h
++++ b/arch/s390/pci/pci_iov.h
+@@ -28,5 +30,10 @@ static inline int zpci_iov_setup_virtfn(struct zpci_bus *zbus, struct pci_dev *v
+ {
+ 	return 0;
+ }
++
++static inline struct pci_dev *zpci_iov_find_parent_pf(struct zpci_bus *zbus, struct zpci_dev *zdev)
++{
++	return NULL;
++}
+ #endif /* CONFIG_PCI_IOV */
+ #endif /* __S390_PCI_IOV_h */

@@ -1,0 +1,28 @@
+From b0d368e5e58fb4b9d4e0d2ca7d59707867bc5a4b Mon Sep 17 00:00:00 2001
+From: root <root@congroo0>
+Date: Thu, 27 Mar 2025 18:23:16 +0800
+Subject: [PATCH] Applied chunk patch with shell script:
+ chunk_001_20250327_182310.patch
+
+---
+ drivers/bluetooth/btqca.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git drivers/bluetooth/btqca.c drivers/bluetooth/btqca.c
+index dfbbac92242a..d59546773e4b 100644
+--- drivers/bluetooth/btqca.c
++++ drivers/bluetooth/btqca.c
+@@ -848,8 +848,9 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 				 "qca/msnv%02x.bin", rom_ver);
+ 			break;
+ 		case QCA_WCN6855:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/hpnv%02x.bin", rom_ver);
++			qca_read_fw_board_id(hdev, &boardid);
++			qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
++						  "hpnv", soc_type, ver, rom_ver, boardid);
+ 			break;
+ 		case QCA_WCN7850:
+ 			qca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);
+-- 
+2.25.1

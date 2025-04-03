@@ -28,38 +28,22 @@ class ChunkAnalyzerModule(BaseModule):
         start_time = datetime.now()
         
         try:
-            # 只有当direct_apply失败时才进行处理
-            if not context.direct_apply_result or context.direct_apply_result.get('success', True):
-                logger.info("直接应用成功或未执行，跳过补丁分块分析")
-                return context
+            # 下载补丁（如果需要）
+            if not hasattr(context.commit, "patch_path") or not Path(context.commit.patch_path).exists():
+                context.commit.patch_path = self._download_patch(context)
                 
-            # 获取补丁文件路径
-            patch_path = None
-            if context.direct_apply_result.get('patch_path'):
-                patch_path = Path(context.direct_apply_result.get('patch_path'))
-                if not patch_path.exists():
-                    logger.warning(f"补丁文件不存在: {patch_path}，尝试使用commit.patch_path")
-                    patch_path = None
+            # 分析补丁，拆分成块
+            patch_path = Path(context.commit.patch_path)
+            chunk_patches = self._create_chunk_patches(self._split_patch_into_chunks(patch_path), context)
             
-            if not patch_path:
-                patch_path = Path(context.commit.patch_path)
-                if not patch_path or not patch_path.exists():
-                    raise ValueError("没有找到有效的补丁文件路径")
-            
-            # 确保使用绝对路径
-            patch_path = Path(patch_path.absolute())
-            logger.info(f"开始分析补丁: {patch_path}")
-            
-            # 1. 将补丁分解为块
-            chunks = self._split_patch_into_chunks(patch_path)
-            logger.info(f"补丁被分解为 {len(chunks)} 个块")
-            
-            # 2. 为每个chunk创建单独的补丁文件
-            chunk_patches = self._create_chunk_patches(chunks, context)
-            logger.info(f"已为 {len(chunk_patches)} 个块创建单独的补丁文件")
-            
-            # 3. 尝试应用每个单独的chunk补丁
+            # 尝试应用每个块
             applied_chunks = self._apply_chunk_patches(chunk_patches, context)
+            
+            # 确保applied_chunks不为None
+            if applied_chunks is None:
+                logger.warning("_apply_chunk_patches返回了None，使用空列表代替")
+                applied_chunks = []
+                
             logger.info(f"成功应用了 {len(applied_chunks)} 个块补丁，总共 {len(chunk_patches)} 个")
             
             # 4. 为剩余的未应用成功的块创建一个合并补丁
@@ -77,7 +61,7 @@ class ChunkAnalyzerModule(BaseModule):
             # 5. 保存分析结果
             analysis_result = {
                 'original_patch': str(patch_path),
-                'total_chunks': len(chunks),
+                'total_chunks': len(chunk_patches),
                 'applied_chunks': len(applied_chunks),
                 'applied_chunk_patches': [str(p.absolute()) for p in applied_chunks],
                 'remaining_patch': str(remaining_patch) if remaining_patch else None,
@@ -309,11 +293,26 @@ class ChunkAnalyzerModule(BaseModule):
         # 获取当前分支
         current_branch = self._run_git_command(["rev-parse", "--abbrev-ref", "HEAD"], repo_path)
         logger.info(f"当前分支: {current_branch}")
+        # 确保当前分支是目标版本
+        if current_branch != context.config.target_version:
+            logger.info(f"当前分支不是目标版本，切换到目标版本: {context.config.target_version}")
+            self._run_git_command(["checkout", context.config.target_version], repo_path)
         
         # 创建测试分支
         test_branch = f"chunk_test_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}"
         
         try:
+            # 检查是否存在同名分支
+            result = subprocess.run(
+                ["git", "show-ref", "--verify", f"refs/heads/{test_branch}"],
+                cwd=repo_path,
+                capture_output=True
+            )
+            if result.returncode == 0:
+                # 分支已存在，先尝试删除
+                logger.warning(f"检测到临时分支已存在: {test_branch}，尝试删除")
+                self._run_git_command(["checkout", context.config.target_version], repo_path)
+                self._run_git_command(["branch", "-D", test_branch], repo_path)
             # 创建测试分支
             self._run_git_command(["checkout", "-b", test_branch], repo_path)
             logger.info(f"创建测试分支: {test_branch}")
@@ -973,43 +972,75 @@ class ChunkAnalyzerModule(BaseModule):
                             logger.warning(f"找不到匹配的文件")
                             continue
                     
+                    # 获取当前HEAD提交hash，用于在应用补丁后对比
+                    current_commit = self._run_git_command(["rev-parse", "HEAD"], repo_path)
+                    logger.info(f"应用补丁前的提交: {current_commit}")
+                    
                     # 创建一个临时脚本来运行patch命令，以便使用更多的shell特性
                     temp_dir = tempfile.mkdtemp()
                     script_path = Path(temp_dir) / "apply_patch.sh"
                     abs_patch_path_str = str(abs_patch_path.absolute())
                     
-                    # 创建shell脚本
+                    # 创建shell脚本，添加对应用结果的捕获
                     with open(script_path, 'w') as f:
                         f.write(f"""#!/bin/bash
                         set -e
                         cd {repo_path}
                         
+                        # 创建输出捕获文件
+                        OUTPUT_FILE="{temp_dir}/patch_output.txt"
+                        
                         # 尝试方法1：使用patch命令的最大模糊匹配
-                        if cat {abs_patch_path_str} | patch -p1 -F 100 --fuzz=100 --ignore-whitespace -f --verbose {target_file}; then
+                        if cat {abs_patch_path_str} | patch -p1 -F 100 --fuzz=100 --ignore-whitespace -f --verbose {target_file} > "$OUTPUT_FILE" 2>&1; then
+                            cat "$OUTPUT_FILE"  # 显示输出
                             echo "方法8.1成功：使用patch -p1 -F 100"
+                            # 提取应用位置信息
+                            ACTUAL_LINE=$(grep -o "Hunk #[0-9]\\+ succeeded at [0-9]\\+" "$OUTPUT_FILE" | grep -o "[0-9]\\+$" || echo "")
+                            if [ ! -z "$ACTUAL_LINE" ]; then
+                                echo "ACTUAL_LINE_NUMBER:$ACTUAL_LINE"
+                            fi
                             exit 0
                         fi
                         
                         # 尝试方法2：将补丁转换为上下文差异格式
-                        if cat {abs_patch_path_str} | patch -p1 -F 100 --fuzz=100 -c -f --verbose {target_file}; then
+                        if cat {abs_patch_path_str} | patch -p1 -F 100 --fuzz=100 -c -f --verbose {target_file} > "$OUTPUT_FILE" 2>&1; then
+                            cat "$OUTPUT_FILE"  # 显示输出
                             echo "方法8.2成功：使用patch -p1 -F 100 -c"
+                            # 提取应用位置信息
+                            ACTUAL_LINE=$(grep -o "Hunk #[0-9]\\+ succeeded at [0-9]\\+" "$OUTPUT_FILE" | grep -o "[0-9]\\+$" || echo "")
+                            if [ ! -z "$ACTUAL_LINE" ]; then
+                                echo "ACTUAL_LINE_NUMBER:$ACTUAL_LINE"
+                            fi
                             exit 0
                         fi
                         
                         # 尝试方法3：直接编辑目标文件，使用ed命令
-                        if cat {abs_patch_path_str} | patch -p1 -F 100 --fuzz=100 -e -f --verbose {target_file}; then
+                        if cat {abs_patch_path_str} | patch -p1 -F 100 --fuzz=100 -e -f --verbose {target_file} > "$OUTPUT_FILE" 2>&1; then
+                            cat "$OUTPUT_FILE"  # 显示输出
                             echo "方法8.3成功：使用patch -p1 -F 100 -e"
+                            # 提取应用位置信息
+                            ACTUAL_LINE=$(grep -o "Hunk #[0-9]\\+ succeeded at [0-9]\\+" "$OUTPUT_FILE" | grep -o "[0-9]\\+$" || echo "")
+                            if [ ! -z "$ACTUAL_LINE" ]; then
+                                echo "ACTUAL_LINE_NUMBER:$ACTUAL_LINE"
+                            fi
                             exit 0
                         fi
                         
                         # 尝试方法4：使用--dry-run模式先检查
-                        if cat {abs_patch_path_str} | patch -p1 -F 100 --fuzz=100 --ignore-whitespace --dry-run {target_file} && cat {abs_patch_path_str} | patch -p1 -F 100 --fuzz=100 --ignore-whitespace {target_file}; then
+                        if cat {abs_patch_path_str} | patch -p1 -F 100 --fuzz=100 --ignore-whitespace --dry-run {target_file} > "$OUTPUT_FILE" 2>&1 && cat {abs_patch_path_str} | patch -p1 -F 100 --fuzz=100 --ignore-whitespace {target_file} >> "$OUTPUT_FILE" 2>&1; then
+                            cat "$OUTPUT_FILE"  # 显示输出
                             echo "方法8.4成功：使用--dry-run先检查"
+                            # 提取应用位置信息
+                            ACTUAL_LINE=$(grep -o "Hunk #[0-9]\\+ succeeded at [0-9]\\+" "$OUTPUT_FILE" | grep -o "[0-9]\\+$" || echo "")
+                            if [ ! -z "$ACTUAL_LINE" ]; then
+                                echo "ACTUAL_LINE_NUMBER:$ACTUAL_LINE"
+                            fi
                             exit 0
                         fi
                         
                         # 失败
                         echo "所有shell尝试都失败"
+                        cat "$OUTPUT_FILE"  # 显示输出
                         exit 1
                         """)
                     
@@ -1024,15 +1055,141 @@ class ChunkAnalyzerModule(BaseModule):
                         text=True
                     )
                     
+                    # 解析脚本输出，提取实际应用行号
+                    actual_line_number = None
+                    actual_offset = None
+                    
                     if result.returncode == 0:
+                        # 尝试提取实际应用的行号
+                        actual_line_match = re.search(r'ACTUAL_LINE_NUMBER:(\d+)', result.stdout)
+                        if actual_line_match:
+                            actual_line_number = int(actual_line_match.group(1))
+                            logger.info(f"实际应用行号: {actual_line_number}")
+                        
+                        # 尝试从完整输出中提取偏移信息
+                        offset_match = re.search(r'offset (-?\d+) lines', result.stdout)
+                        if offset_match:
+                            actual_offset = int(offset_match.group(1))
+                            logger.info(f"行号偏移: {actual_offset}")
+                        
+                        # 提交更改
+                        self._run_git_command(["add", "."], repo_path)
+                        commit_msg = f"Applied chunk patch with shell script: {patch_path.name}"
+                        self._run_git_command(["commit", "-m", commit_msg], repo_path)
+                        
+                        # 获取新提交的hash
+                        new_commit = self._run_git_command(["rev-parse", "HEAD"], repo_path)
+                        logger.info(f"应用补丁后的提交: {new_commit}")
+                        
+                        # 从新提交生成实际应用的补丁文件
+                        output_dir = context.commit.base_dir / "chunk_patches"
+                        output_dir.mkdir(parents=True, exist_ok=True)
+                        
+                        # 使用git format-patch生成实际的补丁内容（替代git show）
+                        actual_patch_path = output_dir / f"{patch_path.stem}_actual.patch"
+                        try:
+                            # 先切换到临时目录，否则git format-patch会在当前目录生成文件
+                            temp_patch_dir = tempfile.mkdtemp()
+                            format_patch_cmd = [
+                                "format-patch", 
+                                "-1", 
+                                "--stdout", 
+                                "--no-prefix", 
+                                new_commit
+                            ]
+                            actual_patch_content = self._run_git_command(format_patch_cmd, repo_path)
+                            
+                            # 保存实际的补丁内容
+                            with open(actual_patch_path, 'w', encoding='utf-8') as f:
+                                f.write(actual_patch_content)
+                            logger.info(f"已从实际提交生成补丁: {actual_patch_path}")
+                            
+                            # 也生成一个针对特定文件的补丁
+                            specific_patch_path = output_dir / f"{patch_path.stem}_specific.patch"
+                            specific_patch_cmd = [
+                                "format-patch",
+                                "-1",
+                                "--stdout",
+                                "--no-prefix",
+                                new_commit,
+                                "--",
+                                target_file
+                            ]
+                            specific_patch_content = self._run_git_command(specific_patch_cmd, repo_path)
+                            
+                            with open(specific_patch_path, 'w', encoding='utf-8') as f:
+                                f.write(specific_patch_content)
+                            logger.info(f"已从实际提交生成特定文件的补丁: {specific_patch_path}")
+                            
+                            # 使用git diff来生成更精确的补丁文件
+                            precise_patch_path = output_dir / f"{patch_path.stem}_precise.patch"
+                            precise_patch_content = self._run_git_command(
+                                ["diff", f"{current_commit}..{new_commit}", "--", target_file],
+                                repo_path
+                            )
+                            
+                            with open(precise_patch_path, 'w', encoding='utf-8') as f:
+                                f.write(precise_patch_content)
+                            logger.info(f"已从实际提交生成精确补丁: {precise_patch_path}")
+                            
+                            # 清理临时目录
+                            shutil.rmtree(temp_patch_dir, ignore_errors=True)
+                            
+                        except Exception as e:
+                            logger.error(f"从提交生成补丁时出错: {e}")
+                            import traceback
+                            logger.error(f"错误堆栈: {traceback.format_exc()}")
+                        
+                        # 创建包含实际应用位置信息的补丁文件
+                        if actual_line_number or actual_offset:
+                            # 提取原始行号信息
+                            original_hunk_match = re.search(r'@@ -(\d+),(\d+) \+(\d+),(\d+) @@', patch_content)
+                            if original_hunk_match:
+                                old_start = int(original_hunk_match.group(1))
+                                old_count = int(original_hunk_match.group(2))
+                                new_start = int(original_hunk_match.group(3))
+                                new_count = int(original_hunk_match.group(4))
+                                
+                                # 保存到chunk_patches目录用于后续评估
+                                adjusted_patch_info_path = output_dir / f"{patch_path.stem}_adjusted_info.json"
+                                with open(adjusted_patch_info_path, 'w', encoding='utf-8') as f:
+                                    json.dump({
+                                        "original_patch": str(abs_patch_path),
+                                        "original_line": old_start,
+                                        "actual_line": actual_line_number or (old_start + actual_offset),
+                                        "offset": actual_offset,
+                                        "target_file": target_file,
+                                        "method": "method8",
+                                        "output": result.stdout,
+                                        "commit_hash": new_commit,
+                                        "actual_patch": str(actual_patch_path),
+                                        "specific_patch": str(specific_patch_path),
+                                        "precise_patch": str(precise_patch_path)
+                                    }, f, indent=2, ensure_ascii=False)
+                                
+                                logger.info(f"已保存实际应用位置信息: {adjusted_patch_info_path}")
+                        
                         # 成功应用
                         applied_patches.append(patch_path)
                         logger.info(f"成功应用块补丁(方法8): {patch_path.name}")
                         logger.info(f"Shell脚本输出: {result.stdout}")
                         
-                        # 提交更改
-                        self._run_git_command(["add", "."], repo_path)
-                        self._run_git_command(["commit", "-m", f"Applied chunk patch with shell script: {patch_path.name}"], repo_path)
+                        # 将应用信息存储在patch对象上，方便后续评估使用
+                        # 使用扩展字典表示方式，避免直接修改Path对象
+                        if not hasattr(self, '_patch_application_info'):
+                            self._patch_application_info = {}
+                        
+                        self._patch_application_info[str(patch_path)] = {
+                            "actual_line": actual_line_number,
+                            "offset": actual_offset,
+                            "target_file": target_file,
+                            "method": "method8",
+                            "output": result.stdout,
+                            "commit_hash": new_commit,
+                            "actual_patch": str(actual_patch_path),
+                            "specific_patch": str(specific_patch_path),
+                            "precise_patch": str(precise_patch_path)
+                        }
                     else:
                         logger.info(f"方法8失败: {result.stderr}")
                         # 恢复到干净状态
@@ -1051,12 +1208,17 @@ class ChunkAnalyzerModule(BaseModule):
         finally:
             # 清理：切回原始分支，删除测试分支
             try:
-                self._run_git_command(["checkout", current_branch], repo_path)
+                # 先确保切换回目标版本分支
+                logger.info(f"切换回目标版本分支: {context.config.target_version}")
+                self._run_git_command(["checkout", context.config.target_version], repo_path)
+                
+                # 然后删除临时分支
+                logger.info(f"清理临时分支: {test_branch}")
                 self._run_git_command(["branch", "-D", test_branch], repo_path)
-                logger.info(f"清理测试分支: {test_branch}")
             except Exception as e:
                 logger.error(f"清理测试分支失败: {e}")
         
+        # 确保返回列表，即使是空列表
         return applied_patches
     
     def _create_remaining_patch(self, all_patches: List[Path], applied_patches: List[Path], context: ModuleContext) -> Optional[Path]:
@@ -1240,53 +1402,210 @@ class ChunkAnalyzerModule(BaseModule):
                 
             details_dir = max(detail_dirs, key=lambda p: p.stat().st_mtime)
             
+            # 创建补丁内容目录
+            patches_dir = details_dir / "patches"
+            patches_dir.mkdir(exist_ok=True)
+            
             # 复制特定于chunk_analyzer的文件
             
             # 复制原始补丁文件
+            original_patch_content = ""
             if hasattr(context.commit, "patch_path") and Path(context.commit.patch_path).exists():
                 original_patch_dest = details_dir / "original_patch.diff"
                 shutil.copy(context.commit.patch_path, original_patch_dest)
+                
+                # 读取原始补丁内容用于显示
+                with open(context.commit.patch_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    original_patch_content = f.read()
+                
+                # 保存原始补丁内容的文本文件
+                with open(patches_dir / "original_patch.txt", 'w', encoding='utf-8') as f:
+                    f.write(original_patch_content)
             
             # 复制剩余补丁文件（如果有）
+            remaining_patch_content = ""
             if context.chunk_analyzer_result and context.chunk_analyzer_result.get("remaining_patch"):
                 remaining_patch = Path(context.chunk_analyzer_result.get("remaining_patch"))
                 if remaining_patch.exists():
                     remaining_patch_dest = details_dir / "remaining_patch.diff"
                     shutil.copy(remaining_patch, remaining_patch_dest)
+                    
+                    # 读取剩余补丁内容用于显示
+                    with open(remaining_patch, 'r', encoding='utf-8', errors='ignore') as f:
+                        remaining_patch_content = f.read()
+                    
+                    # 保存剩余补丁内容的文本文件
+                    with open(patches_dir / "remaining_patch.txt", 'w', encoding='utf-8') as f:
+                        f.write(remaining_patch_content)
             
             # 保存应用成功的补丁信息
+            applied_chunks_content = []
             if context.chunk_analyzer_result and context.chunk_analyzer_result.get("applied_chunk_patches"):
                 applied_chunks_info = []
+                all_applied_content = ""
+                
                 for i, chunk_path in enumerate(context.chunk_analyzer_result.get("applied_chunk_patches", []), 1):
                     chunk_file = Path(chunk_path)
                     if chunk_file.exists():
+                        # 检查是否有应用细节信息
+                        patch_info = {}
+                        precise_patch = None
+                        specific_patch = None
+                        actual_patch = None
+                        
+                        if hasattr(self, '_patch_application_info') and str(chunk_path) in self._patch_application_info:
+                            patch_info = self._patch_application_info[str(chunk_path)]
+                            logger.info(f"找到补丁应用细节信息: {patch_info}")
+                            
+                            # 尝试使用从实际commit生成的补丁
+                            for patch_type in ['precise_patch', 'specific_patch', 'actual_patch']:
+                                if patch_type in patch_info and patch_info[patch_type] and Path(patch_info[patch_type]).exists():
+                                    if patch_type == 'precise_patch':
+                                        precise_patch = Path(patch_info[patch_type])
+                                    elif patch_type == 'specific_patch':
+                                        specific_patch = Path(patch_info[patch_type])
+                                    else:
+                                        actual_patch = Path(patch_info[patch_type])
+                        
+                        # 确定使用哪个补丁文件 - 优先使用更精确的
+                        final_patch_file = None
+                        content = None
+                        
+                        if precise_patch and precise_patch.exists():
+                            final_patch_file = precise_patch
+                            logger.info(f"使用精确生成的补丁文件: {precise_patch}")
+                            with open(precise_patch, 'r', encoding='utf-8', errors='ignore') as f:
+                                content = f.read()
+                        elif specific_patch and specific_patch.exists():
+                            final_patch_file = specific_patch
+                            logger.info(f"使用特定文件的补丁文件: {specific_patch}")
+                            with open(specific_patch, 'r', encoding='utf-8', errors='ignore') as f:
+                                content = f.read()
+                        elif actual_patch and actual_patch.exists():
+                            final_patch_file = actual_patch
+                            logger.info(f"使用实际提交的补丁文件: {actual_patch}")
+                            with open(actual_patch, 'r', encoding='utf-8', errors='ignore') as f:
+                                content = f.read()
+                        elif chunk_file.exists():
+                            final_patch_file = chunk_file
+                            with open(chunk_file, 'r', encoding='utf-8', errors='ignore') as f:
+                                content = f.read()
+                        
+                        if final_patch_file is None or content is None:
+                            logger.warning(f"未找到有效的补丁文件: {chunk_path}")
+                            continue
+                        
                         # 复制应用成功的补丁
                         chunk_dest = details_dir / f"applied_chunk_{i}.diff"
-                        shutil.copy(chunk_file, chunk_dest)
+                        shutil.copy(final_patch_file, chunk_dest)
                         
-                        # 读取补丁内容
-                        with open(chunk_file, 'r', encoding='utf-8', errors='ignore') as f:
-                            content = f.read()
+                        # 添加到所有应用成功的内容中
+                        all_applied_content += f"\n\n# ===== 应用成功的补丁块 {i} =====\n\n"
+                        if patch_info:
+                            # 添加应用细节信息
+                            all_applied_content += f"# 应用方法: {patch_info.get('method', '未知')}\n"
+                            if patch_info.get('actual_line'):
+                                all_applied_content += f"# 实际应用行号: {patch_info.get('actual_line')}\n"
+                            if patch_info.get('offset'):
+                                all_applied_content += f"# 行号偏移: {patch_info.get('offset')}\n"
+                            all_applied_content += f"# 目标文件: {patch_info.get('target_file', '未知')}\n"
+                            if patch_info.get('commit_hash'):
+                                all_applied_content += f"# 提交哈希: {patch_info.get('commit_hash')}\n"
+                            all_applied_content += "\n"
+                        
+                        all_applied_content += content
+                        
+                        # 保存单个应用成功的补丁内容，添加应用细节信息
+                        detailed_content = content
+                        if patch_info:
+                            header = f"# 应用方法: {patch_info.get('method', '未知')}\n"
+                            if patch_info.get('actual_line'):
+                                header += f"# 实际应用行号: {patch_info.get('actual_line')}\n"
+                            if patch_info.get('offset'):
+                                header += f"# 行号偏移: {patch_info.get('offset')}\n"
+                            header += f"# 目标文件: {patch_info.get('target_file', '未知')}\n"
+                            if patch_info.get('commit_hash'):
+                                header += f"# 提交哈希: {patch_info.get('commit_hash')}\n"
+                            if final_patch_file != chunk_file:
+                                header += f"# 实际补丁文件: {final_patch_file}\n"
+                            header += "\n"
+                            detailed_content = header + content
+                        
+                        with open(patches_dir / f"applied_chunk_{i}.txt", 'w', encoding='utf-8') as f:
+                            f.write(detailed_content)
                         
                         # 提取修改文件信息
                         file_match = re.search(r'diff --git a/(.*) b/', content)
-                        file_path = file_match.group(1) if file_match else "未知"
+                        file_path = file_match.group(1) if file_match else patch_info.get('target_file', "未知")
                         
-                        # 提取修改位置信息
-                        hunk_match = re.search(r'@@ -(\d+),(\d+) \+(\d+),(\d+) @@', content)
-                        position = f"{hunk_match.group(1)}-{hunk_match.group(3)}" if hunk_match else "未知"
+                        # 提取修改位置信息 - 优先使用实际应用的行号
+                        position = "未知"
+                        if patch_info.get('actual_line'):
+                            position = f"{patch_info.get('actual_line')}"
+                        else:
+                            # 尝试从补丁内容中提取
+                            hunk_match = re.search(r'@@ -(\d+),(\d+) \+(\d+),(\d+) @@', content)
+                            if hunk_match:
+                                position = f"{hunk_match.group(1)}-{hunk_match.group(3)}"
                         
-                        applied_chunks_info.append({
+                        # 添加应用细节到信息中
+                        chunk_info = {
                             "索引": i,
                             "补丁路径": str(chunk_path),
+                            "实际补丁": str(final_patch_file) if final_patch_file != chunk_file else None,
                             "修改文件": file_path,
-                            "修改位置": position
-                        })
+                            "修改位置": position,
+                            "内容": content
+                        }
+                        
+                        if patch_info:
+                            chunk_info.update({
+                                "应用方法": patch_info.get('method', '未知'),
+                                "实际应用行号": patch_info.get('actual_line'),
+                                "行号偏移": patch_info.get('offset'),
+                                "目标文件": patch_info.get('target_file', '未知'),
+                                "提交哈希": patch_info.get('commit_hash')
+                            })
+                        
+                        applied_chunks_info.append(chunk_info)
+                        
+                        # 添加到应用成功的补丁列表
+                        applied_chunk_content = {
+                            "index": i,
+                            "file": file_path,
+                            "position": position,
+                            "content": content
+                        }
+                        
+                        if patch_info:
+                            applied_chunk_content.update({
+                                "method": patch_info.get('method', '未知'),
+                                "actual_line": patch_info.get('actual_line'),
+                                "offset": patch_info.get('offset'),
+                                "target_file": patch_info.get('target_file', '未知'),
+                                "commit_hash": patch_info.get('commit_hash')
+                            })
+                        
+                        applied_chunks_content.append(applied_chunk_content)
+                
+                # 保存所有应用成功的补丁内容
+                with open(patches_dir / "all_applied_chunks.txt", 'w', encoding='utf-8') as f:
+                    f.write(all_applied_content)
                 
                 # 保存应用成功的补丁信息
                 applied_chunks_file = details_dir / "applied_chunks.json"
                 with open(applied_chunks_file, 'w', encoding='utf-8') as f:
                     json.dump(applied_chunks_info, f, indent=2, ensure_ascii=False)
+            
+            # 保存所有补丁内容到一个JSON文件供HTML使用
+            patches_json = {
+                "original_patch": original_patch_content,
+                "applied_chunks": applied_chunks_content,
+                "remaining_patch": remaining_patch_content
+            }
+            
+            with open(details_dir / "patches_content.json", 'w', encoding='utf-8') as f:
+                json.dump(patches_json, f, indent=2, ensure_ascii=False)
             
             # 更新README文件
             readme_file = details_dir / "README.md"
@@ -1297,6 +1616,15 @@ class ChunkAnalyzerModule(BaseModule):
                     f.write("- remaining_patch.diff: 剩余未应用补丁文件（如果有）\n")
                     f.write("- applied_chunk_*.diff: 成功应用的补丁块\n")
                     f.write("- applied_chunks.json: 成功应用的补丁块详细信息\n")
+                    f.write("\n## 补丁内容文本文件\n\n")
+                    f.write("- patches/original_patch.txt: 原始补丁内容\n")
+                    f.write("- patches/remaining_patch.txt: 剩余未应用补丁内容\n")
+                    f.write("- patches/applied_chunk_*.txt: 单个成功应用的补丁块内容\n")
+                    f.write("- patches/all_applied_chunks.txt: 所有成功应用的补丁块内容\n")
+                    f.write("\n## 实际应用补丁文件\n\n")
+                    f.write("- 精确补丁文件 (*_precise.patch): 使用git diff命令从实际提交中生成的精确补丁\n")
+                    f.write("- 特定文件补丁 (*_specific.patch): 使用git show命令从实际提交中获取特定文件的变更\n")
+                    f.write("- 实际提交补丁 (*_actual.patch): 实际提交生成的完整补丁\n")
             
         except Exception as e:
             logger.error(f"保存chunk_analyzer特定评估信息失败: {e}")
@@ -1334,6 +1662,40 @@ class ChunkAnalyzerModule(BaseModule):
         # 如果是错误状态，不添加额外内容
         if context.chunk_analyzer_result.get("status") == "error":
             return ""
+
+        # 查找或创建当前评估目录路径
+        eval_dir = context.base_dir / "evaluations" / self.name
+        if not eval_dir.exists():
+            logger.warning(f"评估目录不存在: {eval_dir}")
+            return ""
+        
+        # 查找当前评估的details目录
+        details_dir = None
+        try:
+            # 先尝试查找当前会话最新创建的目录
+            timestamp = datetime.now().strftime("%Y%m%d")  # 使用当天日期匹配
+            commit_sha = context.commit.commit_sha[:6]
+            current_details_dirs = list(eval_dir.glob(f"details_{commit_sha}_{timestamp}*"))
+            
+            if current_details_dirs:
+                # 如果找到匹配当前提交和日期的目录，使用最新的
+                details_dir = max(current_details_dirs, key=lambda p: p.stat().st_mtime)
+                logger.info(f"找到当前评估会话目录: {details_dir}")
+            else:
+                # 如果没找到，使用所有目录中最新的
+                all_details_dirs = list(eval_dir.glob("details_*"))
+                if all_details_dirs:
+                    details_dir = max(all_details_dirs, key=lambda p: p.stat().st_mtime)
+                    logger.info(f"使用最新评估目录: {details_dir}")
+                else:
+                    logger.warning("未找到任何评估详情目录")
+                    return ""
+        except Exception as e:
+            logger.error(f"查找评估目录时出错: {e}")
+            return ""
+        
+        # 存储当前评估目录路径供_get_patch_content方法使用
+        self._current_details_dir = details_dir
             
         # 生成块应用统计部分
         chunks_html = f"""
@@ -1352,6 +1714,56 @@ class ChunkAnalyzerModule(BaseModule):
                 context.chunk_analyzer_result.get("applied_chunks", 0) / max(1, context.chunk_analyzer_result.get("total_chunks", 1)) * 100
             :.1f}%</strong>)
           </p>
+        </div>
+        """
+        
+        # 补丁内容展示部分（原始补丁、应用成功的补丁、剩余补丁）
+        patches_html = """
+        <div class="card">
+          <h2>补丁内容详情</h2>
+          <div class="tabs">
+            <div class="tab-header">
+              <button class="tab-button active" onclick="openTab(event, 'original-patch')">原始补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'applied-patches')">应用成功的补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'remaining-patch')">未应用成功的补丁</button>
+            </div>
+            
+            <div id="original-patch" class="tab-content" style="display:block;">
+              <h3>原始补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">"""
+        
+        # 添加原始补丁内容
+        patches_html += self._get_patch_content(context, "original")
+                
+        patches_html += """</pre>
+              </div>
+            </div>
+            
+            <div id="applied-patches" class="tab-content">
+              <h3>应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">"""
+        
+        # 添加应用成功的补丁内容
+        patches_html += self._get_patch_content(context, "applied")
+                
+        patches_html += """</pre>
+              </div>
+            </div>
+            
+            <div id="remaining-patch" class="tab-content">
+              <h3>未应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">"""
+        
+        # 添加剩余补丁内容
+        patches_html += self._get_patch_content(context, "remaining")
+                
+        patches_html += """</pre>
+              </div>
+            </div>
+          </div>
         </div>
         """
         
@@ -1379,8 +1791,9 @@ class ChunkAnalyzerModule(BaseModule):
                             "file": file_path,
                             "position": position
                         })
-                    except Exception:
-                        # 如果处理某个文件出错，跳过它
+                    except Exception as e:
+                        # 如果处理某个文件出错，记录错误并跳过它
+                        logger.error(f"处理应用成功的补丁块{i+1}时出错: {e}")
                         continue
             
             if applied_chunks:
@@ -1425,5 +1838,344 @@ class ChunkAnalyzerModule(BaseModule):
             </div>
             """
         
+        # 添加CSS样式
+        style_html = """
+        <style>
+        .code-container {
+          max-height: 500px;
+          overflow-y: auto;
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          border: 1px solid #eee;
+        }
+        
+        .code-block {
+          padding: 15px;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: monospace;
+          font-size: 13px;
+          line-height: 1.4;
+        }
+        
+        /* 为补丁内容添加语法高亮 */
+        .code-block .add {
+          background-color: #e6ffed;
+          color: #22863a;
+        }
+        
+        .code-block .remove {
+          background-color: #ffeef0;
+          color: #cb2431;
+        }
+        
+        .code-block .hunk {
+          color: #0366d6;
+          background-color: #f1f8ff;
+        }
+        
+        .code-block .header {
+          color: #6f42c1;
+          font-weight: bold;
+        }
+        </style>
+        
+        <script>
+        // 对补丁内容应用简单的语法高亮
+        document.addEventListener('DOMContentLoaded', function() {
+          const codeBlocks = document.querySelectorAll('.code-block');
+          codeBlocks.forEach(function(block) {
+            let html = block.innerHTML;
+            
+            // 替换添加的行
+            html = html.replace(/^(\+[^+].*)/gm, '<span class="add">$1</span>');
+            
+            // 替换删除的行
+            html = html.replace(/^(-[^-].*)/gm, '<span class="remove">$1</span>');
+            
+            // 替换区块头
+            html = html.replace(/^(@@.*@@)/gm, '<span class="hunk">$1</span>');
+            
+            // 替换diff头
+            html = html.replace(/^(diff --git.*|index.*|---.*|\+\+\+.*)/gm, '<span class="header">$1</span>');
+            
+            block.innerHTML = html;
+          });
+        });
+        </script>
+        """
+        
         # 组合所有部分
-        return chunks_html + applied_chunks_html + remaining_patch_html 
+        return chunks_html + patches_html + applied_chunks_html + remaining_patch_html + style_html
+    
+    def _get_patch_content(self, context: ModuleContext, patch_type: str) -> str:
+        """获取不同类型的补丁内容"""
+        try:
+            # 使用当前评估会话的目录（从_generate_additional_html_sections方法中获取）
+            if hasattr(self, '_current_details_dir') and self._current_details_dir:
+                details_dir = self._current_details_dir
+                logger.info(f"使用当前会话评估目录: {details_dir}")
+            else:
+                # 尝试找到当前评估的details目录
+                eval_dir = context.base_dir / "evaluations" / self.name
+                # 使用当前提交的SHA和当天日期匹配
+                timestamp = datetime.now().strftime("%Y%m%d")
+                commit_sha = context.commit.commit_sha[:6]
+                matched_dirs = list(eval_dir.glob(f"details_{commit_sha}_{timestamp}*"))
+                
+                if matched_dirs:
+                    details_dir = max(matched_dirs, key=lambda p: p.stat().st_mtime)
+                    logger.info(f"找到匹配当前提交的评估目录: {details_dir}")
+                else:
+                    # 如果没找到匹配的，使用最新的
+                    all_dirs = list(eval_dir.glob("details_*"))
+                    if not all_dirs:
+                        logger.warning("未找到任何评估目录")
+                        return "未找到评估信息目录"
+                    
+                    details_dir = max(all_dirs, key=lambda p: p.stat().st_mtime)
+                    logger.info(f"使用最新的评估目录: {details_dir}")
+            
+            # 创建一个函数来从patches_content.json文件获取补丁内容
+            def get_content_from_json():
+                json_file = details_dir / "patches_content.json"
+                if json_file.exists():
+                    try:
+                        with open(json_file, 'r', encoding='utf-8', errors='ignore') as f:
+                            json_data = json.load(f)
+                        
+                        if patch_type == "original" and "original_patch" in json_data:
+                            logger.info(f"从JSON文件获取原始补丁内容: {json_file}")
+                            return json_data["original_patch"].replace('<', '&lt;').replace('>', '&gt;')
+                        
+                        elif patch_type == "applied" and "applied_chunks" in json_data:
+                            content = ""
+                            for chunk in json_data["applied_chunks"]:
+                                content += f"\n\n# ===== 应用成功的补丁块 {chunk.get('index', '?')} =====\n\n"
+                                content += chunk.get("content", "")
+                            
+                            if content:
+                                logger.info(f"从JSON文件获取应用成功的补丁内容: {json_file}")
+                                return content.replace('<', '&lt;').replace('>', '&gt;')
+                        
+                        elif patch_type == "remaining" and "remaining_patch" in json_data:
+                            logger.info(f"从JSON文件获取剩余补丁内容: {json_file}")
+                            return json_data["remaining_patch"].replace('<', '&lt;').replace('>', '&gt;')
+                    
+                    except Exception as e:
+                        logger.error(f"读取JSON文件出错: {e}")
+                
+                return None
+            
+            # 检查补丁目录存在性
+            patches_dir = details_dir / "patches"
+            if not patches_dir.exists():
+                logger.warning(f"补丁目录不存在: {patches_dir}")
+                
+                # 尝试创建patches目录
+                try:
+                    patches_dir.mkdir(exist_ok=True, parents=True)
+                    logger.info(f"成功创建补丁目录: {patches_dir}")
+                except Exception as e:
+                    logger.error(f"创建补丁目录失败: {e}")
+                
+                # 首先尝试从patches_content.json获取内容
+                json_content = get_content_from_json()
+                if json_content:
+                    return json_content
+                
+                # 再尝试直接从context获取补丁内容作为备选方案
+                if patch_type == "original" and hasattr(context.commit, "patch_path") and Path(context.commit.patch_path).exists():
+                    with open(context.commit.patch_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
+                        
+                        # 尝试保存到新创建的patches目录
+                        try:
+                            with open(patches_dir / "original_patch.txt", 'w', encoding='utf-8') as out_f:
+                                out_f.write(content)
+                            logger.info(f"已将原始补丁内容保存到: {patches_dir / 'original_patch.txt'}")
+                        except Exception as e:
+                            logger.error(f"保存补丁内容失败: {e}")
+                        
+                        return content.replace('<', '&lt;').replace('>', '&gt;')
+                
+                # 针对不同类型的补丁返回特定信息
+                if patch_type == "original":
+                    return f"补丁目录不存在，且未找到原始补丁内容: {patches_dir}"
+                elif patch_type == "applied":
+                    return f"补丁目录不存在，且未找到应用成功的补丁内容: {patches_dir}"
+                else:
+                    return f"补丁目录不存在，且未找到剩余补丁内容: {patches_dir}"
+            
+            # 尝试从patches_content.json获取内容
+            json_content = get_content_from_json()
+            if json_content:
+                return json_content
+            
+            # 根据补丁类型获取不同内容
+            if patch_type == "original":
+                # 获取原始补丁内容
+                original_file = patches_dir / "original_patch.txt"
+                if original_file.exists():
+                    with open(original_file, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
+                    logger.info(f"成功读取原始补丁内容: {original_file}")
+                    return content.replace('<', '&lt;').replace('>', '&gt;')
+                else:
+                    # 尝试直接从原始补丁文件读取
+                    original_patch_diff = details_dir / "original_patch.diff"
+                    if original_patch_diff.exists():
+                        with open(original_patch_diff, 'r', encoding='utf-8', errors='ignore') as f:
+                            content = f.read()
+                        logger.info(f"从diff文件读取原始补丁内容: {original_patch_diff}")
+                        return content.replace('<', '&lt;').replace('>', '&gt;')
+                    
+                    logger.warning(f"原始补丁文件不存在: {original_file} 和 {original_patch_diff}")
+                    
+                    # 尝试从context直接获取
+                    if hasattr(context.commit, "patch_path") and Path(context.commit.patch_path).exists():
+                        with open(context.commit.patch_path, 'r', encoding='utf-8', errors='ignore') as f:
+                            content = f.read()
+                            
+                            # 尝试保存到patches目录
+                            try:
+                                with open(patches_dir / "original_patch.txt", 'w', encoding='utf-8') as out_f:
+                                    out_f.write(content)
+                                logger.info(f"已将原始补丁内容保存到: {patches_dir / 'original_patch.txt'}")
+                            except Exception as e:
+                                logger.error(f"保存补丁内容失败: {e}")
+                            
+                        logger.info(f"从context获取原始补丁内容: {context.commit.patch_path}")
+                        return content.replace('<', '&lt;').replace('>', '&gt;')
+                    
+                    return "未找到原始补丁内容"
+            
+            elif patch_type == "applied":
+                # 获取应用成功的补丁内容
+                applied_file = patches_dir / "all_applied_chunks.txt"
+                if applied_file.exists():
+                    with open(applied_file, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
+                    logger.info(f"成功读取应用成功的补丁内容: {applied_file}")
+                    return content.replace('<', '&lt;').replace('>', '&gt;')
+                else:
+                    # 尝试读取各个应用成功的补丁并合并
+                    content = ""
+                    applied_files = list(patches_dir.glob("applied_chunk_*.txt"))
+                    
+                    if not applied_files:
+                        # 尝试读取diff文件
+                        applied_diffs = list(details_dir.glob("applied_chunk_*.diff"))
+                        for file in sorted(applied_diffs):
+                            with open(file, 'r', encoding='utf-8', errors='ignore') as f:
+                                chunk_content = f.read()
+                                content += f"\n\n# ===== {file.stem} =====\n\n"
+                                content += chunk_content
+                                
+                                # 尝试保存到patches目录
+                                try:
+                                    with open(patches_dir / f"{file.stem}.txt", 'w', encoding='utf-8') as out_f:
+                                        out_f.write(chunk_content)
+                                    logger.info(f"已将补丁块内容保存到: {patches_dir / f'{file.stem}.txt'}")
+                                except Exception as e:
+                                    logger.error(f"保存补丁块内容失败: {e}")
+                        
+                        if content:
+                            logger.info(f"从diff文件读取应用成功的补丁内容")
+                            return content.replace('<', '&lt;').replace('>', '&gt;')
+                    
+                        # 尝试从context直接获取
+                        if context.chunk_analyzer_result and context.chunk_analyzer_result.get("applied_chunk_patches"):
+                            for i, chunk_path in enumerate(context.chunk_analyzer_result.get("applied_chunk_patches", []), 1):
+                                chunk_file = Path(chunk_path)
+                                if chunk_file.exists():
+                                    with open(chunk_file, 'r', encoding='utf-8', errors='ignore') as f:
+                                        chunk_content = f.read()
+                                        content += f"\n\n# ===== 应用成功的补丁块 {i} =====\n\n"
+                                        content += chunk_content
+                                        
+                                        # 尝试保存到patches目录
+                                        try:
+                                            with open(patches_dir / f"applied_chunk_{i}.txt", 'w', encoding='utf-8') as out_f:
+                                                out_f.write(chunk_content)
+                                            logger.info(f"已将补丁块内容保存到: {patches_dir / f'applied_chunk_{i}.txt'}")
+                                        except Exception as e:
+                                            logger.error(f"保存补丁块内容失败: {e}")
+                            
+                            if content:
+                                # 尝试保存合并的内容
+                                try:
+                                    with open(patches_dir / "all_applied_chunks.txt", 'w', encoding='utf-8') as out_f:
+                                        out_f.write(content)
+                                    logger.info(f"已将合并的补丁块内容保存到: {patches_dir / 'all_applied_chunks.txt'}")
+                                except Exception as e:
+                                    logger.error(f"保存合并补丁块内容失败: {e}")
+                                
+                                logger.info(f"从context获取应用成功的补丁内容")
+                                return content.replace('<', '&lt;').replace('>', '&gt;')
+                        
+                        logger.warning(f"未找到任何应用成功的补丁文件")
+                        return "没有应用成功的补丁块"
+                    
+                    logger.info(f"从各个txt文件读取应用成功的补丁内容")
+                    for file in sorted(applied_files):
+                        with open(file, 'r', encoding='utf-8', errors='ignore') as f:
+                            content += f"\n\n# ===== {file.stem} =====\n\n"
+                            content += f.read()
+                    
+                    return content.replace('<', '&lt;').replace('>', '&gt;')
+            
+            elif patch_type == "remaining":
+                # 获取剩余补丁内容
+                remaining_file = patches_dir / "remaining_patch.txt"
+                if remaining_file.exists():
+                    with open(remaining_file, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
+                    logger.info(f"成功读取剩余补丁内容: {remaining_file}")
+                    return content.replace('<', '&lt;').replace('>', '&gt;')
+                else:
+                    # 尝试从diff文件读取
+                    remaining_diff = details_dir / "remaining_patch.diff"
+                    if remaining_diff.exists():
+                        with open(remaining_diff, 'r', encoding='utf-8', errors='ignore') as f:
+                            content = f.read()
+                            
+                            # 尝试保存到patches目录
+                            try:
+                                with open(patches_dir / "remaining_patch.txt", 'w', encoding='utf-8') as out_f:
+                                    out_f.write(content)
+                                logger.info(f"已将剩余补丁内容保存到: {patches_dir / 'remaining_patch.txt'}")
+                            except Exception as e:
+                                logger.error(f"保存剩余补丁内容失败: {e}")
+                            
+                        logger.info(f"从diff文件读取剩余补丁内容: {remaining_diff}")
+                        return content.replace('<', '&lt;').replace('>', '&gt;')
+                    
+                    # 尝试从context直接获取
+                    if context.chunk_analyzer_result and context.chunk_analyzer_result.get("remaining_patch"):
+                        remaining_patch = Path(context.chunk_analyzer_result.get("remaining_patch"))
+                        if remaining_patch.exists():
+                            with open(remaining_patch, 'r', encoding='utf-8', errors='ignore') as f:
+                                content = f.read()
+                                
+                                # 尝试保存到patches目录
+                                try:
+                                    with open(patches_dir / "remaining_patch.txt", 'w', encoding='utf-8') as out_f:
+                                        out_f.write(content)
+                                    logger.info(f"已将剩余补丁内容保存到: {patches_dir / 'remaining_patch.txt'}")
+                                except Exception as e:
+                                    logger.error(f"保存剩余补丁内容失败: {e}")
+                                
+                            logger.info(f"从context获取剩余补丁内容: {remaining_patch}")
+                            return content.replace('<', '&lt;').replace('>', '&gt;')
+                    
+                    logger.warning(f"未找到剩余补丁文件")
+                    return "没有剩余未应用的补丁内容"
+            
+            return f"未识别的补丁类型: {patch_type}"
+            
+        except Exception as e:
+            logger.error(f"获取补丁内容时出错: {e}")
+            import traceback
+            logger.error(f"错误堆栈: {traceback.format_exc()}")
+            return f"获取补丁内容时出错: {str(e)}"

@@ -1,0 +1,13 @@
+{
+  "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_181002.patch",
+  "original_line": 909,
+  "actual_line": 848,
+  "offset": -61,
+  "target_file": "drivers/bluetooth/btqca.c",
+  "method": "method8",
+  "output": "Hmm...  Looks like a unified diff to me...\nThe text leading up to this was:\n--------------------------\n|From a2fad248947d702ed3dcb52b8377c1a3ae201e44 Mon Sep 17 00:00:00 2001\n|From: Zijun Hu <quic_zijuhu@quicinc.com>\n|Date: Mon, 13 Jan 2025 22:43:23 +0800\n|Subject: [PATCH] Bluetooth: qca: Fix poor RF performance for WCN6855\n|\n|For WCN6855, board ID specific NVM needs to be downloaded once board ID\n|is available, but the default NVM is always downloaded currently.\n|\n|The wrong NVM causes poor RF performance, and effects user experience\n|for several types of laptop with WCN6855 on the market.\n|\n|Fix by downloading board ID specific NVM if board ID is available.\n|\n|Fixes: 095327fede00 (\"Bluetooth: hci_qca: Add support for QTI Bluetooth chip wcn6855\")\n|Cc: stable@vger.kernel.org # 6.4\n|Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>\n|Tested-by: Johan Hovold <johan+linaro@kernel.org>\n|Reviewed-by: Johan Hovold <johan+linaro@kernel.org>\n|Tested-by: Steev Klimaszewski <steev@kali.org> #Thinkpad X13s\n|Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>\n|---\n| drivers/bluetooth/btqca.c | 5 +++--\n| 1 file changed, 3 insertions(+), 2 deletions(-)\n|\n|diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c\n|index a6b53d1f23dbd..cdf09d9a9ad27 100644\n|--- a/drivers/bluetooth/btqca.c\n|+++ b/drivers/bluetooth/btqca.c\n--------------------------\npatching file drivers/bluetooth/btqca.c\nUsing Plan A...\nHunk #1 succeeded at 848 with fuzz 1 (offset -61 lines).\ndone\n方法8.1成功：使用patch -p1 -F 100\nACTUAL_LINE_NUMBER:848\n",
+  "commit_hash": "b72c8842fa65af7a44559a73a9a97a80476f6dd3",
+  "actual_patch": "workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_181002_actual.patch",
+  "specific_patch": "workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_181002_specific.patch",
+  "precise_patch": "workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_181002_precise.patch"
+}

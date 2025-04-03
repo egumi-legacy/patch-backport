@@ -1,0 +1,28 @@
+From 97e2e73bcce47fc3507e758b79f3de8b0cccea84 Mon Sep 17 00:00:00 2001
+From: root <root@congroo0>
+Date: Thu, 3 Apr 2025 15:48:23 +0800
+Subject: [PATCH] Applied adapted patch for linux-6.12.y
+
+---
+ drivers/bluetooth/btqca.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
+index dfbbac92242a..5683b4cd0ca2 100644
+--- a/drivers/bluetooth/btqca.c
++++ b/drivers/bluetooth/btqca.c
+@@ -848,8 +848,9 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 				 "qca/msnv%02x.bin", rom_ver);
+ 			break;
+ 		case QCA_WCN6855:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/hpnv%02x.bin", rom_ver);
++			qca_read_fw_board_id(hdev, &boardid);
++			qca_generate_hsp_nvm_name(config.fwname, sizeof(config.fwname),
++						  ver, rom_ver, boardid);
+ 			break;
+ 		case QCA_WCN7850:
+ 			qca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);
+-- 
+2.25.1
+

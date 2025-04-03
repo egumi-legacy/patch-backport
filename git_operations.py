@@ -47,25 +47,49 @@ class GitOperations:
             }
             self.repo_path = None
 
-        self.use_cached_commits = context.config.use_cached_commits if context else False
-        self.commits_file = context.config.commits_file if context else _DEFAULT_COMMITS_FILE
-        self.branch = context.config.branch if context else None
+        # 如果有这个属性，则使用缓存的commits
+        if hasattr(context.config, 'use_cached_commits'):
+            self.use_cached_commits = context.config.use_cached_commits
+        else:
+            self.use_cached_commits = False
+        if hasattr(context.config, 'commits_file'):
+            self.commits_file = context.config.commits_file
+        else:
+            self.commits_file = _DEFAULT_COMMITS_FILE
+        if hasattr(context.config, 'branch'):
+            self.branch = context.config.branch
+        else:
+            self.branch = self.context.config.target_version
         # 可能是模式1的 patch_url，也可能是模式2的 repo_url
-        self.url = context.config.repo_url if context.config.repo_url else context.config.patch_url if context else None
+        if hasattr(context.config, 'repo_url'):
+            self.url = context.config.repo_url
+        else:
+            self.url = context.config.patch_url
         self.allowed_ref_fields = ['commit_sha', 'tag', 'branch']
         self.commit_info = self.parse_github_url(self.url) if self.url else None
         self.owner = self.commit_info['owner'] if self.commit_info else None
         self.repo = self.commit_info['repo'] if self.commit_info else None
 
-        self.commits_pages_start = context.config.commits_pages_start if context else None
-        self.commits_pages_end = context.config.commits_pages_end if context else None
-        self.commits_per_page = context.config.commits_per_page if context else None
+        # 如果context有commits_pages_start属性，则使用context的commits_pages_start
+        if hasattr(context.config, 'commits_pages_start'):
+            self.commits_pages_start = context.config.commits_pages_start
+        else:
+            self.commits_pages_start = None
+        if hasattr(context.config, 'commits_pages_end'):
+            self.commits_pages_end = context.config.commits_pages_end
+        else:
+            self.commits_pages_end = None
+        if hasattr(context.config, 'commits_per_page'):
+            self.commits_per_page = context.config.commits_per_page
+        else:
+            self.commits_per_page = None
         
-        if self.commit_info and self.commit_info['commit_sha']:
-            self.patch_commit_sha = self.commit_info['commit_sha']
-            # 设置base_dir
-            self.base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
-            context.config.update(basedir = self.base_dir)
+        # if self.commit_info and self.commit_info['commit_sha']:
+        #     self.patch_commit_sha = self.commit_info['commit_sha']
+        #     # 设置base_dir
+        #     self.base_dir = Path('patchfile') / f"{self.owner}_{self.repo}_{self.patch_commit_sha[:6]}"
+
+        #     context.config.update(basedir = self.base_dir)
 
     def make_commit_info(self, owner = None, repo = None, **kwargs):
         """构建提交信息字典，根据传入的可变参数动态设置键值对"""

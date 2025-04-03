@@ -1,13 +1,3 @@
-A. Commit message:
-Avoid backtracking in filtered_query_string (CVE-2024-41128)
-
-B. Change summary:
-Replaced the usage of `gsub` with a combination of `split` and `map` to avoid potential backtracking issues in the regular expression. This ensures that the query string is processed more efficiently and securely.
-
-C. Compatibility Risk:
-Low
-
-D. Fixed Code:
 diff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb
 index 7ad1ba3e0eb0e..b02f0d6f85341 100644
 --- a/actionpack/lib/action_dispatch/http/filter_parameters.rb

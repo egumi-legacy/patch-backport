@@ -468,75 +468,146 @@ class LLMAdapterModule(BaseModule):
         :param end_line: 修改结束行
         :return: 函数上下文，如果无法确定则返回None
         """
+        # 初始化统计信息
+        if not hasattr(self, '_function_context_stats'):
+            self._function_context_stats = {
+                'total': 0,
+                'success': 0,
+                'failure_reasons': {}
+            }
+        
+        self._function_context_stats['total'] += 1
+        
         try:
             lines = file_content.split('\n')
             
             # 安全检查
             if start_line < 1 or start_line > len(lines) or end_line < 1 or end_line > len(lines):
                 logger.warning(f"行号超出范围: {start_line}-{end_line}，文件总行数: {len(lines)}")
+                self._add_failure_reason('line_out_of_range')
                 return None
             
             # 向上查找函数开始（如 "void function_name(" 或 "int function_name{"）
             function_start = start_line - 1
             # 常见函数标记的正则表达式
             function_start_pattern = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]*\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(')
-            while function_start > 0:
-                if function_start_pattern.match(lines[function_start - 1].strip()):
-                    break
-                if '{' in lines[function_start - 1] and '}' not in lines[function_start - 1]:
-                    # 可能找到了函数开始
-                    break
-                function_start -= 1
-                
-                # 防止无限循环或搜索过远
-                if start_line - function_start > 50:  # 最多向上查找50行
-                    function_start = max(1, start_line - 10)  # 如果找不到，就取前10行作为上下文
-                    break
             
-            # 向下查找函数结束（如 "}" 单独一行）
-            function_end = end_line - 1
-            # 常见函数结束的正则表达式
-            function_end_pattern = re.compile(r'^\s*}\s*$')
-            nesting_level = 0
-            while function_end < len(lines) - 1:
-                line = lines[function_end]
-                # 计算大括号嵌套层级
-                nesting_level += line.count('{') - line.count('}')
+            # Python、JavaScript、Java等语言的函数定义
+            js_func_pattern = re.compile(r'^(async\s+)?function\s+[\w$]+\s*\(')
+            py_func_pattern = re.compile(r'^(async\s+)?def\s+[\w_]+\s*\(')
+            java_method_pattern = re.compile(r'^(\s*)(public|private|protected)?\s*(static)?\s*[\w<>[\],\s]+\s+[\w_]+\s*\(')
+            
+            # 类方法
+            method_pattern = re.compile(r'^\s*(public|private|protected)?\s*(static)?\s*[\w<>[\],\s]+\s+[\w_]+\s*\(')
+            py_method_pattern = re.compile(r'^\s+def\s+[\w_]+\s*\(')
+            js_method_pattern = re.compile(r'^\s+[\w$]+\s*\(')
+            js_arrow_func_pattern = re.compile(r'(const|let|var)\s+[\w$]+\s*=\s*(\(.*\)|[\w$]+)\s*=>')
+            
+            # 记录当前缩进级别（对于Python很重要）
+            target_indent = None
+            for i in range(start_line - 1, -1, -1):
+                line = lines[i]
                 
-                if nesting_level <= 0 and function_end_pattern.match(lines[function_end + 1]):
-                    function_end += 1  # 包含结束的大括号
-                    break
+                # 对于Python，检查缩进级别
+                if target_indent is None and line.strip() and i < start_line - 1:
+                    # 计算修改行的缩进
+                    current_line = lines[start_line - 1]
+                    if current_line.strip():
+                        target_indent = len(current_line) - len(current_line.lstrip())
+                
+                # 检查各种函数定义模式
+                if (function_start_pattern.search(line) or
+                        js_func_pattern.search(line) or
+                        py_func_pattern.search(line) or
+                        java_method_pattern.search(line) or
+                        method_pattern.search(line) or
+                        py_method_pattern.search(line) or
+                        js_method_pattern.search(line) or
+                        js_arrow_func_pattern.search(line)):
                     
-                function_end += 1
-                
-                # 防止无限循环或搜索过远
-                if function_end - end_line > 100:  # 最多向下查找100行
-                    function_end = min(len(lines) - 1, end_line + 20)  # 如果找不到，就取后20行作为上下文
+                    function_start = i
+                    
+                    # 继续向上查找函数注释
+                    comment_start = function_start
+                    for j in range(function_start - 1, max(0, function_start - 20), -1):
+                        prev_line = lines[j]
+                        # 如果是空行或者注释，继续向上
+                        if not prev_line.strip() or prev_line.strip().startswith(('/*', '*', '//', '#', '"""', "'''")):
+                            comment_start = j
+                        else:
+                            break
+                    
+                    function_start = comment_start
                     break
             
-            # 截取函数上下文
-            max_context_lines = 500  # 防止函数过长，限制最大行数
-            if function_end - function_start > max_context_lines:
-                # 如果函数太长，只取修改点周围的代码
-                context_start = max(function_start, start_line - max_context_lines // 4)
-                context_end = min(function_end, end_line + max_context_lines // 4)
+            # 向下查找函数结束
+            # 使用括号匹配或缩进级别来确定函数结束位置
+            function_end = end_line - 1
+            
+            # 括号匹配（对于C、Java、JavaScript等使用大括号的语言）
+            brace_count = 0
+            found_opening_brace = False
+            
+            # 检查函数起始行有没有左括号
+            for c in lines[function_start]:
+                if c == '{':
+                    found_opening_brace = True
+                    brace_count += 1
+                elif c == '}':
+                    brace_count -= 1
+            
+            # 如果是使用大括号的语言
+            if found_opening_brace:
+                for i in range(function_start + 1, len(lines)):
+                    for c in lines[i]:
+                        if c == '{':
+                            brace_count += 1
+                        elif c == '}':
+                            brace_count -= 1
+                            if brace_count == 0:
+                                function_end = i
+                                break
+                    
+                    if brace_count == 0:
+                        break
+            
+            # 如果是Python等使用缩进的语言
+            elif target_indent is not None:
+                # 找出函数结束的位置（第一个缩进级别小于等于函数定义的行）
+                for i in range(function_start + 1, len(lines)):
+                    line = lines[i]
+                    if line.strip() and not line.strip().startswith(('#', '"""', "'''")):
+                        current_indent = len(line) - len(line.lstrip())
+                        # 如果缩进变回与函数定义同级或更小，说明函数结束了
+                        if current_indent <= target_indent:
+                            function_end = i - 1
+                            break
                 
-                context_lines = lines[context_start:context_end + 1]
-                return f"// 函数过长，只显示部分内容（行 {context_start+1} 到 {context_end+1}）...\n" + '\n'.join(context_lines)
-            else:
-                # 返回完整函数
-                return '\n'.join(lines[function_start:function_end + 1])
-                
+                # 如果没找到结束位置，说明函数持续到文件末尾
+                if function_end == end_line - 1:
+                    function_end = len(lines) - 1
+            
+            # 提取函数代码
+            function_code = '\n'.join(lines[function_start:function_end + 1])
+            
+            self._function_context_stats['success'] += 1
+            return function_code
+        
         except Exception as e:
             logger.error(f"提取函数上下文时出错: {e}")
             logger.error(traceback.format_exc())
-            # 如果出错，返回行周围的几行作为简单上下文
-            try:
-                context_start = max(0, start_line - 5 - 1)  # -1是因为行号从1开始，数组从0开始
-                context_end = min(len(file_content.split('\n')) - 1, end_line + 5 - 1)
-                return '\n'.join(file_content.split('\n')[context_start:context_end + 1])
-            except:
-                return None
+            self._add_failure_reason('exception')
+            return None
+    
+    def _add_failure_reason(self, reason):
+        """增加失败原因统计"""
+        if not hasattr(self, '_function_context_stats'):
+            return
+        
+        if 'failure_reasons' not in self._function_context_stats:
+            self._function_context_stats['failure_reasons'] = {}
+        
+        self._function_context_stats['failure_reasons'][reason] = self._function_context_stats['failure_reasons'].get(reason, 0) + 1
     
     def _get_context_diff(self, context: ModuleContext, patch_content: str) -> str:
         """获取上下文差异"""
@@ -1104,3 +1175,488 @@ Generated patch from complete file responses
             # 记录应用错误，但限制长度
             error_summary = kwargs['apply_error'][:200] + "..." if len(kwargs['apply_error']) > 200 else kwargs['apply_error']
             self.metrics['apply_errors'].append(error_summary)
+
+    def _save_evaluation_info(self, context: ModuleContext):
+        """
+        保存美观易读的输入/输出评估信息，特别关注函数上下文提取相关的信息
+        """
+        try:
+            # 获取评估目录路径
+            eval_dir = context.base_dir / "evaluations" / self.name
+            eval_dir.mkdir(parents=True, exist_ok=True)
+            
+            # 创建详细评估信息目录
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            commit_sha = context.commit.commit_sha[:6]
+            details_dir = eval_dir / f"details_{commit_sha}_{timestamp}"
+            details_dir.mkdir(parents=True, exist_ok=True)
+            
+            # 保存原始补丁内容
+            patch_content = ""
+            if context.commit.patch_path and Path(context.commit.patch_path).exists():
+                try:
+                    with open(context.commit.patch_path, 'r', encoding='utf-8') as f:
+                        patch_content = f.read()
+                    
+                    patch_file = details_dir / "original_patch.diff"
+                    with open(patch_file, 'w', encoding='utf-8') as f:
+                        f.write(patch_content)
+                except Exception as e:
+                    logger.error(f"保存原始补丁时出错: {e}")
+            
+            # 保存提取的函数上下文信息
+            self._save_function_context_info(context, details_dir, patch_content)
+            
+            # 保存LLM输入输出信息
+            self._save_llm_io_info(context, details_dir)
+            
+            # 基本评估信息
+            evaluation_info = {
+                "模块信息": {
+                    "模块名称": self.name,
+                    "模块类型": str(self.type) if self.type else "未知",
+                    "提交SHA": context.commit.commit_sha,
+                    "目标版本": context.config.target_version,
+                    "执行时间": datetime.now().isoformat()
+                },
+                "输入信息": self._collect_input_info(context),
+                "输出信息": self._collect_output_info(context)
+            }
+            
+            # 保存评估信息摘要
+            summary_file = details_dir / "summary.json"
+            with open(summary_file, 'w', encoding='utf-8') as f:
+                json.dump(evaluation_info, f, indent=2, ensure_ascii=False)
+            
+            # 创建README文件
+            self._generate_readme(details_dir, context, evaluation_info)
+            
+            # 生成HTML报告
+            self._generate_html_report(details_dir, context, evaluation_info)
+            
+            logger.info(f"LLM适配器评估信息已保存到: {details_dir}")
+            
+        except Exception as e:
+            logger.error(f"保存评估信息失败: {e}")
+            import traceback
+            logger.error(f"错误堆栈: {traceback.format_exc()}")
+    
+    def _save_function_context_info(self, context: ModuleContext, details_dir: Path, patch_content: str):
+        """保存函数上下文提取的详细信息"""
+        try:
+            # 提取补丁中的块信息
+            chunks_info = []
+            if patch_content:
+                file_chunks = self._extract_chunk_info(patch_content, "")
+                
+                # 为每个块提取函数上下文
+                for i, chunk in enumerate(file_chunks):
+                    file_path = chunk.get('file_path', 'unknown_file')
+                    start_line = chunk.get('start_line', 0)
+                    end_line = chunk.get('end_line', 0)
+                    
+                    # 从上游获取文件内容
+                    file_content = self._get_file_content_from_upstream(context, file_path)
+                    if not file_content:
+                        file_content = self._get_file_content_from_target(context, file_path)
+                    
+                    if file_content:
+                        # 提取上下50行
+                        lines = file_content.split('\n')
+                        total_lines = len(lines)
+                        
+                        context_start = max(1, start_line - 50)
+                        context_end = min(total_lines, end_line + 50)
+                        
+                        surrounding_lines = '\n'.join(lines[context_start-1:context_end])
+                        
+                        # 提取函数上下文
+                        function_context = self._extract_function_context(file_content, start_line, end_line)
+                        
+                        chunk_info = {
+                            'chunk_index': i,
+                            'file_path': file_path,
+                            'start_line': start_line,
+                            'end_line': end_line,
+                            'surrounding_lines': surrounding_lines,
+                            'surrounding_range': f"{context_start}-{context_end}",
+                            'function_context': function_context
+                        }
+                        chunks_info.append(chunk_info)
+                
+                # 保存块信息
+                chunks_file = details_dir / "chunks_function_context.json"
+                with open(chunks_file, 'w', encoding='utf-8') as f:
+                    json.dump(chunks_info, f, indent=2, ensure_ascii=False)
+                
+                # 为每个块创建单独的文件，便于查看
+                chunks_dir = details_dir / "chunks"
+                chunks_dir.mkdir(parents=True, exist_ok=True)
+                
+                for i, chunk in enumerate(chunks_info):
+                    # 保存周围行
+                    surrounding_file = chunks_dir / f"chunk_{i}_surrounding_lines.txt"
+                    with open(surrounding_file, 'w', encoding='utf-8') as f:
+                        f.write(f"文件: {chunk['file_path']}\n")
+                        f.write(f"行范围: {chunk['surrounding_range']}\n")
+                        f.write("-" * 80 + "\n")
+                        f.write(chunk['surrounding_lines'])
+                    
+                    # 保存函数上下文
+                    if chunk['function_context']:
+                        function_file = chunks_dir / f"chunk_{i}_function_context.txt"
+                        with open(function_file, 'w', encoding='utf-8') as f:
+                            f.write(f"文件: {chunk['file_path']}\n")
+                            f.write(f"补丁行范围: {chunk['start_line']}-{chunk['end_line']}\n")
+                            f.write("-" * 80 + "\n")
+                            f.write(chunk['function_context'])
+        
+        except Exception as e:
+            logger.error(f"保存函数上下文信息失败: {e}")
+            import traceback
+            logger.error(f"错误堆栈: {traceback.format_exc()}")
+    
+    def _save_llm_io_info(self, context: ModuleContext, details_dir: Path):
+        """保存LLM输入输出的详细信息"""
+        try:
+            if context.llm_output:
+                llm_dir = details_dir / "llm_io"
+                llm_dir.mkdir(parents=True, exist_ok=True)
+                
+                # 保存提示词
+                if 'prompt' in context.llm_output:
+                    prompt_file = llm_dir / "prompt.txt"
+                    with open(prompt_file, 'w', encoding='utf-8') as f:
+                        f.write(context.llm_output['prompt'])
+                
+                # 保存LLM响应
+                if 'response' in context.llm_output:
+                    sresponse_file = llm_dir / "response.txt"
+                    with open(response_file, 'w', encoding='utf-8') as f:
+                        f.write(context.llm_output['response'])
+                
+                # 保存增强模式数据
+                if 'enhanced_data' in context.llm_output:
+                    enhanced_file = llm_dir / "enhanced_data.json"
+                    with open(enhanced_file, 'w', encoding='utf-8') as f:
+                        json.dump(context.llm_output['enhanced_data'], f, indent=2, ensure_ascii=False)
+        
+        except Exception as e:
+            logger.error(f"保存LLM IO信息失败: {e}")
+            import traceback
+            logger.error(f"错误堆栈: {traceback.format_exc()}")
+    
+    def _collect_input_info(self, context: ModuleContext) -> Dict[str, Any]:
+        """收集输入信息"""
+        input_info = {
+            "原始补丁路径": str(context.commit.patch_path) if hasattr(context.commit, "patch_path") else "未知",
+            "代码仓库路径": str(context.config.repo_path) if hasattr(context.config, "repo_path") else "未知",
+            "目标版本": context.config.target_version,
+            "使用函数级上下文": self.config.get('use_function_context', True),
+            "使用增强模式": self.config.get('use_enhanced_mode', False),
+            "LLM模型": context.config.model
+        }
+        
+        # 添加补丁分析信息
+        if context.commit.patch_path and Path(context.commit.patch_path).exists():
+            try:
+                with open(context.commit.patch_path, 'r', encoding='utf-8') as f:
+                    patch_content = f.read()
+                
+                file_chunks = self._extract_chunk_info(patch_content, "")
+                input_info["补丁修改块数"] = len(file_chunks)
+                input_info["修改文件列表"] = list(set(chunk['file_path'] for chunk in file_chunks if 'file_path' in chunk))
+            except Exception as e:
+                logger.error(f"收集补丁信息时出错: {e}")
+        
+        return input_info
+    
+    def _collect_output_info(self, context: ModuleContext) -> Dict[str, Any]:
+        """收集输出信息"""
+        output_info = {
+            "状态": "成功" if context.llm_output and context.llm_output.get('success', False) else "失败",
+            "生成补丁路径": str(context.llm_output.get('patch_path', 'N/A')) if context.llm_output else "N/A",
+            "函数上下文提取成功率": "N/A",
+            "补丁应用测试结果": "N/A"
+        }
+        
+        # 函数上下文提取成功率
+        if hasattr(self, '_function_context_stats'):
+            stats = getattr(self, '_function_context_stats', {})
+            total = stats.get('total', 0)
+            success = stats.get('success', 0)
+            if total > 0:
+                output_info["函数上下文提取成功率"] = f"{success}/{total} ({success/total*100:.1f}%)"
+            output_info["函数上下文提取失败理由"] = stats.get('failure_reasons', {})
+        
+        # 补丁应用测试结果
+        if context.llm_output and 'test_result' in context.llm_output:
+            test_result = context.llm_output['test_result']
+            output_info["补丁应用测试结果"] = "成功" if test_result.get('success', False) else "失败"
+            if not test_result.get('success', False):
+                output_info["补丁应用失败原因"] = test_result.get('error_type', 'unknown')
+        
+        return output_info
+    
+    def _generate_additional_html_sections(self, context: ModuleContext) -> str:
+        """生成额外的HTML报告部分"""
+        additional_sections = ""
+        
+        # 函数上下文提取部分
+        additional_sections += """
+        <div class="card">
+          <h2>函数上下文提取结果</h2>
+          <p>下面列出了从修改块中提取的函数上下文信息。这些信息用于为LLM提供足够的语义上下文。</p>
+          <div class="accordion">
+        """
+        
+        # 尝试从评估目录中读取chunks_function_context.json
+        eval_dir = context.base_dir / "evaluations" / self.name
+        latest_dir = None
+        
+        # 查找最新的评估目录
+        try:
+            dirs = [d for d in eval_dir.iterdir() if d.is_dir() and d.name.startswith("details_")]
+            if dirs:
+                latest_dir = max(dirs, key=lambda d: d.stat().st_mtime)
+        except Exception:
+            pass
+        
+        # 读取chunks信息
+        chunks_info = []
+        if latest_dir and (latest_dir / "chunks_function_context.json").exists():
+            try:
+                with open(latest_dir / "chunks_function_context.json", 'r', encoding='utf-8') as f:
+                    chunks_info = json.load(f)
+            except Exception:
+                pass
+        
+        # 为每个chunk生成HTML部分
+        for i, chunk in enumerate(chunks_info):
+            file_path = chunk.get('file_path', 'unknown_file')
+            start_line = chunk.get('start_line', 0)
+            end_line = chunk.get('end_line', 0)
+            surrounding_range = chunk.get('surrounding_range', 'N/A')
+            has_function_context = chunk.get('function_context') is not None
+            
+            additional_sections += f"""
+            <div class="accordion-item">
+              <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h3>块 {i+1}: {file_path} (行 {start_line}-{end_line})</h3>
+                <span class="tag {
+                    'tag-success' if has_function_context else 'tag-error'
+                }">{
+                    '已提取函数上下文' if has_function_context else '未提取函数上下文'
+                }</span>
+              </div>
+              <div class="accordion-content">
+                <div class="tabs">
+                  <div class="tab-header">
+                    <button class="tab-button active" onclick="openTab(event, 'function-context-{i}')">函数上下文</button>
+                    <button class="tab-button" onclick="openTab(event, 'surrounding-lines-{i}')">周围行 ({surrounding_range})</button>
+                  </div>
+                  
+                  <div id="function-context-{i}" class="tab-content" style="display:block;">
+                    <pre>{
+                        chunk.get('function_context', '未能提取函数上下文').replace('<', '&lt;').replace('>', '&gt;')
+                    }</pre>
+                  </div>
+                  
+                  <div id="surrounding-lines-{i}" class="tab-content">
+                    <pre>{
+                        chunk.get('surrounding_lines', '未能提取周围行').replace('<', '&lt;').replace('>', '&gt;')
+                    }</pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+            """
+        
+        additional_sections += """
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2>LLM输入输出</h2>
+          <p>下面是发送给LLM的提示词以及LLM返回的响应。</p>
+          <div class="tabs">
+            <div class="tab-header">
+              <button class="tab-button active" onclick="openTab(event, 'llm-prompt')">提示词</button>
+              <button class="tab-button" onclick="openTab(event, 'llm-response')">响应</button>
+            </div>
+            
+            <div id="llm-prompt" class="tab-content" style="display:block;">
+              <pre>"""
+        
+        # 添加提示词内容
+        if context.llm_output and 'prompt' in context.llm_output:
+            additional_sections += context.llm_output['prompt'].replace('<', '&lt;').replace('>', '&gt;')
+        else:
+            additional_sections += "未找到提示词"
+        
+        additional_sections += """</pre>
+            </div>
+            
+            <div id="llm-response" class="tab-content">
+              <pre>"""
+        
+        # 添加响应内容
+        if context.llm_output and 'response' in context.llm_output:
+            additional_sections += context.llm_output['response'].replace('<', '&lt;').replace('>', '&gt;')
+        else:
+            additional_sections += "未找到响应"
+        
+        additional_sections += """</pre>
+            </div>
+          </div>
+        </div>
+        
+        <script>
+        function toggleAccordion(element) {
+          element.parentElement.classList.toggle("active");
+          var content = element.nextElementSibling;
+          if (content.style.maxHeight) {
+            content.style.maxHeight = null;
+          } else {
+            content.style.maxHeight = content.scrollHeight + "px";
+          }
+        }
+        
+        function openTab(evt, tabName) {
+          var i, tabcontent, tabbuttons;
+          
+          // 隐藏所有标签内容
+          tabcontent = evt.currentTarget.parentElement.parentElement.getElementsByClassName("tab-content");
+          for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+          }
+          
+          // 移除所有标签按钮的active类
+          tabbuttons = evt.currentTarget.parentElement.getElementsByClassName("tab-button");
+          for (i = 0; i < tabbuttons.length; i++) {
+            tabbuttons[i].className = tabbuttons[i].className.replace(" active", "");
+          }
+          
+          // 显示当前标签并添加active类到按钮
+          document.getElementById(tabName).style.display = "block";
+          evt.currentTarget.className += " active";
+        }
+        </script>
+        
+        <style>
+        .accordion {
+          width: 100%;
+        }
+        
+        .accordion-item {
+          margin-bottom: 10px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          overflow: hidden;
+        }
+        
+        .accordion-header {
+          background-color: #f8f9fa;
+          padding: 15px;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        
+        .accordion-header h3 {
+          margin: 0;
+          font-size: 16px;
+        }
+        
+        .accordion-content {
+          padding: 0;
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease-out;
+        }
+        
+        .accordion-item.active .accordion-content {
+          max-height: 1000px;
+        }
+        
+        .tabs {
+          width: 100%;
+        }
+        
+        .tab-header {
+          overflow: hidden;
+          border-bottom: 1px solid #ccc;
+          background-color: #f1f1f1;
+        }
+        
+        .tab-button {
+          background-color: inherit;
+          float: left;
+          border: none;
+          outline: none;
+          cursor: pointer;
+          padding: 12px 16px;
+          transition: 0.3s;
+          font-size: 14px;
+        }
+        
+        .tab-button:hover {
+          background-color: #ddd;
+        }
+        
+        .tab-button.active {
+          background-color: #3498db;
+          color: white;
+        }
+        
+        .tab-content {
+          display: none;
+          padding: 15px;
+          border-top: none;
+        }
+        </style>
+        """
+        
+        return additional_sections
+    
+    def _generate_readme(self, details_dir: Path, context: ModuleContext, evaluation_info: Dict[str, Any]):
+        """生成评估信息的README文件"""
+        readme_file = details_dir / "README.md"
+        with open(readme_file, 'w', encoding='utf-8') as f:
+            f.write(f"# LLM适配器模块评估信息\n\n")
+            
+            # 基本信息
+            f.write(f"## 基本信息\n\n")
+            f.write(f"- 模块名称: {self.name}\n")
+            f.write(f"- 模块类型: {self.type}\n")
+            f.write(f"- 提交SHA: {context.commit.commit_sha}\n")
+            f.write(f"- 目标版本: {context.config.target_version}\n")
+            f.write(f"- 执行时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            
+            # 处理结果
+            f.write(f"## 处理结果\n\n")
+            output_info = evaluation_info.get("输出信息", {})
+            for key, value in output_info.items():
+                f.write(f"- {key}: {value}\n")
+            
+            # 函数上下文提取
+            f.write(f"\n## 函数上下文提取\n\n")
+            f.write("函数上下文提取是LLM适配的关键步骤，能够为大模型提供充分的代码语义理解环境。\n")
+            f.write("详细的提取结果可以在以下目录中查看：\n\n")
+            f.write("- chunks/: 包含每个修改块的函数上下文提取结果\n")
+            f.write("- chunks_function_context.json: 所有块的函数上下文信息\n\n")
+            
+            # LLM输入输出
+            f.write(f"## LLM输入输出\n\n")
+            f.write("LLM的输入和输出保存在以下目录：\n\n")
+            f.write("- llm_io/prompt.txt: 发送给LLM的提示词\n")
+            f.write("- llm_io/response.txt: LLM的响应\n")
+            
+            # 目录说明
+            f.write(f"\n## 目录内容说明\n\n")
+            f.write(f"- summary.json: 评估信息摘要\n")
+            f.write(f"- original_patch.diff: 原始补丁文件\n")
+            f.write(f"- report.html: HTML格式评估报告\n")
+            f.write(f"- chunks/: 每个修改块的详细信息\n")
+            f.write(f"- llm_io/: LLM输入输出信息\n")

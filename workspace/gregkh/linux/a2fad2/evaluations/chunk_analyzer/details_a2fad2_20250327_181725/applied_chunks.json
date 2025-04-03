@@ -1,0 +1,11 @@
+[
+  {
+    "索引": 1,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_181715.patch",
+    "实际补丁": "workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_181002_precise.patch",
+    "修改文件": "drivers/bluetooth/btqca.c",
+    "修改位置": "848-848",
+    "内容": "diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c\nindex dfbbac92242a..d59546773e4b 100644\n--- a/drivers/bluetooth/btqca.c\n+++ b/drivers/bluetooth/btqca.c\n@@ -848,8 +848,9 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,\n \t\t\t\t \"qca/msnv%02x.bin\", rom_ver);\n \t\t\tbreak;\n \t\tcase QCA_WCN6855:\n-\t\t\tsnprintf(config.fwname, sizeof(config.fwname),\n-\t\t\t\t \"qca/hpnv%02x.bin\", rom_ver);\n+\t\t\tqca_read_fw_board_id(hdev, &boardid);\n+\t\t\tqca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),\n+\t\t\t\t\t\t  \"hpnv\", soc_type, ver, rom_ver, boardid);\n \t\t\tbreak;\n \t\tcase QCA_WCN7850:\n \t\t\tqca_get_nvm_name_generic(&config, \"hmt\", rom_ver, boardid);",
+    "补丁类型": "precise"
+  }
+]

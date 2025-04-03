@@ -1,0 +1,31 @@
+From 4904e1941ee334bf1f90e4017a37f7c8a52b685c Mon Sep 17 00:00:00 2001
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+Date: Tue, 15 Sep 2020 10:42:41 +0200
+Subject: [PATCH] s390/pci: add missing pci_iov.h include
+
+this fixes a missing prototype compiler warning spotted by the kernel
+test robot.
+
+Fixes: abb95b7550f8 ("s390/pci: consolidate SR-IOV specific code")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+---
+ arch/s390/pci/pci_iov.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git arch/s390/pci/pci_iov.c arch/s390/pci/pci_iov.c
+index 35fca14ebb35..ead062bf2b41 100644
+--- arch/s390/pci/pci_iov.c
++++ arch/s390/pci/pci_iov.c
+@@ -13,6 +13,8 @@
+ #include <linux/kernel.h>
+ #include <linux/pci.h>
+ 
++#include "pci_iov.h"
++
+ static struct resource iov_res = {
+ 	.name	= "PCI IOV res",
+ 	.start	= 0,
+-- 
+2.25.1

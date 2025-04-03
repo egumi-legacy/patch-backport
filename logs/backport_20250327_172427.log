@@ -1,0 +1,1068 @@
+2025-03-27 17:24:27.474 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250327_172427.log
+2025-03-27 17:24:27.476 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-03-27 17:24:27.477 | INFO     | __main__:_get_commits_list:257 - commits_file:workspace/gregkh/linux_cache/branch_linux-6.12.y_commits.json
+2025-03-27 17:24:27.477 | INFO     | __main__:_get_commits_list:258 - use_cached_commits:True
+2025-03-27 17:24:27.478 | INFO     | __main__:_get_commits_list:261 - 从缓存文件加载commits信息
+2025-03-27 17:24:27.483 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-03-27 17:24:27.484 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: direct_apply
+2025-03-27 17:24:27.484 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: chunk_analyzer
+2025-03-27 17:24:27.485 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: llm_adapter
+2025-03-27 17:24:27.486 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: patch_adapter
+2025-03-27 17:24:27.486 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: compiler
+2025-03-27 17:24:27.486 | INFO     | __main__:_process_mode2:199 - 处理提交 132/1: a2fad2
+2025-03-27 17:24:27.487 | INFO     | core.adaptation_pipeline:process_patch:69 - 开始处理补丁: a2fad248947d702ed3dcb52b8377c1a3ae201e44
+2025-03-27 17:24:27.487 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: direct_apply
+2025-03-27 17:24:27.623 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: patch failed: drivers/bluetooth/btqca.c:909\nerror: drivers/bluetooth/btqca.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/patches/upstream_a2fad2.patch', 'success': False, 'timestamp': '2025-03-20T07:49:51.335345'}
+2025-03-27 17:24:27.623 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: chunk_analyzer
+2025-03-27 17:24:27.624 | INFO     | modules.chunk_analyzer:execute:51 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/patches/upstream_a2fad2.patch
+2025-03-27 17:24:27.624 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:158 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/patches/upstream_a2fad2.patch
+2025-03-27 17:24:27.625 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:163 - 补丁文件包含 40 行内容
+2025-03-27 17:24:27.625 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:178 - 发现修改文件: drivers/bluetooth/btqca.c
+2025-03-27 17:24:27.626 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:229 - 发现修改块: drivers/bluetooth/btqca.c @@ -909,8 +909,9 @@ (modification)
+2025-03-27 17:24:27.627 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 补丁分解完成，共找到 1 个修改块
+2025-03-27 17:24:27.627 | INFO     | modules.chunk_analyzer:execute:55 - 补丁被分解为 1 个块
+2025-03-27 17:24:27.628 | INFO     | modules.chunk_analyzer:_create_chunk_patches:268 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/patches/upstream_a2fad2.patch
+2025-03-27 17:24:27.629 | INFO     | modules.chunk_analyzer:_create_chunk_patches:294 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_172427.patch (修改文件: drivers/bluetooth/btqca.c)
+2025-03-27 17:24:27.630 | INFO     | modules.chunk_analyzer:execute:59 - 已为 1 个块创建单独的补丁文件
+2025-03-27 17:24:27.630 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: rev-parse --abbrev-ref HEAD
+2025-03-27 17:24:27.634 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:311 - 当前分支: linux-6.12.y
+2025-03-27 17:24:27.635 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: checkout -b chunk_test_20250327_172427_cb071f
+2025-03-27 17:24:27.639 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:319 - 创建测试分支: chunk_test_20250327_172427_cb071f
+2025-03-27 17:24:27.640 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:325 - 尝试应用补丁块: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_172427.patch
+2025-03-27 17:24:27.640 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:329 - 方法1: 尝试 git apply --ignore-space-change
+2025-03-27 17:24:27.641 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: apply --ignore-space-change --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_172427.patch
+2025-03-27 17:24:27.645 | ERROR    | modules.chunk_analyzer:_run_git_command:1268 - Git命令执行失败: error: patch failed: drivers/bluetooth/btqca.c:909
+error: drivers/bluetooth/btqca.c: patch does not apply
+
+2025-03-27 17:24:27.646 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:341 - 方法1失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_172427.patch']' returned non-zero exit status 1.
+2025-03-27 17:24:27.646 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: reset --hard
+2025-03-27 17:24:28.608 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 方法2: 尝试 git apply --reject
+2025-03-27 17:24:28.608 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: apply --reject --ignore-whitespace --ignore-space-change /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_172427.patch
+2025-03-27 17:24:28.613 | ERROR    | modules.chunk_analyzer:_run_git_command:1268 - Git命令执行失败: Checking patch drivers/bluetooth/btqca.c...
+error: while searching for:
+				 "qca/msnv%02x.bin", rom_ver);
+			break;
+		case QCA_WCN6855:
+			snprintf(config.fwname, sizeof(config.fwname),
+				 "qca/hpnv%02x.bin", rom_ver);
+			break;
+		case QCA_WCN7850:
+			qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
+
+error: patch failed: drivers/bluetooth/btqca.c:909
+Applying patch drivers/bluetooth/btqca.c with 1 reject...
+Rejected hunk #1.
+
+2025-03-27 17:24:28.613 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:370 - 方法2失败: Command '['git', 'apply', '--reject', '--ignore-whitespace', '--ignore-space-change', '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_172427.patch']' returned non-zero exit status 1.
+2025-03-27 17:24:28.614 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: reset --hard
+2025-03-27 17:24:29.134 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:376 - 方法3: 尝试 git am --3way
+2025-03-27 17:24:29.797 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:396 - 方法3失败: error: sha1 information is lacking or useless (drivers/bluetooth/btqca.c).
+error: could not build fake ancestor
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-03-27 17:24:29.798 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:411 - 方法4: 尝试系统 patch 命令
+2025-03-27 17:24:29.800 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:493 - 准备对文件 drivers/bluetooth/btqca.c 应用补丁 /tmp/tmpybtlhgv9/temp.patch
+2025-03-27 17:24:29.802 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:526 - 方法4异常: 'bytes' object has no attribute 'encode'
+2025-03-27 17:24:29.802 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: reset --hard
+2025-03-27 17:24:30.201 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:532 - 方法5: 尝试调整补丁行号
+2025-03-27 17:24:30.204 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 909，新行号: 851
+2025-03-27 17:24:30.205 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpvbd3cgkg/adjusted.patch
+2025-03-27 17:24:30.206 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpvbd3cgkg/adjusted.patch
+2025-03-27 17:24:30.210 | ERROR    | modules.chunk_analyzer:_run_git_command:1268 - Git命令执行失败: error: patch failed: drivers/bluetooth/btqca.c:851
+error: drivers/bluetooth/btqca.c: patch does not apply
+
+2025-03-27 17:24:30.210 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpvbd3cgkg/adjusted.patch']' returned non-zero exit status 1.
+2025-03-27 17:24:30.211 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: reset --hard
+2025-03-27 17:24:30.907 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:666 - 方法6: 尝试使用更多patch选项组合
+2025-03-27 17:24:30.914 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:751 - 尝试patch选项: patch -p1 -F 100 --fuzz=100 --ignore-whitespace -f -l drivers/bluetooth/btqca.c
+2025-03-27 17:24:30.915 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:783 - 尝试选项 patch -p1 -F 100 --fuzz=100 --ignore-whitespace -f -l drivers/bluetooth/btqca.c 异常: 'bytes' object has no attribute 'encode'
+2025-03-27 17:24:30.920 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:785 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 759, in _apply_chunk_patches
+    patch_result = subprocess.run(
+                   ^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 2092, in _communicate
+    self._save_input(input)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 2172, in _save_input
+    self._input = self._input.encode(self.stdin.encoding,
+                  ^^^^^^^^^^^^^^^^^^
+AttributeError: 'bytes' object has no attribute 'encode'. Did you mean: 'decode'?
+
+2025-03-27 17:24:30.920 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: reset --hard
+2025-03-27 17:24:31.372 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:751 - 尝试patch选项: patch -p1 -F 100 --fuzz=100 --ignore-whitespace -f -l -t drivers/bluetooth/btqca.c
+2025-03-27 17:24:31.373 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:783 - 尝试选项 patch -p1 -F 100 --fuzz=100 --ignore-whitespace -f -l -t drivers/bluetooth/btqca.c 异常: 'bytes' object has no attribute 'encode'
+2025-03-27 17:24:31.377 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:785 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 759, in _apply_chunk_patches
+    patch_result = subprocess.run(
+                   ^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 2092, in _communicate
+    self._save_input(input)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 2172, in _save_input
+    self._input = self._input.encode(self.stdin.encoding,
+                  ^^^^^^^^^^^^^^^^^^
+AttributeError: 'bytes' object has no attribute 'encode'. Did you mean: 'decode'?
+
+2025-03-27 17:24:31.378 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: reset --hard
+2025-03-27 17:24:31.853 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:751 - 尝试patch选项: patch -p1 -F 100 --fuzz=100 --ignore-whitespace -f -l -N drivers/bluetooth/btqca.c
+2025-03-27 17:24:31.854 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:783 - 尝试选项 patch -p1 -F 100 --fuzz=100 --ignore-whitespace -f -l -N drivers/bluetooth/btqca.c 异常: 'bytes' object has no attribute 'encode'
+2025-03-27 17:24:31.857 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:785 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 759, in _apply_chunk_patches
+    patch_result = subprocess.run(
+                   ^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 2092, in _communicate
+    self._save_input(input)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 2172, in _save_input
+    self._input = self._input.encode(self.stdin.encoding,
+                  ^^^^^^^^^^^^^^^^^^
+AttributeError: 'bytes' object has no attribute 'encode'. Did you mean: 'decode'?
+
+2025-03-27 17:24:31.858 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: reset --hard
+2025-03-27 17:24:32.267 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:802 - 方法7: 尝试使用git diff内容差异检测
+2025-03-27 17:24:32.269 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:914 - 删除行不足以确定准确位置
+2025-03-27 17:24:32.269 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:926 - 方法8: 尝试使用外部shell命令应用补丁
+2025-03-27 17:24:32.286 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:1064 - 实际应用行号: 848
+2025-03-27 17:24:32.287 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:1070 - 行号偏移: -61
+2025-03-27 17:24:32.288 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:1125 - 已保存实际应用位置信息: workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_172427_adjusted_info.json
+2025-03-27 17:24:32.288 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:1132 - 已保存实际应用的补丁文件: workspace/gregkh/linux/a2fad2/chunk_patches/chunk_001_20250327_172427_adjusted.patch
+2025-03-27 17:24:32.289 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:1136 - 成功应用块补丁(方法8): chunk_001_20250327_172427.patch
+2025-03-27 17:24:32.289 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:1137 - Shell脚本输出: Hmm...  Looks like a unified diff to me...
+The text leading up to this was:
+--------------------------
+|From a2fad248947d702ed3dcb52b8377c1a3ae201e44 Mon Sep 17 00:00:00 2001
+|From: Zijun Hu <quic_zijuhu@quicinc.com>
+|Date: Mon, 13 Jan 2025 22:43:23 +0800
+|Subject: [PATCH] Bluetooth: qca: Fix poor RF performance for WCN6855
+|
+|For WCN6855, board ID specific NVM needs to be downloaded once board ID
+|is available, but the default NVM is always downloaded currently.
+|
+|The wrong NVM causes poor RF performance, and effects user experience
+|for several types of laptop with WCN6855 on the market.
+|
+|Fix by downloading board ID specific NVM if board ID is available.
+|
+|Fixes: 095327fede00 ("Bluetooth: hci_qca: Add support for QTI Bluetooth chip wcn6855")
+|Cc: stable@vger.kernel.org # 6.4
+|Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+|Tested-by: Johan Hovold <johan+linaro@kernel.org>
+|Reviewed-by: Johan Hovold <johan+linaro@kernel.org>
+|Tested-by: Steev Klimaszewski <steev@kali.org> #Thinkpad X13s
+|Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+|---
+| drivers/bluetooth/btqca.c | 5 +++--
+| 1 file changed, 3 insertions(+), 2 deletions(-)
+|
+|diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
+|index a6b53d1f23dbd..cdf09d9a9ad27 100644
+|--- a/drivers/bluetooth/btqca.c
+|+++ b/drivers/bluetooth/btqca.c
+--------------------------
+patching file drivers/bluetooth/btqca.c
+Using Plan A...
+Hunk #1 succeeded at 848 with fuzz 1 (offset -61 lines).
+done
+方法8.1成功：使用patch -p1 -F 100
+ACTUAL_LINE_NUMBER:848
+
+2025-03-27 17:24:32.290 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: add .
+2025-03-27 17:24:32.784 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: commit -m Applied chunk patch with shell script: chunk_001_20250327_172427.patch
+2025-03-27 17:24:33.037 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: checkout linux-6.12.y
+2025-03-27 17:24:33.380 | INFO     | modules.chunk_analyzer:_run_git_command:1257 - 运行git命令: branch -D chunk_test_20250327_172427_cb071f
+2025-03-27 17:24:33.386 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:1176 - 清理测试分支: chunk_test_20250327_172427_cb071f
+2025-03-27 17:24:33.386 | INFO     | modules.chunk_analyzer:execute:63 - 成功应用了 1 个块补丁，总共 1 个
+2025-03-27 17:24:33.387 | INFO     | modules.chunk_analyzer:execute:75 - 所有块补丁都已成功应用，无需创建剩余补丁
+2025-03-27 17:24:33.388 | INFO     | modules.chunk_analyzer:execute:97 - 补丁分块分析完成，耗时: 5.76秒
+2025-03-27 17:24:33.389 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/gregkh/linux/a2fad2/evaluations/chunk_analyzer/metrics_a2fad2_20250327_172433.json
+2025-03-27 17:24:33.391 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:1589 - 找到当前评估会话目录: workspace/gregkh/linux/a2fad2/evaluations/chunk_analyzer/details_a2fad2_20250327_172433
+2025-03-27 17:24:33.391 | INFO     | modules.chunk_analyzer:_get_patch_content:1823 - 使用当前会话评估目录: workspace/gregkh/linux/a2fad2/evaluations/chunk_analyzer/details_a2fad2_20250327_172433
+2025-03-27 17:24:33.392 | WARNING  | modules.chunk_analyzer:_get_patch_content:1879 - 补丁目录不存在: workspace/gregkh/linux/a2fad2/evaluations/chunk_analyzer/details_a2fad2_20250327_172433/patches
+2025-03-27 17:24:33.395 | INFO     | modules.chunk_analyzer:_get_patch_content:1884 - 成功创建补丁目录: workspace/gregkh/linux/a2fad2/evaluations/chunk_analyzer/details_a2fad2_20250327_172433/patches
+2025-03-27 17:24:33.398 | INFO     | modules.chunk_analyzer:_get_patch_content:1902 - 已将原始补丁内容保存到: workspace/gregkh/linux/a2fad2/evaluations/chunk_analyzer/details_a2fad2_20250327_172433/patches/original_patch.txt
+2025-03-27 17:24:33.398 | INFO     | modules.chunk_analyzer:_get_patch_content:1823 - 使用当前会话评估目录: workspace/gregkh/linux/a2fad2/evaluations/chunk_analyzer/details_a2fad2_20250327_172433
+2025-03-27 17:24:33.400 | INFO     | modules.chunk_analyzer:_get_patch_content:2007 - 已将补丁块内容保存到: workspace/gregkh/linux/a2fad2/evaluations/chunk_analyzer/details_a2fad2_20250327_172433/patches/applied_chunk_1.txt
+2025-03-27 17:24:33.401 | INFO     | modules.chunk_analyzer:_get_patch_content:2016 - 已将合并的补丁块内容保存到: workspace/gregkh/linux/a2fad2/evaluations/chunk_analyzer/details_a2fad2_20250327_172433/patches/all_applied_chunks.txt
+2025-03-27 17:24:33.401 | INFO     | modules.chunk_analyzer:_get_patch_content:2020 - 从context获取应用成功的补丁内容
+2025-03-27 17:24:33.402 | INFO     | modules.chunk_analyzer:_get_patch_content:1823 - 使用当前会话评估目录: workspace/gregkh/linux/a2fad2/evaluations/chunk_analyzer/details_a2fad2_20250327_172433
+2025-03-27 17:24:33.402 | WARNING  | modules.chunk_analyzer:_get_patch_content:2078 - 未找到剩余补丁文件
+2025-03-27 17:24:33.403 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/gregkh/linux/a2fad2/evaluations/chunk_analyzer/details_a2fad2_20250327_172433
+2025-03-27 17:24:33.406 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: llm_adapter
+2025-03-27 17:24:33.407 | INFO     | modules.llm_adapter:execute:55 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/patches/upstream_a2fad2.patch
+2025-03-27 17:24:33.407 | INFO     | modules.llm_adapter:execute:57 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/a2fad2/patches/upstream_a2fad2.patch
+2025-03-27 17:24:33.408 | INFO     | modules.llm_adapter:_prepare_prompt_data:181 - 使用传统上下文差异
+2025-03-27 17:24:33.485 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-03-27 17:24:33.486 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/gregkh/linux/a2fad2/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-27 17:24:33.486 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-03-27 17:24:33.487 | INFO     | modules.llm_adapter:_call_llm:734 - llm.run() result:{'openai_responses': ['diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c\nindex a6b53d1f23dbd..cdf09d9a9ad27 100644\n--- a/drivers/bluetooth/btqca.c\n+++ b/drivers/bluetooth/btqca.c\n@@ -271,39 +271,6 @@\n \treturn 0;\n }\n EXPORT_SYMBOL_GPL(qca_send_pre_shutdown_cmd);\n-\n-static bool qca_filename_has_extension(const char *filename)\n-{\n-\tconst char *suffix = strrchr(filename, \'.\');\n-\n-\t/* File extensions require a dot, but not as the first or last character */\n-\tif (!suffix || suffix == filename || *(suffix + 1) == \'\\0\')\n-\t\treturn 0;\n-\n-\t/* Avoid matching directories with names that look like files with extensions */\n-\treturn !strchr(suffix, \'/\');\n-}\n-\n-static bool qca_get_alt_nvm_file(char *filename, size_t max_size)\n-{\n-\tchar fwname[64];\n-\tconst char *suffix;\n-\n-\t/* nvm file name has an extension, replace with .bin */\n-\tif (qca_filename_has_extension(filename)) {\n-\t\tsuffix = strrchr(filename, \'.\');\n-\t\tstrscpy(fwname, filename, suffix - filename + 1);\n-\t\tsnprintf(fwname + (suffix - filename),\n-\t\t       sizeof(fwname) - (suffix - filename), ".bin");\n-\t\t/* If nvm file is already the default one, return false to skip the retry. */\n-\t\tif (strcmp(fwname, filename) == 0)\n-\t\t\treturn false;\n-\n-\t\tsnprintf(filename, max_size, "%s", fwname);\n-\t\treturn true;\n-\t}\n-\treturn false;\n-}\n \n static int qca_tlv_check_data(struct hci_dev *hdev,\n \t\t\t       struct qca_fw_config *config,\n@@ -597,19 +564,6 @@\n \t\t\t\t\t   config->fwname, ret);\n \t\t\t\treturn ret;\n \t\t\t}\n-\t\t}\n-\t\t/* If the board-specific file is missing, try loading the default\n-\t\t * one, unless that was attempted already.\n-\t\t */\n-\t\telse if (config->type == TLV_TYPE_NVM &&\n-\t\t\t qca_get_alt_nvm_file(config->fwname, sizeof(config->fwname))) {\n-\t\t\tbt_dev_info(hdev, "QCA Downloading %s", config->fwname);\n-\t\t\tret = request_firmware(&fw, config->fwname, &hdev->dev);\n-\t\t\tif (ret) {\n-\t\t\t\tbt_dev_err(hdev, "QCA Failed to request file: %s (%d)",\n-\t\t\t\t\t   config->fwname, ret);\n-\t\t\t\treturn ret;\n-\t\t\t}\n \t\t} else {\n \t\t\tbt_dev_err(hdev, "QCA Failed to request file: %s (%d)",\n \t\t\t\t   config->fwname, ret);\n@@ -746,43 +700,39 @@\n \treturn 0;\n }\n \n-static void qca_get_nvm_name_by_board(char *fwname, size_t max_size,\n-\t\tconst char *stem, enum qca_btsoc_type soc_type,\n+static void qca_generate_hsp_nvm_name(char *fwname, size_t max_size,\n \t\tstruct qca_btsoc_version ver, u8 rom_ver, u16 bid)\n {\n \tconst char *variant;\n-\tconst char *prefix;\n-\n-\t/* Set the default value to variant and prefix */\n-\tvariant = "";\n-\tprefix = "b";\n-\n-\tif (soc_type == QCA_QCA2066)\n-\t\tprefix = "";\n-\n-\tif (soc_type == QCA_WCN6855 || soc_type == QCA_QCA2066) {\n-\t\t/* If the chip is manufactured by GlobalFoundries */\n-\t\tif ((le32_to_cpu(ver.soc_id) & QCA_HSP_GF_SOC_MASK) == QCA_HSP_GF_SOC_ID)\n-\t\t\tvariant = "g";\n-\t}\n-\n-\tif (rom_ver != 0) {\n-\t\tif (bid == 0x0 || bid == 0xffff)\n-\t\t\tsnprintf(fwname, max_size, "qca/%s%02x%s.bin", stem, rom_ver, variant);\n-\t\telse\n-\t\t\tsnprintf(fwname, max_size, "qca/%s%02x%s.%s%02x", stem, rom_ver,\n-\t\t\t\t\t\tvariant, prefix, bid);\n-\t} else {\n-\t\tif (bid == 0x0 || bid == 0xffff)\n-\t\t\tsnprintf(fwname, max_size, "qca/%s%s.bin", stem, variant);\n-\t\telse\n-\t\t\tsnprintf(fwname, max_size, "qca/%s%s.%s%02x", stem, variant, prefix, bid);\n-\t}\n+\n+\t/* hsp gf chip */\n+\tif ((le32_to_cpu(ver.soc_id) & QCA_HSP_GF_SOC_MASK) == QCA_HSP_GF_SOC_ID)\n+\t\tvariant = "g";\n+\telse\n+\t\tvariant = "";\n+\n+\tif (bid == 0x0)\n+\t\tsnprintf(fwname, max_size, "qca/hpnv%02x%s.bin", rom_ver, variant);\n+\telse\n+\t\tsnprintf(fwname, max_size, "qca/hpnv%02x%s.%x", rom_ver, variant, bid);\n+}\n+\n+static inline void qca_get_nvm_name_generic(struct qca_fw_config *cfg,\n+\t\t\t\t\t    const char *stem, u8 rom_ver, u16 bid)\n+{\n+\tif (bid == 0x0)\n+\t\tsnprintf(cfg->fwname, sizeof(cfg->fwname), "qca/%snv%02x.bin", stem, rom_ver);\n+\telse if (bid & 0xff00)\n+\t\tsnprintf(cfg->fwname, sizeof(cfg->fwname),\n+\t\t\t "qca/%snv%02x.b%x", stem, rom_ver, bid);\n+\telse\n+\t\tsnprintf(cfg->fwname, sizeof(cfg->fwname),\n+\t\t\t "qca/%snv%02x.b%02x", stem, rom_ver, bid);\n }\n \n int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,\n \t\t   enum qca_btsoc_type soc_type, struct qca_btsoc_version ver,\n-\t\t   const char *firmware_name, const char *rampatch_name)\n+\t\t   const char *firmware_name)\n {\n \tstruct qca_fw_config config = {};\n \tint err;\n@@ -811,48 +761,44 @@\n \n \tconfig.type = TLV_TYPE_PATCH;\n-\tif (rampatch_name) {\n-\t\tsnprintf(config.fwname, sizeof(config.fwname), "qca/%s", rampatch_name);\n-\t} else {\n-\t\tswitch (soc_type) {\n-\t\tcase QCA_WCN3990:\n-\t\tcase QCA_WCN3991:\n-\t\tcase QCA_WCN3998:\n-\t\t\tsnprintf(config.fwname, sizeof(config.fwname),\n-\t\t\t\t "qca/crbtfw%02x.tlv", rom_ver);\n-\t\t\tbreak;\n-\t\tcase QCA_WCN3988:\n-\t\t\tsnprintf(config.fwname, sizeof(config.fwname),\n-\t\t\t\t "qca/apbtfw%02x.tlv", rom_ver);\n-\t\t\tbreak;\n-\t\tcase QCA_QCA2066:\n-\t\t\tsnprintf(config.fwname, sizeof(config.fwname),\n-\t\t\t\t "qca/hpbtfw%02x.tlv", rom_ver);\n-\t\t\tbreak;\n-\t\tcase QCA_QCA6390:\n-\t\t\tsnprintf(config.fwname, sizeof(config.fwname),\n-\t\t\t\t "qca/htbtfw%02x.tlv", rom_ver);\n-\t\t\tbreak;\n-\t\tcase QCA_WCN6750:\n-\t\t\t/* Choose mbn file by default.If mbn file is not found\n-\t\t\t * then choose tlv file\n-\t\t\t */\n-\t\t\tconfig.type = ELF_TYPE_PATCH;\n-\t\t\tsnprintf(config.fwname, sizeof(config.fwname),\n-\t\t\t\t "qca/msbtfw%02x.mbn", rom_ver);\n-\t\t\tbreak;\n-\t\tcase QCA_WCN6855:\n-\t\t\tsnprintf(config.fwname, sizeof(config.fwname),\n-\t\t\t\t "qca/hpbtfw%02x.tlv", rom_ver);\n-\t\t\tbreak;\n-\t\tcase QCA_WCN7850:\n-\t\t\tsnprintf(config.fwname, sizeof(config.fwname),\n-\t\t\t\t "qca/hmtbtfw%02x.tlv", rom_ver);\n-\t\t\tbreak;\n-\t\tdefault:\n-\t\t\tsnprintf(config.fwname, sizeof(config.fwname),\n-\t\t\t\t "qca/rampatch_%08x.bin", soc_ver);\n-\t\t}\n+\tswitch (soc_type) {\n+\tcase QCA_WCN3990:\n+\tcase QCA_WCN3991:\n+\tcase QCA_WCN3998:\n+\t\tsnprintf(config.fwname, sizeof(config.fwname),\n+\t\t\t "qca/crbtfw%02x.tlv", rom_ver);\n+\t\tbreak;\n+\tcase QCA_WCN3988:\n+\t\tsnprintf(config.fwname, sizeof(config.fwname),\n+\t\t\t "qca/apbtfw%02x.tlv", rom_ver);\n+\t\tbreak;\n+\tcase QCA_QCA2066:\n+\t\tsnprintf(config.fwname, sizeof(config.fwname),\n+\t\t\t "qca/hpbtfw%02x.tlv", rom_ver);\n+\t\tbreak;\n+\tcase QCA_QCA6390:\n+\t\tsnprintf(config.fwname, sizeof(config.fwname),\n+\t\t\t "qca/htbtfw%02x.tlv", rom_ver);\n+\t\tbreak;\n+\tcase QCA_WCN6750:\n+\t\t/* Choose mbn file by default.If mbn file is not found\n+\t\t * then choose tlv file\n+\t\t */\n+\t\tconfig.type = ELF_TYPE_PATCH;\n+\t\tsnprintf(config.fwname, sizeof(config.fwname),\n+\t\t\t "qca/msbtfw%02x.mbn", rom_ver);\n+\t\tbreak;\n+\tcase QCA_WCN6855:\n+\t\tqca_read_fw_board_id(hdev, &boardid);\n+\t\tqca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),\n+\t\t\t\t\t  "hpnv", soc_type, ver, rom_ver, boardid);\n+\t\tbreak;\n+\tcase QCA_WCN7850:\n+\t\tqca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);\n+\t\tbreak;\n+\tdefault:\n+\t\tsnprintf(config.fwname, sizeof(config.fwname),\n+\t\t\t "qca/rampatch_%08x.bin", soc_ver);\n \t}\n \n \terr = qca_download_firmware(hdev, &config, soc_type, rom_ver);\n@@ -870,14 +816,8 @@\n \tconfig.type = TLV_TYPE_NVM;\n \tif (firmware_name) {\n-\t\t/* The firmware name has an extension, use it directly */\n-\t\tif (qca_filename_has_extension(firmware_name)) {\n-\t\t\tsnprintf(config.fwname, sizeof(config.fwname), "qca/%s", firmware_name);\n-\t\t} else {\n-\t\t\tqca_read_fw_board_id(hdev, &boardid);\n-\t\t\tqca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),\n-\t\t\t\t firmware_name, soc_type, ver, 0, boardid);\n-\t\t}\n+\t\tsnprintf(config.fwname, sizeof(config.fwname),\n+\t\t\t "qca/%s", firmware_name);\n \t} else {\n \t\tswitch (soc_type) {\n \t\tcase QCA_WCN3990:\n@@ -896,9 +836,8 @@\n \t\t\t\t "qca/apnv%02x.bin", rom_ver);\n \t\t\tbreak;\n \t\tcase QCA_QCA2066:\n-\t\t\tqca_get_nvm_name_by_board(config.fwname,\n-\t\t\t\tsizeof(config.fwname), "hpnv", soc_type, ver,\n-\t\t\t\trom_ver, boardid);\n+\t\t\tqca_generate_hsp_nvm_name(config.fwname,\n+\t\t\t\tsizeof(config.fwname), ver, rom_ver, boardid);\n \t\t\tbreak;\n \t\tcase QCA_QCA6390:\n \t\t\tsnprintf(config.fwname, sizeof(config.fwname),\n@@ -913,9 +852,9 @@\n \t\t\t\t "qca/hpnv%02x.bin", rom_ver);\n \t\t\tbreak;\n \t\tcase QCA_WCN7850:\n-\t\t\tqca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),\n-\t\t\t\t "hmtnv", soc_type, ver, rom_ver, boardid);\n+\t\t\tqca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);\n \t\t\tbreak;\n+\n \t\tdefault:\n \t\t\tsnprintf(config.fwname, sizeof(config.fwname),\n \t\t\t\t "qca/nvm_%08x.bin", soc_ver);'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-03-27 17:24:33.487 | INFO     | modules.llm_adapter:_parse_llm_response:816 - 原始LLM响应(前100字符): diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
+index a6b53d1f23dbd..cdf09d9a9ad2...
+2025-03-27 17:24:33.489 | INFO     | modules.llm_adapter:_parse_llm_response:850 - 找到diff --git格式，内容前100字符: diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
+index a6b53d1f23dbd..cdf09d9a9ad2...
+2025-03-27 17:24:33.490 | INFO     | modules.llm_adapter:_save_llm_response:985 - LLM响应已保存到: workspace/gregkh/linux/a2fad2/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-27 17:24:33.490 | INFO     | modules.llm_adapter:_save_llm_response:986 - 原始LLM响应已保存到: workspace/gregkh/linux/a2fad2/llm_output/raw_output_linux-6.12.y_qwen-plus.patch
+2025-03-27 17:24:33.491 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/gregkh/linux/a2fad2/evaluations/llm_adapter/metrics_a2fad2_20250327_172433.json
+2025-03-27 17:24:33.492 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: patch_adapter
+2025-03-27 17:24:33.492 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/gregkh/linux/a2fad2/llm_output/output_linux-6.12.y_qwen-plus.patch
+2025-03-27 17:24:33.494 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_linux-6.12.y_20250327_172433
+2025-03-27 17:24:34.446 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
+index a6b53d1f23dbd..cdf09d9a9ad27 100644
+--- a/drivers/bluetooth/btqca.c
++++ b/drivers/bluetooth/btqca.c
+@@ -271,39 +271,6 @@
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(qca_send_pre_shutdown_cmd);
+-
+-static bool qca_filename_has_extension(const char *filename)
+-{
+-	const char *suffix = strrchr(filename, '.');
+-
+-	/* File extensions require a dot, but not as the first or last character */
+-	if (!suffix || suffix == filename || *(suffix + 1) == '\0')
+-		return 0;
+-
+-	/* Avoid matching directories with names that look like files with extensions */
+-	return !strchr(suffix, '/');
+-}
+-
+-static bool qca_get_alt_nvm_file(char *filename, size_t max_size)
+-{
+-	char fwname[64];
+-	const char *suffix;
+-
+-	/* nvm file name has an extension, replace with .bin */
+-	if (qca_filename_has_extension(filename)) {
+-		suffix = strrchr(filename, '.');
+-		strscpy(fwname, filename, suffix - filename + 1);
+-		snprintf(fwname + (suffix - filename),
+-		       sizeof(fwname) - (suffix - filename), ".bin");
+-		/* If nvm file is already the default one, return false to skip the retry. */
+-		if (strcmp(fwname, filename) == 0)
+-			return false;
+-
+-		snprintf(filename, max_size, "%s", fwname);
+-		return true;
+-	}
+-	return false;
+-}
+ 
+ static int qca_tlv_check_data(struct hci_dev *hdev,
+ 			       struct qca_fw_config *config,
+@@ -597,19 +564,6 @@
+ 					   config->fwname, ret);
+ 				return ret;
+ 			}
+-		}
+-		/* If the board-specific file is missing, try loading the default
+-		 * one, unless that was attempted already.
+-		 */
+-		else if (config->type == TLV_TYPE_NVM &&
+-			 qca_get_alt_nvm_file(config->fwname, sizeof(config->fwname))) {
+-			bt_dev_info(hdev, "QCA Downloading %s", config->fwname);
+-			ret = request_firmware(&fw, config->fwname, &hdev->dev);
+-			if (ret) {
+-				bt_dev_err(hdev, "QCA Failed to request file: %s (%d)",
+-					   config->fwname, ret);
+-				return ret;
+-			}
+ 		} else {
+ 			bt_dev_err(hdev, "QCA Failed to request file: %s (%d)",
+ 				   config->fwname, ret);
+@@ -746,43 +700,39 @@
+ 	return 0;
+ }
+ 
+-static void qca_get_nvm_name_by_board(char *fwname, size_t max_size,
+-		const char *stem, enum qca_btsoc_type soc_type,
++static void qca_generate_hsp_nvm_name(char *fwname, size_t max_size,
+ 		struct qca_btsoc_version ver, u8 rom_ver, u16 bid)
+ {
+ 	const char *variant;
+-	const char *prefix;
+-
+-	/* Set the default value to variant and prefix */
+-	variant = "";
+-	prefix = "b";
+-
+-	if (soc_type == QCA_QCA2066)
+-		prefix = "";
+-
+-	if (soc_type == QCA_WCN6855 || soc_type == QCA_QCA2066) {
+-		/* If the chip is manufactured by GlobalFoundries */
+-		if ((le32_to_cpu(ver.soc_id) & QCA_HSP_GF_SOC_MASK) == QCA_HSP_GF_SOC_ID)
+-			variant = "g";
+-	}
+-
+-	if (rom_ver != 0) {
+-		if (bid == 0x0 || bid == 0xffff)
+-			snprintf(fwname, max_size, "qca/%s%02x%s.bin", stem, rom_ver, variant);
+-		else
+-			snprintf(fwname, max_size, "qca/%s%02x%s.%s%02x", stem, rom_ver,
+-						variant, prefix, bid);
+-	} else {
+-		if (bid == 0x0 || bid == 0xffff)
+-			snprintf(fwname, max_size, "qca/%s%s.bin", stem, variant);
+-		else
+-			snprintf(fwname, max_size, "qca/%s%s.%s%02x", stem, variant, prefix, bid);
+-	}
++
++	/* hsp gf chip */
++	if ((le32_to_cpu(ver.soc_id) & QCA_HSP_GF_SOC_MASK) == QCA_HSP_GF_SOC_ID)
++		variant = "g";
++	else
++		variant = "";
++
++	if (bid == 0x0)
++		snprintf(fwname, max_size, "qca/hpnv%02x%s.bin", rom_ver, variant);
++	else
++		snprintf(fwname, max_size, "qca/hpnv%02x%s.%x", rom_ver, variant, bid);
++}
++
++static inline void qca_get_nvm_name_generic(struct qca_fw_config *cfg,
++					    const char *stem, u8 rom_ver, u16 bid)
++{
++	if (bid == 0x0)
++		snprintf(cfg->fwname, sizeof(cfg->fwname), "qca/%snv%02x.bin", stem, rom_ver);
++	else if (bid & 0xff00)
++		snprintf(cfg->fwname, sizeof(cfg->fwname),
++			 "qca/%snv%02x.b%x", stem, rom_ver, bid);
++	else
++		snprintf(cfg->fwname, sizeof(cfg->fwname),
++			 "qca/%snv%02x.b%02x", stem, rom_ver, bid);
+ }
+ 
+ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 		   enum qca_btsoc_type soc_type, struct qca_btsoc_version ver,
+-		   const char *firmware_name, const char *rampatch_name)
++		   const char *firmware_name)
+ {
+ 	struct qca_fw_config config = {};
+ 	int err;
+@@ -811,48 +761,44 @@
+ 
+ 	config.type = TLV_TYPE_PATCH;
+-	if (rampatch_name) {
+-		snprintf(config.fwname, sizeof(config.fwname), "qca/%s", rampatch_name);
+-	} else {
+-		switch (soc_type) {
+-		case QCA_WCN3990:
+-		case QCA_WCN3991:
+-		case QCA_WCN3998:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/crbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_WCN3988:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/apbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_QCA2066:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/hpbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_QCA6390:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/htbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_WCN6750:
+-			/* Choose mbn file by default.If mbn file is not found
+-			 * then choose tlv file
+-			 */
+-			config.type = ELF_TYPE_PATCH;
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/msbtfw%02x.mbn", rom_ver);
+-			break;
+-		case QCA_WCN6855:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/hpbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_WCN7850:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/hmtbtfw%02x.tlv", rom_ver);
+-			break;
+-		default:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/rampatch_%08x.bin", soc_ver);
+-		}
++	switch (soc_type) {
++	case QCA_WCN3990:
++	case QCA_WCN3991:
++	case QCA_WCN3998:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/crbtfw%02x.tlv", rom_ver);
++		break;
++	case QCA_WCN3988:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/apbtfw%02x.tlv", rom_ver);
++		break;
++	case QCA_QCA2066:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/hpbtfw%02x.tlv", rom_ver);
++		break;
++	case QCA_QCA6390:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/htbtfw%02x.tlv", rom_ver);
++		break;
++	case QCA_WCN6750:
++		/* Choose mbn file by default.If mbn file is not found
++		 * then choose tlv file
++		 */
++		config.type = ELF_TYPE_PATCH;
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/msbtfw%02x.mbn", rom_ver);
++		break;
++	case QCA_WCN6855:
++		qca_read_fw_board_id(hdev, &boardid);
++		qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
++					  "hpnv", soc_type, ver, rom_ver, boardid);
++		break;
++	case QCA_WCN7850:
++		qca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);
++		break;
++	default:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/rampatch_%08x.bin", soc_ver);
+ 	}
+ 
+ 	err = qca_download_firmware(hdev, &config, soc_type, rom_ver);
+@@ -870,14 +816,8 @@
+ 	config.type = TLV_TYPE_NVM;
+ 	if (firmware_name) {
+-		/* The firmware name has an extension, use it directly */
+-		if (qca_filename_has_extension(firmware_name)) {
+-			snprintf(config.fwname, sizeof(config.fwname), "qca/%s", firmware_name);
+-		} else {
+-			qca_read_fw_board_id(hdev, &boardid);
+-			qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
+-				 firmware_name, soc_type, ver, 0, boardid);
+-		}
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/%s", firmware_name);
+ 	} else {
+ 		switch (soc_type) {
+ 		case QCA_WCN3990:
+@@ -896,9 +836,8 @@
+ 				 "qca/apnv%02x.bin", rom_ver);
+ 			break;
+ 		case QCA_QCA2066:
+-			qca_get_nvm_name_by_board(config.fwname,
+-				sizeof(config.fwname), "hpnv", soc_type, ver,
+-				rom_ver, boardid);
++			qca_generate_hsp_nvm_name(config.fwname,
++				sizeof(config.fwname), ver, rom_ver, boardid);
+ 			break;
+ 		case QCA_QCA6390:
+ 			snprintf(config.fwname, sizeof(config.fwname),
+@@ -913,9 +852,9 @@
+ 				 "qca/hpnv%02x.bin", rom_ver);
+ 			break;
+ 		case QCA_WCN7850:
+-			qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
+-				 "hmtnv", soc_type, ver, rom_ver, boardid);
++			qca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);
+ 			break;
++
+ 		default:
+ 			snprintf(config.fwname, sizeof(config.fwname),
+ 				 "qca/nvm_%08x.bin", soc_ver);
+2025-03-27 17:24:34.447 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -271,39 +271,6 @@
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(qca_send_pre_shutdown_cmd);
+-
+-static bool qca_filename_has_extension(const char *filename)
+-{
+-	const char *suffix = strrchr(filename, '.');
+-
+-	/* File extensions require a dot, but not as the first or last character */
+-	if (!suffix || suffix == filename || *(suffix + 1) == '\0')
+-		return 0;
+-
+-	/* Avoid matching directories with names that look like files with extensions */
+-	return !strchr(suffix, '/');
+-}
+-
+-static bool qca_get_alt_nvm_file(char *filename, size_t max_size)
+-{
+-	char fwname[64];
+-	const char *suffix;
+-
+-	/* nvm file name has an extension, replace with .bin */
+-	if (qca_filename_has_extension(filename)) {
+-		suffix = strrchr(filename, '.');
+-		strscpy(fwname, filename, suffix - filename + 1);
+-		snprintf(fwname + (suffix - filename),
+-		       sizeof(fwname) - (suffix - filename), ".bin");
+-		/* If nvm file is already the default one, return false to skip the retry. */
+-		if (strcmp(fwname, filename) == 0)
+-			return false;
+-
+-		snprintf(filename, max_size, "%s", fwname);
+-		return true;
+-	}
+-	return false;
+-}
+ 
+ static int qca_tlv_check_data(struct hci_dev *hdev,
+ 			       struct qca_fw_config *config,
+@@ -597,19 +564,6 @@
+ 					   config->fwname, ret);
+ 				return ret;
+ 			}
+-		}
+-		/* If the board-specific file is missing, try loading the default
+-		 * one, unless that was attempted already.
+-		 */
+-		else if (config->type == TLV_TYPE_NVM &&
+-			 qca_get_alt_nvm_file(config->fwname, sizeof(config->fwname))) {
+-			bt_dev_info(hdev, "QCA Downloading %s", config->fwname);
+-			ret = request_firmware(&fw, config->fwname, &hdev->dev);
+-			if (ret) {
+-				bt_dev_err(hdev, "QCA Failed to request file: %s (%d)",
+-					   config->fwname, ret);
+-				return ret;
+-			}
+ 		} else {
+ 			bt_dev_err(hdev, "QCA Failed to request file: %s (%d)",
+ 				   config->fwname, ret);
+@@ -746,43 +700,39 @@
+ 	return 0;
+ }
+ 
+-static void qca_get_nvm_name_by_board(char *fwname, size_t max_size,
+-		const char *stem, enum qca_btsoc_type soc_type,
++static void qca_generate_hsp_nvm_name(char *fwname, size_t max_size,
+ 		struct qca_btsoc_version ver, u8 rom_ver, u16 bid)
+ {
+ 	const char *variant;
+-	const char *prefix;
+-
+-	/* Set the default value to variant and prefix */
+-	variant = "";
+-	prefix = "b";
+-
+-	if (soc_type == QCA_QCA2066)
+-		prefix = "";
+-
+-	if (soc_type == QCA_WCN6855 || soc_type == QCA_QCA2066) {
+-		/* If the chip is manufactured by GlobalFoundries */
+-		if ((le32_to_cpu(ver.soc_id) & QCA_HSP_GF_SOC_MASK) == QCA_HSP_GF_SOC_ID)
+-			variant = "g";
+-	}
+-
+-	if (rom_ver != 0) {
+-		if (bid == 0x0 || bid == 0xffff)
+-			snprintf(fwname, max_size, "qca/%s%02x%s.bin", stem, rom_ver, variant);
+-		else
+-			snprintf(fwname, max_size, "qca/%s%02x%s.%s%02x", stem, rom_ver,
+-						variant, prefix, bid);
+-	} else {
+-		if (bid == 0x0 || bid == 0xffff)
+-			snprintf(fwname, max_size, "qca/%s%s.bin", stem, variant);
+-		else
+-			snprintf(fwname, max_size, "qca/%s%s.%s%02x", stem, variant, prefix, bid);
+-	}
++
++	/* hsp gf chip */
++	if ((le32_to_cpu(ver.soc_id) & QCA_HSP_GF_SOC_MASK) == QCA_HSP_GF_SOC_ID)
++		variant = "g";
++	else
++		variant = "";
++
++	if (bid == 0x0)
++		snprintf(fwname, max_size, "qca/hpnv%02x%s.bin", rom_ver, variant);
++	else
++		snprintf(fwname, max_size, "qca/hpnv%02x%s.%x", rom_ver, variant, bid);
++}
++
++static inline void qca_get_nvm_name_generic(struct qca_fw_config *cfg,
++					    const char *stem, u8 rom_ver, u16 bid)
++{
++	if (bid == 0x0)
++		snprintf(cfg->fwname, sizeof(cfg->fwname), "qca/%snv%02x.bin", stem, rom_ver);
++	else if (bid & 0xff00)
++		snprintf(cfg->fwname, sizeof(cfg->fwname),
++			 "qca/%snv%02x.b%x", stem, rom_ver, bid);
++	else
++		snprintf(cfg->fwname, sizeof(cfg->fwname),
++			 "qca/%snv%02x.b%02x", stem, rom_ver, bid);
+ }
+ 
+ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 		   enum qca_btsoc_type soc_type, struct qca_btsoc_version ver,
+-		   const char *firmware_name, const char *rampatch_name)
++		   const char *firmware_name)
+ {
+ 	struct qca_fw_config config = {};
+ 	int err;
+@@ -811,48 +761,44 @@
+ 
+ 	config.type = TLV_TYPE_PATCH;
+-	if (rampatch_name) {
+-		snprintf(config.fwname, sizeof(config.fwname), "qca/%s", rampatch_name);
+-	} else {
+-		switch (soc_type) {
+-		case QCA_WCN3990:
+-		case QCA_WCN3991:
+-		case QCA_WCN3998:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/crbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_WCN3988:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/apbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_QCA2066:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/hpbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_QCA6390:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/htbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_WCN6750:
+-			/* Choose mbn file by default.If mbn file is not found
+-			 * then choose tlv file
+-			 */
+-			config.type = ELF_TYPE_PATCH;
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/msbtfw%02x.mbn", rom_ver);
+-			break;
+-		case QCA_WCN6855:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/hpbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_WCN7850:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/hmtbtfw%02x.tlv", rom_ver);
+-			break;
+-		default:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/rampatch_%08x.bin", soc_ver);
+-		}
++	switch (soc_type) {
++	case QCA_WCN3990:
++	case QCA_WCN3991:
++	case QCA_WCN3998:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/crbtfw%02x.tlv", rom_ver);
++		break;
++	case QCA_WCN3988:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/apbtfw%02x.tlv", rom_ver);
++		break;
++	case QCA_QCA2066:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/hpbtfw%02x.tlv", rom_ver);
++		break;
++	case QCA_QCA6390:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/htbtfw%02x.tlv", rom_ver);
++		break;
++	case QCA_WCN6750:
++		/* Choose mbn file by default.If mbn file is not found
++		 * then choose tlv file
++		 */
++		config.type = ELF_TYPE_PATCH;
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/msbtfw%02x.mbn", rom_ver);
++		break;
++	case QCA_WCN6855:
++		qca_read_fw_board_id(hdev, &boardid);
++		qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
++					  "hpnv", soc_type, ver, rom_ver, boardid);
++		break;
++	case QCA_WCN7850:
++		qca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);
++		break;
++	default:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/rampatch_%08x.bin", soc_ver);
+ 	}
+ 
+ 	err = qca_download_firmware(hdev, &config, soc_type, rom_ver);
+@@ -870,14 +816,8 @@
+ 	config.type = TLV_TYPE_NVM;
+ 	if (firmware_name) {
+-		/* The firmware name has an extension, use it directly */
+-		if (qca_filename_has_extension(firmware_name)) {
+-			snprintf(config.fwname, sizeof(config.fwname), "qca/%s", firmware_name);
+-		} else {
+-			qca_read_fw_board_id(hdev, &boardid);
+-			qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
+-				 firmware_name, soc_type, ver, 0, boardid);
+-		}
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/%s", firmware_name);
+ 	} else {
+ 		switch (soc_type) {
+ 		case QCA_WCN3990:
+@@ -896,9 +836,8 @@
+ 				 "qca/apnv%02x.bin", rom_ver);
+ 			break;
+ 		case QCA_QCA2066:
+-			qca_get_nvm_name_by_board(config.fwname,
+-				sizeof(config.fwname), "hpnv", soc_type, ver,
+-				rom_ver, boardid);
++			qca_generate_hsp_nvm_name(config.fwname,
++				sizeof(config.fwname), ver, rom_ver, boardid);
+ 			break;
+ 		case QCA_QCA6390:
+ 			snprintf(config.fwname, sizeof(config.fwname),
+@@ -913,9 +852,9 @@
+ 				 "qca/hpnv%02x.bin", rom_ver);
+ 			break;
+ 		case QCA_WCN7850:
+-			qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
+-				 "hmtnv", soc_type, ver, rom_ver, boardid);
++			qca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);
+ 			break;
++
+ 		default:
+ 			snprintf(config.fwname, sizeof(config.fwname),
+ 				 "qca/nvm_%08x.bin", soc_ver);
+2025-03-27 17:24:34.449 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -271,39 +271,6 @@
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(qca_send_pre_shutdown_cmd);
+-
+-static bool qca_filename_has_extension(const char *filename)
+-{
+-	const char *suffix = strrchr(filename, '.');
+-
+-	/* File extensions require a dot, but not as the first or last character */
+-	if (!suffix || suffix == filename || *(suffix + 1) == '\0')
+-		return 0;
+-
+-	/* Avoid matching directories with names that look like files with extensions */
+-	return !strchr(suffix, '/');
+-}
+-
+-static bool qca_get_alt_nvm_file(char *filename, size_t max_size)
+-{
+-	char fwname[64];
+-	const char *suffix;
+-
+-	/* nvm file name has an extension, replace with .bin */
+-	if (qca_filename_has_extension(filename)) {
+-		suffix = strrchr(filename, '.');
+-		strscpy(fwname, filename, suffix - filename + 1);
+-		snprintf(fwname + (suffix - filename),
+-		       sizeof(fwname) - (suffix - filename), ".bin");
+-		/* If nvm file is already the default one, return false to skip the retry. */
+-		if (strcmp(fwname, filename) == 0)
+-			return false;
+-
+-		snprintf(filename, max_size, "%s", fwname);
+-		return true;
+-	}
+-	return false;
+-}
+ 
+ static int qca_tlv_check_data(struct hci_dev *hdev,
+ 			       struct qca_fw_config *config,
+
+2025-03-27 17:24:34.450 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 271, 'old_count': 39, 'new_start': 271, 'new_count': 6}, 'lines': [('context', '\treturn 0;'), ('context', '}'), ('context', 'EXPORT_SYMBOL_GPL(qca_send_pre_shutdown_cmd);'), ('remove', ''), ('remove', 'static bool qca_filename_has_extension(const char *filename)'), ('remove', '{'), ('remove', "\tconst char *suffix = strrchr(filename, '.');"), ('remove', ''), ('remove', '\t/* File extensions require a dot, but not as the first or last character */'), ('remove', "\tif (!suffix || suffix == filename || *(suffix + 1) == '\\0')"), ('remove', '\t\treturn 0;'), ('remove', ''), ('remove', '\t/* Avoid matching directories with names that look like files with extensions */'), ('remove', "\treturn !strchr(suffix, '/');"), ('remove', '}'), ('remove', ''), ('remove', 'static bool qca_get_alt_nvm_file(char *filename, size_t max_size)'), ('remove', '{'), ('remove', '\tchar fwname[64];'), ('remove', '\tconst char *suffix;'), ('remove', ''), ('remove', '\t/* nvm file name has an extension, replace with .bin */'), ('remove', '\tif (qca_filename_has_extension(filename)) {'), ('remove', "\t\tsuffix = strrchr(filename, '.');"), ('remove', '\t\tstrscpy(fwname, filename, suffix - filename + 1);'), ('remove', '\t\tsnprintf(fwname + (suffix - filename),'), ('remove', '\t\t       sizeof(fwname) - (suffix - filename), ".bin");'), ('remove', '\t\t/* If nvm file is already the default one, return false to skip the retry. */'), ('remove', '\t\tif (strcmp(fwname, filename) == 0)'), ('remove', '\t\t\treturn false;'), ('remove', ''), ('remove', '\t\tsnprintf(filename, max_size, "%s", fwname);'), ('remove', '\t\treturn true;'), ('remove', '\t}'), ('remove', '\treturn false;'), ('remove', '}'), ('context', ''), ('context', 'static int qca_tlv_check_data(struct hci_dev *hdev,'), ('context', '\t\t\t       struct qca_fw_config *config,')]}
+2025-03-27 17:24:34.462 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-03-27 17:24:34.463 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 271, 'old_count': 39, 'new_start': 271, 'new_count': 6}, 'lines': [('context', '\treturn 0;'), ('context', '}'), ('context', 'EXPORT_SYMBOL_GPL(qca_send_pre_shutdown_cmd);'), ('remove', ''), ('remove', 'static bool qca_filename_has_extension(const char *filename)'), ('remove', '{'), ('remove', "\tconst char *suffix = strrchr(filename, '.');"), ('remove', ''), ('remove', '\t/* File extensions require a dot, but not as the first or last character */'), ('remove', "\tif (!suffix || suffix == filename || *(suffix + 1) == '\\0')"), ('remove', '\t\treturn 0;'), ('remove', ''), ('remove', '\t/* Avoid matching directories with names that look like files with extensions */'), ('remove', "\treturn !strchr(suffix, '/');"), ('remove', '}'), ('remove', ''), ('remove', 'static bool qca_get_alt_nvm_file(char *filename, size_t max_size)'), ('remove', '{'), ('remove', '\tchar fwname[64];'), ('remove', '\tconst char *suffix;'), ('remove', ''), ('remove', '\t/* nvm file name has an extension, replace with .bin */'), ('remove', '\tif (qca_filename_has_extension(filename)) {'), ('remove', "\t\tsuffix = strrchr(filename, '.');"), ('remove', '\t\tstrscpy(fwname, filename, suffix - filename + 1);'), ('remove', '\t\tsnprintf(fwname + (suffix - filename),'), ('remove', '\t\t       sizeof(fwname) - (suffix - filename), ".bin");'), ('remove', '\t\t/* If nvm file is already the default one, return false to skip the retry. */'), ('remove', '\t\tif (strcmp(fwname, filename) == 0)'), ('remove', '\t\t\treturn false;'), ('remove', ''), ('remove', '\t\tsnprintf(filename, max_size, "%s", fwname);'), ('remove', '\t\treturn true;'), ('remove', '\t}'), ('remove', '\treturn false;'), ('remove', '}'), ('context', ''), ('context', 'static int qca_tlv_check_data(struct hci_dev *hdev,'), ('context', '\t\t\t       struct qca_fw_config *config,')]}
+2025-03-27 17:24:34.466 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -597,19 +564,6 @@
+ 					   config->fwname, ret);
+ 				return ret;
+ 			}
+-		}
+-		/* If the board-specific file is missing, try loading the default
+-		 * one, unless that was attempted already.
+-		 */
+-		else if (config->type == TLV_TYPE_NVM &&
+-			 qca_get_alt_nvm_file(config->fwname, sizeof(config->fwname))) {
+-			bt_dev_info(hdev, "QCA Downloading %s", config->fwname);
+-			ret = request_firmware(&fw, config->fwname, &hdev->dev);
+-			if (ret) {
+-				bt_dev_err(hdev, "QCA Failed to request file: %s (%d)",
+-					   config->fwname, ret);
+-				return ret;
+-			}
+ 		} else {
+ 			bt_dev_err(hdev, "QCA Failed to request file: %s (%d)",
+ 				   config->fwname, ret);
+
+2025-03-27 17:24:34.468 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 597, 'old_count': 19, 'new_start': 564, 'new_count': 6}, 'lines': [('context', '\t\t\t\t\t   config->fwname, ret);'), ('context', '\t\t\t\treturn ret;'), ('context', '\t\t\t}'), ('remove', '\t\t}'), ('remove', '\t\t/* If the board-specific file is missing, try loading the default'), ('remove', '\t\t * one, unless that was attempted already.'), ('remove', '\t\t */'), ('remove', '\t\telse if (config->type == TLV_TYPE_NVM &&'), ('remove', '\t\t\t qca_get_alt_nvm_file(config->fwname, sizeof(config->fwname))) {'), ('remove', '\t\t\tbt_dev_info(hdev, "QCA Downloading %s", config->fwname);'), ('remove', '\t\t\tret = request_firmware(&fw, config->fwname, &hdev->dev);'), ('remove', '\t\t\tif (ret) {'), ('remove', '\t\t\t\tbt_dev_err(hdev, "QCA Failed to request file: %s (%d)",'), ('remove', '\t\t\t\t\t   config->fwname, ret);'), ('remove', '\t\t\t\treturn ret;'), ('remove', '\t\t\t}'), ('context', '\t\t} else {'), ('context', '\t\t\tbt_dev_err(hdev, "QCA Failed to request file: %s (%d)",'), ('context', '\t\t\t\t   config->fwname, ret);')]}
+2025-03-27 17:24:34.475 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-03-27 17:24:34.476 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 597, 'old_count': 19, 'new_start': 564, 'new_count': 6}, 'lines': [('context', '\t\t\t\t\t   config->fwname, ret);'), ('context', '\t\t\t\treturn ret;'), ('context', '\t\t\t}'), ('remove', '\t\t}'), ('remove', '\t\t/* If the board-specific file is missing, try loading the default'), ('remove', '\t\t * one, unless that was attempted already.'), ('remove', '\t\t */'), ('remove', '\t\telse if (config->type == TLV_TYPE_NVM &&'), ('remove', '\t\t\t qca_get_alt_nvm_file(config->fwname, sizeof(config->fwname))) {'), ('remove', '\t\t\tbt_dev_info(hdev, "QCA Downloading %s", config->fwname);'), ('remove', '\t\t\tret = request_firmware(&fw, config->fwname, &hdev->dev);'), ('remove', '\t\t\tif (ret) {'), ('remove', '\t\t\t\tbt_dev_err(hdev, "QCA Failed to request file: %s (%d)",'), ('remove', '\t\t\t\t\t   config->fwname, ret);'), ('remove', '\t\t\t\treturn ret;'), ('remove', '\t\t\t}'), ('context', '\t\t} else {'), ('context', '\t\t\tbt_dev_err(hdev, "QCA Failed to request file: %s (%d)",'), ('context', '\t\t\t\t   config->fwname, ret);')]}
+2025-03-27 17:24:34.476 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -746,43 +700,39 @@
+ 	return 0;
+ }
+ 
+-static void qca_get_nvm_name_by_board(char *fwname, size_t max_size,
+-		const char *stem, enum qca_btsoc_type soc_type,
++static void qca_generate_hsp_nvm_name(char *fwname, size_t max_size,
+ 		struct qca_btsoc_version ver, u8 rom_ver, u16 bid)
+ {
+ 	const char *variant;
+-	const char *prefix;
+-
+-	/* Set the default value to variant and prefix */
+-	variant = "";
+-	prefix = "b";
+-
+-	if (soc_type == QCA_QCA2066)
+-		prefix = "";
+-
+-	if (soc_type == QCA_WCN6855 || soc_type == QCA_QCA2066) {
+-		/* If the chip is manufactured by GlobalFoundries */
+-		if ((le32_to_cpu(ver.soc_id) & QCA_HSP_GF_SOC_MASK) == QCA_HSP_GF_SOC_ID)
+-			variant = "g";
+-	}
+-
+-	if (rom_ver != 0) {
+-		if (bid == 0x0 || bid == 0xffff)
+-			snprintf(fwname, max_size, "qca/%s%02x%s.bin", stem, rom_ver, variant);
+-		else
+-			snprintf(fwname, max_size, "qca/%s%02x%s.%s%02x", stem, rom_ver,
+-						variant, prefix, bid);
+-	} else {
+-		if (bid == 0x0 || bid == 0xffff)
+-			snprintf(fwname, max_size, "qca/%s%s.bin", stem, variant);
+-		else
+-			snprintf(fwname, max_size, "qca/%s%s.%s%02x", stem, variant, prefix, bid);
+-	}
++
++	/* hsp gf chip */
++	if ((le32_to_cpu(ver.soc_id) & QCA_HSP_GF_SOC_MASK) == QCA_HSP_GF_SOC_ID)
++		variant = "g";
++	else
++		variant = "";
++
++	if (bid == 0x0)
++		snprintf(fwname, max_size, "qca/hpnv%02x%s.bin", rom_ver, variant);
++	else
++		snprintf(fwname, max_size, "qca/hpnv%02x%s.%x", rom_ver, variant, bid);
++}
++
++static inline void qca_get_nvm_name_generic(struct qca_fw_config *cfg,
++					    const char *stem, u8 rom_ver, u16 bid)
++{
++	if (bid == 0x0)
++		snprintf(cfg->fwname, sizeof(cfg->fwname), "qca/%snv%02x.bin", stem, rom_ver);
++	else if (bid & 0xff00)
++		snprintf(cfg->fwname, sizeof(cfg->fwname),
++			 "qca/%snv%02x.b%x", stem, rom_ver, bid);
++	else
++		snprintf(cfg->fwname, sizeof(cfg->fwname),
++			 "qca/%snv%02x.b%02x", stem, rom_ver, bid);
+ }
+ 
+ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 		   enum qca_btsoc_type soc_type, struct qca_btsoc_version ver,
+-		   const char *firmware_name, const char *rampatch_name)
++		   const char *firmware_name)
+ {
+ 	struct qca_fw_config config = {};
+ 	int err;
+
+2025-03-27 17:24:34.477 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 746, 'old_count': 43, 'new_start': 700, 'new_count': 39}, 'lines': [('context', '\treturn 0;'), ('context', '}'), ('context', ''), ('remove', 'static void qca_get_nvm_name_by_board(char *fwname, size_t max_size,'), ('remove', '\t\tconst char *stem, enum qca_btsoc_type soc_type,'), ('add', 'static void qca_generate_hsp_nvm_name(char *fwname, size_t max_size,'), ('context', '\t\tstruct qca_btsoc_version ver, u8 rom_ver, u16 bid)'), ('context', '{'), ('context', '\tconst char *variant;'), ('remove', '\tconst char *prefix;'), ('remove', ''), ('remove', '\t/* Set the default value to variant and prefix */'), ('remove', '\tvariant = "";'), ('remove', '\tprefix = "b";'), ('remove', ''), ('remove', '\tif (soc_type == QCA_QCA2066)'), ('remove', '\t\tprefix = "";'), ('remove', ''), ('remove', '\tif (soc_type == QCA_WCN6855 || soc_type == QCA_QCA2066) {'), ('remove', '\t\t/* If the chip is manufactured by GlobalFoundries */'), ('remove', '\t\tif ((le32_to_cpu(ver.soc_id) & QCA_HSP_GF_SOC_MASK) == QCA_HSP_GF_SOC_ID)'), ('remove', '\t\t\tvariant = "g";'), ('remove', '\t}'), ('remove', ''), ('remove', '\tif (rom_ver != 0) {'), ('remove', '\t\tif (bid == 0x0 || bid == 0xffff)'), ('remove', '\t\t\tsnprintf(fwname, max_size, "qca/%s%02x%s.bin", stem, rom_ver, variant);'), ('remove', '\t\telse'), ('remove', '\t\t\tsnprintf(fwname, max_size, "qca/%s%02x%s.%s%02x", stem, rom_ver,'), ('remove', '\t\t\t\t\t\tvariant, prefix, bid);'), ('remove', '\t} else {'), ('remove', '\t\tif (bid == 0x0 || bid == 0xffff)'), ('remove', '\t\t\tsnprintf(fwname, max_size, "qca/%s%s.bin", stem, variant);'), ('remove', '\t\telse'), ('remove', '\t\t\tsnprintf(fwname, max_size, "qca/%s%s.%s%02x", stem, variant, prefix, bid);'), ('remove', '\t}'), ('add', ''), ('add', '\t/* hsp gf chip */'), ('add', '\tif ((le32_to_cpu(ver.soc_id) & QCA_HSP_GF_SOC_MASK) == QCA_HSP_GF_SOC_ID)'), ('add', '\t\tvariant = "g";'), ('add', '\telse'), ('add', '\t\tvariant = "";'), ('add', ''), ('add', '\tif (bid == 0x0)'), ('add', '\t\tsnprintf(fwname, max_size, "qca/hpnv%02x%s.bin", rom_ver, variant);'), ('add', '\telse'), ('add', '\t\tsnprintf(fwname, max_size, "qca/hpnv%02x%s.%x", rom_ver, variant, bid);'), ('add', '}'), ('add', ''), ('add', 'static inline void qca_get_nvm_name_generic(struct qca_fw_config *cfg,'), ('add', '\t\t\t\t\t    const char *stem, u8 rom_ver, u16 bid)'), ('add', '{'), ('add', '\tif (bid == 0x0)'), ('add', '\t\tsnprintf(cfg->fwname, sizeof(cfg->fwname), "qca/%snv%02x.bin", stem, rom_ver);'), ('add', '\telse if (bid & 0xff00)'), ('add', '\t\tsnprintf(cfg->fwname, sizeof(cfg->fwname),'), ('add', '\t\t\t "qca/%snv%02x.b%x", stem, rom_ver, bid);'), ('add', '\telse'), ('add', '\t\tsnprintf(cfg->fwname, sizeof(cfg->fwname),'), ('add', '\t\t\t "qca/%snv%02x.b%02x", stem, rom_ver, bid);'), ('context', '}'), ('context', ''), ('context', 'int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,'), ('context', '\t\t   enum qca_btsoc_type soc_type, struct qca_btsoc_version ver,'), ('remove', '\t\t   const char *firmware_name, const char *rampatch_name)'), ('add', '\t\t   const char *firmware_name)'), ('context', '{'), ('context', '\tstruct qca_fw_config config = {};'), ('context', '\tint err;')]}
+2025-03-27 17:24:34.498 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-03-27 17:24:34.499 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 746, 'old_count': 43, 'new_start': 700, 'new_count': 39}, 'lines': [('context', '\treturn 0;'), ('context', '}'), ('context', ''), ('remove', 'static void qca_get_nvm_name_by_board(char *fwname, size_t max_size,'), ('remove', '\t\tconst char *stem, enum qca_btsoc_type soc_type,'), ('add', 'static void qca_generate_hsp_nvm_name(char *fwname, size_t max_size,'), ('context', '\t\tstruct qca_btsoc_version ver, u8 rom_ver, u16 bid)'), ('context', '{'), ('context', '\tconst char *variant;'), ('remove', '\tconst char *prefix;'), ('remove', ''), ('remove', '\t/* Set the default value to variant and prefix */'), ('remove', '\tvariant = "";'), ('remove', '\tprefix = "b";'), ('remove', ''), ('remove', '\tif (soc_type == QCA_QCA2066)'), ('remove', '\t\tprefix = "";'), ('remove', ''), ('remove', '\tif (soc_type == QCA_WCN6855 || soc_type == QCA_QCA2066) {'), ('remove', '\t\t/* If the chip is manufactured by GlobalFoundries */'), ('remove', '\t\tif ((le32_to_cpu(ver.soc_id) & QCA_HSP_GF_SOC_MASK) == QCA_HSP_GF_SOC_ID)'), ('remove', '\t\t\tvariant = "g";'), ('remove', '\t}'), ('remove', ''), ('remove', '\tif (rom_ver != 0) {'), ('remove', '\t\tif (bid == 0x0 || bid == 0xffff)'), ('remove', '\t\t\tsnprintf(fwname, max_size, "qca/%s%02x%s.bin", stem, rom_ver, variant);'), ('remove', '\t\telse'), ('remove', '\t\t\tsnprintf(fwname, max_size, "qca/%s%02x%s.%s%02x", stem, rom_ver,'), ('remove', '\t\t\t\t\t\tvariant, prefix, bid);'), ('remove', '\t} else {'), ('remove', '\t\tif (bid == 0x0 || bid == 0xffff)'), ('remove', '\t\t\tsnprintf(fwname, max_size, "qca/%s%s.bin", stem, variant);'), ('remove', '\t\telse'), ('remove', '\t\t\tsnprintf(fwname, max_size, "qca/%s%s.%s%02x", stem, variant, prefix, bid);'), ('remove', '\t}'), ('add', ''), ('add', '\t/* hsp gf chip */'), ('add', '\tif ((le32_to_cpu(ver.soc_id) & QCA_HSP_GF_SOC_MASK) == QCA_HSP_GF_SOC_ID)'), ('add', '\t\tvariant = "g";'), ('add', '\telse'), ('add', '\t\tvariant = "";'), ('add', ''), ('add', '\tif (bid == 0x0)'), ('add', '\t\tsnprintf(fwname, max_size, "qca/hpnv%02x%s.bin", rom_ver, variant);'), ('add', '\telse'), ('add', '\t\tsnprintf(fwname, max_size, "qca/hpnv%02x%s.%x", rom_ver, variant, bid);'), ('add', '}'), ('add', ''), ('add', 'static inline void qca_get_nvm_name_generic(struct qca_fw_config *cfg,'), ('add', '\t\t\t\t\t    const char *stem, u8 rom_ver, u16 bid)'), ('add', '{'), ('add', '\tif (bid == 0x0)'), ('add', '\t\tsnprintf(cfg->fwname, sizeof(cfg->fwname), "qca/%snv%02x.bin", stem, rom_ver);'), ('add', '\telse if (bid & 0xff00)'), ('add', '\t\tsnprintf(cfg->fwname, sizeof(cfg->fwname),'), ('add', '\t\t\t "qca/%snv%02x.b%x", stem, rom_ver, bid);'), ('add', '\telse'), ('add', '\t\tsnprintf(cfg->fwname, sizeof(cfg->fwname),'), ('add', '\t\t\t "qca/%snv%02x.b%02x", stem, rom_ver, bid);'), ('context', '}'), ('context', ''), ('context', 'int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,'), ('context', '\t\t   enum qca_btsoc_type soc_type, struct qca_btsoc_version ver,'), ('remove', '\t\t   const char *firmware_name, const char *rampatch_name)'), ('add', '\t\t   const char *firmware_name)'), ('context', '{'), ('context', '\tstruct qca_fw_config config = {};'), ('context', '\tint err;')]}
+2025-03-27 17:24:34.499 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -811,48 +761,44 @@
+ 
+ 	config.type = TLV_TYPE_PATCH;
+-	if (rampatch_name) {
+-		snprintf(config.fwname, sizeof(config.fwname), "qca/%s", rampatch_name);
+-	} else {
+-		switch (soc_type) {
+-		case QCA_WCN3990:
+-		case QCA_WCN3991:
+-		case QCA_WCN3998:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/crbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_WCN3988:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/apbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_QCA2066:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/hpbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_QCA6390:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/htbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_WCN6750:
+-			/* Choose mbn file by default.If mbn file is not found
+-			 * then choose tlv file
+-			 */
+-			config.type = ELF_TYPE_PATCH;
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/msbtfw%02x.mbn", rom_ver);
+-			break;
+-		case QCA_WCN6855:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/hpbtfw%02x.tlv", rom_ver);
+-			break;
+-		case QCA_WCN7850:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/hmtbtfw%02x.tlv", rom_ver);
+-			break;
+-		default:
+-			snprintf(config.fwname, sizeof(config.fwname),
+-				 "qca/rampatch_%08x.bin", soc_ver);
+-		}
++	switch (soc_type) {
++	case QCA_WCN3990:
++	case QCA_WCN3991:
++	case QCA_WCN3998:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/crbtfw%02x.tlv", rom_ver);
++		break;
++	case QCA_WCN3988:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/apbtfw%02x.tlv", rom_ver);
++		break;
++	case QCA_QCA2066:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/hpbtfw%02x.tlv", rom_ver);
++		break;
++	case QCA_QCA6390:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/htbtfw%02x.tlv", rom_ver);
++		break;
++	case QCA_WCN6750:
++		/* Choose mbn file by default.If mbn file is not found
++		 * then choose tlv file
++		 */
++		config.type = ELF_TYPE_PATCH;
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/msbtfw%02x.mbn", rom_ver);
++		break;
++	case QCA_WCN6855:
++		qca_read_fw_board_id(hdev, &boardid);
++		qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
++					  "hpnv", soc_type, ver, rom_ver, boardid);
++		break;
++	case QCA_WCN7850:
++		qca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);
++		break;
++	default:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/rampatch_%08x.bin", soc_ver);
+ 	}
+ 
+ 	err = qca_download_firmware(hdev, &config, soc_type, rom_ver);
+
+2025-03-27 17:24:34.500 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 811, 'old_count': 48, 'new_start': 761, 'new_count': 44}, 'lines': [('context', ''), ('context', '\tconfig.type = TLV_TYPE_PATCH;'), ('remove', '\tif (rampatch_name) {'), ('remove', '\t\tsnprintf(config.fwname, sizeof(config.fwname), "qca/%s", rampatch_name);'), ('remove', '\t} else {'), ('remove', '\t\tswitch (soc_type) {'), ('remove', '\t\tcase QCA_WCN3990:'), ('remove', '\t\tcase QCA_WCN3991:'), ('remove', '\t\tcase QCA_WCN3998:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/crbtfw%02x.tlv", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tcase QCA_WCN3988:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/apbtfw%02x.tlv", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tcase QCA_QCA2066:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/hpbtfw%02x.tlv", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tcase QCA_QCA6390:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/htbtfw%02x.tlv", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tcase QCA_WCN6750:'), ('remove', '\t\t\t/* Choose mbn file by default.If mbn file is not found'), ('remove', '\t\t\t * then choose tlv file'), ('remove', '\t\t\t */'), ('remove', '\t\t\tconfig.type = ELF_TYPE_PATCH;'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/msbtfw%02x.mbn", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tcase QCA_WCN6855:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/hpbtfw%02x.tlv", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tcase QCA_WCN7850:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/hmtbtfw%02x.tlv", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tdefault:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/rampatch_%08x.bin", soc_ver);'), ('remove', '\t\t}'), ('add', '\tswitch (soc_type) {'), ('add', '\tcase QCA_WCN3990:'), ('add', '\tcase QCA_WCN3991:'), ('add', '\tcase QCA_WCN3998:'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/crbtfw%02x.tlv", rom_ver);'), ('add', '\t\tbreak;'), ('add', '\tcase QCA_WCN3988:'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/apbtfw%02x.tlv", rom_ver);'), ('add', '\t\tbreak;'), ('add', '\tcase QCA_QCA2066:'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/hpbtfw%02x.tlv", rom_ver);'), ('add', '\t\tbreak;'), ('add', '\tcase QCA_QCA6390:'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/htbtfw%02x.tlv", rom_ver);'), ('add', '\t\tbreak;'), ('add', '\tcase QCA_WCN6750:'), ('add', '\t\t/* Choose mbn file by default.If mbn file is not found'), ('add', '\t\t * then choose tlv file'), ('add', '\t\t */'), ('add', '\t\tconfig.type = ELF_TYPE_PATCH;'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/msbtfw%02x.mbn", rom_ver);'), ('add', '\t\tbreak;'), ('add', '\tcase QCA_WCN6855:'), ('add', '\t\tqca_read_fw_board_id(hdev, &boardid);'), ('add', '\t\tqca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t\t\t  "hpnv", soc_type, ver, rom_ver, boardid);'), ('add', '\t\tbreak;'), ('add', '\tcase QCA_WCN7850:'), ('add', '\t\tqca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);'), ('add', '\t\tbreak;'), ('add', '\tdefault:'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/rampatch_%08x.bin", soc_ver);'), ('context', '\t}'), ('context', ''), ('context', '\terr = qca_download_firmware(hdev, &config, soc_type, rom_ver);')]}
+2025-03-27 17:24:34.517 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-03-27 17:24:34.517 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 811, 'old_count': 48, 'new_start': 761, 'new_count': 44}, 'lines': [('context', ''), ('context', '\tconfig.type = TLV_TYPE_PATCH;'), ('remove', '\tif (rampatch_name) {'), ('remove', '\t\tsnprintf(config.fwname, sizeof(config.fwname), "qca/%s", rampatch_name);'), ('remove', '\t} else {'), ('remove', '\t\tswitch (soc_type) {'), ('remove', '\t\tcase QCA_WCN3990:'), ('remove', '\t\tcase QCA_WCN3991:'), ('remove', '\t\tcase QCA_WCN3998:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/crbtfw%02x.tlv", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tcase QCA_WCN3988:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/apbtfw%02x.tlv", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tcase QCA_QCA2066:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/hpbtfw%02x.tlv", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tcase QCA_QCA6390:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/htbtfw%02x.tlv", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tcase QCA_WCN6750:'), ('remove', '\t\t\t/* Choose mbn file by default.If mbn file is not found'), ('remove', '\t\t\t * then choose tlv file'), ('remove', '\t\t\t */'), ('remove', '\t\t\tconfig.type = ELF_TYPE_PATCH;'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/msbtfw%02x.mbn", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tcase QCA_WCN6855:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/hpbtfw%02x.tlv", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tcase QCA_WCN7850:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/hmtbtfw%02x.tlv", rom_ver);'), ('remove', '\t\t\tbreak;'), ('remove', '\t\tdefault:'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "qca/rampatch_%08x.bin", soc_ver);'), ('remove', '\t\t}'), ('add', '\tswitch (soc_type) {'), ('add', '\tcase QCA_WCN3990:'), ('add', '\tcase QCA_WCN3991:'), ('add', '\tcase QCA_WCN3998:'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/crbtfw%02x.tlv", rom_ver);'), ('add', '\t\tbreak;'), ('add', '\tcase QCA_WCN3988:'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/apbtfw%02x.tlv", rom_ver);'), ('add', '\t\tbreak;'), ('add', '\tcase QCA_QCA2066:'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/hpbtfw%02x.tlv", rom_ver);'), ('add', '\t\tbreak;'), ('add', '\tcase QCA_QCA6390:'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/htbtfw%02x.tlv", rom_ver);'), ('add', '\t\tbreak;'), ('add', '\tcase QCA_WCN6750:'), ('add', '\t\t/* Choose mbn file by default.If mbn file is not found'), ('add', '\t\t * then choose tlv file'), ('add', '\t\t */'), ('add', '\t\tconfig.type = ELF_TYPE_PATCH;'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/msbtfw%02x.mbn", rom_ver);'), ('add', '\t\tbreak;'), ('add', '\tcase QCA_WCN6855:'), ('add', '\t\tqca_read_fw_board_id(hdev, &boardid);'), ('add', '\t\tqca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t\t\t  "hpnv", soc_type, ver, rom_ver, boardid);'), ('add', '\t\tbreak;'), ('add', '\tcase QCA_WCN7850:'), ('add', '\t\tqca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);'), ('add', '\t\tbreak;'), ('add', '\tdefault:'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/rampatch_%08x.bin", soc_ver);'), ('context', '\t}'), ('context', ''), ('context', '\terr = qca_download_firmware(hdev, &config, soc_type, rom_ver);')]}
+2025-03-27 17:24:34.518 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -870,14 +816,8 @@
+ 	config.type = TLV_TYPE_NVM;
+ 	if (firmware_name) {
+-		/* The firmware name has an extension, use it directly */
+-		if (qca_filename_has_extension(firmware_name)) {
+-			snprintf(config.fwname, sizeof(config.fwname), "qca/%s", firmware_name);
+-		} else {
+-			qca_read_fw_board_id(hdev, &boardid);
+-			qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
+-				 firmware_name, soc_type, ver, 0, boardid);
+-		}
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/%s", firmware_name);
+ 	} else {
+ 		switch (soc_type) {
+ 		case QCA_WCN3990:
+
+2025-03-27 17:24:34.518 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 870, 'old_count': 14, 'new_start': 816, 'new_count': 8}, 'lines': [('context', '\tconfig.type = TLV_TYPE_NVM;'), ('context', '\tif (firmware_name) {'), ('remove', '\t\t/* The firmware name has an extension, use it directly */'), ('remove', '\t\tif (qca_filename_has_extension(firmware_name)) {'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname), "qca/%s", firmware_name);'), ('remove', '\t\t} else {'), ('remove', '\t\t\tqca_read_fw_board_id(hdev, &boardid);'), ('remove', '\t\t\tqca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t firmware_name, soc_type, ver, 0, boardid);'), ('remove', '\t\t}'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/%s", firmware_name);'), ('context', '\t} else {'), ('context', '\t\tswitch (soc_type) {'), ('context', '\t\tcase QCA_WCN3990:')]}
+2025-03-27 17:24:34.524 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-03-27 17:24:34.525 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 870, 'old_count': 14, 'new_start': 816, 'new_count': 8}, 'lines': [('context', '\tconfig.type = TLV_TYPE_NVM;'), ('context', '\tif (firmware_name) {'), ('remove', '\t\t/* The firmware name has an extension, use it directly */'), ('remove', '\t\tif (qca_filename_has_extension(firmware_name)) {'), ('remove', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname), "qca/%s", firmware_name);'), ('remove', '\t\t} else {'), ('remove', '\t\t\tqca_read_fw_board_id(hdev, &boardid);'), ('remove', '\t\t\tqca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t firmware_name, soc_type, ver, 0, boardid);'), ('remove', '\t\t}'), ('add', '\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('add', '\t\t\t "qca/%s", firmware_name);'), ('context', '\t} else {'), ('context', '\t\tswitch (soc_type) {'), ('context', '\t\tcase QCA_WCN3990:')]}
+2025-03-27 17:24:34.526 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -896,9 +836,8 @@
+ 				 "qca/apnv%02x.bin", rom_ver);
+ 			break;
+ 		case QCA_QCA2066:
+-			qca_get_nvm_name_by_board(config.fwname,
+-				sizeof(config.fwname), "hpnv", soc_type, ver,
+-				rom_ver, boardid);
++			qca_generate_hsp_nvm_name(config.fwname,
++				sizeof(config.fwname), ver, rom_ver, boardid);
+ 			break;
+ 		case QCA_QCA6390:
+ 			snprintf(config.fwname, sizeof(config.fwname),
+
+2025-03-27 17:24:34.526 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 896, 'old_count': 9, 'new_start': 836, 'new_count': 8}, 'lines': [('context', '\t\t\t\t "qca/apnv%02x.bin", rom_ver);'), ('context', '\t\t\tbreak;'), ('context', '\t\tcase QCA_QCA2066:'), ('remove', '\t\t\tqca_get_nvm_name_by_board(config.fwname,'), ('remove', '\t\t\t\tsizeof(config.fwname), "hpnv", soc_type, ver,'), ('remove', '\t\t\t\trom_ver, boardid);'), ('add', '\t\t\tqca_generate_hsp_nvm_name(config.fwname,'), ('add', '\t\t\t\tsizeof(config.fwname), ver, rom_ver, boardid);'), ('context', '\t\t\tbreak;'), ('context', '\t\tcase QCA_QCA6390:'), ('context', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),')]}
+2025-03-27 17:24:34.530 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-03-27 17:24:34.531 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 896, 'old_count': 9, 'new_start': 836, 'new_count': 8}, 'lines': [('context', '\t\t\t\t "qca/apnv%02x.bin", rom_ver);'), ('context', '\t\t\tbreak;'), ('context', '\t\tcase QCA_QCA2066:'), ('remove', '\t\t\tqca_get_nvm_name_by_board(config.fwname,'), ('remove', '\t\t\t\tsizeof(config.fwname), "hpnv", soc_type, ver,'), ('remove', '\t\t\t\trom_ver, boardid);'), ('add', '\t\t\tqca_generate_hsp_nvm_name(config.fwname,'), ('add', '\t\t\t\tsizeof(config.fwname), ver, rom_ver, boardid);'), ('context', '\t\t\tbreak;'), ('context', '\t\tcase QCA_QCA6390:'), ('context', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),')]}
+2025-03-27 17:24:34.531 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -913,9 +852,9 @@
+ 				 "qca/hpnv%02x.bin", rom_ver);
+ 			break;
+ 		case QCA_WCN7850:
+-			qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
+-				 "hmtnv", soc_type, ver, rom_ver, boardid);
++			qca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);
+ 			break;
++
+ 		default:
+ 			snprintf(config.fwname, sizeof(config.fwname),
+ 				 "qca/nvm_%08x.bin", soc_ver);
+2025-03-27 17:24:34.532 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 913, 'old_count': 9, 'new_start': 852, 'new_count': 9}, 'lines': [('context', '\t\t\t\t "qca/hpnv%02x.bin", rom_ver);'), ('context', '\t\t\tbreak;'), ('context', '\t\tcase QCA_WCN7850:'), ('remove', '\t\t\tqca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "hmtnv", soc_type, ver, rom_ver, boardid);'), ('add', '\t\t\tqca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);'), ('context', '\t\t\tbreak;'), ('add', ''), ('context', '\t\tdefault:'), ('context', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('context', '\t\t\t\t "qca/nvm_%08x.bin", soc_ver);')]}
+2025-03-27 17:24:34.536 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-03-27 17:24:34.537 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 913, 'old_count': 9, 'new_start': 852, 'new_count': 9}, 'lines': [('context', '\t\t\t\t "qca/hpnv%02x.bin", rom_ver);'), ('context', '\t\t\tbreak;'), ('context', '\t\tcase QCA_WCN7850:'), ('remove', '\t\t\tqca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),'), ('remove', '\t\t\t\t "hmtnv", soc_type, ver, rom_ver, boardid);'), ('add', '\t\t\tqca_get_nvm_name_generic(&config, "hmt", rom_ver, boardid);'), ('context', '\t\t\tbreak;'), ('add', ''), ('context', '\t\tdefault:'), ('context', '\t\t\tsnprintf(config.fwname, sizeof(config.fwname),'), ('context', '\t\t\t\t "qca/nvm_%08x.bin", soc_ver);')]}
+2025-03-27 17:24:34.539 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: drivers/bluetooth/btqca.c
+2025-03-27 17:24:34.541 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/workspace/sow/backport-test/linux/drivers/bluetooth/btqca.c
+2025-03-27 17:24:34.543 | INFO     | modules.patch_adapter:_generate_adapted_patch:271 - 文件未修改: drivers/bluetooth/btqca.c
+2025-03-27 17:24:34.544 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-03-27 17:24:34.544 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_linux-6.12.y_20250327_172433
+2025-03-27 17:24:34.917 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-03-27 17:24:34.919 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-03-27 17:24:34.922 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/gregkh/linux/a2fad2/metrics/patch_adapter_metrics.json
+2025-03-27 17:24:34.923 | INFO     | modules.base_module:_should_run:93 - 适配补丁失败，跳过编译
+2025-03-27 17:24:34.924 | INFO     | core.adaptation_pipeline:process_patch:106 - 补丁处理完成，耗时: 7.44秒
+2025-03-27 17:24:34.926 | INFO     | __main__:_save_results:439 - 结果已保存到: results/linux-6.12.y_a2fad2_20250327_172434/result.json
+2025-03-27 17:24:34.926 | INFO     | __main__:_print_summary:449 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-03-27 17:24:34.927 | INFO     | __main__:_print_summary:470 - ==================================================
+2025-03-27 17:24:34.927 | INFO     | __main__:_print_summary:471 - 处理摘要 - 提交: a2fad2
+2025-03-27 17:24:34.930 | INFO     | __main__:_print_summary:472 - 结果: 处理失败 (方法: failed)
+2025-03-27 17:24:34.932 | INFO     | __main__:_print_summary:477 - ==================================================
+2025-03-27 17:24:34.936 | INFO     | __main__:_print_mode2_statistics:520 - ============================================================
+2025-03-27 17:24:34.937 | INFO     | __main__:_print_mode2_statistics:521 - 模式2处理统计
+2025-03-27 17:24:34.937 | INFO     | __main__:_print_mode2_statistics:522 - ============================================================
+2025-03-27 17:24:34.938 | INFO     | __main__:_print_mode2_statistics:523 - 总提交数: 1
+2025-03-27 17:24:34.938 | INFO     | __main__:_print_mode2_statistics:524 - 直接应用成功: 0
+2025-03-27 17:24:34.939 | INFO     | __main__:_print_mode2_statistics:525 - 需要适配数量: 1
+2025-03-27 17:24:34.939 | INFO     | __main__:_print_mode2_statistics:526 - 适配成功数量: 0
+2025-03-27 17:24:34.940 | INFO     | __main__:_print_mode2_statistics:527 - - LLM适配成功: 0
+2025-03-27 17:24:34.940 | INFO     | __main__:_print_mode2_statistics:528 - - 补丁适配成功: 0
+2025-03-27 17:24:34.941 | INFO     | __main__:_print_mode2_statistics:529 - - 编译成功: 0
+2025-03-27 17:24:34.941 | INFO     | __main__:_print_mode2_statistics:530 - 适配失败数量: 1
+2025-03-27 17:24:34.941 | INFO     | __main__:_print_mode2_statistics:532 - 适配成功率: 0.00%
+2025-03-27 17:24:34.942 | INFO     | __main__:_print_mode2_statistics:535 - 
+失败的提交:
+2025-03-27 17:24:34.943 | INFO     | __main__:_print_mode2_statistics:537 -   - a2fad2: None
+2025-03-27 17:24:34.943 | INFO     | __main__:_print_mode2_statistics:539 - ============================================================
+2025-03-27 17:24:34.946 | INFO     | __main__:_print_mode2_statistics:567 - 统计结果已保存到: statistics/mode2_stats_linux-6.12.y_20250327_172434.json
+2025-03-27 17:24:34.946 | INFO     | __main__:run:122 - 处理完成

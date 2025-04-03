@@ -1,0 +1,1540 @@
+2025-04-03 15:55:29.739 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250403_155529.log
+2025-04-03 15:55:29.739 | INFO     | __main__:run:113 - 开始执行 模式2
+2025-04-03 15:55:29.740 | INFO     | __main__:_get_commits_list:258 - commits_file:workspace/gregkh/linux_cache/branch_linux-6.12.y_commits.json
+2025-04-03 15:55:29.740 | INFO     | __main__:_get_commits_list:259 - use_cached_commits:True
+2025-04-03 15:55:29.740 | INFO     | __main__:_get_commits_list:262 - 从缓存文件加载commits信息
+2025-04-03 15:55:29.745 | INFO     | __main__:_process_mode2:171 - 找到 296 个上游提交
+2025-04-03 15:55:29.745 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: direct_apply
+2025-04-03 15:55:29.746 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: chunk_analyzer
+2025-04-03 15:55:29.746 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: llm_adapter
+2025-04-03 15:55:29.746 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: patch_adapter
+2025-04-03 15:55:29.747 | INFO     | core.adaptation_pipeline:_load_modules:57 - 已加载模块: compiler
+2025-04-03 15:55:29.747 | INFO     | __main__:_process_mode2:200 - 处理提交 184/1: 795042
+2025-04-03 15:55:29.748 | INFO     | core.adaptation_pipeline:process_patch:69 - 开始处理补丁: 79504249d7e27cad4a3eeb9afc6386e418728ce0
+2025-04-03 15:55:29.748 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: direct_apply
+2025-04-03 15:55:29.851 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: patch failed: drivers/hid/hid-steam.c:1307\nerror: drivers/hid/hid-steam.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/patches/upstream_795042.patch', 'success': False, 'timestamp': '2025-03-20T07:57:16.787780'}
+2025-04-03 15:55:29.852 | INFO     | core.adaptation_pipeline:process_patch:84 - 执行模块: chunk_analyzer
+2025-04-03 15:55:29.852 | INFO     | modules.chunk_analyzer:execute:51 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/patches/upstream_795042.patch
+2025-04-03 15:55:29.853 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:158 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/patches/upstream_795042.patch
+2025-04-03 15:55:29.853 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:163 - 补丁文件包含 109 行内容
+2025-04-03 15:55:29.854 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:178 - 发现修改文件: drivers/hid/hid-steam.c
+2025-04-03 15:55:29.855 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:229 - 发现修改块: drivers/hid/hid-steam.c @@ -313,6 +313,7 @@ (modification)
+2025-04-03 15:55:29.855 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:229 - 发现修改块: drivers/hid/hid-steam.c @@ -1072,6 +1073,31 @@ (modification)
+2025-04-03 15:55:29.855 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:229 - 发现修改块: drivers/hid/hid-steam.c @@ -1117,8 +1143,7 @@ (modification)
+2025-04-03 15:55:29.856 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:229 - 发现修改块: drivers/hid/hid-steam.c @@ -1135,11 +1160,7 @@ (modification)
+2025-04-03 15:55:29.856 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:229 - 发现修改块: drivers/hid/hid-steam.c @@ -1231,6 +1252,7 @@ (modification)
+2025-04-03 15:55:29.857 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:229 - 发现修改块: drivers/hid/hid-steam.c @@ -1291,6 +1313,7 @@ (modification)
+2025-04-03 15:55:29.857 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:229 - 发现修改块: drivers/hid/hid-steam.c @@ -1307,6 +1330,7 @@ (modification)
+2025-04-03 15:55:29.857 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 补丁分解完成，共找到 7 个修改块
+2025-04-03 15:55:29.858 | INFO     | modules.chunk_analyzer:execute:55 - 补丁被分解为 7 个块
+2025-04-03 15:55:29.859 | INFO     | modules.chunk_analyzer:_create_chunk_patches:268 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/patches/upstream_795042.patch
+2025-04-03 15:55:29.860 | INFO     | modules.chunk_analyzer:_create_chunk_patches:294 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_001_20250403_155529.patch (修改文件: drivers/hid/hid-steam.c)
+2025-04-03 15:55:29.860 | INFO     | modules.chunk_analyzer:_create_chunk_patches:294 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_002_20250403_155529.patch (修改文件: drivers/hid/hid-steam.c)
+2025-04-03 15:55:29.861 | INFO     | modules.chunk_analyzer:_create_chunk_patches:294 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_003_20250403_155529.patch (修改文件: drivers/hid/hid-steam.c)
+2025-04-03 15:55:29.861 | INFO     | modules.chunk_analyzer:_create_chunk_patches:294 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_004_20250403_155529.patch (修改文件: drivers/hid/hid-steam.c)
+2025-04-03 15:55:29.862 | INFO     | modules.chunk_analyzer:_create_chunk_patches:294 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_005_20250403_155529.patch (修改文件: drivers/hid/hid-steam.c)
+2025-04-03 15:55:29.862 | INFO     | modules.chunk_analyzer:_create_chunk_patches:294 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_006_20250403_155529.patch (修改文件: drivers/hid/hid-steam.c)
+2025-04-03 15:55:29.863 | INFO     | modules.chunk_analyzer:_create_chunk_patches:294 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_007_20250403_155529.patch (修改文件: drivers/hid/hid-steam.c)
+2025-04-03 15:55:29.863 | INFO     | modules.chunk_analyzer:execute:59 - 已为 7 个块创建单独的补丁文件
+2025-04-03 15:55:29.863 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: rev-parse --abbrev-ref HEAD
+2025-04-03 15:55:29.868 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:311 - 当前分支: linux-6.12.y
+2025-04-03 15:55:29.868 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: checkout -b chunk_test_20250403_155529_f296d7
+2025-04-03 15:55:29.873 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:319 - 创建测试分支: chunk_test_20250403_155529_f296d7
+2025-04-03 15:55:29.873 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:325 - 尝试应用补丁块: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_001_20250403_155529.patch
+2025-04-03 15:55:29.874 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:329 - 方法1: 尝试 git apply --ignore-space-change
+2025-04-03 15:55:29.874 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_001_20250403_155529.patch
+2025-04-03 15:55:29.877 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:334 - 成功应用块补丁(方法1): chunk_001_20250403_155529.patch
+2025-04-03 15:55:29.877 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: add .
+2025-04-03 15:55:30.220 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: commit -m Applied chunk patch: chunk_001_20250403_155529.patch
+2025-04-03 15:55:30.439 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:325 - 尝试应用补丁块: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_002_20250403_155529.patch
+2025-04-03 15:55:30.439 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:329 - 方法1: 尝试 git apply --ignore-space-change
+2025-04-03 15:55:30.440 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_002_20250403_155529.patch
+2025-04-03 15:55:30.443 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:334 - 成功应用块补丁(方法1): chunk_002_20250403_155529.patch
+2025-04-03 15:55:30.444 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: add .
+2025-04-03 15:55:30.758 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: commit -m Applied chunk patch: chunk_002_20250403_155529.patch
+2025-04-03 15:55:30.941 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:325 - 尝试应用补丁块: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_003_20250403_155529.patch
+2025-04-03 15:55:30.941 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:329 - 方法1: 尝试 git apply --ignore-space-change
+2025-04-03 15:55:30.941 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_003_20250403_155529.patch
+2025-04-03 15:55:30.947 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:334 - 成功应用块补丁(方法1): chunk_003_20250403_155529.patch
+2025-04-03 15:55:30.948 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: add .
+2025-04-03 15:55:31.246 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: commit -m Applied chunk patch: chunk_003_20250403_155529.patch
+2025-04-03 15:55:31.406 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:325 - 尝试应用补丁块: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_004_20250403_155529.patch
+2025-04-03 15:55:31.406 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:329 - 方法1: 尝试 git apply --ignore-space-change
+2025-04-03 15:55:31.406 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_004_20250403_155529.patch
+2025-04-03 15:55:31.411 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:334 - 成功应用块补丁(方法1): chunk_004_20250403_155529.patch
+2025-04-03 15:55:31.411 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: add .
+2025-04-03 15:55:31.652 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: commit -m Applied chunk patch: chunk_004_20250403_155529.patch
+2025-04-03 15:55:31.818 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:325 - 尝试应用补丁块: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_005_20250403_155529.patch
+2025-04-03 15:55:31.818 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:329 - 方法1: 尝试 git apply --ignore-space-change
+2025-04-03 15:55:31.819 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_005_20250403_155529.patch
+2025-04-03 15:55:31.823 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:334 - 成功应用块补丁(方法1): chunk_005_20250403_155529.patch
+2025-04-03 15:55:31.823 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: add .
+2025-04-03 15:55:32.120 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: commit -m Applied chunk patch: chunk_005_20250403_155529.patch
+2025-04-03 15:55:32.278 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:325 - 尝试应用补丁块: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_006_20250403_155529.patch
+2025-04-03 15:55:32.278 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:329 - 方法1: 尝试 git apply --ignore-space-change
+2025-04-03 15:55:32.279 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_006_20250403_155529.patch
+2025-04-03 15:55:32.284 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:334 - 成功应用块补丁(方法1): chunk_006_20250403_155529.patch
+2025-04-03 15:55:32.284 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: add .
+2025-04-03 15:55:32.523 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: commit -m Applied chunk patch: chunk_006_20250403_155529.patch
+2025-04-03 15:55:32.651 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:325 - 尝试应用补丁块: /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_007_20250403_155529.patch
+2025-04-03 15:55:32.652 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:329 - 方法1: 尝试 git apply --ignore-space-change
+2025-04-03 15:55:32.652 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_007_20250403_155529.patch
+2025-04-03 15:55:32.656 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:1307
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:32.657 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:341 - 方法1失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_007_20250403_155529.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:32.657 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:33.052 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 方法2: 尝试 git apply --reject
+2025-04-03 15:55:33.052 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --reject --ignore-whitespace --ignore-space-change /home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_007_20250403_155529.patch
+2025-04-03 15:55:33.056 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: Checking patch drivers/hid/hid-steam.c...
+error: while searching for:
+	cancel_delayed_work_sync(&steam->mode_switch);
+	cancel_work_sync(&steam->work_connect);
+	cancel_work_sync(&steam->rumble_work);
+	hid_destroy_device(steam->client_hdev);
+	steam->client_hdev = NULL;
+	steam->client_opened = 0;
+
+error: patch failed: drivers/hid/hid-steam.c:1307
+Applying patch drivers/hid/hid-steam.c with 1 reject...
+Rejected hunk #1.
+
+2025-04-03 15:55:33.057 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:370 - 方法2失败: Command '['git', 'apply', '--reject', '--ignore-whitespace', '--ignore-space-change', '/home/elpsy/workspace/sow/patch-backport/workspace/gregkh/linux/795042/chunk_patches/chunk_007_20250403_155529.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:33.057 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:33.375 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:376 - 方法3: 尝试 git am --3way
+2025-04-03 15:55:33.833 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:396 - 方法3失败: error: sha1 information is lacking or useless (drivers/hid/hid-steam.c).
+error: could not build fake ancestor
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-04-03 15:55:33.834 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:411 - 方法4: 尝试系统 patch 命令
+2025-04-03 15:55:33.838 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:493 - 准备对文件 drivers/hid/hid-steam.c 应用补丁 /tmp/tmpy5pkv6pk/temp.patch
+2025-04-03 15:55:33.840 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:526 - 方法4异常: 'bytes' object has no attribute 'encode'
+2025-04-03 15:55:33.841 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:34.257 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:532 - 方法5: 尝试调整补丁行号
+2025-04-03 15:55:34.259 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 1
+2025-04-03 15:55:34.260 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp9708wgd7/adjusted.patch
+2025-04-03 15:55:34.260 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp9708wgd7/adjusted.patch
+2025-04-03 15:55:34.278 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:1
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:34.279 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp9708wgd7/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:34.279 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:34.602 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 2
+2025-04-03 15:55:34.603 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpnwv2yck7/adjusted.patch
+2025-04-03 15:55:34.603 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpnwv2yck7/adjusted.patch
+2025-04-03 15:55:34.607 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:2
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:34.607 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpnwv2yck7/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:34.608 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:34.966 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 3
+2025-04-03 15:55:34.967 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp1mm5ur4n/adjusted.patch
+2025-04-03 15:55:34.967 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp1mm5ur4n/adjusted.patch
+2025-04-03 15:55:34.971 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:3
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:34.972 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp1mm5ur4n/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:34.972 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:35.321 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 4
+2025-04-03 15:55:35.322 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpvs25d2x8/adjusted.patch
+2025-04-03 15:55:35.322 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpvs25d2x8/adjusted.patch
+2025-04-03 15:55:35.327 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:4
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:35.327 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpvs25d2x8/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:35.328 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:35.658 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 5
+2025-04-03 15:55:35.660 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpd3r98_74/adjusted.patch
+2025-04-03 15:55:35.661 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpd3r98_74/adjusted.patch
+2025-04-03 15:55:35.665 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:5
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:35.665 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpd3r98_74/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:35.666 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:36.021 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 6
+2025-04-03 15:55:36.022 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpdu5sqe0y/adjusted.patch
+2025-04-03 15:55:36.022 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpdu5sqe0y/adjusted.patch
+2025-04-03 15:55:36.025 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:6
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:36.025 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpdu5sqe0y/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:36.026 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:36.385 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 7
+2025-04-03 15:55:36.386 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpyal186gp/adjusted.patch
+2025-04-03 15:55:36.386 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpyal186gp/adjusted.patch
+2025-04-03 15:55:36.390 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:7
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:36.391 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpyal186gp/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:36.391 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:36.773 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 8
+2025-04-03 15:55:36.774 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpvm9s8h58/adjusted.patch
+2025-04-03 15:55:36.774 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpvm9s8h58/adjusted.patch
+2025-04-03 15:55:36.777 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:8
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:36.778 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpvm9s8h58/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:36.778 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:37.100 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 9
+2025-04-03 15:55:37.101 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpbdiot3jd/adjusted.patch
+2025-04-03 15:55:37.101 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpbdiot3jd/adjusted.patch
+2025-04-03 15:55:37.106 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:9
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:37.106 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpbdiot3jd/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:37.107 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:37.440 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 10
+2025-04-03 15:55:37.443 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp6pggspl8/adjusted.patch
+2025-04-03 15:55:37.444 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp6pggspl8/adjusted.patch
+2025-04-03 15:55:37.450 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:10
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:37.451 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp6pggspl8/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:37.451 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:37.771 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 11
+2025-04-03 15:55:37.771 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpbjo6a4pv/adjusted.patch
+2025-04-03 15:55:37.772 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpbjo6a4pv/adjusted.patch
+2025-04-03 15:55:37.775 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:11
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:37.776 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpbjo6a4pv/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:37.776 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:38.117 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 12
+2025-04-03 15:55:38.118 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpmznb_lvw/adjusted.patch
+2025-04-03 15:55:38.118 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpmznb_lvw/adjusted.patch
+2025-04-03 15:55:38.122 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:12
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:38.123 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpmznb_lvw/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:38.123 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:38.464 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 13
+2025-04-03 15:55:38.466 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpsuntx_xw/adjusted.patch
+2025-04-03 15:55:38.467 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpsuntx_xw/adjusted.patch
+2025-04-03 15:55:38.470 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:13
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:38.471 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpsuntx_xw/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:38.471 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:38.929 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 14
+2025-04-03 15:55:38.930 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp92p5pd40/adjusted.patch
+2025-04-03 15:55:38.931 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp92p5pd40/adjusted.patch
+2025-04-03 15:55:38.936 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:14
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:38.936 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp92p5pd40/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:38.937 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:39.284 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 15
+2025-04-03 15:55:39.286 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpee5tk661/adjusted.patch
+2025-04-03 15:55:39.286 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpee5tk661/adjusted.patch
+2025-04-03 15:55:39.294 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:15
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:39.294 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpee5tk661/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:39.295 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:39.609 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 16
+2025-04-03 15:55:39.614 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpzfhirjbg/adjusted.patch
+2025-04-03 15:55:39.614 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpzfhirjbg/adjusted.patch
+2025-04-03 15:55:39.618 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:16
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:39.619 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpzfhirjbg/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:39.619 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:39.927 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 17
+2025-04-03 15:55:39.928 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp_bs1gn2r/adjusted.patch
+2025-04-03 15:55:39.928 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp_bs1gn2r/adjusted.patch
+2025-04-03 15:55:39.932 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:17
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:39.932 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp_bs1gn2r/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:39.932 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:40.250 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 18
+2025-04-03 15:55:40.250 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp5lw_bi7_/adjusted.patch
+2025-04-03 15:55:40.251 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp5lw_bi7_/adjusted.patch
+2025-04-03 15:55:40.254 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:18
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:40.255 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp5lw_bi7_/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:40.255 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:40.583 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 19
+2025-04-03 15:55:40.583 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp1r13z2s_/adjusted.patch
+2025-04-03 15:55:40.584 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp1r13z2s_/adjusted.patch
+2025-04-03 15:55:40.587 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:19
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:40.587 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp1r13z2s_/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:40.588 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:40.904 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 20
+2025-04-03 15:55:40.905 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmphz0lc4um/adjusted.patch
+2025-04-03 15:55:40.905 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmphz0lc4um/adjusted.patch
+2025-04-03 15:55:40.909 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:20
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:40.909 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmphz0lc4um/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:40.909 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:41.300 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 21
+2025-04-03 15:55:41.301 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpm2iruznq/adjusted.patch
+2025-04-03 15:55:41.301 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpm2iruznq/adjusted.patch
+2025-04-03 15:55:41.306 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:21
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:41.307 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpm2iruznq/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:41.307 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:41.611 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 22
+2025-04-03 15:55:41.611 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpxmz9lplz/adjusted.patch
+2025-04-03 15:55:41.612 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpxmz9lplz/adjusted.patch
+2025-04-03 15:55:41.617 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:22
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:41.617 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpxmz9lplz/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:41.617 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:41.950 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 23
+2025-04-03 15:55:41.951 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp31s7t7tc/adjusted.patch
+2025-04-03 15:55:41.951 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp31s7t7tc/adjusted.patch
+2025-04-03 15:55:41.957 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:23
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:41.957 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp31s7t7tc/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:41.958 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:42.276 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 24
+2025-04-03 15:55:42.277 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp2vmn62np/adjusted.patch
+2025-04-03 15:55:42.277 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp2vmn62np/adjusted.patch
+2025-04-03 15:55:42.289 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:24
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:42.289 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp2vmn62np/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:42.290 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:42.626 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 25
+2025-04-03 15:55:42.627 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpal2c_930/adjusted.patch
+2025-04-03 15:55:42.627 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpal2c_930/adjusted.patch
+2025-04-03 15:55:42.641 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:25
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:42.641 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpal2c_930/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:42.642 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:42.969 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 26
+2025-04-03 15:55:42.970 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpwscds9cn/adjusted.patch
+2025-04-03 15:55:42.971 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpwscds9cn/adjusted.patch
+2025-04-03 15:55:42.974 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:26
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:42.975 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpwscds9cn/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:42.975 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:43.283 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 27
+2025-04-03 15:55:43.285 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpdkqdkhgi/adjusted.patch
+2025-04-03 15:55:43.285 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpdkqdkhgi/adjusted.patch
+2025-04-03 15:55:43.289 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:27
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:43.289 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpdkqdkhgi/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:43.290 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:43.690 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 28
+2025-04-03 15:55:43.691 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpau3daq7g/adjusted.patch
+2025-04-03 15:55:43.692 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpau3daq7g/adjusted.patch
+2025-04-03 15:55:43.695 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:28
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:43.695 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpau3daq7g/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:43.696 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:44.008 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 29
+2025-04-03 15:55:44.009 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpx3ls_dt5/adjusted.patch
+2025-04-03 15:55:44.010 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpx3ls_dt5/adjusted.patch
+2025-04-03 15:55:44.014 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:29
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:44.014 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpx3ls_dt5/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:44.015 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:44.417 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 30
+2025-04-03 15:55:44.418 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpodntt260/adjusted.patch
+2025-04-03 15:55:44.418 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpodntt260/adjusted.patch
+2025-04-03 15:55:44.425 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:30
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:44.425 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpodntt260/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:44.426 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:45.003 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 31
+2025-04-03 15:55:45.004 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpqdfxny7y/adjusted.patch
+2025-04-03 15:55:45.004 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpqdfxny7y/adjusted.patch
+2025-04-03 15:55:45.008 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:31
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:45.008 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpqdfxny7y/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:45.009 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:45.424 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 32
+2025-04-03 15:55:45.426 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpg7hm01g8/adjusted.patch
+2025-04-03 15:55:45.426 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpg7hm01g8/adjusted.patch
+2025-04-03 15:55:45.431 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:32
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:45.431 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpg7hm01g8/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:45.432 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:46.167 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 33
+2025-04-03 15:55:46.168 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpw6lmf8oz/adjusted.patch
+2025-04-03 15:55:46.170 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpw6lmf8oz/adjusted.patch
+2025-04-03 15:55:46.174 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:33
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:46.175 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpw6lmf8oz/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:46.175 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:46.731 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 34
+2025-04-03 15:55:46.732 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp3aif03gs/adjusted.patch
+2025-04-03 15:55:46.733 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp3aif03gs/adjusted.patch
+2025-04-03 15:55:46.737 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:34
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:46.738 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp3aif03gs/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:46.738 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:47.110 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 35
+2025-04-03 15:55:47.111 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpffpurdcl/adjusted.patch
+2025-04-03 15:55:47.112 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpffpurdcl/adjusted.patch
+2025-04-03 15:55:47.116 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:35
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:47.116 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpffpurdcl/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:47.117 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:47.481 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 36
+2025-04-03 15:55:47.482 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp5dvdme6b/adjusted.patch
+2025-04-03 15:55:47.482 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp5dvdme6b/adjusted.patch
+2025-04-03 15:55:47.486 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:36
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:47.486 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp5dvdme6b/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:47.487 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:47.795 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 37
+2025-04-03 15:55:47.798 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpudx05_3s/adjusted.patch
+2025-04-03 15:55:47.798 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpudx05_3s/adjusted.patch
+2025-04-03 15:55:47.802 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:37
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:47.802 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpudx05_3s/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:47.803 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:48.137 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 38
+2025-04-03 15:55:48.138 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp664e1x76/adjusted.patch
+2025-04-03 15:55:48.139 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp664e1x76/adjusted.patch
+2025-04-03 15:55:48.144 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:38
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:48.145 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp664e1x76/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:48.145 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:48.491 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 39
+2025-04-03 15:55:48.492 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp_uvxf0dq/adjusted.patch
+2025-04-03 15:55:48.493 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp_uvxf0dq/adjusted.patch
+2025-04-03 15:55:48.498 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:39
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:48.498 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp_uvxf0dq/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:48.498 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:48.842 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 40
+2025-04-03 15:55:48.843 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpydx00i0u/adjusted.patch
+2025-04-03 15:55:48.843 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpydx00i0u/adjusted.patch
+2025-04-03 15:55:48.847 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:40
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:48.848 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpydx00i0u/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:48.848 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:49.167 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 41
+2025-04-03 15:55:49.168 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpwg9gwk_a/adjusted.patch
+2025-04-03 15:55:49.168 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpwg9gwk_a/adjusted.patch
+2025-04-03 15:55:49.172 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:41
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:49.172 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpwg9gwk_a/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:49.172 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:49.502 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 42
+2025-04-03 15:55:49.502 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp0e8qq94r/adjusted.patch
+2025-04-03 15:55:49.503 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp0e8qq94r/adjusted.patch
+2025-04-03 15:55:49.506 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:42
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:49.506 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp0e8qq94r/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:49.507 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:49.825 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 43
+2025-04-03 15:55:49.826 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpqy5vfmc5/adjusted.patch
+2025-04-03 15:55:49.826 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpqy5vfmc5/adjusted.patch
+2025-04-03 15:55:49.831 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:43
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:49.832 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpqy5vfmc5/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:49.832 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:50.166 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 44
+2025-04-03 15:55:50.166 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpnmejnchm/adjusted.patch
+2025-04-03 15:55:50.167 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpnmejnchm/adjusted.patch
+2025-04-03 15:55:50.170 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:44
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:50.170 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpnmejnchm/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:50.171 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:50.512 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 45
+2025-04-03 15:55:50.513 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp9848itf2/adjusted.patch
+2025-04-03 15:55:50.514 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp9848itf2/adjusted.patch
+2025-04-03 15:55:50.517 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:45
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:50.517 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp9848itf2/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:50.518 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:50.920 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 46
+2025-04-03 15:55:50.921 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp3kseomkh/adjusted.patch
+2025-04-03 15:55:50.921 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp3kseomkh/adjusted.patch
+2025-04-03 15:55:50.925 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:46
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:50.926 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp3kseomkh/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:50.926 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:51.273 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 47
+2025-04-03 15:55:51.274 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpk1cseanh/adjusted.patch
+2025-04-03 15:55:51.274 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpk1cseanh/adjusted.patch
+2025-04-03 15:55:51.277 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:47
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:51.277 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpk1cseanh/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:51.277 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:51.613 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 48
+2025-04-03 15:55:51.614 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpsv0peq1q/adjusted.patch
+2025-04-03 15:55:51.614 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpsv0peq1q/adjusted.patch
+2025-04-03 15:55:51.617 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:48
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:51.618 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpsv0peq1q/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:51.618 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:51.946 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 49
+2025-04-03 15:55:51.947 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpyjgqd6s0/adjusted.patch
+2025-04-03 15:55:51.948 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpyjgqd6s0/adjusted.patch
+2025-04-03 15:55:51.951 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:49
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:51.951 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpyjgqd6s0/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:51.952 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:52.269 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 50
+2025-04-03 15:55:52.270 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpp3wr2_hm/adjusted.patch
+2025-04-03 15:55:52.270 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpp3wr2_hm/adjusted.patch
+2025-04-03 15:55:52.273 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:50
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:52.274 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpp3wr2_hm/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:52.274 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:52.592 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 51
+2025-04-03 15:55:52.593 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpa82kyo1b/adjusted.patch
+2025-04-03 15:55:52.593 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpa82kyo1b/adjusted.patch
+2025-04-03 15:55:52.597 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:51
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:52.597 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpa82kyo1b/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:52.597 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:52.922 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 52
+2025-04-03 15:55:52.923 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmper8m086g/adjusted.patch
+2025-04-03 15:55:52.923 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmper8m086g/adjusted.patch
+2025-04-03 15:55:52.927 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:52
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:52.928 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmper8m086g/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:52.928 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:53.372 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 53
+2025-04-03 15:55:53.373 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpvmwvi50v/adjusted.patch
+2025-04-03 15:55:53.373 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpvmwvi50v/adjusted.patch
+2025-04-03 15:55:53.377 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:53
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:53.378 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpvmwvi50v/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:53.378 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:53.717 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 54
+2025-04-03 15:55:53.718 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp_bi3_3rx/adjusted.patch
+2025-04-03 15:55:53.718 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp_bi3_3rx/adjusted.patch
+2025-04-03 15:55:53.721 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:54
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:53.722 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp_bi3_3rx/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:53.722 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:54.036 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 55
+2025-04-03 15:55:54.037 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpt1ukaq6f/adjusted.patch
+2025-04-03 15:55:54.037 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpt1ukaq6f/adjusted.patch
+2025-04-03 15:55:54.041 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:55
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:54.042 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpt1ukaq6f/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:54.042 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:54.368 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 56
+2025-04-03 15:55:54.369 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpryk186yu/adjusted.patch
+2025-04-03 15:55:54.370 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpryk186yu/adjusted.patch
+2025-04-03 15:55:54.373 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:56
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:54.374 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpryk186yu/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:54.374 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:54.677 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 57
+2025-04-03 15:55:54.678 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpq1u0nzy0/adjusted.patch
+2025-04-03 15:55:54.678 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpq1u0nzy0/adjusted.patch
+2025-04-03 15:55:54.683 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:57
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:54.684 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpq1u0nzy0/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:54.684 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:54.999 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 58
+2025-04-03 15:55:55.000 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpg4ns82d5/adjusted.patch
+2025-04-03 15:55:55.000 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpg4ns82d5/adjusted.patch
+2025-04-03 15:55:55.004 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:58
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:55.004 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpg4ns82d5/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:55.004 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:55.350 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 59
+2025-04-03 15:55:55.351 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp_d7sb_o3/adjusted.patch
+2025-04-03 15:55:55.351 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp_d7sb_o3/adjusted.patch
+2025-04-03 15:55:55.355 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:59
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:55.355 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp_d7sb_o3/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:55.356 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:55.745 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 60
+2025-04-03 15:55:55.746 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp3sx5_p5i/adjusted.patch
+2025-04-03 15:55:55.747 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp3sx5_p5i/adjusted.patch
+2025-04-03 15:55:55.753 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:60
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:55.753 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp3sx5_p5i/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:55.754 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:56.057 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 61
+2025-04-03 15:55:56.057 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp01goheua/adjusted.patch
+2025-04-03 15:55:56.058 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp01goheua/adjusted.patch
+2025-04-03 15:55:56.061 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:61
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:56.062 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp01goheua/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:56.062 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:56.383 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 62
+2025-04-03 15:55:56.384 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpdot9jq_n/adjusted.patch
+2025-04-03 15:55:56.384 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpdot9jq_n/adjusted.patch
+2025-04-03 15:55:56.388 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:62
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:56.388 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpdot9jq_n/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:56.388 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:56.714 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 63
+2025-04-03 15:55:56.715 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpjx6ihhgx/adjusted.patch
+2025-04-03 15:55:56.716 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpjx6ihhgx/adjusted.patch
+2025-04-03 15:55:56.718 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:63
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:56.719 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpjx6ihhgx/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:56.720 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:57.024 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 64
+2025-04-03 15:55:57.025 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpzc6xlxl6/adjusted.patch
+2025-04-03 15:55:57.025 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpzc6xlxl6/adjusted.patch
+2025-04-03 15:55:57.031 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:64
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:57.032 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpzc6xlxl6/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:57.032 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:57.370 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 65
+2025-04-03 15:55:57.371 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpz5r_41zo/adjusted.patch
+2025-04-03 15:55:57.371 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpz5r_41zo/adjusted.patch
+2025-04-03 15:55:57.375 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:65
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:57.376 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpz5r_41zo/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:57.376 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:57.772 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 66
+2025-04-03 15:55:57.772 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpdllhdhbn/adjusted.patch
+2025-04-03 15:55:57.773 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpdllhdhbn/adjusted.patch
+2025-04-03 15:55:57.776 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:66
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:57.777 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpdllhdhbn/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:57.777 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:58.090 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 67
+2025-04-03 15:55:58.091 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpzeje5rol/adjusted.patch
+2025-04-03 15:55:58.091 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpzeje5rol/adjusted.patch
+2025-04-03 15:55:58.094 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:67
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:58.095 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpzeje5rol/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:58.095 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:58.425 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 68
+2025-04-03 15:55:58.426 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp358zimtv/adjusted.patch
+2025-04-03 15:55:58.426 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp358zimtv/adjusted.patch
+2025-04-03 15:55:58.429 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:68
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:58.430 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp358zimtv/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:58.430 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:58.736 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 69
+2025-04-03 15:55:58.737 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp2rlzsmj5/adjusted.patch
+2025-04-03 15:55:58.737 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp2rlzsmj5/adjusted.patch
+2025-04-03 15:55:58.741 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:69
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:58.741 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp2rlzsmj5/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:58.742 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:59.087 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 70
+2025-04-03 15:55:59.088 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpqxvdsm0x/adjusted.patch
+2025-04-03 15:55:59.088 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpqxvdsm0x/adjusted.patch
+2025-04-03 15:55:59.092 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:70
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:59.093 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpqxvdsm0x/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:59.093 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:59.447 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 71
+2025-04-03 15:55:59.448 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpp56_flw9/adjusted.patch
+2025-04-03 15:55:59.448 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpp56_flw9/adjusted.patch
+2025-04-03 15:55:59.452 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:71
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:59.452 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpp56_flw9/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:59.452 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:55:59.783 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 72
+2025-04-03 15:55:59.784 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp8_i1nbk8/adjusted.patch
+2025-04-03 15:55:59.784 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp8_i1nbk8/adjusted.patch
+2025-04-03 15:55:59.791 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:72
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:55:59.792 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp8_i1nbk8/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:55:59.792 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:00.264 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 73
+2025-04-03 15:56:00.265 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp9kint4_q/adjusted.patch
+2025-04-03 15:56:00.265 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp9kint4_q/adjusted.patch
+2025-04-03 15:56:00.269 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:73
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:00.270 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp9kint4_q/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:00.270 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:00.578 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 74
+2025-04-03 15:56:00.579 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpiqne3rp7/adjusted.patch
+2025-04-03 15:56:00.580 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpiqne3rp7/adjusted.patch
+2025-04-03 15:56:00.584 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:74
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:00.584 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpiqne3rp7/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:00.585 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:00.966 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 75
+2025-04-03 15:56:00.967 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmppwywmffv/adjusted.patch
+2025-04-03 15:56:00.967 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmppwywmffv/adjusted.patch
+2025-04-03 15:56:00.972 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:75
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:00.973 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmppwywmffv/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:00.973 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:01.521 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 76
+2025-04-03 15:56:01.522 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp04725xrq/adjusted.patch
+2025-04-03 15:56:01.522 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp04725xrq/adjusted.patch
+2025-04-03 15:56:01.526 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:76
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:01.526 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp04725xrq/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:01.527 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:01.869 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 77
+2025-04-03 15:56:01.870 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp3afylikr/adjusted.patch
+2025-04-03 15:56:01.871 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp3afylikr/adjusted.patch
+2025-04-03 15:56:01.874 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:77
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:01.875 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp3afylikr/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:01.875 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:02.433 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 78
+2025-04-03 15:56:02.434 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpn2u0mx3k/adjusted.patch
+2025-04-03 15:56:02.434 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpn2u0mx3k/adjusted.patch
+2025-04-03 15:56:02.441 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:78
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:02.441 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpn2u0mx3k/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:02.442 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:02.766 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 79
+2025-04-03 15:56:02.767 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpceq_da4q/adjusted.patch
+2025-04-03 15:56:02.767 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpceq_da4q/adjusted.patch
+2025-04-03 15:56:02.771 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:79
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:02.771 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpceq_da4q/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:02.772 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:03.098 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 80
+2025-04-03 15:56:03.099 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp8j8hufdo/adjusted.patch
+2025-04-03 15:56:03.099 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp8j8hufdo/adjusted.patch
+2025-04-03 15:56:03.102 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:80
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:03.103 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp8j8hufdo/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:03.103 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:03.422 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 81
+2025-04-03 15:56:03.430 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpm_4ek6n0/adjusted.patch
+2025-04-03 15:56:03.430 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpm_4ek6n0/adjusted.patch
+2025-04-03 15:56:03.433 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:81
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:03.434 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpm_4ek6n0/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:03.434 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:03.762 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 82
+2025-04-03 15:56:03.763 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmplxdj0o8c/adjusted.patch
+2025-04-03 15:56:03.764 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmplxdj0o8c/adjusted.patch
+2025-04-03 15:56:03.767 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:82
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:03.767 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmplxdj0o8c/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:03.768 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:04.168 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 83
+2025-04-03 15:56:04.169 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpcdakyktu/adjusted.patch
+2025-04-03 15:56:04.169 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpcdakyktu/adjusted.patch
+2025-04-03 15:56:04.179 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:83
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:04.179 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpcdakyktu/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:04.180 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:04.612 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 84
+2025-04-03 15:56:04.614 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpbst1yhoc/adjusted.patch
+2025-04-03 15:56:04.614 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpbst1yhoc/adjusted.patch
+2025-04-03 15:56:04.630 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:84
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:04.630 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpbst1yhoc/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:04.631 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:05.088 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 85
+2025-04-03 15:56:05.089 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpnhfrvvoi/adjusted.patch
+2025-04-03 15:56:05.090 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpnhfrvvoi/adjusted.patch
+2025-04-03 15:56:05.093 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:85
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:05.093 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpnhfrvvoi/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:05.094 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:05.466 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 86
+2025-04-03 15:56:05.467 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp_hw1j1e1/adjusted.patch
+2025-04-03 15:56:05.467 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp_hw1j1e1/adjusted.patch
+2025-04-03 15:56:05.471 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:86
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:05.471 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp_hw1j1e1/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:05.471 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:05.856 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 87
+2025-04-03 15:56:05.857 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmptj7phyem/adjusted.patch
+2025-04-03 15:56:05.857 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmptj7phyem/adjusted.patch
+2025-04-03 15:56:05.861 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:87
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:05.861 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmptj7phyem/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:05.862 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:06.244 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 88
+2025-04-03 15:56:06.244 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpwq0skizv/adjusted.patch
+2025-04-03 15:56:06.245 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpwq0skizv/adjusted.patch
+2025-04-03 15:56:06.248 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:88
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:06.248 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpwq0skizv/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:06.249 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:06.571 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 89
+2025-04-03 15:56:06.572 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpjupqk2aq/adjusted.patch
+2025-04-03 15:56:06.572 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpjupqk2aq/adjusted.patch
+2025-04-03 15:56:06.576 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:89
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:06.577 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpjupqk2aq/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:06.577 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:06.898 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 90
+2025-04-03 15:56:06.905 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpyafrn9q1/adjusted.patch
+2025-04-03 15:56:06.905 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpyafrn9q1/adjusted.patch
+2025-04-03 15:56:06.909 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:90
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:06.909 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpyafrn9q1/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:06.910 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:07.350 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 91
+2025-04-03 15:56:07.351 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp_o9wutny/adjusted.patch
+2025-04-03 15:56:07.351 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp_o9wutny/adjusted.patch
+2025-04-03 15:56:07.356 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:91
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:07.356 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp_o9wutny/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:07.356 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:07.727 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 92
+2025-04-03 15:56:07.728 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp3qi0vk6k/adjusted.patch
+2025-04-03 15:56:07.728 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp3qi0vk6k/adjusted.patch
+2025-04-03 15:56:07.733 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:92
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:07.733 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp3qi0vk6k/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:07.733 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:08.086 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 93
+2025-04-03 15:56:08.086 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpeqgx79i2/adjusted.patch
+2025-04-03 15:56:08.087 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpeqgx79i2/adjusted.patch
+2025-04-03 15:56:08.090 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:93
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:08.091 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpeqgx79i2/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:08.091 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:08.487 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 94
+2025-04-03 15:56:08.488 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmph6py0ezw/adjusted.patch
+2025-04-03 15:56:08.488 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmph6py0ezw/adjusted.patch
+2025-04-03 15:56:08.491 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:94
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:08.491 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmph6py0ezw/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:08.492 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:08.921 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 95
+2025-04-03 15:56:08.921 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpnkgzzeko/adjusted.patch
+2025-04-03 15:56:08.922 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpnkgzzeko/adjusted.patch
+2025-04-03 15:56:08.925 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:95
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:08.926 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpnkgzzeko/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:08.926 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:09.349 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 96
+2025-04-03 15:56:09.350 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmptnwkqjj3/adjusted.patch
+2025-04-03 15:56:09.350 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmptnwkqjj3/adjusted.patch
+2025-04-03 15:56:09.354 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:96
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:09.355 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmptnwkqjj3/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:09.355 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:09.746 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 97
+2025-04-03 15:56:09.747 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpf9nxmugw/adjusted.patch
+2025-04-03 15:56:09.747 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpf9nxmugw/adjusted.patch
+2025-04-03 15:56:09.751 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:97
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:09.752 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpf9nxmugw/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:09.752 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:10.065 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 98
+2025-04-03 15:56:10.065 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpuxecvvkb/adjusted.patch
+2025-04-03 15:56:10.066 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpuxecvvkb/adjusted.patch
+2025-04-03 15:56:10.070 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:98
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:10.070 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpuxecvvkb/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:10.070 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:10.405 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 99
+2025-04-03 15:56:10.406 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpzab4w1kw/adjusted.patch
+2025-04-03 15:56:10.407 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpzab4w1kw/adjusted.patch
+2025-04-03 15:56:10.412 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:99
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:10.412 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpzab4w1kw/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:10.412 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:10.782 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 100
+2025-04-03 15:56:10.783 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpdvq94wf0/adjusted.patch
+2025-04-03 15:56:10.784 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpdvq94wf0/adjusted.patch
+2025-04-03 15:56:10.788 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:100
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:10.789 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpdvq94wf0/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:10.789 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:11.109 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 101
+2025-04-03 15:56:11.110 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp66kn8ibt/adjusted.patch
+2025-04-03 15:56:11.110 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp66kn8ibt/adjusted.patch
+2025-04-03 15:56:11.113 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:101
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:11.114 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp66kn8ibt/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:11.114 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:11.478 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 102
+2025-04-03 15:56:11.479 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpjusb5oxf/adjusted.patch
+2025-04-03 15:56:11.479 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpjusb5oxf/adjusted.patch
+2025-04-03 15:56:11.483 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:102
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:11.483 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpjusb5oxf/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:11.484 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:11.863 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 103
+2025-04-03 15:56:11.864 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpwv01ug5l/adjusted.patch
+2025-04-03 15:56:11.864 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpwv01ug5l/adjusted.patch
+2025-04-03 15:56:11.867 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:103
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:11.868 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpwv01ug5l/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:11.868 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:12.237 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 104
+2025-04-03 15:56:12.238 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpkngj7gi4/adjusted.patch
+2025-04-03 15:56:12.238 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpkngj7gi4/adjusted.patch
+2025-04-03 15:56:12.242 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:104
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:12.243 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpkngj7gi4/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:12.243 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:12.580 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 105
+2025-04-03 15:56:12.581 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpmgmz2r41/adjusted.patch
+2025-04-03 15:56:12.581 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpmgmz2r41/adjusted.patch
+2025-04-03 15:56:12.585 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:105
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:12.585 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpmgmz2r41/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:12.586 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:12.903 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 106
+2025-04-03 15:56:12.903 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp9d0iipsv/adjusted.patch
+2025-04-03 15:56:12.904 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp9d0iipsv/adjusted.patch
+2025-04-03 15:56:12.907 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:106
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:12.907 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp9d0iipsv/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:12.907 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:13.255 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 107
+2025-04-03 15:56:13.256 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmplydpdm9g/adjusted.patch
+2025-04-03 15:56:13.256 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmplydpdm9g/adjusted.patch
+2025-04-03 15:56:13.260 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:107
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:13.261 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmplydpdm9g/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:13.261 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:13.583 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 108
+2025-04-03 15:56:13.584 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp1e1yhqzb/adjusted.patch
+2025-04-03 15:56:13.585 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp1e1yhqzb/adjusted.patch
+2025-04-03 15:56:13.588 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:108
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:13.589 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp1e1yhqzb/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:13.589 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:13.922 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 109
+2025-04-03 15:56:13.923 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp5tkzmstl/adjusted.patch
+2025-04-03 15:56:13.923 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp5tkzmstl/adjusted.patch
+2025-04-03 15:56:13.927 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:109
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:13.927 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp5tkzmstl/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:13.928 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:14.297 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 110
+2025-04-03 15:56:14.298 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp48omeqyi/adjusted.patch
+2025-04-03 15:56:14.298 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp48omeqyi/adjusted.patch
+2025-04-03 15:56:14.302 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:110
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:14.302 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp48omeqyi/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:14.303 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:14.639 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 111
+2025-04-03 15:56:14.640 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpq5whr835/adjusted.patch
+2025-04-03 15:56:14.640 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpq5whr835/adjusted.patch
+2025-04-03 15:56:14.644 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:111
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:14.645 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpq5whr835/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:14.645 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:14.966 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 112
+2025-04-03 15:56:14.967 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpxg3yxg_i/adjusted.patch
+2025-04-03 15:56:14.967 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpxg3yxg_i/adjusted.patch
+2025-04-03 15:56:14.970 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:112
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:14.971 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpxg3yxg_i/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:14.971 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:15.310 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 113
+2025-04-03 15:56:15.311 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpocxwj1p8/adjusted.patch
+2025-04-03 15:56:15.311 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpocxwj1p8/adjusted.patch
+2025-04-03 15:56:15.315 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:113
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:15.315 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpocxwj1p8/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:15.316 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:15.663 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 114
+2025-04-03 15:56:15.664 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpdc3a22nb/adjusted.patch
+2025-04-03 15:56:15.664 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpdc3a22nb/adjusted.patch
+2025-04-03 15:56:15.668 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:114
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:15.669 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpdc3a22nb/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:15.669 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:15.970 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 115
+2025-04-03 15:56:15.971 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpew0hysq4/adjusted.patch
+2025-04-03 15:56:15.971 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpew0hysq4/adjusted.patch
+2025-04-03 15:56:15.974 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:115
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:15.975 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpew0hysq4/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:15.975 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:16.379 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 116
+2025-04-03 15:56:16.380 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpt5_ubm0d/adjusted.patch
+2025-04-03 15:56:16.381 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpt5_ubm0d/adjusted.patch
+2025-04-03 15:56:16.385 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:116
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:16.385 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpt5_ubm0d/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:16.386 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:16.771 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 117
+2025-04-03 15:56:16.771 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp371d5y2p/adjusted.patch
+2025-04-03 15:56:16.772 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp371d5y2p/adjusted.patch
+2025-04-03 15:56:16.775 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:117
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:16.776 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp371d5y2p/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:16.776 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:17.152 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 118
+2025-04-03 15:56:17.153 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpjeoif5av/adjusted.patch
+2025-04-03 15:56:17.153 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpjeoif5av/adjusted.patch
+2025-04-03 15:56:17.157 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:118
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:17.158 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpjeoif5av/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:17.158 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:17.588 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 119
+2025-04-03 15:56:17.589 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp55goxlsa/adjusted.patch
+2025-04-03 15:56:17.590 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp55goxlsa/adjusted.patch
+2025-04-03 15:56:17.593 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:119
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:17.593 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp55goxlsa/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:17.594 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:17.927 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 120
+2025-04-03 15:56:17.928 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpram5eea0/adjusted.patch
+2025-04-03 15:56:17.929 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpram5eea0/adjusted.patch
+2025-04-03 15:56:17.932 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:120
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:17.932 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpram5eea0/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:17.933 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:18.326 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 121
+2025-04-03 15:56:18.327 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpv7n9rca7/adjusted.patch
+2025-04-03 15:56:18.327 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpv7n9rca7/adjusted.patch
+2025-04-03 15:56:18.331 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:121
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:18.331 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpv7n9rca7/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:18.332 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:18.705 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 122
+2025-04-03 15:56:18.706 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmptmsut8i0/adjusted.patch
+2025-04-03 15:56:18.707 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmptmsut8i0/adjusted.patch
+2025-04-03 15:56:18.711 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:122
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:18.711 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmptmsut8i0/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:18.712 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:19.081 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 123
+2025-04-03 15:56:19.082 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp0u0may57/adjusted.patch
+2025-04-03 15:56:19.082 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp0u0may57/adjusted.patch
+2025-04-03 15:56:19.086 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:123
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:19.087 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp0u0may57/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:19.087 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:19.426 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 124
+2025-04-03 15:56:19.428 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpizg__na2/adjusted.patch
+2025-04-03 15:56:19.428 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpizg__na2/adjusted.patch
+2025-04-03 15:56:19.431 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:124
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:19.431 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpizg__na2/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:19.432 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:19.736 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 125
+2025-04-03 15:56:19.736 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp1hkc0hjd/adjusted.patch
+2025-04-03 15:56:19.737 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp1hkc0hjd/adjusted.patch
+2025-04-03 15:56:19.741 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:125
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:19.741 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp1hkc0hjd/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:19.742 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:20.105 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 126
+2025-04-03 15:56:20.105 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpnzglz7o0/adjusted.patch
+2025-04-03 15:56:20.106 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpnzglz7o0/adjusted.patch
+2025-04-03 15:56:20.109 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:126
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:20.109 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpnzglz7o0/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:20.110 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:20.470 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 127
+2025-04-03 15:56:20.470 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpviw8_992/adjusted.patch
+2025-04-03 15:56:20.471 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpviw8_992/adjusted.patch
+2025-04-03 15:56:20.473 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:127
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:20.474 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpviw8_992/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:20.474 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:20.838 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 128
+2025-04-03 15:56:20.839 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp1_9r7amr/adjusted.patch
+2025-04-03 15:56:20.839 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp1_9r7amr/adjusted.patch
+2025-04-03 15:56:20.843 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:128
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:20.844 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp1_9r7amr/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:20.844 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:21.229 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 129
+2025-04-03 15:56:21.230 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp4n24li9u/adjusted.patch
+2025-04-03 15:56:21.231 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp4n24li9u/adjusted.patch
+2025-04-03 15:56:21.235 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:129
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:21.235 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp4n24li9u/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:21.236 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:21.606 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 130
+2025-04-03 15:56:21.607 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmprih3divb/adjusted.patch
+2025-04-03 15:56:21.608 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmprih3divb/adjusted.patch
+2025-04-03 15:56:21.611 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:130
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:21.612 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmprih3divb/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:21.612 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:21.960 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 131
+2025-04-03 15:56:21.961 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpvjdx1g_b/adjusted.patch
+2025-04-03 15:56:21.962 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpvjdx1g_b/adjusted.patch
+2025-04-03 15:56:21.965 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:131
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:21.966 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpvjdx1g_b/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:21.966 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:22.313 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 132
+2025-04-03 15:56:22.314 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp8as9g49g/adjusted.patch
+2025-04-03 15:56:22.315 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp8as9g49g/adjusted.patch
+2025-04-03 15:56:22.318 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:132
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:22.319 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp8as9g49g/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:22.319 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:22.674 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 133
+2025-04-03 15:56:22.675 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpztkxjsuq/adjusted.patch
+2025-04-03 15:56:22.675 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpztkxjsuq/adjusted.patch
+2025-04-03 15:56:22.678 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:133
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:22.679 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpztkxjsuq/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:22.679 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:22.997 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 134
+2025-04-03 15:56:22.998 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpuzghcy_0/adjusted.patch
+2025-04-03 15:56:22.998 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpuzghcy_0/adjusted.patch
+2025-04-03 15:56:23.002 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:134
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:23.003 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpuzghcy_0/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:23.003 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:23.357 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 135
+2025-04-03 15:56:23.358 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp2aajgl2b/adjusted.patch
+2025-04-03 15:56:23.358 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp2aajgl2b/adjusted.patch
+2025-04-03 15:56:23.364 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:135
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:23.364 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp2aajgl2b/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:23.364 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:23.735 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 136
+2025-04-03 15:56:23.736 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp2teiyyvy/adjusted.patch
+2025-04-03 15:56:23.736 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp2teiyyvy/adjusted.patch
+2025-04-03 15:56:23.739 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:136
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:23.740 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp2teiyyvy/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:23.740 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:24.081 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 137
+2025-04-03 15:56:24.082 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpcj_2u2nz/adjusted.patch
+2025-04-03 15:56:24.082 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpcj_2u2nz/adjusted.patch
+2025-04-03 15:56:24.085 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:137
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:24.086 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpcj_2u2nz/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:24.086 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:24.429 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 138
+2025-04-03 15:56:24.429 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpfcz0pg2k/adjusted.patch
+2025-04-03 15:56:24.430 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpfcz0pg2k/adjusted.patch
+2025-04-03 15:56:24.433 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:138
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:24.433 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpfcz0pg2k/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:24.434 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:24.750 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 139
+2025-04-03 15:56:24.751 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpmf4qrer7/adjusted.patch
+2025-04-03 15:56:24.752 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpmf4qrer7/adjusted.patch
+2025-04-03 15:56:24.755 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:139
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:24.755 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpmf4qrer7/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:24.756 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:25.084 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 140
+2025-04-03 15:56:25.085 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpw6rczuj2/adjusted.patch
+2025-04-03 15:56:25.085 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpw6rczuj2/adjusted.patch
+2025-04-03 15:56:25.089 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:140
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:25.090 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpw6rczuj2/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:25.090 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:25.404 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 141
+2025-04-03 15:56:25.405 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp6g1rlbxl/adjusted.patch
+2025-04-03 15:56:25.405 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp6g1rlbxl/adjusted.patch
+2025-04-03 15:56:25.409 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:141
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:25.409 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp6g1rlbxl/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:25.410 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:25.817 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 142
+2025-04-03 15:56:25.818 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpfcol13c7/adjusted.patch
+2025-04-03 15:56:25.818 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpfcol13c7/adjusted.patch
+2025-04-03 15:56:25.823 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:142
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:25.823 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpfcol13c7/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:25.824 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:26.156 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 143
+2025-04-03 15:56:26.157 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpmb1tg5xh/adjusted.patch
+2025-04-03 15:56:26.157 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpmb1tg5xh/adjusted.patch
+2025-04-03 15:56:26.162 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:143
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:26.162 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpmb1tg5xh/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:26.163 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:26.507 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 144
+2025-04-03 15:56:26.508 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpycly068q/adjusted.patch
+2025-04-03 15:56:26.508 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpycly068q/adjusted.patch
+2025-04-03 15:56:26.512 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:144
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:26.512 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpycly068q/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:26.513 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:26.854 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 145
+2025-04-03 15:56:26.855 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpahy9mhfz/adjusted.patch
+2025-04-03 15:56:26.855 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpahy9mhfz/adjusted.patch
+2025-04-03 15:56:26.858 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:145
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:26.859 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpahy9mhfz/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:26.859 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:27.193 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 146
+2025-04-03 15:56:27.194 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpf4f6zxs5/adjusted.patch
+2025-04-03 15:56:27.194 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpf4f6zxs5/adjusted.patch
+2025-04-03 15:56:27.197 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:146
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:27.198 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpf4f6zxs5/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:27.198 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:27.539 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 147
+2025-04-03 15:56:27.540 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmps438x44a/adjusted.patch
+2025-04-03 15:56:27.540 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmps438x44a/adjusted.patch
+2025-04-03 15:56:27.543 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:147
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:27.544 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmps438x44a/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:27.544 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:27.892 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 148
+2025-04-03 15:56:27.892 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpan41pt1g/adjusted.patch
+2025-04-03 15:56:27.893 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpan41pt1g/adjusted.patch
+2025-04-03 15:56:27.900 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:148
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:27.900 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpan41pt1g/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:27.900 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:28.292 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 149
+2025-04-03 15:56:28.293 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpscj1b2q0/adjusted.patch
+2025-04-03 15:56:28.293 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpscj1b2q0/adjusted.patch
+2025-04-03 15:56:28.297 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:149
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:28.297 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpscj1b2q0/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:28.298 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:28.631 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 150
+2025-04-03 15:56:28.632 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpb5b7yxhq/adjusted.patch
+2025-04-03 15:56:28.632 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpb5b7yxhq/adjusted.patch
+2025-04-03 15:56:28.637 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:150
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:28.637 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpb5b7yxhq/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:28.637 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:28.937 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 151
+2025-04-03 15:56:28.938 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmphkklflmi/adjusted.patch
+2025-04-03 15:56:28.938 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmphkklflmi/adjusted.patch
+2025-04-03 15:56:28.942 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:151
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:28.942 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmphkklflmi/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:28.943 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:29.310 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 152
+2025-04-03 15:56:29.311 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpnb8y65gj/adjusted.patch
+2025-04-03 15:56:29.311 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpnb8y65gj/adjusted.patch
+2025-04-03 15:56:29.314 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:152
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:29.315 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpnb8y65gj/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:29.315 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:29.624 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 153
+2025-04-03 15:56:29.625 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpn5l4iogs/adjusted.patch
+2025-04-03 15:56:29.625 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpn5l4iogs/adjusted.patch
+2025-04-03 15:56:29.628 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:153
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:29.629 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpn5l4iogs/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:29.629 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:29.986 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 154
+2025-04-03 15:56:29.987 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp1js9l3n_/adjusted.patch
+2025-04-03 15:56:29.987 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp1js9l3n_/adjusted.patch
+2025-04-03 15:56:29.992 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:154
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:29.992 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp1js9l3n_/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:29.993 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:30.338 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 155
+2025-04-03 15:56:30.344 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpoe99a04x/adjusted.patch
+2025-04-03 15:56:30.344 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpoe99a04x/adjusted.patch
+2025-04-03 15:56:30.348 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:155
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:30.348 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpoe99a04x/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:30.349 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:30.773 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 156
+2025-04-03 15:56:30.774 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpy13yh1bl/adjusted.patch
+2025-04-03 15:56:30.775 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpy13yh1bl/adjusted.patch
+2025-04-03 15:56:30.778 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:156
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:30.779 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpy13yh1bl/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:30.779 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:31.091 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 157
+2025-04-03 15:56:31.092 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpi0k4l3zz/adjusted.patch
+2025-04-03 15:56:31.092 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpi0k4l3zz/adjusted.patch
+2025-04-03 15:56:31.095 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:157
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:31.096 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpi0k4l3zz/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:31.096 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:31.430 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 158
+2025-04-03 15:56:31.431 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp4vho0pvd/adjusted.patch
+2025-04-03 15:56:31.431 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp4vho0pvd/adjusted.patch
+2025-04-03 15:56:31.435 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:158
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:31.436 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp4vho0pvd/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:31.436 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:31.759 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 159
+2025-04-03 15:56:31.760 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpej5einhf/adjusted.patch
+2025-04-03 15:56:31.761 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpej5einhf/adjusted.patch
+2025-04-03 15:56:31.764 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:159
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:31.764 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpej5einhf/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:31.765 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:32.109 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 160
+2025-04-03 15:56:32.110 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpjku5wgy4/adjusted.patch
+2025-04-03 15:56:32.111 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpjku5wgy4/adjusted.patch
+2025-04-03 15:56:32.115 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:160
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:32.115 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpjku5wgy4/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:32.115 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:32.489 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 161
+2025-04-03 15:56:32.490 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmplg3wzt8x/adjusted.patch
+2025-04-03 15:56:32.490 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmplg3wzt8x/adjusted.patch
+2025-04-03 15:56:32.493 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:161
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:32.494 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmplg3wzt8x/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:32.494 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:32.902 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 162
+2025-04-03 15:56:32.903 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpp1d2a1to/adjusted.patch
+2025-04-03 15:56:32.904 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpp1d2a1to/adjusted.patch
+2025-04-03 15:56:32.909 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:162
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:32.909 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpp1d2a1to/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:32.910 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:33.303 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 163
+2025-04-03 15:56:33.304 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp9dccc__b/adjusted.patch
+2025-04-03 15:56:33.305 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp9dccc__b/adjusted.patch
+2025-04-03 15:56:33.309 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:163
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:33.310 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp9dccc__b/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:33.310 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:33.662 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 164
+2025-04-03 15:56:33.663 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp50aenho0/adjusted.patch
+2025-04-03 15:56:33.664 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp50aenho0/adjusted.patch
+2025-04-03 15:56:33.667 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:164
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:33.667 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp50aenho0/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:33.668 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:34.089 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 165
+2025-04-03 15:56:34.090 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp3a1xt1ck/adjusted.patch
+2025-04-03 15:56:34.090 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp3a1xt1ck/adjusted.patch
+2025-04-03 15:56:34.094 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:165
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:34.094 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp3a1xt1ck/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:34.095 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:34.461 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 166
+2025-04-03 15:56:34.463 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp_1g38mn3/adjusted.patch
+2025-04-03 15:56:34.464 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp_1g38mn3/adjusted.patch
+2025-04-03 15:56:34.469 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:166
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:34.469 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp_1g38mn3/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:34.470 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:34.816 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 167
+2025-04-03 15:56:34.817 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp21o_cj3k/adjusted.patch
+2025-04-03 15:56:34.817 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp21o_cj3k/adjusted.patch
+2025-04-03 15:56:34.821 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:167
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:34.821 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp21o_cj3k/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:34.822 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:35.287 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 168
+2025-04-03 15:56:35.288 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpse03flyf/adjusted.patch
+2025-04-03 15:56:35.288 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpse03flyf/adjusted.patch
+2025-04-03 15:56:35.293 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:168
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:35.293 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpse03flyf/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:35.294 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:35.669 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 169
+2025-04-03 15:56:35.669 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpdbvj_7ej/adjusted.patch
+2025-04-03 15:56:35.670 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpdbvj_7ej/adjusted.patch
+2025-04-03 15:56:35.673 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:169
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:35.673 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpdbvj_7ej/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:35.674 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:36.099 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 170
+2025-04-03 15:56:36.100 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp0ialu7de/adjusted.patch
+2025-04-03 15:56:36.100 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp0ialu7de/adjusted.patch
+2025-04-03 15:56:36.104 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:170
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:36.104 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp0ialu7de/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:36.105 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:36.475 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 171
+2025-04-03 15:56:36.476 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpgky1821b/adjusted.patch
+2025-04-03 15:56:36.476 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpgky1821b/adjusted.patch
+2025-04-03 15:56:36.481 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:171
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:36.481 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpgky1821b/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:36.482 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:36.860 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 172
+2025-04-03 15:56:36.861 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp5en104py/adjusted.patch
+2025-04-03 15:56:36.862 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp5en104py/adjusted.patch
+2025-04-03 15:56:36.865 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:172
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:36.865 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp5en104py/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:36.866 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:37.212 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 173
+2025-04-03 15:56:37.213 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp0of6ihjc/adjusted.patch
+2025-04-03 15:56:37.213 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp0of6ihjc/adjusted.patch
+2025-04-03 15:56:37.217 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:173
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:37.218 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp0of6ihjc/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:37.218 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:37.669 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 174
+2025-04-03 15:56:37.670 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpl_kc3qhl/adjusted.patch
+2025-04-03 15:56:37.670 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpl_kc3qhl/adjusted.patch
+2025-04-03 15:56:37.674 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:174
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:37.674 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpl_kc3qhl/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:37.675 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:37.992 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 175
+2025-04-03 15:56:37.993 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmp00s32wte/adjusted.patch
+2025-04-03 15:56:37.994 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmp00s32wte/adjusted.patch
+2025-04-03 15:56:37.997 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:175
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:37.997 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmp00s32wte/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:37.998 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:38.341 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 176
+2025-04-03 15:56:38.342 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpg8ujy6te/adjusted.patch
+2025-04-03 15:56:38.342 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpg8ujy6te/adjusted.patch
+2025-04-03 15:56:38.346 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:176
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:38.347 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpg8ujy6te/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:38.347 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:38.666 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 177
+2025-04-03 15:56:38.667 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpravcdxi_/adjusted.patch
+2025-04-03 15:56:38.668 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpravcdxi_/adjusted.patch
+2025-04-03 15:56:38.672 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:177
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:38.672 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpravcdxi_/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:38.673 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:39.003 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:620 - 找到匹配行，原始行号: 1307，新行号: 178
+2025-04-03 15:56:39.003 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:637 - 尝试应用调整行号后的补丁: /tmp/tmpz9lmujk3/adjusted.patch
+2025-04-03 15:56:39.004 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: apply --ignore-space-change --ignore-whitespace /tmp/tmpz9lmujk3/adjusted.patch
+2025-04-03 15:56:39.008 | ERROR    | modules.chunk_analyzer:_run_git_command:1306 - Git命令执行失败: error: patch failed: drivers/hid/hid-steam.c:178
+error: drivers/hid/hid-steam.c: patch does not apply
+
+2025-04-03 15:56:39.008 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:652 - 尝试调整行号失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/tmp/tmpz9lmujk3/adjusted.patch']' returned non-zero exit status 1.
+2025-04-03 15:56:39.008 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: reset --hard
+2025-04-03 15:56:39.094 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: checkout linux-6.12.y
+2025-04-03 15:56:39.275 | INFO     | modules.chunk_analyzer:_run_git_command:1295 - 运行git命令: branch -D chunk_test_20250403_155529_f296d7
+2025-04-03 15:56:39.280 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:1214 - 清理测试分支: chunk_test_20250403_155529_f296d7

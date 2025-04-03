@@ -1,7 +1,7 @@
 # 通用配置（必需）
 common:
   # 模式选择（必需）
-  mode: 2  # 1: 单个提交, 2: 多个提交
+  mode: 1  # 1: 单个提交, 2: 多个提交
   
   # LLM 相关配置
   model: "qwen-plus"  # 使用的模型
@@ -16,7 +16,7 @@ common:
     - "chunk_analyzer"
     - "llm_adapter"
     - "patch_adapter"
-    - "compiler"
+    # - "compiler"
 
   build_command: "make"  # 构建命令
   retry_with_feedback: false
@@ -34,10 +34,12 @@ common:
   
   stop_on_failure: false  # 是否在失败时停止
   use_cached_patches: true
-  repo_path: "../backport-test/linux"  # 本地仓库路径
-  # target_version: "v5.2.7"  # 目标版本
-  target_version: "linux-6.12.y"  # 目标版本
+  # repo_path: "../backport-test/linux"  # 本地仓库路径
+  repo_path: "../backport-test/rails"
+  target_version: "v5.2.7"  # 目标版本
+  # target_version: "linux-6.12.y"  # 目标版本
 
+# TODO：工作路径 include repo_path commit_hash[:12]
 
 # 模式1特定配置
 mode1:

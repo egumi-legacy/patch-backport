@@ -1,0 +1,10 @@
+[
+  {
+    "索引": 1,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250403_171906.patch",
+    "实际补丁": null,
+    "修改文件": "actionpack/lib/action_dispatch/http/filter_parameters.rb",
+    "修改位置": "73-73",
+    "内容": "From fb493bebae1a9b83e494fe7edbf01f6167d606fd Mon Sep 17 00:00:00 2001\nFrom: John Hawthorn <john@hawthorn.email>\nDate: Thu, 10 Oct 2024 20:41:33 -0700\nSubject: [PATCH] Avoid backtracking in filtered_query_string\n\nThanks scyoon for the patch\n\nCVE-2024-41128\n---\n .../lib/action_dispatch/http/filter_parameters.rb   | 13 +++++++++----\n 1 file changed, 9 insertions(+), 4 deletions(-)\n\ndiff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb\nindex 7ad1ba3e0eb0e..b02f0d6f85341 100644\n--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:\n         ActiveSupport::ParameterFilter.new(filters)\n       end\n \n-      KV_RE   = \"[^&;=]+\"\n-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}\n       def filtered_query_string # :doc:\n-        query_string.gsub(PAIR_RE) do |_|\n-          parameter_filter.filter($1 => $2).first.join(\"=\")\n+        parts = query_string.split(/([&;])/)\n+        filtered_parts = parts.map do |part|\n+          if part.include?(\"=\")\n+            key, value = part.split(\"=\", 2)\n+            parameter_filter.filter(key => value).first.join(\"=\")\n+          else\n+            part\n+          end\n         end\n+        filtered_parts.join(\"\")\n       end\n     end\n   end\n"
+  }
+]

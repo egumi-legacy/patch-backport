@@ -175,7 +175,7 @@ class PatchBackportTool:
         
         # 统计变量
         start = 75 # 30
-        end = 100 # 65
+        end = 250 # 65
         total_commits = len(commits_list[start:end])
         # total_commits = end - start + 1
         successful_commits = 0
@@ -191,7 +191,9 @@ class PatchBackportTool:
             # 单个测试
             # if upstream_sha != "82a0a3e6f8c02b3236b55e784a083fa4ee07c321": #backapply用例
             # if upstream_sha != "a2fad248947d702ed3dcb52b8377c1a3ae201e44": #enhanced用例
-            if upstream_sha != "4ccacf86491d33d2486b62d4d44864d7101b299d": #chunk analyzer用例
+            # if upstream_sha != "79504249d7e27cad4a3eeb9afc6386e418728ce0": #bug
+            if upstream_sha != "2844ddbd540fc84d7571cca65d6c43088e4d6952":
+            # if upstream_sha != "4ccacf86491d33d2486b62d4d44864d7101b299d": #chunk analyzer用例
                 continue
             else:
                 total_commits = 1
