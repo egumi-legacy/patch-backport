@@ -4,6 +4,7 @@ from datetime import datetime
 from loguru import logger
 from modules.base_module import BaseModule
 import importlib
+import copy
 # from core.adaptation_result import AdaptationResult
 # from config_manager import ProjectConfig
 from core.parameter_manager import ModuleContext, BaseConfig
@@ -50,8 +51,15 @@ class AdaptationPipeline:
                 module = importlib.import_module(module_path)
                 module_class = getattr(module, class_name)
                 
+                # 确保配置中的target_version是字符串而非列表
+                module_config = copy.deepcopy(self.config)
+                if isinstance(module_config.target_version, list):
+                    # 对每个模块实例，我们只传入当前正在处理的那个版本
+                    # 实际版本会在process_patch中设置
+                    module_config.target_version = module_config.target_version[0]
+                    
                 # 实例化模块
-                module_instance = module_class(self.config)
+                module_instance = module_class(module_config)
                 modules.append(module_instance)
                 
                 logger.info(f"已加载模块: {module_name}")
@@ -62,6 +70,11 @@ class AdaptationPipeline:
     
     def _should_run(self, module: BaseModule, context: ModuleContext) -> bool:
         """判断是否应该运行模块"""
+        # 确保使用当前版本的目标版本
+        current_version = context.config.target_version
+        # 如果target_version是列表，使用列表的第一个元素(这里应该只有一个元素)
+        if isinstance(current_version, list):
+            current_version = current_version[0]
         return module._should_run(context)
     
     def process_patch(self, context: ModuleContext) -> ModuleContext:

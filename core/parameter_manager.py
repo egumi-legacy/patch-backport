@@ -41,12 +41,23 @@ class BaseConfig(BaseModel):
     extra_config: Dict[str, Any] = Field(default_factory=dict)
     repo_path: Optional[Path] = None
 
-    target_version: str 
+    # target_version: str 
+    target_version: Union[str, List[str]] = Field(default=None)
 
     module_configs: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
 
     # 内核编译器配置
     kernel_compiler: Dict[str, Any] = Field(default_factory=dict)
+
+    @field_validator("target_version")
+    def validate_target_version(cls, v):
+        if isinstance(v, str):
+            # 向后兼容单一版本
+            return [v]
+        elif isinstance(v, list) and all(isinstance(item, str) for item in v):
+            return v
+        else:
+            raise ValueError("target_version必须是字符串或字符串列表")
 
     @field_validator("enabled_modules")
     def validate_enabled_modules(cls, v):

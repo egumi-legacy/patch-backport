@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 import traceback
 import requests
+import copy
 
 # 第三方库
 from loguru import logger
@@ -126,43 +127,81 @@ class PatchBackportTool:
             logger.error(f"错误堆栈: {traceback.format_exc()}")
             sys.exit(1)
     
+    # def _process_mode1(self):
+    #     """处理模式1: 单个补丁"""
+        
+    #     # 创建提交上下文
+    #     commit_context = CommitContext.create_for_mode1(self.config)
+        
+    #     # 创建模块上下文
+    #     context = ModuleContext(
+    #         config=self.config,
+    #         commit=commit_context
+    #     )
+        
+    #     # 创建处理流水线
+    #     pipeline = AdaptationPipeline(self.config)
+        
+    #     # 处理补丁
+    #     context = pipeline.process_patch(context)
+        
+    #     # 保存结果
+    #     self._save_results(context)
+        
+    #     # 打印摘要
+    #     self._print_summary(context)
     def _process_mode1(self):
-        """处理模式1: 单个补丁"""
-        # # 从补丁URL提取仓库信息
-        # url_info = parse_github_url(self.config.patch_url)
-        # if not url_info:
-        #     raise ValueError(f"无法解析补丁URL: {self.config.patch_url}")
-            
-        # 提取补丁信息
-        # patch_info = {
-        #     'commit_sha': self.config.commit_sha,
-        #     'patch_url': self.config.patch_url,
-        #     'repo_owner': url_info['owner'],
-        #     'repo_name': url_info['repo'],
-        #     'base_dir': Path("workspace") / f"{url_info['owner']}_{url_info['repo']}" / self.config.commit_sha[:8],
-        #     'repo_path': self.config.repo_path if hasattr(self.config, 'repo_path') else Path.cwd()
-        # }
-        
-        # 创建提交上下文
-        commit_context = CommitContext.create_for_mode1(self.config)
-        
-        # 创建模块上下文
-        context = ModuleContext(
-            config=self.config,
-            commit=commit_context
-        )
+        """处理模式1: 单个补丁多个版本"""
+        # 获取补丁URL
+        patch_url = self.config.patch_url
+        logger.info(f"处理补丁: {patch_url}")
         
         # 创建处理流水线
         pipeline = AdaptationPipeline(self.config)
         
-        # 处理补丁
-        context = pipeline.process_patch(context)
+        # 获取所有目标版本
+        target_versions = self.config.target_version
+        logger.info(f"目标版本: {target_versions}")
         
-        # 保存结果
-        self._save_results(context)
+        # 各个版本的结果
+        version_results = {}
         
-        # 打印摘要
-        self._print_summary(context)
+        # 处理每个版本
+        for target_version in target_versions:
+            logger.info(f"开始处理版本: {target_version}")
+            
+            # 创建当前版本的配置副本
+            version_config = copy.deepcopy(self.config)
+            version_config.target_version = target_version
+            
+            # 创建提交上下文
+            commit_context = CommitContext.create_for_mode1(version_config)
+            
+            # 创建模块上下文
+            context = ModuleContext(
+                config=version_config,
+                commit=commit_context
+            )
+            
+            # 处理补丁
+            processed_context = pipeline.process_patch(context)
+            
+            # 保存结果
+            result_path = self._save_results(processed_context)
+            
+            # 打印摘要
+            self._print_summary(processed_context)
+            
+            # 存储此版本的结果
+            version_results[target_version] = {
+                'context': processed_context,
+                'result_path': result_path
+            }
+        
+        # 打印所有版本的汇总结果
+        self._print_multi_version_summary(version_results)
+        
+        return version_results
     
     def _process_mode2(self):
         """处理模式2: 多个补丁"""
@@ -251,6 +290,40 @@ class PatchBackportTool:
                                      patch_adapter_success_count, 
                                      compiler_success_count, 
                                      failed_commits)
+        
+
+    def _print_multi_version_summary(self, version_results):
+        """打印多个版本的汇总结果"""
+        logger.info("=" * 80)
+        logger.info("多版本补丁适配汇总")
+        logger.info("=" * 80)
+        
+        success_count = 0
+        for version, result in version_results.items():
+            context = result['context']
+            success = False
+            
+            # 检查各个模块的成功状态
+            if context.direct_apply_result and context.direct_apply_result.get('success'):
+                method = "直接应用"
+                success = True
+            elif context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks', 0) > 0:
+                method = f"块分析器 ({context.chunk_analyzer_result.get('applied_chunks', 0)}/{context.chunk_analyzer_result.get('total_chunks', 0)})"
+                success = context.chunk_analyzer_result.get('applied_chunks', 0) == context.chunk_analyzer_result.get('total_chunks', 0)
+            elif context.patch_adapter_result and context.patch_adapter_result.get('success'):
+                method = "补丁适配器"
+                success = True
+            else:
+                method = "所有方法失败"
+                
+            status = "成功" if success else "失败"
+            logger.info(f"版本 {version}: {status} (方法: {method})")
+            
+            if success:
+                success_count += 1
+        
+        success_rate = success_count / len(version_results) * 100
+        logger.info(f"总成功率: {success_rate:.1f}% ({success_count}/{len(version_results)})")
     
     def _get_commits_list(self) -> List[Dict[str, str]]:
         """获取上游提交信息"""

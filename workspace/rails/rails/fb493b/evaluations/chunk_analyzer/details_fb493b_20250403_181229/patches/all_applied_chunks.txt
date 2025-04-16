@@ -1,18 +1,25 @@
-From 42dad2ef757ad5550f510b82eb36e79aef8c36e8 Mon Sep 17 00:00:00 2001
-From: root <root@congroo0>
-Date: Thu, 10 Apr 2025 15:24:46 +0800
-Subject: [PATCH] Applied adapted patch for v5.2.7
 
+
+# ===== 应用成功的补丁块 1 =====
+
+From fb493bebae1a9b83e494fe7edbf01f6167d606fd Mon Sep 17 00:00:00 2001
+From: John Hawthorn <john@hawthorn.email>
+Date: Thu, 10 Oct 2024 20:41:33 -0700
+Subject: [PATCH] Avoid backtracking in filtered_query_string
+
+Thanks scyoon for the patch
+
+CVE-2024-41128
 ---
  .../lib/action_dispatch/http/filter_parameters.rb   | 13 +++++++++----
  1 file changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb
-index ec86b8bc47..6bc5c0bbb9 100644
+index 7ad1ba3e0eb0e..b02f0d6f85341 100644
 --- a/actionpack/lib/action_dispatch/http/filter_parameters.rb
 +++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb
-@@ -72,12 +72,17 @@ def parameter_filter_for(filters) # :doc:
-         ParameterFilter.new(filters)
+@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:
+         ActiveSupport::ParameterFilter.new(filters)
        end
  
 -      KV_RE   = "[^&;=]+"
@@ -33,6 +40,3 @@ index ec86b8bc47..6bc5c0bbb9 100644
        end
      end
    end
--- 
-2.25.1
-

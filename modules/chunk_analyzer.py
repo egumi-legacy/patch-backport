@@ -28,22 +28,38 @@ class ChunkAnalyzerModule(BaseModule):
         start_time = datetime.now()
         
         try:
-            # 下载补丁（如果需要）
-            if not hasattr(context.commit, "patch_path") or not Path(context.commit.patch_path).exists():
-                context.commit.patch_path = self._download_patch(context)
+            # 只有当direct_apply失败时才进行处理
+            if not context.direct_apply_result or context.direct_apply_result.get('success', True):
+                logger.info("直接应用成功或未执行，跳过补丁分块分析")
+                return context
                 
-            # 分析补丁，拆分成块
-            patch_path = Path(context.commit.patch_path)
-            chunk_patches = self._create_chunk_patches(self._split_patch_into_chunks(patch_path), context)
+            # 获取补丁文件路径
+            patch_path = None
+            if context.direct_apply_result.get('patch_path'):
+                patch_path = Path(context.direct_apply_result.get('patch_path'))
+                if not patch_path.exists():
+                    logger.warning(f"补丁文件不存在: {patch_path}，尝试使用commit.patch_path")
+                    patch_path = None
             
-            # 尝试应用每个块
+            if not patch_path:
+                patch_path = Path(context.commit.patch_path)
+                if not patch_path or not patch_path.exists():
+                    raise ValueError("没有找到有效的补丁文件路径")
+            
+            # 确保使用绝对路径
+            patch_path = Path(patch_path.absolute())
+            logger.info(f"开始分析补丁: {patch_path}")
+            
+            # 1. 将补丁分解为块
+            chunks = self._split_patch_into_chunks(patch_path)
+            logger.info(f"补丁被分解为 {len(chunks)} 个块")
+            
+            # 2. 为每个chunk创建单独的补丁文件
+            chunk_patches = self._create_chunk_patches(chunks, context)
+            logger.info(f"已为 {len(chunk_patches)} 个块创建单独的补丁文件")
+            
+            # 3. 尝试应用每个单独的chunk补丁
             applied_chunks = self._apply_chunk_patches(chunk_patches, context)
-            
-            # 确保applied_chunks不为None
-            if applied_chunks is None:
-                logger.warning("_apply_chunk_patches返回了None，使用空列表代替")
-                applied_chunks = []
-                
             logger.info(f"成功应用了 {len(applied_chunks)} 个块补丁，总共 {len(chunk_patches)} 个")
             
             # 4. 为剩余的未应用成功的块创建一个合并补丁
@@ -61,7 +77,7 @@ class ChunkAnalyzerModule(BaseModule):
             # 5. 保存分析结果
             analysis_result = {
                 'original_patch': str(patch_path),
-                'total_chunks': len(chunk_patches),
+                'total_chunks': len(chunks),
                 'applied_chunks': len(applied_chunks),
                 'applied_chunk_patches': [str(p.absolute()) for p in applied_chunks],
                 'remaining_patch': str(remaining_patch) if remaining_patch else None,
@@ -293,6 +309,12 @@ class ChunkAnalyzerModule(BaseModule):
         # 获取当前分支
         current_branch = self._run_git_command(["rev-parse", "--abbrev-ref", "HEAD"], repo_path)
         logger.info(f"当前分支: {current_branch}")
+
+        # 确保当前分支是目标版本
+        target_version = context.config.target_version
+        # 如果是列表，取第一个元素
+        if isinstance(target_version, list):
+            target_version = target_version[0]
         # 确保当前分支是目标版本
         if current_branch != context.config.target_version:
             logger.info(f"当前分支不是目标版本，切换到目标版本: {context.config.target_version}")

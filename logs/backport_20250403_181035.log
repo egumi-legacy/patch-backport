@@ -1,0 +1,18 @@
+2025-04-03 18:10:35.094 | INFO     | __main__:_setup_logger:109 - 日志文件: logs/backport_20250403_181035.log
+2025-04-03 18:10:35.094 | INFO     | __main__:run:113 - 开始执行 模式1
+2025-04-03 18:10:35.094 | INFO     | __main__:_process_mode1:156 - 处理补丁: https://github.com/rails/rails/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-04-03 18:10:35.095 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-04-03 18:10:35.096 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-04-03 18:10:35.096 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-04-03 18:10:35.097 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-04-03 18:10:35.097 | INFO     | __main__:_process_mode1:163 - 目标版本: ['v5.2.7', 'v5.3.0']
+2025-04-03 18:10:35.097 | INFO     | __main__:_process_mode1:170 - 开始处理版本: v5.2.7
+2025-04-03 18:10:35.097 | ERROR    | __main__:run:125 - 执行过程发生错误: name 'copy' is not defined
+2025-04-03 18:10:35.099 | ERROR    | __main__:run:126 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 118, in run
+    self._process_mode1()
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 173, in _process_mode1
+    version_config = copy.deepcopy(self.config)
+                     ^^^^
+NameError: name 'copy' is not defined. Did you forget to import 'copy'
+
