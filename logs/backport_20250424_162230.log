@@ -1,0 +1,94 @@
+2025-04-24 16:22:31.010 | INFO     | __main__:_setup_logger:271 - 日志文件: logs/backport_20250424_162230.log
+2025-04-24 16:22:31.010 | INFO     | __main__:run:275 - 开始执行 模式1
+2025-04-24 16:22:31.011 | INFO     | __main__:_process_mode1:318 - 处理补丁: https://github.com/gregkh/linux/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd.patch
+2025-04-24 16:22:31.011 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-04-24 16:22:31.012 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-04-24 16:22:31.012 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-04-24 16:22:31.013 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-04-24 16:22:31.014 | INFO     | __main__:_process_mode1:325 - 目标版本: ['linux-6.12.y']
+2025-04-24 16:22:31.014 | INFO     | __main__:_process_mode1:332 - 开始处理版本: linux-6.12.y
+2025-04-24 16:22:31.015 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: fb493bebae1a9b83e494fe7edbf01f6167d606fd.patch
+2025-04-24 16:22:31.015 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-04-24 16:22:31.123 | INFO     | modules.direct_apply:_download_patch:236 - 上游补丁文件不存在，下载补丁
+2025-04-24 16:22:31.124 | INFO     | patch_utils:download_patch:79 - parts: ['https:', '', 'github.com', 'gregkh', 'linux', 'commit', 'fb493bebae1a9b83e494fe7edbf01f6167d606fd.patch']
+2025-04-24 16:22:31.125 | INFO     | patch_utils:download_patch:87 - 使用Commit API下载patch: https://api.github.com/repos/gregkh/linux/commits/fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-04-24 16:22:32.168 | ERROR    | patch_utils:download_patch:108 - 下载patch失败: 422 Client Error: Unprocessable Entity for url: https://api.github.com/repos/gregkh/linux/commits/fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-04-24 16:22:32.168 | INFO     | patch_utils:download_patch:112 - 尝试直接下载patch文件...
+2025-04-24 16:22:39.859 | ERROR    | patch_utils:download_patch:134 - 直接下载patch也失败: Exceeded 30 redirects.
+2025-04-24 16:22:39.860 | ERROR    | modules.direct_apply:execute:103 - 直接应用过程发生错误: 无法下载补丁: https://github.com/gregkh/linux/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd.patch
+2025-04-24 16:22:39.867 | ERROR    | modules.direct_apply:execute:105 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 57, in execute
+    patch_path = self._download_patch(context)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 237, in _download_patch
+    success = download_patch(context.commit.patch_url, patch_path).exists()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/patch_utils.py", line 137, in download_patch
+    raise ValueError(f"无法下载补丁: {patch_url}")
+ValueError: 无法下载补丁: https://github.com/gregkh/linux/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd.patch
+
+2025-04-24 16:22:39.871 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-04-24 16:22:39.873 | ERROR    | modules.chunk_analyzer:execute:121 - 补丁分析过程发生错误: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-04-24 16:22:39.881 | ERROR    | modules.chunk_analyzer:execute:123 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 46, in execute
+    patch_path = Path(context.commit.patch_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 1162, in __init__
+    super().__init__(*args)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+2025-04-24 16:22:39.884 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/gregkh/linux/fb493b/evaluations/chunk_analyzer/metrics_fb493b_20250424_162239.json
+2025-04-24 16:22:39.887 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/gregkh/linux/fb493b/evaluations/chunk_analyzer/details_fb493b_20250424_162239
+2025-04-24 16:22:39.888 | ERROR    | modules.chunk_analyzer:_save_evaluation_info:1670 - 保存chunk_analyzer特定评估信息失败: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-04-24 16:22:39.889 | ERROR    | modules.chunk_analyzer:_save_evaluation_info:1672 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 1453, in _save_evaluation_info
+    if hasattr(context.commit, "patch_path") and Path(context.commit.patch_path).exists():
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 1162, in __init__
+    super().__init__(*args)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+2025-04-24 16:22:39.889 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: llm_adapter
+2025-04-24 16:22:39.890 | INFO     | modules.llm_adapter:execute:55 - context.commit.patch_path: None
+2025-04-24 16:22:39.891 | ERROR    | modules.llm_adapter:execute:99 - LLM处理过程发生错误: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-04-24 16:22:39.892 | ERROR    | modules.llm_adapter:execute:100 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 56, in execute
+    patch_path = Path(context.commit.patch_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 1162, in __init__
+    super().__init__(*args)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+2025-04-24 16:22:39.894 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/gregkh/linux/fb493b/evaluations/llm_adapter/metrics_fb493b_20250424_162239.json
+2025-04-24 16:22:39.895 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: patch_adapter
+2025-04-24 16:22:39.896 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 找不到LLM响应文件
+2025-04-24 16:22:39.897 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 46, in execute
+    llm_response_path = self._get_llm_response_path(context)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 129, in _get_llm_response_path
+    raise ValueError("找不到LLM响应文件")
+ValueError: 找不到LLM响应文件
+
+2025-04-24 16:22:39.898 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/gregkh/linux/fb493b/metrics/patch_adapter_metrics.json
+2025-04-24 16:22:39.899 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 8.88秒
+2025-04-24 16:22:39.899 | INFO     | __main__:_merge_patches:832 - 开始合并补丁...
+2025-04-24 16:22:39.899 | WARNING  | __main__:_merge_patches:955 - 没有找到可合并的补丁
+2025-04-24 16:22:39.900 | ERROR    | __main__:run:287 - 执行过程发生错误: '>' not supported between instances of 'NoneType' and 'int'
+2025-04-24 16:22:39.901 | ERROR    | __main__:run:288 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 280, in run
+    self._process_mode1()
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 357, in _process_mode1
+    result_path = self._save_results(processed_context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 665, in _save_results
+    ('chunk_analyzer', context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') > 0),
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: '>' not supported between instances of 'NoneType' and 'int'
+

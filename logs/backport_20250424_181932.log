@@ -1,0 +1,20 @@
+2025-04-24 18:19:32.943 | INFO     | __main__:_setup_logger:271 - 日志文件: logs/backport_20250424_181932.log
+2025-04-24 18:19:32.944 | INFO     | __main__:run:275 - 开始执行 模式1
+2025-04-24 18:19:32.944 | INFO     | __main__:_process_mode1:295 - 处理补丁: https://github.com/rails/rails/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-04-24 18:19:32.945 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-04-24 18:19:32.946 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-04-24 18:19:32.947 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-04-24 18:19:32.947 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-04-24 18:19:32.947 | INFO     | __main__:_process_mode1:302 - 目标版本: ['v5.2.7']
+2025-04-24 18:19:32.948 | INFO     | __main__:_process_mode1:309 - 开始处理版本: v5.2.7
+2025-04-24 18:19:32.949 | ERROR    | __main__:run:287 - 执行过程发生错误: "ModuleContext" object has no field "start_time"
+2025-04-24 18:19:32.953 | ERROR    | __main__:run:288 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 280, in run
+    self._process_mode1()
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 325, in _process_mode1
+    context.start_time = datetime.now()
+    ^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/site-packages/pydantic/main.py", line 856, in __setattr__
+    raise ValueError(f'"{self.__class__.__name__}" object has no field "{name}"')
+ValueError: "ModuleContext" object has no field "start_time"
+

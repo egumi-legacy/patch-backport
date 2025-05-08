@@ -1,0 +1,25 @@
+From 49d9f4116bcb93c5676b8c40c441aee8efbd4645 Mon Sep 17 00:00:00 2001
+From: antirez <antirez@gmail.com>
+Date: Tue, 11 Dec 2018 13:18:52 +0100
+Subject: [PATCH] Fix stringmatchlen() read past buffer bug.
+
+See #5632.
+---
+ src/util.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git src/util.c src/util.c
+index 36cbc43d3..feb443c10 100644
+--- src/util.c
++++ src/util.c
+@@ -47,7 +47,7 @@
+ int stringmatchlen(const char *pattern, int patternLen,
+         const char *string, int stringLen, int nocase)
+ {
+-    while(patternLen) {
++    while(patternLen && stringLen) {
+         switch(pattern[0]) {
+         case '*':
+             while (pattern[1] == '*') {
+-- 
+2.25.1

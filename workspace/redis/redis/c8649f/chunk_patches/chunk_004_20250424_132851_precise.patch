@@ -1,0 +1,14 @@
+diff --git a/tests/unit/keyspace.tcl b/tests/unit/keyspace.tcl
+index d4e7bf51c..c9b66a0dc 100644
+--- a/tests/unit/keyspace.tcl
++++ b/tests/unit/keyspace.tcl
+@@ -273,3 +273,9 @@ start_server {tags {"keyspace"}} {
+         r keys *
+     } {dlskeriewrioeuwqoirueioqwrueoqwrueqw}
+ }
++
++    test {Regression for pattern matching very long nested loops} {
++        r flushdb
++        r SET [string repeat "a" 50000] 1
++        r KEYS [string repeat "*?" 50000]
++    } {}

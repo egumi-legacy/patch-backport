@@ -1,65 +1,40 @@
-# 通用配置（必需）
 common:
-  # 模式选择（必需）
-  mode: 1  # 1: 单个提交, 2: 多个提交
-  
-  # LLM 相关配置
-  model: "qwen-plus"  # 使用的模型
-  prompt_template_file: "configs/test_prompts.json"  # 提示模板文件路径
-  prompt_id: "backport"  # 提示ID
-  use_cached_llm_output: true
-  response_file: "response.txt"
-  
-  enabled_modules:  # 启用的管道模块
-    - "direct_apply"
-    # - "backtrack_apply"
-    - "chunk_analyzer"
-    - "llm_adapter"
-    - "patch_adapter"
-    # - "compiler"
-
-  build_command: "make"  # 构建命令
-  retry_with_feedback: false
-  module_configs:  # 各模块的特定配置
-    llm_adapter:
-      use_enhanced_prompt: false
-      temperature: 0.7
+  build_command: make
+  enabled_modules:
+  - direct_apply
+  - chunk_analyzer
+  - llm_adapter
+  - patch_adapter
+  mode: 1
+  model: qwen-plus
+  module_configs:
     compiler:
-      extra_flags: "-j4"
+      extra_flags: -j4
     kernel_compiler:
+      ccache_dir: ~/.ccache
+      docker_image: kernel-compiler:latest
       enabled: true
       use_docker: true
-      docker_image: "kernel-compiler:latest"
-      ccache_dir: "~/.ccache"
-  
-  stop_on_failure: false  # 是否在失败时停止
+    llm_adapter:
+      temperature: 0.7
+      use_enhanced_prompt: false
+  prompt_id: backport
+  prompt_template_file: configs/test_prompts.json
+  repo_base_path: ../backport-test
+  repo_path: ../backport-test/rails
+  repo_url: https://github.com/rails/rails
+  response_file: response.txt
+  retry_with_feedback: false
+  stop_on_failure: false
+  target_version: v5.2.7
+  use_cached_llm_output: true
   use_cached_patches: true
-  # repo_path: "../backport-test/linux"  # 本地仓库路径
-  repo_path: "../backport-test/rails"
-  # target_version: "v5.2.7"  # 目标版本
-  target_version:
-  - v5.2.7
-  - v5.3.0
-  # target_version: "linux-6.12.y"  # 目标版本
-
-# TODO：工作路径 include repo_path commit_hash[:12]
-
-# 模式1特定配置
 mode1:
-  patch_url: "https://github.com/rails/rails/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd"  # 补丁URL
-  # target_version: "v2.0"  # 目标版本
-
-# 模式2特定配置
+  patch_url: https://github.com/rails/rails/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd
 mode2:
-  repo_url: 'https://github.com/gregkh/linux'
-  branch: 'linux-6.12.y'
-  
-  # start_index: 0  # 起始提交索引
-  # end_index: 100  # 结束提交索引
-  # Commits 缓存配置
-  use_cached_commits: true  # 是否使用之前缓存过的commits list
-  # commits_file: "commits.json"  # 可选，默认为 commits.json
-  # 更改下面两项要把 commits 缓存设为 false
-  commits_pages_start: 1  # 起始页
-  commits_pages_end: 3    # 结束页
-  commits_per_page: 100   # 每页数量，范围为 1-100
+  branch: linux-6.12.y
+  commits_pages_end: 3
+  commits_pages_start: 1
+  commits_per_page: 100
+  repo_url: https://github.com/gregkh/linux
+  use_cached_commits: true

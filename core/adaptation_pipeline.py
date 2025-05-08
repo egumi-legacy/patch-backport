@@ -90,6 +90,12 @@ class AdaptationPipeline:
                 # if not isinstance(module, CompilerModule):
                 logger.info(f"直接应用成功，跳过模块: {module.__class__.__name__}")
                 continue
+                
+            # 块分析器应用所有块成功后跳过后续模块
+            if hasattr(context, 'chunk_analyzer_result') and context.chunk_analyzer_result and context.chunk_analyzer_result.get('success', False):
+                logger.info(f"块分析器已成功应用所有块，跳过模块: {module.__class__.__name__}")
+                continue
+                
             if not self._should_run(module, context):
                 continue
             

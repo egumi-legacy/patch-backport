@@ -1,0 +1,39 @@
+# API服务配置
+repo_path: "../backport-test/linux"  # 本地仓库路径
+model: "qwen-plus"  # 使用的模型
+
+# 启用的处理模块
+enabled_modules:
+  - "direct_apply"
+  - "chunk_analyzer"
+  - "llm_adapter"
+  - "patch_adapter"
+  # - "compiler"  # 可选的编译模块
+
+# 服务设置
+service:
+  host: "0.0.0.0"  # 监听地址
+  port: 8000       # 监听端口
+  debug: false     # 是否开启调试模式
+  log_level: "info"
+  # workers: 4       # 工作进程数
+
+# 任务管理
+task_timeout: 3600            # 任务超时时间（秒）
+max_concurrent_tasks: 3       # 最大并发任务数
+result_retention_days: 7      # 结果保留天数
+
+# 数据库设置
+database:
+  path: "data/cve_database.db"  # 数据库文件路径
+
+# 日志设置
+logging:
+  api_log_path: "logs/api_service.log"
+  rotation: "10 MB"        # 日志轮换大小
+  retention: "30 days"     # 日志保留时间
+
+# 缓存设置
+cache:
+  use_cached_patches: true    # 是否使用缓存的补丁
+  cache_dir: "cache"          # 缓存目录 

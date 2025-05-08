@@ -1,9 +1,29 @@
 ---
-description:
-globs:
+description: 
+globs: 
+alwaysApply: false
 ---
 
 # Your rule content
 
 - You can @ files here
 - You can use markdown but dont have to
+- the process of my project are belows:
+
+---
+把一个针对新版本的patch移植到一个较旧版本上，并且使用LLM来辅助。
+目前的方法是，如果这个patch可以git am直接打入，那就跳过，如果不行，我们将尝试：
+1.我们将patch按chunk分块，然后使用更多上下文的模糊匹配。例如patch -p1 -Fuzz，这样应用成功的就可以去掉，给后续处理更少的无关上下文。剩下应用不成功的合成一个新的patch。完成整个流程后，最终的patch要和一开始去掉的合并。
+2.不能打入的我们输入后面的流程：首先根据patch中，新旧版本路径不一致的（例如在旧版本中找不到这个patch所修改的对应路径的文件）尝试根据路径的相似度找出路径的具体修改，看更改为旧路径后是否能打入。
+3.能打入的继续去掉，不能打入的：我们使用LLM，用两种模式：第一种
+给LLM输入两个东西：1.新版本的patch 2.对于新版本patch中修改的文件，输入这个文件在旧版本以及在打入这个新版本patch之前的内容的diff信息。
+LLM会输出这个patch，我们再对这个patch进行后续处理，包括适配上下文（LLM给出的行数以及上下文是基于新版本以及新旧差别的，不准确，需要我们用文本相似度匹配找到实际修改的位置）、生成准确可用git am的patch，评测是否可以打入。
+
+第二种：输入1.整个旧版本文件 2.新版本patch的chunk所在的函数级上下文，让LLM直接输出文件，生成patch，同样测试是否能直接打入。
+软件可能还会对适配结果进行分析，将分析结果反馈给大模型进行再次生成。
+---
+
+- 以下是一些处理细节：
+  core/adaptation_pipeline.py控制整个模块的启动和流程顺序
+  core/parameter_manager.py控制整个模块的参数，包括每个子模块的上下文。如果需要新增参数，需要在这里也新增。
+  

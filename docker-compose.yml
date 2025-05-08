@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  patch-backport-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: patch-backport-api:latest
+    container_name: patch-backport-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./configs:/app/configs
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./results:/app/results
+      - ./workspace:/app/workspace
+      - ./cache:/app/cache
+      - ${REPO_PATH:-../backport-test}:/backport-test
+    env_file:
+      - .env
+    restart: unless-stopped
+    command: python api_server.py
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - patch-network
+
+  # 可选: 添加SQLite Web界面管理CVE数据库
+  sqlite-web:
+    image: coleifer/sqlite-web
+    container_name: sqlite-web
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./data:/data
+    environment:
+      - SQLITE_DATABASE=/data/cve_database.db
+    command: sqlite_web -p 8001 -H 0.0.0.0 /data/cve_database.db
+    depends_on:
+      - patch-backport-api
+    networks:
+      - patch-network
+    restart: unless-stopped
+
+networks:
+  patch-network:
+    driver: bridge 

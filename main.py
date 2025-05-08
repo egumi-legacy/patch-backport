@@ -35,6 +35,167 @@ from patch_processor import PatchProcessor
 # from utils.git_operations import parse_github_url
 
 
+def find_existing_repo(repo_base_path: Path, repo_url: str) -> Optional[Path]:
+    """
+    在指定的基础目录下查找与repo_url对应的git仓库
+    
+    Args:
+        repo_base_path: 包含多个仓库的基础目录路径
+        repo_url: 仓库URL
+        
+    Returns:
+        如果找到，返回仓库路径；否则返回None
+    """
+    try:
+        # 解析仓库名称
+        repo_name = repo_url.rstrip('/').split('/')[-1]
+        if repo_name.endswith('.git'):
+            repo_name = repo_name[:-4]
+        
+        # 检查可能的仓库路径
+        potential_paths = [
+            repo_base_path / repo_name,  # 直接用仓库名
+            repo_base_path / repo_name.lower(),  # 小写仓库名
+        ]
+        
+        # 检查每个潜在路径是否是一个git仓库
+        for path in potential_paths:
+            logger.info(f"path:{path}")
+            git_dir = path / '.git'
+            if git_dir.exists() and git_dir.is_dir():
+                # 验证远程URL是否匹配
+                result = subprocess.run(
+                    ['git', 'config', '--get', 'remote.origin.url'],
+                    cwd=path,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+                if result.returncode == 0:
+                    remote_url = result.stdout.strip()
+                    # 简单验证URL是否匹配(忽略.git后缀和协议差异)
+                    if normalize_git_url(remote_url) == normalize_git_url(repo_url):
+                        logger.info(f"在 {path} 找到已存在的仓库")
+                        return path
+        
+        return None
+    except Exception as e:
+        logger.error(f"查找已存在仓库时出错: {e}")
+        return None
+
+
+def normalize_git_url(url: str) -> str:
+    """标准化git URL以便比较"""
+    # 移除协议前缀
+    url = re.sub(r'^(https?|git|ssh)://', '', url)
+    # 移除用户名
+    url = re.sub(r'^.+@', '', url)
+    # 移除.git后缀
+    url = re.sub(r'\.git$', '', url)
+    # 移除尾部斜杠
+    url = url.rstrip('/')
+    return url
+
+
+def clone_repo(repo_url: str, target_dir: Path) -> bool:
+    """
+    克隆仓库到指定目录
+    
+    Args:
+        repo_url: 仓库URL
+        target_dir: 目标目录
+        
+    Returns:
+        是否成功
+    """
+    try:
+        logger.info(f"正在克隆仓库 {repo_url} 到 {target_dir}")
+        
+        # 确保目标目录存在
+        target_dir.parent.mkdir(parents=True, exist_ok=True)
+        
+        # 克隆仓库
+        result = subprocess.run(
+            ['git', 'clone', repo_url, str(target_dir)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        
+        if result.returncode != 0:
+            logger.error(f"克隆仓库失败: {result.stderr}")
+            return False
+            
+        logger.info(f"成功克隆仓库到 {target_dir}")
+        return True
+    except Exception as e:
+        logger.error(f"克隆仓库时出错: {e}")
+        return False
+
+
+def get_base_repo_path(path: str) -> Path:
+    """
+    获取合适的基础仓库路径
+    如果提供的路径本身是git仓库，则使用其父目录
+    
+    Args:
+        path: 路径字符串
+        
+    Returns:
+        基础仓库路径
+    """
+    p = Path(path)
+    # 检查是否是git仓库
+    if (p / '.git').exists() and (p / '.git').is_dir():
+        logger.info(f"检测到 {p} 是一个git仓库，使用其父目录作为基础路径")
+        return p.parent
+    return p
+
+
+def handle_repo_url(repo_url: str, config_data: dict) -> tuple:
+    """
+    处理仓库URL，检查是否存在或需要克隆
+    
+    Args:
+        repo_url: 仓库URL
+        config_data: 配置数据
+        
+    Returns:
+        (base_repo_path, repo_path) 元组，分别是基础仓库路径和具体仓库路径
+    """
+    # 获取或创建repo_base_path字段
+    if 'repo_base_path' not in config_data['common']:
+        # 如果没有repo_base_path，使用repo_path作为初始值
+        base_path_str = config_data['common'].get('repo_path', '../backport-test')
+        base_path = get_base_repo_path(base_path_str)
+        config_data['common']['repo_base_path'] = str(base_path)
+    else:
+        # 已有repo_base_path，确保它不是git仓库
+        base_path = get_base_repo_path(config_data['common']['repo_base_path'])
+        config_data['common']['repo_base_path'] = str(base_path)
+    
+    logger.info(f"使用基础仓库路径: {base_path}")
+    
+    # 从URL解析仓库名称
+    repo_name = repo_url.rstrip('/').split('/')[-1]
+    if repo_name.endswith('.git'):
+        repo_name = repo_name[:-4]
+        
+    # 查找是否存在该仓库
+    existing_repo = find_existing_repo(base_path, repo_url)
+    if existing_repo:
+        logger.info(f"使用已存在的仓库: {existing_repo}")
+        return str(base_path), str(existing_repo)
+    
+    # 仓库不存在，需要克隆
+    target_dir = base_path / repo_name
+    if clone_repo(repo_url, target_dir):
+        return str(base_path), str(target_dir)
+    else:
+        # 克隆失败，使用原始路径
+        logger.warning(f"仓库克隆失败，使用默认路径: {base_path}")
+        return str(base_path), str(base_path)
+
 
 class PatchBackportTool:
     """补丁移植工具"""
@@ -127,29 +288,6 @@ class PatchBackportTool:
             logger.error(f"错误堆栈: {traceback.format_exc()}")
             sys.exit(1)
     
-    # def _process_mode1(self):
-    #     """处理模式1: 单个补丁"""
-        
-    #     # 创建提交上下文
-    #     commit_context = CommitContext.create_for_mode1(self.config)
-        
-    #     # 创建模块上下文
-    #     context = ModuleContext(
-    #         config=self.config,
-    #         commit=commit_context
-    #     )
-        
-    #     # 创建处理流水线
-    #     pipeline = AdaptationPipeline(self.config)
-        
-    #     # 处理补丁
-    #     context = pipeline.process_patch(context)
-        
-    #     # 保存结果
-    #     self._save_results(context)
-        
-    #     # 打印摘要
-    #     self._print_summary(context)
     def _process_mode1(self):
         """处理模式1: 单个补丁多个版本"""
         # 获取补丁URL
@@ -183,8 +321,20 @@ class PatchBackportTool:
                 commit=commit_context
             )
             
+            # 记录开始时间
+            context.start_time = datetime.now()
+            
             # 处理补丁
             processed_context = pipeline.process_patch(context)
+            
+            # 记录结束时间
+            processed_context.end_time = datetime.now()
+            
+            # 合并处理结果的补丁
+            final_patch = self._merge_patches(processed_context)
+            if final_patch:
+                logger.info(f"成功合并补丁到: {final_patch}")
+                processed_context.commit.patch_path = final_patch
             
             # 保存结果
             result_path = self._save_results(processed_context)
@@ -248,8 +398,20 @@ class PatchBackportTool:
                 commit=commit_context
             )
             
+            # 记录开始时间
+            context.start_time = datetime.now()
+            
             # 处理补丁
             context = pipeline.process_patch(context)
+            
+            # 记录结束时间
+            context.end_time = datetime.now()
+            
+            # 合并处理结果的补丁
+            final_patch = self._merge_patches(context)
+            if final_patch:
+                logger.info(f"成功合并补丁到: {final_patch}")
+                context.commit.patch_path = final_patch
             
             # 保存结果
             self._save_results(context)
@@ -261,14 +423,10 @@ class PatchBackportTool:
             direct_success = bool(context.direct_apply_result and context.direct_apply_result.get('success'))
             if direct_success:
                 direct_success_count += 1
-                continue
             llm_success = bool(context.llm_output.get('apply_result') and context.llm_output.get('apply_result').get('success'))
             patch_adapter_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
             compilation_success = bool(context.compilation_result and context.compilation_result.get('success'))
             
-            
-            # if direct_success:
-            #     direct_success_count += 1
             if llm_success:
                 llm_success_count += 1
             if patch_adapter_success:
@@ -439,7 +597,7 @@ class PatchBackportTool:
         # 创建结果目录
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         commit_sha = context.commit.commit_sha[:6]
-        result_dir = Path("results") / f"{self.config.target_version}_{commit_sha}_{timestamp}"
+        result_dir = Path("results") / f"{context.config.target_version}_{commit_sha}_{timestamp}"
         result_dir.mkdir(parents=True, exist_ok=True)
         
         # 准备提交信息
@@ -454,37 +612,71 @@ class PatchBackportTool:
         if hasattr(context.commit, 'downstream_message'):
             commit_info['downstream_message'] = context.commit.downstream_message
         
+        # 添加最终补丁路径信息
+        final_patch_content = None
+        if hasattr(context.commit, 'patch_path') and context.commit.patch_path:
+            commit_info['final_patch_path'] = str(context.commit.patch_path)
+            # 复制最终补丁到结果目录
+            final_patch_filename = context.commit.patch_path.name
+            result_patch_path = result_dir / final_patch_filename
+            try:
+                shutil.copy2(context.commit.patch_path, result_patch_path)
+                logger.info(f"已复制最终补丁到结果目录: {result_patch_path}")
+                
+                # 读取补丁内容
+                with open(context.commit.patch_path, 'r', encoding='utf-8') as f:
+                    final_patch_content = f.read()
+                    
+            except Exception as e:
+                logger.error(f"复制补丁文件时出错: {e}")
+        
+        # 提取LLM输出
+        llm_output = None
+        if context.llm_output and 'response_path' in context.llm_output:
+            response_path = context.llm_output.get('response_path')
+            try:
+                with open(response_path, 'r', encoding='utf-8') as f:
+                    llm_output = f.read()
+            except Exception as e:
+                logger.error(f"读取LLM输出时出错: {e}")
+        
+        # 计算运行时间
+        start_time = context.start_time if hasattr(context, 'start_time') else None
+        end_time = context.end_time if hasattr(context, 'end_time') else datetime.now()
+        execution_time = None
+        if start_time:
+            execution_time = (end_time - start_time).total_seconds()
+        
         # 保存上下文信息
         result = {
             'commit': commit_info,
             'config': {
-                'mode': self.config.mode,
-                'target_version': self.config.target_version,
-                'enabled_modules': self.config.enabled_modules
+                'mode': context.config.mode,
+                'target_version': context.config.target_version,
+                'enabled_modules': context.config.enabled_modules
             },
             'results': {
                 'direct_apply': context.direct_apply_result,
                 'llm_adapter': context.llm_output,
                 'patch_adapter': context.patch_adapter_result,
-                # 'llm_response': {
-                #     'status': context.llm_response.get('status') if context.llm_response else None,
-                #     'timestamp': context.llm_response.get('timestamp') if context.llm_response else None,
-                #     'response_path': context.llm_response.get('response_path') if context.llm_response else None
-                # } if context.llm_response else None,
-                # 'adapted_patches': [
-                #     {
-                #         'file': patch.get('file'),
-                #         'success': patch.get('success')
-                #     } for patch in context.adapted_patches
-                # ] if context.adapted_patches else [],
+                'chunk_analyzer': context.chunk_analyzer_result,
+                'final_patch_path': str(context.commit.patch_path) if hasattr(context.commit, 'patch_path') and context.commit.patch_path else None,
                 'last_error': context.last_error
+            },
+            'timing': {
+                'start_time': start_time.isoformat() if start_time else None,
+                'end_time': end_time.isoformat() if end_time else None,
+                'execution_time_seconds': execution_time,
+                'module_times': context.execution_times if hasattr(context, 'execution_times') else {}
             },
             'summary': {
                 'success': bool(context.direct_apply_result and context.direct_apply_result.get('success')) or
-                          bool(context.patch_adapter_result and context.patch_adapter_result.get('success')),
+                          bool(context.patch_adapter_result and context.patch_adapter_result.get('success')) or
+                          bool(context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') == context.chunk_analyzer_result.get('total_chunks')),
                 'method': next(
                     method for method, condition in [
                         ('direct_apply', context.direct_apply_result and context.direct_apply_result.get('success')),
+                        ('chunk_analyzer', context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') > 0),
                         ('compiler', context.compilation_result and context.compilation_result.get('success')),
                         ('llm_adapter', context.llm_output and context.llm_output.get('success')),
                         ('patch_adapter', context.patch_adapter_result and context.patch_adapter_result.get('success')),
@@ -500,19 +692,116 @@ class PatchBackportTool:
         with open(result_file, 'w') as f:
             json.dump(result, f, indent=2)
         
-        # # 复制关键文件
-        # if context.direct_apply_result and context.direct_apply_result.get('patch_path'):
-        #     patch_path = Path(context.direct_apply_result.get('patch_path'))
-        #     if patch_path.exists():
-        #         shutil.copy(patch_path, result_dir / "original.patch")
-        
-        # if context.llm_response and context.llm_response.get('response_path'):
-        #     response_path = Path(context.llm_response.get('response_path'))
-        #     if response_path.exists():
-        #         shutil.copy(response_path, result_dir / "llm_response.patch")
+        # 创建和保存详细的输出报告
+        self._save_detailed_report(context, result_dir, final_patch_content, llm_output, execution_time)
         
         logger.info(f"结果已保存到: {result_file}")
         return result_dir
+        
+    def _save_detailed_report(self, context: ModuleContext, result_dir: Path, 
+                             final_patch_content: str = None, llm_output: str = None,
+                             execution_time: float = None) -> None:
+        """
+        保存详细的输出报告，包含补丁内容、执行成功状态等
+        
+        Args:
+            context: 模块上下文
+            result_dir: 结果目录
+            final_patch_content: 最终补丁内容
+            llm_output: LLM输出内容
+            execution_time: 执行时间（秒）
+        """
+        # 计算模块成功状态
+        modules_status = {
+            "direct_apply": bool(context.direct_apply_result and context.direct_apply_result.get('success')),
+            "chunk_analyzer": bool(context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') > 0),
+            "llm_adapter": bool(context.llm_output and context.llm_output.get('success')),
+            "patch_adapter": bool(context.patch_adapter_result and context.patch_adapter_result.get('success')),
+            "compilation": bool(context.compilation_result and context.compilation_result.get('success'))
+        }
+        
+        # 整体是否成功
+        overall_success = modules_status["direct_apply"] or modules_status["patch_adapter"] or \
+                         (modules_status["chunk_analyzer"] and context.chunk_analyzer_result.get('applied_chunks') == context.chunk_analyzer_result.get('total_chunks'))
+        
+        # 使用的模型
+        model = context.config.model
+        
+        # 获取执行时间
+        execution_time = context.execution_time  # 使用新添加的属性
+        
+        # 创建详细报告
+        report = {
+            "success": overall_success,
+            "patch_content": final_patch_content,
+            "llm_output": llm_output,
+            "model": model,
+            "modules_status": modules_status,
+            "execution_time_seconds": execution_time,
+            "module_execution_times": context.execution_times,  # 添加各模块执行时间
+            "important_info": {
+                "target_version": context.config.target_version,
+                "commit_sha": context.commit.commit_sha,
+                "timestamp": datetime.now().isoformat()
+            }
+        }
+        
+        # 添加一些其他重要信息
+        if context.chunk_analyzer_result:
+            chunks_info = {
+                "total_chunks": context.chunk_analyzer_result.get('total_chunks', 0),
+                "applied_chunks": context.chunk_analyzer_result.get('applied_chunks', 0)
+            }
+            report["important_info"]["chunks_info"] = chunks_info
+            
+        if context.patch_adapter_result:
+            report["important_info"]["adaptation_method"] = context.patch_adapter_result.get('adaptation_method', 'unknown')
+        
+        # 添加执行路径信息
+        execution_path = self._determine_execution_path(context)
+        if execution_path:
+            report["important_info"]["execution_path"] = execution_path
+            
+        # 保存详细报告JSON
+        detailed_report_file = result_dir / "detailed_report.json"
+        with open(detailed_report_file, 'w', encoding='utf-8') as f:
+            json.dump(report, f, indent=2)
+            
+        logger.info(f"详细报告已保存到: {detailed_report_file}")
+        
+        return report
+    
+    def _determine_execution_path(self, context: ModuleContext) -> str:
+        """
+        确定执行路径，用于报告中显示主要的执行流程
+        
+        Args:
+            context: 模块上下文
+            
+        Returns:
+            执行路径描述
+        """
+        if context.direct_apply_result and context.direct_apply_result.get('success'):
+            return "direct_apply"
+            
+        execution_path = []
+        
+        if context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') > 0:
+            if context.chunk_analyzer_result.get('applied_chunks') == context.chunk_analyzer_result.get('total_chunks'):
+                return "chunk_analyzer (all chunks)"
+            else:
+                execution_path.append(f"chunk_analyzer ({context.chunk_analyzer_result.get('applied_chunks')}/{context.chunk_analyzer_result.get('total_chunks')} chunks)")
+                
+        if context.llm_output and context.llm_output.get('success'):
+            execution_path.append("llm_adapter")
+            
+        if context.patch_adapter_result and context.patch_adapter_result.get('success'):
+            execution_path.append("patch_adapter")
+            
+        if not execution_path:
+            return "failed (no successful modules)"
+            
+        return " -> ".join(execution_path)
     
     def _print_summary(self, context: ModuleContext):
         """打印处理摘要"""
@@ -641,16 +930,343 @@ class PatchBackportTool:
         
         logger.info(f"统计结果已保存到: {stats_file}")
 
+    def _merge_patches(self, context: ModuleContext) -> Optional[Path]:
+        """
+        合并不同模块生成的补丁
+        
+        Args:
+            context: 模块上下文
+            
+        Returns:
+            合并后的补丁路径，失败则返回None
+        """
+        logger.info("开始合并补丁...")
+        
+        # 检查chunk_analyzer结果
+        chunk_results = context.chunk_analyzer_result
+        patch_adapter_results = context.patch_adapter_result
+        
+        # 如果没有任何结果，直接返回
+        if not chunk_results and not patch_adapter_results:
+            logger.warning("没有找到任何可合并的补丁结果")
+            return None
+            
+        # 创建补丁目录
+        patch_dir = context.commit.patch_dir
+        patch_dir.mkdir(parents=True, exist_ok=True)
+        
+        # 合并后的补丁路径
+        merged_patch_path = patch_dir / f"merged_{context.config.target_version}.patch"
+        
+        try:
+            chunk_applied = False
+            all_chunks_applied = False
+            chunk_patches = []
+            
+            # 处理chunk_analyzer结果
+            if isinstance(chunk_results, dict) and chunk_results.get('applied_chunks'):
+                chunk_applied = True
+                applied_chunks = chunk_results.get('applied_chunks', 0)
+                total_chunks = chunk_results.get('total_chunks', 0)
+                all_chunks_applied = applied_chunks == total_chunks and total_chunks > 0
+                
+                # 收集应用成功的chunk补丁
+                if 'applied_patch_paths' in chunk_results:
+                    chunk_patches = [Path(p) for p in chunk_results['applied_patch_paths'] if p]
+                    
+                logger.info(f"Chunk分析器应用了 {applied_chunks}/{total_chunks} 个chunks")
+                
+            # 如果所有chunk都应用成功，跳过patch_adapter
+            if all_chunks_applied:
+                logger.info("所有chunks都已成功应用，跳过patch_adapter")
+                
+                # 如果只有一个补丁，直接使用它
+                if len(chunk_patches) == 1:
+                    context.commit.patch_path = chunk_patches[0]
+                    logger.info(f"使用唯一的chunk补丁: {context.commit.patch_path}")
+                    return context.commit.patch_path
+                    
+                # 合并多个chunk补丁
+                elif len(chunk_patches) > 1:
+                    merged_patch_content = self._combine_patch_files(chunk_patches)
+                    
+                    with open(merged_patch_path, 'w', encoding='utf-8') as f:
+                        f.write(merged_patch_content)
+                        
+                    context.commit.patch_path = merged_patch_path
+                    logger.info(f"合并了 {len(chunk_patches)} 个chunk补丁到: {merged_patch_path}")
+                    return merged_patch_path
+            
+            # 如果有chunk_analyzer的部分结果，但需要与patch_adapter结合
+            patch_adapter_path = None
+            if isinstance(patch_adapter_results, dict) and patch_adapter_results.get('success'):
+                patch_adapter_path = patch_adapter_results.get('adapted_patch_path')
+                if patch_adapter_path:
+                    patch_adapter_path = Path(patch_adapter_path)
+                    logger.info(f"找到patch_adapter成功的补丁: {patch_adapter_path}")
+            
+            # 合并chunk补丁和patch_adapter补丁
+            if chunk_applied and patch_adapter_path:
+                if not chunk_patches:
+                    # 如果没有成功的chunk补丁，直接使用patch_adapter的补丁
+                    context.commit.patch_path = patch_adapter_path
+                    logger.info(f"没有成功的chunk补丁，使用patch_adapter补丁: {patch_adapter_path}")
+                    return patch_adapter_path
+                
+                # 合并chunk补丁和patch_adapter补丁
+                logger.info(f"合并 {len(chunk_patches)} 个chunk补丁和patch_adapter补丁")
+                
+                # 先合并所有chunk补丁
+                chunk_merged_content = self._combine_patch_files(chunk_patches)
+                
+                # 再与patch_adapter补丁合并
+                with open(patch_adapter_path, 'r', encoding='utf-8') as f:
+                    adapter_content = f.read()
+                
+                # 提取两个补丁的文件修改
+                chunk_files = self._parse_patch_files(chunk_merged_content)
+                adapter_files = self._parse_patch_files(adapter_content)
+                
+                # 选择最终的文件修改
+                final_files = {**chunk_files, **adapter_files}  # patch_adapter优先
+                
+                # 提取补丁头信息
+                patch_header = self._extract_patch_header(adapter_content)
+                
+                # 写入最终合并的补丁
+                with open(merged_patch_path, 'w', encoding='utf-8') as f:
+                    f.write(patch_header)
+                    
+                    # 写入每个文件的修改
+                    for file_path, content in final_files.items():
+                        f.write(content)
+                
+                context.commit.patch_path = merged_patch_path
+                logger.info(f"成功合并chunk补丁和patch_adapter补丁到: {merged_patch_path}")
+                return merged_patch_path
+            
+            # 如果只有patch_adapter结果
+            elif patch_adapter_path:
+                context.commit.patch_path = patch_adapter_path
+                logger.info(f"只使用patch_adapter补丁: {patch_adapter_path}")
+                return patch_adapter_path
+                
+            # 如果只有chunk_analyzer结果
+            elif chunk_applied and chunk_patches:
+                # 合并chunk补丁
+                merged_content = self._combine_patch_files(chunk_patches)
+                
+                with open(merged_patch_path, 'w', encoding='utf-8') as f:
+                    f.write(merged_content)
+                    
+                context.commit.patch_path = merged_patch_path
+                logger.info(f"只合并chunk补丁到: {merged_patch_path}")
+                return merged_patch_path
+            
+            logger.warning("没有找到可合并的补丁")
+            return None
+            
+        except Exception as e:
+            logger.error(f"合并补丁时出错: {e}")
+            logger.error(traceback.format_exc())
+            return None
+    
+    def _combine_patch_files(self, patch_files: List[Path]) -> str:
+        """
+        合并多个补丁文件内容
+        
+        Args:
+            patch_files: 补丁文件路径列表
+            
+        Returns:
+            合并后的补丁内容
+        """
+        if not patch_files:
+            return ""
+            
+        # 读取所有补丁文件内容
+        file_contents = []
+        for path in patch_files:
+            if path.exists():
+                with open(path, 'r', encoding='utf-8') as f:
+                    file_contents.append(f.read())
+        
+        if not file_contents:
+            return ""
+            
+        # 使用第一个补丁的头信息
+        patch_header = self._extract_patch_header(file_contents[0])
+        
+        # 提取每个补丁的文件修改
+        all_file_changes = {}
+        for content in file_contents:
+            file_changes = self._parse_patch_files(content)
+            all_file_changes.update(file_changes)  # 后面的优先
+        
+        # 构建合并后的补丁内容
+        merged_content = patch_header
+        for file_path, content in all_file_changes.items():
+            merged_content += content
+            
+        return merged_content
+    
+    def _extract_patch_header(self, patch_content: str) -> str:
+        """
+        提取补丁文件的头信息
+        
+        Args:
+            patch_content: 补丁文件内容
+            
+        Returns:
+            头信息字符串
+        """
+        header = ""
+        for line in patch_content.splitlines():
+            if line.startswith('diff --git'):
+                break
+            header += line + "\n"
+        return header
+    
+    def _parse_patch_files(self, patch_content: str) -> Dict[str, str]:
+        """
+        解析补丁内容中的文件修改
+        
+        Args:
+            patch_content: 补丁内容
+            
+        Returns:
+            文件路径与对应修改内容的字典
+        """
+        result = {}
+        current_file = None
+        current_content = ""
+        
+        lines = patch_content.splitlines(True)  # 保留换行符
+        i = 0
+        
+        # 跳过头信息
+        while i < len(lines) and not lines[i].startswith('diff --git'):
+            i += 1
+            
+        # 处理每个文件的修改
+        while i < len(lines):
+            line = lines[i]
+            
+            # 新文件开始
+            if line.startswith('diff --git'):
+                # 保存之前的文件内容
+                if current_file:
+                    result[current_file] = current_content
+                
+                # 提取新文件名
+                parts = line.split()
+                if len(parts) >= 3:
+                    # 格式: diff --git a/path/to/file b/path/to/file
+                    current_file = parts[2][2:]  # 移除 "b/"
+                    current_content = line
+                else:
+                    current_file = None
+                    current_content = ""
+            else:
+                # 累积当前文件的内容
+                if current_file:
+                    current_content += line
+                    
+            i += 1
+            
+        # 保存最后一个文件的内容
+        if current_file:
+            result[current_file] = current_content
+            
+        return result
+
 
 def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="补丁移植工具")
     parser.add_argument('--config', '-c', type=str, default="configs/new_inputs.yaml",
                        help="配置文件路径 (默认: configs/new_inputs.yaml)")
+    parser.add_argument('--repo-url', '-r', type=str, required=False,
+                       help="Git仓库URL (必填)")
+    parser.add_argument('--mode', '-m', type=int, choices=[1, 2], default=1,
+                       help="处理模式: 1=单个补丁, 2=批量处理 (默认: 1)")
+    parser.add_argument('--patch', '-p', type=str,
+                       help="补丁URL或commit hash (模式1下必填)")
+    parser.add_argument('--target', '-t', type=str, required=False,
+                       help="目标版本，可以是tag或commit hash (必填)")
     args = parser.parse_args()
     
+    # 加载配置文件
+    config_path = args.config
+    try:
+        with open(config_path, 'r') as f:
+            config_data = yaml.safe_load(f)
+    except Exception as e:
+        print(f"加载配置文件失败: {e}")
+        sys.exit(1)
+
+
+    # 检查必需参数
+    if args.mode == 1 and not (args.patch or config_data['mode1'].get('patch_url')):
+        print("错误: 模式1下必须指定补丁URL或commit hash")
+        sys.exit(1)
+        
+    if not (args.target or config_data['common'].get('target_version')):
+        print("错误: 必须指定目标版本")
+        sys.exit(1)
+        
+    if not (args.repo_url or 
+            (args.mode == 1 and config_data['common'].get('repo_url')) or 
+            (args.mode == 2 and config_data['mode2'].get('repo_url'))):
+        print("错误: 必须指定Git仓库URL")
+        sys.exit(1)
+        
+    # 根据命令行参数更新配置
+    if args.mode:
+        config_data['common']['mode'] = args.mode
+        
+    if args.target:
+        config_data['common']['target_version'] = args.target
+        
+    if args.repo_url:
+        # 处理repo_url并更新repo_path和repo_base_path
+        base_repo_path, repo_path = handle_repo_url(args.repo_url, config_data)
+        config_data['common']['repo_base_path'] = base_repo_path
+        config_data['common']['repo_path'] = repo_path
+        logger.info(f"更新repo_base_path为: {base_repo_path}")
+        logger.info(f"更新repo_path为: {repo_path}")
+        
+        if args.mode == 1:
+            # 模式1: 更新repo_url
+            config_data['common']['repo_url'] = args.repo_url
+        else:
+            # 模式2: 更新repo_url
+            config_data['mode2']['repo_url'] = args.repo_url
+            
+    if args.patch and args.mode == 1:
+        # 如果提供的是commit hash而不是完整URL，需要构建完整URL
+        if not args.patch.startswith('http'):
+            # 从repo_url解析owner和repo
+            from patch_utils import parse_github_url
+            info = parse_github_url(args.repo_url)
+            if info:
+                patch_url = f"https://github.com/{info['owner']}/{info['repo']}/commit/{args.patch}.patch"
+                config_data['mode1']['patch_url'] = patch_url
+        else:
+            config_data['mode1']['patch_url'] = args.patch
+    
+    
+    
+    # 保存更新后的配置
+    try:
+        with open(config_path, 'w') as f:
+            yaml.dump(config_data, f, default_flow_style=False)
+    except Exception as e:
+        print(f"保存配置文件失败: {e}")
+        sys.exit(1)
+    
     # 创建并运行工具
-    tool = PatchBackportTool(args.config)
+    tool = PatchBackportTool(config_path)
     tool.run()
 
 

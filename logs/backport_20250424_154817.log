@@ -1,0 +1,105 @@
+2025-04-24 15:48:17.618 | INFO     | __main__:_setup_logger:271 - 日志文件: logs/backport_20250424_154817.log
+2025-04-24 15:48:17.619 | INFO     | __main__:run:275 - 开始执行 模式1
+2025-04-24 15:48:17.619 | INFO     | __main__:_process_mode1:318 - 处理补丁: https://github.com/rails/rails/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-04-24 15:48:17.620 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-04-24 15:48:17.620 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-04-24 15:48:17.621 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-04-24 15:48:17.621 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-04-24 15:48:17.621 | INFO     | __main__:_process_mode1:325 - 目标版本: ['v5.2.7']
+2025-04-24 15:48:17.622 | INFO     | __main__:_process_mode1:332 - 开始处理版本: v5.2.7
+2025-04-24 15:48:17.622 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-04-24 15:48:17.622 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-04-24 15:48:17.624 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: actionpack/lib/action_dispatch/http/filter_parameters.rb: does not exist in index\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch', 'success': False, 'timestamp': '2025-03-19T07:43:59.050397'}
+2025-04-24 15:48:17.624 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-04-24 15:48:17.624 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-04-24 15:48:17.625 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:172 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-04-24 15:48:17.625 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:177 - 补丁文件包含 38 行内容
+2025-04-24 15:48:17.626 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:192 - 发现修改文件: actionpack/lib/action_dispatch/http/filter_parameters.rb
+2025-04-24 15:48:17.626 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:243 - 发现修改块: actionpack/lib/action_dispatch/http/filter_parameters.rb @@ -73,12 +73,17 @@ (modification)
+2025-04-24 15:48:17.627 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:263 - 补丁分解完成，共找到 1 个修改块
+2025-04-24 15:48:17.627 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 1 个块
+2025-04-24 15:48:17.628 | INFO     | modules.chunk_analyzer:_create_chunk_patches:282 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-04-24 15:48:17.629 | INFO     | modules.chunk_analyzer:_create_chunk_patches:308 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250424_154817.patch (修改文件: actionpack/lib/action_dispatch/http/filter_parameters.rb)
+2025-04-24 15:48:17.629 | INFO     | modules.chunk_analyzer:execute:60 - 已为 1 个块创建单独的补丁文件
+2025-04-24 15:48:17.629 | INFO     | modules.chunk_analyzer:execute:62 - 第0个补丁文件为：
+2025-04-24 15:48:17.630 | INFO     | modules.chunk_analyzer:execute:63 - workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250424_154817.patch
+2025-04-24 15:48:17.630 | INFO     | modules.chunk_analyzer:_run_git_command:1336 - 运行git命令: rev-parse --abbrev-ref HEAD
+2025-04-24 15:48:17.633 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:326 - 当前分支: HEAD
+2025-04-24 15:48:17.633 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:335 - 当前分支不是目标版本，切换到目标版本: v5.2.7
+2025-04-24 15:48:17.634 | INFO     | modules.chunk_analyzer:_run_git_command:1336 - 运行git命令: checkout v5.2.7
+2025-04-24 15:48:17.701 | INFO     | modules.chunk_analyzer:_run_git_command:1336 - 运行git命令: checkout -b chunk_test_20250424_154817_f6012c
+2025-04-24 15:48:17.706 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:355 - 创建测试分支: chunk_test_20250424_154817_f6012c
+2025-04-24 15:48:17.706 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:361 - 尝试应用补丁块: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250424_154817.patch
+2025-04-24 15:48:17.707 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:365 - 方法1: 尝试 git apply --ignore-space-change
+2025-04-24 15:48:17.707 | INFO     | modules.chunk_analyzer:_run_git_command:1336 - 运行git命令: apply --ignore-space-change --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250424_154817.patch
+2025-04-24 15:48:17.713 | ERROR    | modules.chunk_analyzer:_run_git_command:1347 - Git命令执行失败: error: patch failed: actionpack/lib/action_dispatch/http/filter_parameters.rb:73
+error: actionpack/lib/action_dispatch/http/filter_parameters.rb: patch does not apply
+
+2025-04-24 15:48:17.714 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:377 - 方法1失败: Command '['git', 'apply', '--ignore-space-change', '--ignore-whitespace', '/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250424_154817.patch']' returned non-zero exit status 1.
+2025-04-24 15:48:17.714 | INFO     | modules.chunk_analyzer:_run_git_command:1336 - 运行git命令: reset --hard
+2025-04-24 15:48:17.742 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:383 - 方法2: 尝试 git apply --reject
+2025-04-24 15:48:17.743 | INFO     | modules.chunk_analyzer:_run_git_command:1336 - 运行git命令: apply --reject --ignore-whitespace --ignore-space-change /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250424_154817.patch
+2025-04-24 15:48:17.747 | ERROR    | modules.chunk_analyzer:_run_git_command:1347 - Git命令执行失败: Checking patch actionpack/lib/action_dispatch/http/filter_parameters.rb...
+error: while searching for:
+        ActiveSupport::ParameterFilter.new(filters)
+      end
+
+      KV_RE   = "[^&;=]+"
+      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}
+      def filtered_query_string # :doc:
+        query_string.gsub(PAIR_RE) do |_|
+          parameter_filter.filter($1 => $2).first.join("=")
+        end
+      end
+    end
+  end
+
+error: patch failed: actionpack/lib/action_dispatch/http/filter_parameters.rb:73
+Applying patch actionpack/lib/action_dispatch/http/filter_parameters.rb with 1 reject...
+Rejected hunk #1.
+
+2025-04-24 15:48:17.747 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:406 - 方法2失败: Command '['git', 'apply', '--reject', '--ignore-whitespace', '--ignore-space-change', '/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250424_154817.patch']' returned non-zero exit status 1.
+2025-04-24 15:48:17.747 | INFO     | modules.chunk_analyzer:_run_git_command:1336 - 运行git命令: reset --hard
+2025-04-24 15:48:17.775 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:412 - 方法3: 尝试 git am --3way
+2025-04-24 15:48:17.841 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:423 - 成功应用块补丁(方法3): chunk_001_20250424_154817.patch
+2025-04-24 15:48:17.841 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:1249 - 切换回目标版本分支: v5.2.7
+2025-04-24 15:48:17.841 | INFO     | modules.chunk_analyzer:_run_git_command:1336 - 运行git命令: checkout v5.2.7
+2025-04-24 15:48:17.860 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:1253 - 清理临时分支: chunk_test_20250424_154817_f6012c
+2025-04-24 15:48:17.860 | INFO     | modules.chunk_analyzer:_run_git_command:1336 - 运行git命令: branch -D chunk_test_20250424_154817_f6012c
+2025-04-24 15:48:17.863 | INFO     | modules.chunk_analyzer:execute:67 - 成功应用了 1 个块补丁，总共 1 个
+2025-04-24 15:48:17.863 | INFO     | modules.chunk_analyzer:execute:79 - 所有块补丁都已成功应用，无需创建剩余补丁
+2025-04-24 15:48:17.864 | INFO     | modules.chunk_analyzer:execute:105 - 所有补丁块应用成功，标记为完全成功
+2025-04-24 15:48:17.865 | INFO     | modules.chunk_analyzer:execute:111 - 补丁分块分析完成，耗时: 0.24秒
+2025-04-24 15:48:17.867 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/metrics_fb493b_20250424_154817.json
+2025-04-24 15:48:17.870 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:1720 - 找到当前评估会话目录: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250424_154817
+2025-04-24 15:48:17.870 | INFO     | modules.chunk_analyzer:_get_patch_content:1954 - 使用当前会话评估目录: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250424_154817
+2025-04-24 15:48:17.871 | WARNING  | modules.chunk_analyzer:_get_patch_content:2010 - 补丁目录不存在: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250424_154817/patches
+2025-04-24 15:48:17.872 | INFO     | modules.chunk_analyzer:_get_patch_content:2015 - 成功创建补丁目录: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250424_154817/patches
+2025-04-24 15:48:17.873 | INFO     | modules.chunk_analyzer:_get_patch_content:2033 - 已将原始补丁内容保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250424_154817/patches/original_patch.txt
+2025-04-24 15:48:17.874 | INFO     | modules.chunk_analyzer:_get_patch_content:1954 - 使用当前会话评估目录: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250424_154817
+2025-04-24 15:48:17.876 | INFO     | modules.chunk_analyzer:_get_patch_content:2138 - 已将补丁块内容保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250424_154817/patches/applied_chunk_1.txt
+2025-04-24 15:48:17.877 | INFO     | modules.chunk_analyzer:_get_patch_content:2147 - 已将合并的补丁块内容保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250424_154817/patches/all_applied_chunks.txt
+2025-04-24 15:48:17.877 | INFO     | modules.chunk_analyzer:_get_patch_content:2151 - 从context获取应用成功的补丁内容
+2025-04-24 15:48:17.877 | INFO     | modules.chunk_analyzer:_get_patch_content:1954 - 使用当前会话评估目录: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250424_154817
+2025-04-24 15:48:17.878 | WARNING  | modules.chunk_analyzer:_get_patch_content:2209 - 未找到剩余补丁文件
+2025-04-24 15:48:17.879 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250424_154817
+2025-04-24 15:48:17.883 | INFO     | core.adaptation_pipeline:process_patch:96 - 块分析器已成功应用所有块，跳过模块: LLMAdapterModule
+2025-04-24 15:48:17.884 | INFO     | core.adaptation_pipeline:process_patch:96 - 块分析器已成功应用所有块，跳过模块: PatchAdapterModule
+2025-04-24 15:48:17.884 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 0.26秒
+2025-04-24 15:48:17.885 | INFO     | __main__:_merge_patches:832 - 开始合并补丁...
+2025-04-24 15:48:17.885 | INFO     | __main__:_merge_patches:866 - Chunk分析器应用了 1/1 个chunks
+2025-04-24 15:48:17.885 | INFO     | __main__:_merge_patches:870 - 所有chunks都已成功应用，跳过patch_adapter
+2025-04-24 15:48:17.886 | WARNING  | __main__:_merge_patches:955 - 没有找到可合并的补丁
+2025-04-24 15:48:17.887 | INFO     | __main__:_save_results:638 - 已复制最终补丁到结果目录: results/v5.2.7_fb493b_20250424_154817/upstream_fb493b.patch
+2025-04-24 15:48:17.888 | INFO     | __main__:_save_results:692 - 结果已保存到: results/v5.2.7_fb493b_20250424_154817/result.json
+2025-04-24 15:48:17.889 | INFO     | __main__:_print_summary:702 - context.patch_adapter_result: []
+2025-04-24 15:48:17.889 | INFO     | __main__:_print_summary:723 - ==================================================
+2025-04-24 15:48:17.890 | INFO     | __main__:_print_summary:724 - 处理摘要 - 提交: fb493b
+2025-04-24 15:48:17.890 | INFO     | __main__:_print_summary:725 - 结果: 处理失败 (方法: failed)
+2025-04-24 15:48:17.890 | INFO     | __main__:_print_summary:730 - ==================================================
+2025-04-24 15:48:17.891 | INFO     | __main__:_print_multi_version_summary:470 - ================================================================================
+2025-04-24 15:48:17.891 | INFO     | __main__:_print_multi_version_summary:471 - 多版本补丁适配汇总
+2025-04-24 15:48:17.892 | INFO     | __main__:_print_multi_version_summary:472 - ================================================================================
+2025-04-24 15:48:17.892 | INFO     | __main__:_print_multi_version_summary:493 - 版本 v5.2.7: 成功 (方法: 块分析器 (1/1))
+2025-04-24 15:48:17.892 | INFO     | __main__:_print_multi_version_summary:499 - 总成功率: 100.0% (1/1)
+2025-04-24 15:48:17.893 | INFO     | __main__:run:284 - 处理完成

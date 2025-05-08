@@ -1,0 +1,41 @@
+From 5f7f0d319e6d8de60da3ac490bffaad55e36e2b8 Mon Sep 17 00:00:00 2001
+From: root <root@congroo0>
+Date: Thu, 24 Apr 2025 12:39:26 +0800
+Subject: [PATCH] Applied chunk patch with shell script:
+ chunk_002_20250424_123925.patch
+
+---
+ src/util.c.rej | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
+
+diff --git src/util.c.rej src/util.c.rej
+index e20c89a55..5f6d78332 100644
+--- src/util.c.rej
++++ src/util.c.rej
+@@ -1,15 +1,11 @@
+ --- src/util.c
+ +++ src/util.c
+-@@ -54,8 +54,11 @@
+- 
+- /* Glob-style pattern matching. */
+- static int stringmatchlen_impl(const char *pattern, int patternLen,
+--        const char *string, int stringLen, int nocase, int *skipLongerMatches)
+-+        const char *string, int stringLen, int nocase, int *skipLongerMatches, int nesting)
+- {
+-+    /* Protection against abusive patterns. */
+-+    if (nesting > 1000) return 0;
+-+
+-     while(patternLen && stringLen) {
+-         switch(pattern[0]) {
+-         case '*':
++@@ -67,7 +70,7 @@ static int stringmatchlen_impl(const char *pattern, int patternLen,
++                 return 1; /* match */
++             while(stringLen) {
++                 if (stringmatchlen_impl(pattern+1, patternLen-1,
++-                            string, stringLen, nocase, skipLongerMatches))
+++                            string, stringLen, nocase, skipLongerMatches, nesting+1))
++                     return 1; /* match */
++                 if (*skipLongerMatches)
++                     return 0; /* no match */
+-- 
+2.25.1

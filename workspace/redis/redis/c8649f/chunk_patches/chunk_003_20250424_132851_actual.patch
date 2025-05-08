@@ -1,0 +1,37 @@
+From 426770afed6b8d77cdff3e93551dee6884be8537 Mon Sep 17 00:00:00 2001
+From: root <root@congroo0>
+Date: Thu, 24 Apr 2025 13:28:52 +0800
+Subject: [PATCH] Applied chunk patch with shell script:
+ chunk_003_20250424_132851.patch
+
+---
+ src/util.c.rej | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git src/util.c.rej src/util.c.rej
+index 5f6d78332..7ff4c7012 100644
+--- src/util.c.rej
++++ src/util.c.rej
+@@ -1,11 +1,11 @@
+ --- src/util.c
+ +++ src/util.c
+-@@ -67,7 +70,7 @@ static int stringmatchlen_impl(const char *pattern, int patternLen,
+-                 return 1; /* match */
+-             while(stringLen) {
+-                 if (stringmatchlen_impl(pattern+1, patternLen-1,
+--                            string, stringLen, nocase, skipLongerMatches))
+-+                            string, stringLen, nocase, skipLongerMatches, nesting+1))
+-                     return 1; /* match */
+-                 if (*skipLongerMatches)
+-                     return 0; /* no match */
++@@ -189,7 +192,7 @@ static int stringmatchlen_impl(const char *pattern, int patternLen,
++ int stringmatchlen(const char *pattern, int patternLen,
++         const char *string, int stringLen, int nocase) {
++     int skipLongerMatches = 0;
++-    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches);
+++    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches,0);
++ }
++ 
++ int stringmatch(const char *pattern, const char *string, int nocase) {
+-- 
+2.25.1

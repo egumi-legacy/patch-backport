@@ -9,6 +9,7 @@ from loguru import logger
 import json
 import shutil
 import uuid
+import pprint
 
 from .base_module import BaseModule, ModuleType
 from core.parameter_manager import ModuleContext
@@ -57,6 +58,12 @@ class ChunkAnalyzerModule(BaseModule):
             # 2. 为每个chunk创建单独的补丁文件
             chunk_patches = self._create_chunk_patches(chunks, context)
             logger.info(f"已为 {len(chunk_patches)} 个块创建单独的补丁文件")
+            for i, chunk_patch in enumerate(chunk_patches):
+                logger.info(f"第 {i+1} 个补丁文件为：")
+                with open(chunk_patch, 'r', encoding='utf-8', errors='ignore') as f:
+                    lines = f.readlines()
+                    text = ''.join(lines)
+                    logger.info(text)
             
             # 3. 尝试应用每个单独的chunk补丁
             applied_chunks = self._apply_chunk_patches(chunk_patches, context)
@@ -83,6 +90,8 @@ class ChunkAnalyzerModule(BaseModule):
                 'remaining_patch': str(remaining_patch) if remaining_patch else None,
                 'timestamp': datetime.now().isoformat()
             }
+            print("analysis_result:")
+            pprint.pprint(analysis_result)
             
             # 将结果写入上下文
             context.chunk_analyzer_result = analysis_result
@@ -92,6 +101,14 @@ class ChunkAnalyzerModule(BaseModule):
                 context.commit.optimized_patch_path = remaining_patch
                 logger.info(f"已将剩余补丁路径存储到上下文: {remaining_patch}")
             
+            # 添加标记，当所有块都应用成功时，记录成功信息用于跳过后续步骤
+            if len(applied_chunks) == len(chunks) and len(chunks) > 0:
+                # 所有块都应用成功
+                context.chunk_analyzer_result['success'] = True
+                logger.info("所有补丁块应用成功，标记为完全成功")
+            else:
+                context.chunk_analyzer_result['success'] = False
+                
             # 更新指标
             execution_time = (datetime.now() - start_time).total_seconds()
             logger.info(f"补丁分块分析完成，耗时: {execution_time:.2f}秒")
@@ -292,6 +309,7 @@ class ChunkAnalyzerModule(BaseModule):
             
             chunk_patches.append(patch_path)
             logger.info(f"创建块补丁文件: {abs_patch_path} (修改文件: {chunk['file_path']})")
+            
         
         return chunk_patches
     

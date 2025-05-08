@@ -1,0 +1,107 @@
+2025-04-24 14:55:24.178 | INFO     | __main__:_setup_logger:271 - 日志文件: logs/backport_20250424_145524.log
+2025-04-24 14:55:24.178 | INFO     | __main__:run:275 - 开始执行 模式1
+2025-04-24 14:55:24.179 | INFO     | __main__:_process_mode1:318 - 处理补丁: https://github.com/redis/redis/commit/c8649f8e852d1dc388b5446e003bb0eefa33d61f
+2025-04-24 14:55:24.180 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-04-24 14:55:24.181 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-04-24 14:55:24.182 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-04-24 14:55:24.183 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-04-24 14:55:24.184 | INFO     | __main__:_process_mode1:325 - 目标版本: ['4.0.14']
+2025-04-24 14:55:24.185 | INFO     | __main__:_process_mode1:332 - 开始处理版本: 4.0.14
+2025-04-24 14:55:24.186 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: c8649f8e852d1dc388b5446e003bb0eefa33d61f
+2025-04-24 14:55:24.187 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-04-24 14:55:24.190 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: patch failed: src/util.c:54\nerror: src/util.c: patch does not apply\nerror: patch failed: tests/unit/keyspace.tcl:499\nerror: tests/unit/keyspace.tcl: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch', 'success': False, 'timestamp': '2025-04-24T12:39:25.277935'}
+2025-04-24 14:55:24.190 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-04-24 14:55:24.191 | INFO     | modules.chunk_analyzer:execute:51 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-04-24 14:55:24.191 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:166 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-04-24 14:55:24.192 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:171 - 补丁文件包含 60 行内容
+2025-04-24 14:55:24.192 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:186 - 发现修改文件: src/util.c
+2025-04-24 14:55:24.193 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:237 - 发现修改块: src/util.c @@ -54,8 +54,11 @@ (modification)
+2025-04-24 14:55:24.193 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:237 - 发现修改块: src/util.c @@ -67,7 +70,7 @@ (modification)
+2025-04-24 14:55:24.194 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:237 - 发现修改块: src/util.c @@ -189,7 +192,7 @@ (modification)
+2025-04-24 14:55:24.194 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:186 - 发现修改文件: tests/unit/keyspace.tcl
+2025-04-24 14:55:24.195 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:237 - 发现修改块: tests/unit/keyspace.tcl @@ -499,4 +499,10 @@ (modification)
+2025-04-24 14:55:24.195 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:257 - 补丁分解完成，共找到 4 个修改块
+2025-04-24 14:55:24.196 | INFO     | modules.chunk_analyzer:execute:55 - 补丁被分解为 4 个块
+2025-04-24 14:55:24.197 | INFO     | modules.chunk_analyzer:_create_chunk_patches:276 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-04-24 14:55:24.198 | INFO     | modules.chunk_analyzer:_create_chunk_patches:302 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/chunk_001_20250424_145524.patch (修改文件: src/util.c)
+2025-04-24 14:55:24.199 | INFO     | modules.chunk_analyzer:_create_chunk_patches:302 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/chunk_002_20250424_145524.patch (修改文件: src/util.c)
+2025-04-24 14:55:24.199 | INFO     | modules.chunk_analyzer:_create_chunk_patches:302 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/chunk_003_20250424_145524.patch (修改文件: src/util.c)
+2025-04-24 14:55:24.200 | INFO     | modules.chunk_analyzer:_create_chunk_patches:302 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/chunk_004_20250424_145524.patch (修改文件: tests/unit/keyspace.tcl)
+2025-04-24 14:55:24.201 | INFO     | modules.chunk_analyzer:execute:59 - 已为 4 个块创建单独的补丁文件
+2025-04-24 14:55:24.201 | INFO     | modules.chunk_analyzer:_run_git_command:1329 - 运行git命令: rev-parse --abbrev-ref HEAD
+2025-04-24 14:55:24.205 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:319 - 当前分支: HEAD
+2025-04-24 14:55:24.206 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:328 - 当前分支不是目标版本，切换到目标版本: 4.0.14
+2025-04-24 14:55:24.206 | INFO     | modules.chunk_analyzer:_run_git_command:1329 - 运行git命令: checkout 4.0.14
+2025-04-24 14:55:24.213 | ERROR    | modules.chunk_analyzer:_run_git_command:1340 - Git命令执行失败: error: The following untracked working tree files would be removed by checkout:
+	util.c.rej
+Please move or remove them before you switch branches.
+Aborting
+
+2025-04-24 14:55:24.213 | ERROR    | modules.chunk_analyzer:execute:112 - 补丁分析过程发生错误: Command '['git', 'checkout', '4.0.14']' returned non-zero exit status 1.
+2025-04-24 14:55:24.217 | ERROR    | modules.chunk_analyzer:execute:114 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 62, in execute
+    applied_chunks = self._apply_chunk_patches(chunk_patches, context)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 329, in _apply_chunk_patches
+    self._run_git_command(["checkout", context.config.target_version], repo_path)
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 1330, in _run_git_command
+    result = subprocess.run(
+             ^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'checkout', '4.0.14']' returned non-zero exit status 1.
+
+2025-04-24 14:55:24.218 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/metrics_c8649f_20250424_145524.json
+2025-04-24 14:55:24.221 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250424_145524
+2025-04-24 14:55:24.223 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: llm_adapter
+2025-04-24 14:55:24.224 | INFO     | modules.llm_adapter:execute:55 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-04-24 14:55:24.225 | INFO     | modules.llm_adapter:execute:57 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-04-24 14:55:24.227 | INFO     | modules.llm_adapter:_prepare_prompt_data:181 - 使用传统上下文差异
+2025-04-24 14:55:24.291 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-04-24 14:55:24.292 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/redis/redis/c8649f/llm_output/output_4.0.14_qwen-plus.patch
+2025-04-24 14:55:24.292 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-04-24 14:55:24.293 | INFO     | modules.llm_adapter:_call_llm:734 - llm.run() result:{'openai_responses': ['diff --git a/src/string.c b/src/string.c\nnew file mode 100644\n--- /dev/null\n+++ b/src/string.c\n@@ -0,0 +1,197 @@\n+#include "string.h"\n+\n+/* Glob-style pattern matching. */\n+static int stringmatchlen_impl(const char *pattern, int patternLen,\n+        const char *string, int stringLen, int nocase, int *skipLongerMatches, int nesting)\n+{\n+    /* Protection against abusive patterns. */\n+    if (nesting > 1000) return 0;\n+\n+    while(patternLen && stringLen) {\n+        switch(pattern[0]) {\n+        case \'*\':\n+            if (patternLen == 1) {\n+                return 1; /* match */\n+            }\n+            while(stringLen) {\n+                if (stringmatchlen_impl(pattern+1, patternLen-1,\n+                            string, stringLen, nocase, skipLongerMatches, nesting+1))\n+                    return 1; /* match */\n+                if (*skipLongerMatches)\n+                    return 0; /* no match */\n+                stringLen--; string++;\n+            }\n+            return 0;\n+        case \'?\':\n+            stringLen--; string++;\n+            patternLen--; pattern++;\n+            break;\n+        case \'\\\\\':\n+            patternLen--; pattern++;\n+            /* fallthrough */\n+        default:\n+            if (nocase) {\n+                char p = toupper(pattern[0]);\n+                char s = toupper(string[0]);\n+                if (p != s) return 0;\n+            } else {\n+                if (pattern[0] != string[0]) return 0;\n+            }\n+            stringLen--; string++;\n+            patternLen--; pattern++;\n+            break;\n+        }\n+    }\n+\n+    if (patternLen == 0) return stringLen == 0;\n+    return 0; /* no match */\n+}\n+\n+int stringmatchlen(const char *pattern, int patternLen,\n+        const char *string, int stringLen, int nocase) {\n+    int skipLongerMatches = 0;\n+    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches,0);\n+}\n+\n+int stringmatch(const char *pattern, const char *string, int nocase) {\n+    if (pattern == NULL || string == NULL) return 0;\n+    return stringmatchlen(pattern,strlen(pattern),string,strlen(string),nocase);\n+}\n+\n+/* Additional utility functions for pattern matching */\n+/* ... remaining code from util.c copied and adapted here ... */\n+\ndiff --git a/tests/unit/keyspace.tcl b/tests/unit/keyspace.tcl\nnew file mode 100644\n--- /dev/null\n+++ b/tests/unit/keyspace.tcl\n@@ -0,0 +1,507 @@\n+# New tests added for pattern matching protection\n+\n+test {Regression for pattern matching very long nested loops} {\n+    r flushdb\n+    r SET [string repeat "a" 50000] 1\n+    r KEYS [string repeat "*?" 50000]\n+} {}\n+\n+# Additional test cases from keyspace.tcl copied and adapted here\n+# ... remaining code from keyspace.tcl copied and adapted here ...'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-04-24 14:55:24.294 | INFO     | modules.llm_adapter:_parse_llm_response:816 - 原始LLM响应(前100字符): diff --git a/src/string.c b/src/string.c
+new file mode 100644
+--- /dev/null
++++ b/src/string.c
+@@ -0...
+2025-04-24 14:55:24.296 | INFO     | modules.llm_adapter:_parse_llm_response:850 - 找到diff --git格式，内容前100字符: diff --git a/src/string.c b/src/string.c
+new file mode 100644
+--- /dev/null
++++ b/src/string.c
+@@ -0...
+2025-04-24 14:55:24.297 | INFO     | modules.llm_adapter:_save_llm_response:985 - LLM响应已保存到: workspace/redis/redis/c8649f/llm_output/output_4.0.14_qwen-plus.patch
+2025-04-24 14:55:24.298 | INFO     | modules.llm_adapter:_save_llm_response:986 - 原始LLM响应已保存到: workspace/redis/redis/c8649f/llm_output/raw_output_4.0.14_qwen-plus.patch
+2025-04-24 14:55:24.299 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/redis/redis/c8649f/evaluations/llm_adapter/metrics_c8649f_20250424_145524.json
+2025-04-24 14:55:24.300 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: patch_adapter
+2025-04-24 14:55:24.301 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/redis/redis/c8649f/llm_output/output_4.0.14_qwen-plus.patch
+2025-04-24 14:55:24.303 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_4.0.14_20250424_145524
+2025-04-24 14:55:24.311 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: Command '['git', 'checkout', '4.0.14']' returned non-zero exit status 1.
+2025-04-24 14:55:24.313 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 58, in execute
+    branch_name = self._prepare_test_branch(context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 165, in _prepare_test_branch
+    subprocess.run(
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'checkout', '4.0.14']' returned non-zero exit status 1.
+
+2025-04-24 14:55:24.315 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/redis/redis/c8649f/metrics/patch_adapter_metrics.json
+2025-04-24 14:55:24.315 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 0.13秒
+2025-04-24 14:55:24.315 | INFO     | __main__:_merge_patches:832 - 开始合并补丁...
+2025-04-24 14:55:24.316 | WARNING  | __main__:_merge_patches:955 - 没有找到可合并的补丁
+2025-04-24 14:55:24.317 | INFO     | __main__:_save_results:638 - 已复制最终补丁到结果目录: results/4.0.14_c8649f_20250424_145524/upstream_c8649f.patch
+2025-04-24 14:55:24.318 | ERROR    | __main__:run:287 - 执行过程发生错误: '>' not supported between instances of 'NoneType' and 'int'
+2025-04-24 14:55:24.320 | ERROR    | __main__:run:288 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 280, in run
+    self._process_mode1()
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 357, in _process_mode1
+    result_path = self._save_results(processed_context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 665, in _save_results
+    ('chunk_analyzer', context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') > 0),
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: '>' not supported between instances of 'NoneType' and 'int'
+

@@ -1,0 +1,26 @@
+From 19cfcd4e5afa517eab162ad4bc8908af517ce49d Mon Sep 17 00:00:00 2001
+From: root <root@congroo0>
+Date: Thu, 24 Apr 2025 12:39:28 +0800
+Subject: [PATCH] Applied chunk patch with shell script:
+ chunk_004_20250424_123925.patch
+
+---
+ tests/unit/keyspace.tcl | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git tests/unit/keyspace.tcl tests/unit/keyspace.tcl
+index d4e7bf51c..c9b66a0dc 100644
+--- tests/unit/keyspace.tcl
++++ tests/unit/keyspace.tcl
+@@ -273,3 +273,9 @@ start_server {tags {"keyspace"}} {
+         r keys *
+     } {dlskeriewrioeuwqoirueioqwrueoqwrueqw}
+ }
++
++    test {Regression for pattern matching very long nested loops} {
++        r flushdb
++        r SET [string repeat "a" 50000] 1
++        r KEYS [string repeat "*?" 50000]
++    } {}
+-- 
+2.25.1

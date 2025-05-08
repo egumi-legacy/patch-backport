@@ -253,6 +253,11 @@ class ModuleContext(BaseModel):
     retry_count: int = 0
     last_error: Optional[str] = None
     feedback_data: Optional[Dict[str, Any]] = None
+    
+    # 时间相关字段
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
+    execution_times: Dict[str, float] = Field(default_factory=dict)  # 各模块执行时间
 
     class Config:
         arbitrary_types_allowed = True
@@ -526,3 +531,10 @@ class ModuleContext(BaseModel):
     #     """
     #     for field_name, value in data.items():
     #         self.update_data(field_name, value, merge)
+
+    @property
+    def execution_time(self) -> Optional[float]:
+        """获取总执行时间（秒）"""
+        if self.start_time and self.end_time:
+            return (self.end_time - self.start_time).total_seconds()
+        return None
