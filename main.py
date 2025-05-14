@@ -482,6 +482,66 @@ class PatchBackportTool:
         
         success_rate = success_count / len(version_results) * 100
         logger.info(f"总成功率: {success_rate:.1f}% ({success_count}/{len(version_results)})")
+        
+        # 保存统计结果到文件
+        stats_dir = Path("statistics")
+        stats_dir.mkdir(exist_ok=True)
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        repo_name = version_results[list(version_results.keys())[0]]['context'].commit.repo_name
+        commit_sha = version_results[list(version_results.keys())[0]]['context'].commit.commit_sha[:6]
+        stats_file = stats_dir / f"{repo_name}_multi_version_stats_{commit_sha}_{timestamp}.json"
+        
+        # 构建统计数据
+        stats_data = {
+            'timestamp': datetime.now().isoformat(),
+            'repo_name': repo_name,
+            'commit_sha': commit_sha,
+            'versions': list(version_results.keys()),
+            'success_count': success_count,
+            'total_versions': len(version_results),
+            'success_rate': success_rate,
+            'version_details': {}
+        }
+        
+        # 添加每个版本的详细信息
+        for version, result in version_results.items():
+            context = result['context']
+            # 确定适配状态
+            direct_success = bool(context.direct_apply_result and context.direct_apply_result.get('success'))
+            if direct_success:
+                adaptation_status = None  # 直接成功，不需要适配
+            elif success:
+                adaptation_status = True  # 适配成功
+            else:
+                adaptation_status = False  # 适配失败
+            
+            stats_data['version_details'][version] = {
+                'adaptation_status': adaptation_status,
+                'success': success,
+                'method': method,
+                'execution_time': context.execution_time,
+            }
+            
+            # 如果有块分析结果，添加块统计
+            if context.chunk_analyzer_result:
+                chunks_info = {
+                    'total_chunks': context.chunk_analyzer_result.get('total_chunks', 0),
+                    'no_conflict_chunks': context.chunk_analyzer_result.get('applied_chunks', 0)
+                }
+                # 添加详细的块信息（如果有）
+                if hasattr(context, 'chunks_detailed_info'):
+                    chunks_info.update(context.chunks_detailed_info)
+                
+                stats_data['version_details'][version]['chunks_info'] = chunks_info
+        
+        # 保存统计结果
+        with open(stats_file, 'w') as f:
+            json.dump(stats_data, f, indent=2)
+            
+        logger.info(f"多版本统计结果已保存到: {stats_file}")
+        
+        return stats_data
     
     def _get_commits_list(self) -> List[Dict[str, str]]:
         """获取上游提交信息"""
@@ -597,7 +657,10 @@ class PatchBackportTool:
         # 创建结果目录
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         commit_sha = context.commit.commit_sha[:6]
-        result_dir = Path("results") / f"{context.config.target_version}_{commit_sha}_{timestamp}"
+        repo_name = context.commit.repo_name  # 获取仓库名称
+        
+        # 使用仓库名称作为前缀创建结果目录
+        result_dir = Path("results") / f"{repo_name}_{context.config.target_version}_{commit_sha}_{timestamp}"
         result_dir.mkdir(parents=True, exist_ok=True)
         
         # 准备提交信息
@@ -643,12 +706,76 @@ class PatchBackportTool:
         # 计算运行时间
         start_time = context.start_time if hasattr(context, 'start_time') else None
         end_time = context.end_time if hasattr(context, 'end_time') else datetime.now()
-        execution_time = None
+        total_seconds = None
         if start_time:
-            execution_time = (end_time - start_time).total_seconds()
+            total_seconds = (end_time - start_time).total_seconds()
         
-        # 保存上下文信息
+        # 确定适配状态
+        direct_success = bool(context.direct_apply_result and context.direct_apply_result.get('success'))
+        patch_adapter_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
+        chunk_analyzer_success = bool(context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') == context.chunk_analyzer_result.get('total_chunks'))
+        overall_success = direct_success or patch_adapter_success or chunk_analyzer_success
+        
+        # 适配状态: None-直接成功，True-适配成功，False-适配失败
+        if direct_success:
+            adaptation_status = None  # 直接成功，不需要适配
+        elif overall_success:
+            adaptation_status = True  # 适配成功
+        else:
+            adaptation_status = False  # 适配失败
+            
+        # 更新上下文中的适配状态
+        context.adaptation_status = adaptation_status
+        
+        # 准备块分析信息
+        chunks_info = {
+            "total_chunks": 0,
+            "no_conflict_chunks": 0,
+            "adapt_succeeded_chunks": 0,
+            "adapt_failed_chunks": 0,
+            "compilation_failed_chunks": 0
+        }
+        
+        # 从chunk_analyzer_result和chunks_detailed_info获取信息
+        if context.chunk_analyzer_result:
+            # 从结果获取基本信息
+            chunks_info["total_chunks"] = context.chunk_analyzer_result.get('total_chunks', 0)
+            chunks_info["no_conflict_chunks"] = context.chunk_analyzer_result.get('applied_chunks', 0)
+        
+        # 合并详细的chunk信息
+        if hasattr(context, 'chunks_detailed_info'):
+            chunks_info.update(context.chunks_detailed_info)
+        
+        # 计算模块成功状态
+        modules_status = {
+            "direct_apply": bool(context.direct_apply_result and context.direct_apply_result.get('success')),
+            "chunk_analyzer": bool(context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') > 0),
+            "llm_adapter": bool(context.llm_output and context.llm_output.get('success')),
+            "patch_adapter": bool(context.patch_adapter_result and context.patch_adapter_result.get('success')),
+            "compilation": bool(context.compilation_result and context.compilation_result.get('success'))
+        }
+            
+        # 添加执行路径信息
+        execution_path = self._determine_execution_path(context)
+        
+        # 构建合并后的结果对象
         result = {
+            # 摘要信息放在最前面
+            'summary': {
+                'adaptation_status': adaptation_status,  # 适配状态: None-直接成功，True-适配成功，False-适配失败
+                'chunks_info': chunks_info,  # 块分析详细信息
+                'method': next(
+                    method for method, condition in [
+                        ('direct_apply', context.direct_apply_result and context.direct_apply_result.get('success')),
+                        ('chunk_analyzer', context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') > 0),
+                        ('compiler', context.compilation_result and context.compilation_result.get('success')),
+                        ('llm_adapter', context.llm_output and context.llm_output.get('success')),
+                        ('patch_adapter', context.patch_adapter_result and context.patch_adapter_result.get('success')),
+                        ('failed', True)
+                    ] if condition
+                ),
+                'timestamp': datetime.now().isoformat()
+            },
             'commit': commit_info,
             'config': {
                 'mode': context.config.mode,
@@ -666,111 +793,37 @@ class PatchBackportTool:
             'timing': {
                 'start_time': start_time.isoformat() if start_time else None,
                 'end_time': end_time.isoformat() if end_time else None,
-                'execution_time_seconds': execution_time,
-                'module_times': context.execution_times if hasattr(context, 'execution_times') else {}
+                'total_seconds': total_seconds,
+                'module_execution_seconds': context.execution_times if hasattr(context, 'execution_times') else {}
             },
-            'summary': {
-                'success': bool(context.direct_apply_result and context.direct_apply_result.get('success')) or
-                          bool(context.patch_adapter_result and context.patch_adapter_result.get('success')) or
-                          bool(context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') == context.chunk_analyzer_result.get('total_chunks')),
-                'method': next(
-                    method for method, condition in [
-                        ('direct_apply', context.direct_apply_result and context.direct_apply_result.get('success')),
-                        ('chunk_analyzer', context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') > 0),
-                        ('compiler', context.compilation_result and context.compilation_result.get('success')),
-                        ('llm_adapter', context.llm_output and context.llm_output.get('success')),
-                        ('patch_adapter', context.patch_adapter_result and context.patch_adapter_result.get('success')),
-                        ('failed', True)
-                    ] if condition
-                ),
-                'timestamp': datetime.now().isoformat()
+            # 详细报告部分
+            'detailed': {
+                'adaptation_status': adaptation_status,
+                'patch_content': final_patch_content,
+                'llm_output': llm_output,
+                'model': context.config.model,
+                'modules_status': modules_status,
+                'input_parameters': {
+                    'target_version': context.config.target_version,
+                    'commit_sha': context.commit.commit_sha,
+                    'timestamp': datetime.now().isoformat(),
+                    'execution_path': execution_path
+                }
             }
         }
+        
+        # 添加补丁适配方法（如果有）
+        if context.patch_adapter_result:
+            result['detailed']['input_parameters']['adaptation_method'] = context.patch_adapter_result.get('adaptation_method', 'unknown')
         
         # 保存结果JSON
         result_file = result_dir / "result.json"
         with open(result_file, 'w') as f:
             json.dump(result, f, indent=2)
         
-        # 创建和保存详细的输出报告
-        self._save_detailed_report(context, result_dir, final_patch_content, llm_output, execution_time)
-        
         logger.info(f"结果已保存到: {result_file}")
         return result_dir
         
-    def _save_detailed_report(self, context: ModuleContext, result_dir: Path, 
-                             final_patch_content: str = None, llm_output: str = None,
-                             execution_time: float = None) -> None:
-        """
-        保存详细的输出报告，包含补丁内容、执行成功状态等
-        
-        Args:
-            context: 模块上下文
-            result_dir: 结果目录
-            final_patch_content: 最终补丁内容
-            llm_output: LLM输出内容
-            execution_time: 执行时间（秒）
-        """
-        # 计算模块成功状态
-        modules_status = {
-            "direct_apply": bool(context.direct_apply_result and context.direct_apply_result.get('success')),
-            "chunk_analyzer": bool(context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') > 0),
-            "llm_adapter": bool(context.llm_output and context.llm_output.get('success')),
-            "patch_adapter": bool(context.patch_adapter_result and context.patch_adapter_result.get('success')),
-            "compilation": bool(context.compilation_result and context.compilation_result.get('success'))
-        }
-        
-        # 整体是否成功
-        overall_success = modules_status["direct_apply"] or modules_status["patch_adapter"] or \
-                         (modules_status["chunk_analyzer"] and context.chunk_analyzer_result.get('applied_chunks') == context.chunk_analyzer_result.get('total_chunks'))
-        
-        # 使用的模型
-        model = context.config.model
-        
-        # 获取执行时间
-        execution_time = context.execution_time  # 使用新添加的属性
-        
-        # 创建详细报告
-        report = {
-            "success": overall_success,
-            "patch_content": final_patch_content,
-            "llm_output": llm_output,
-            "model": model,
-            "modules_status": modules_status,
-            "execution_time_seconds": execution_time,
-            "module_execution_times": context.execution_times,  # 添加各模块执行时间
-            "important_info": {
-                "target_version": context.config.target_version,
-                "commit_sha": context.commit.commit_sha,
-                "timestamp": datetime.now().isoformat()
-            }
-        }
-        
-        # 添加一些其他重要信息
-        if context.chunk_analyzer_result:
-            chunks_info = {
-                "total_chunks": context.chunk_analyzer_result.get('total_chunks', 0),
-                "applied_chunks": context.chunk_analyzer_result.get('applied_chunks', 0)
-            }
-            report["important_info"]["chunks_info"] = chunks_info
-            
-        if context.patch_adapter_result:
-            report["important_info"]["adaptation_method"] = context.patch_adapter_result.get('adaptation_method', 'unknown')
-        
-        # 添加执行路径信息
-        execution_path = self._determine_execution_path(context)
-        if execution_path:
-            report["important_info"]["execution_path"] = execution_path
-            
-        # 保存详细报告JSON
-        detailed_report_file = result_dir / "detailed_report.json"
-        with open(detailed_report_file, 'w', encoding='utf-8') as f:
-            json.dump(report, f, indent=2)
-            
-        logger.info(f"详细报告已保存到: {detailed_report_file}")
-        
-        return report
-    
     def _determine_execution_path(self, context: ModuleContext) -> str:
         """
         确定执行路径，用于报告中显示主要的执行流程
@@ -814,26 +867,42 @@ class PatchBackportTool:
         patch_adapter_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
         compilation_success = bool(context.compilation_result and context.compilation_result.get('success'))
         
+        # 确定适配状态
         if direct_success:
-            result = "直接应用成功"
+            adaptation_status = "无需适配 (直接应用成功)"
             method = "direct_apply"
-        elif llm_success:
-            result = "LLM适配成功"
-            method = "llm_adapter"
-        elif patch_adapter_success:
-            result = "补丁适配成功"
-            method = "patch_adapter"
-        elif compilation_success:
-            result = "编译成功"
-            method = "compiler"
+        elif llm_success or patch_adapter_success or compilation_success:
+            adaptation_status = "适配成功"
+            if llm_success:
+                method = "llm_adapter"
+            elif patch_adapter_success:
+                method = "patch_adapter"
+            elif compilation_success:
+                method = "compiler"
+            else:
+                method = "unknown"
         else:
-            result = "处理失败"
+            adaptation_status = "适配失败"
             method = "failed"
         
         # 打印摘要
         logger.info("=" * 50)
         logger.info(f"处理摘要 - 提交: {commit_sha}")
-        logger.info(f"结果: {result} (方法: {method})")
+        logger.info(f"适配状态: {adaptation_status} (方法: {method})")
+        
+        # 打印块分析结果（如果有）
+        if hasattr(context, 'chunks_detailed_info') and context.chunks_detailed_info:
+            chunks_info = context.chunks_detailed_info
+            logger.info("块分析统计:")
+            logger.info(f"- 总块数: {chunks_info.get('total_chunks', 0)}")
+            logger.info(f"- 无冲突块数: {chunks_info.get('no_conflict_chunks', 0)}")
+            logger.info(f"- 成功适配块数: {chunks_info.get('adapt_succeeded_chunks', 0)}")
+            logger.info(f"- 适配失败块数: {chunks_info.get('adapt_failed_chunks', 0)}")
+            logger.info(f"- 编译失败块数: {chunks_info.get('compilation_failed_chunks', 0)}")
+        
+        # 打印执行时间
+        if hasattr(context, 'execution_time') and context.execution_time:
+            logger.info(f"总执行时间: {context.execution_time:.2f}秒")
         
         if context.last_error:
             logger.info(f"最后错误: {context.last_error}")
@@ -842,8 +911,6 @@ class PatchBackportTool:
 
     def _print_mode2_statistics(self, total, direct_success_count, llm_success_count, patch_adapter_success_count, compiler_success_count, failed_commits):
         """打印模式2的统计信息"""
-        # success_rate = (compiler_success_count) / total * 100 if total > 0 else 0
-        
         # 从上下文中提取处理方法信息 (不使用不存在的self.processed_commits属性)
         direct_apply_count = 0
         patch_adapter_count = 0
@@ -907,10 +974,12 @@ class PatchBackportTool:
         stats_dir.mkdir(exist_ok=True)
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        stats_file = stats_dir / f"mode2_stats_{self.config.target_version}_{timestamp}.json"
+        repo_name = self.config.repo_name  # 获取仓库名称
+        stats_file = stats_dir / f"{repo_name}_mode2_stats_{self.config.target_version}_{timestamp}.json"
         
         stats_data = {
             'timestamp': datetime.now().isoformat(),
+            'repo_name': repo_name,
             'target_version': self.config.target_version,
             'total_commits': total,
             'direct_apply_success': direct_success_count,
@@ -1181,20 +1250,78 @@ class PatchBackportTool:
         return result
 
 
+def get_default_config_path() -> Path:
+    """获取默认配置文件路径"""
+    config_dir = Path.home() / '.config' / 'port-patch'
+    config_file = config_dir / 'new_inputs.yaml'
+    
+    # 确保配置目录存在
+    config_dir.mkdir(parents=True, exist_ok=True)
+    
+    # 如果配置文件不存在，创建默认配置
+    if not config_file.exists():
+        # logger.error(f"配置文件不存在，请检查是否存在{config_file}")
+        raise FileNotFoundError(f"配置文件不存在，请检查是否存在{config_file}")
+        # default_config = {
+        #     'common': {
+        #         'mode': 1,
+        #         'target_version': '',
+        #         'repo_url': '',
+        #         'repo_path': '',
+        #         'repo_base_path': ''
+        #     },
+        #     'mode1': {
+        #         'patch_url': ''
+        #     },
+        #     'mode2': {
+        #         'repo_url': '',
+        #         'branch': 'main'
+        #     }
+        # }
+        
+        # # 确保目录存在
+        # config_dir.mkdir(parents=True, exist_ok=True)
+        
+        # # 写入默认配置
+        # with open(config_file, 'w') as f:
+        #     yaml.dump(default_config, f, default_flow_style=False)
+            
+    return config_file
+
 def main():
     """主函数"""
+    # 获取默认配置文件路径
+    default_config_path = get_default_config_path()
+    
     parser = argparse.ArgumentParser(description="补丁移植工具")
-    parser.add_argument('--config', '-c', type=str, default="configs/new_inputs.yaml",
-                       help="配置文件路径 (默认: configs/new_inputs.yaml)")
+    parser.add_argument('commit_pos', type=str, nargs='?', default=None,
+                       help="补丁URL或commit hash（位置参数）")
+    parser.add_argument('--config', '-c', type=str, default=str(default_config_path),
+                       help=f"配置文件路径 (默认: {default_config_path})")
     parser.add_argument('--repo-url', '-r', type=str, required=False,
                        help="Git仓库URL (必填)")
     parser.add_argument('--mode', '-m', type=int, choices=[1, 2], default=1,
                        help="处理模式: 1=单个补丁, 2=批量处理 (默认: 1)")
-    parser.add_argument('--patch', '-p', type=str,
-                       help="补丁URL或commit hash (模式1下必填)")
+    parser.add_argument('--commit', '-p', type=str, required=False,
+                        help="补丁URL或commit hash（命名参数）")
     parser.add_argument('--target', '-t', type=str, required=False,
                        help="目标版本，可以是tag或commit hash (必填)")
-    args = parser.parse_args()
+    
+    # 先解析参数，不检查未知参数，用于处理URL中可能包含的特殊字符
+    args, unknown = parser.parse_known_args()
+    
+    # 检查是否在未知参数中有完整的URL，如果有可能是commit参数
+    if unknown and args.commit_pos is None:
+        # 尝试找出看起来像URL的参数
+        for arg in unknown:
+            if arg.startswith("http") and "/commit/" in arg:
+                args.commit_pos = arg
+                unknown.remove(arg)
+                break
+    
+    # 如果还有未知参数，报错
+    if unknown:
+        parser.error(f"未识别的参数: {' '.join(unknown)}")
     
     # 加载配置文件
     config_path = args.config
@@ -1205,9 +1332,11 @@ def main():
         print(f"加载配置文件失败: {e}")
         sys.exit(1)
 
-
+    # 确定commit参数 - 优先使用命名参数，其次使用位置参数
+    commit_param = args.commit if args.commit is not None else args.commit_pos
+    
     # 检查必需参数
-    if args.mode == 1 and not (args.patch or config_data['mode1'].get('patch_url')):
+    if args.mode == 1 and not (commit_param or config_data['mode1'].get('patch_url')):
         print("错误: 模式1下必须指定补丁URL或commit hash")
         sys.exit(1)
         
@@ -1243,17 +1372,21 @@ def main():
             # 模式2: 更新repo_url
             config_data['mode2']['repo_url'] = args.repo_url
             
-    if args.patch and args.mode == 1:
+    if commit_param and args.mode == 1:
         # 如果提供的是commit hash而不是完整URL，需要构建完整URL
-        if not args.patch.startswith('http'):
+        if not commit_param.startswith('http'):
             # 从repo_url解析owner和repo
             from patch_utils import parse_github_url
             info = parse_github_url(args.repo_url)
             if info:
-                patch_url = f"https://github.com/{info['owner']}/{info['repo']}/commit/{args.patch}.patch"
+                patch_url = f"https://github.com/{info['owner']}/{info['repo']}/commit/{commit_param}.patch"
                 config_data['mode1']['patch_url'] = patch_url
         else:
-            config_data['mode1']['patch_url'] = args.patch
+            # 如果是完整的commit URL，根据是否包含.patch后缀处理
+            if commit_param.endswith('.patch'):
+                config_data['mode1']['patch_url'] = commit_param
+            else:
+                config_data['mode1']['patch_url'] = f"{commit_param}.patch"
     
     
     

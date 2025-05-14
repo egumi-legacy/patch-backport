@@ -1,0 +1,74 @@
+{
+  "commit": {
+    "sha": "fb493bebae1a9b83e494fe7edbf01f6167d606fd.patch",
+    "patch_url": "https://github.com/rails/rails/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd.patch",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "v5.2.7",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: actionpack/lib/action_dispatch/http/filter_parameters.rb:73\nerror: actionpack/lib/action_dispatch/http/filter_parameters.rb: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch",
+      "timestamp": "2025-05-08T17:53:27.582580"
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb\nindex 7ad1ba3e0eb0e..b02f0d6f85341 100644\n--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:\n         ActiveSupport::ParameterFilter.new(filters)\n       end\n \n-      KV_RE   = \"[^&;=]+\"\n-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}\n       def filtered_query_string # :doc:\n-        query_string.gsub(PAIR_RE) do |_|\n-          parameter_filter.filter($1 => $2).first.join(\"=\")\n+        parts = query_string.split(/([&;])/)\n+        filtered_parts = parts.map do |part|\n+          if part.include?(\"=\")\n+            key, value = part.split(\"=\", 2)\n+            parameter_filter.filter(key => value).first.join(\"=\")\n+          else\n+            part\n+          end\n         end\n+        filtered_parts.join(\"\")\n       end\n     end\n   end",
+      "prompt": {
+        "patch_content": "From fb493bebae1a9b83e494fe7edbf01f6167d606fd Mon Sep 17 00:00:00 2001\nFrom: John Hawthorn <john@hawthorn.email>\nDate: Thu, 10 Oct 2024 20:41:33 -0700\nSubject: [PATCH] Avoid backtracking in filtered_query_string\n\nThanks scyoon for the patch\n\nCVE-2024-41128\n---\n .../lib/action_dispatch/http/filter_parameters.rb   | 13 +++++++++----\n 1 file changed, 9 insertions(+), 4 deletions(-)\n\ndiff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb\nindex 7ad1ba3e0eb0e..b02f0d6f85341 100644\n--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:\n         ActiveSupport::ParameterFilter.new(filters)\n       end\n \n-      KV_RE   = \"[^&;=]+\"\n-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}\n       def filtered_query_string # :doc:\n-        query_string.gsub(PAIR_RE) do |_|\n-          parameter_filter.filter($1 => $2).first.join(\"=\")\n+        parts = query_string.split(/([&;])/)\n+        filtered_parts = parts.map do |part|\n+          if part.include?(\"=\")\n+            key, value = part.split(\"=\", 2)\n+            parameter_filter.filter(key => value).first.join(\"=\")\n+          else\n+            part\n+          end\n         end\n+        filtered_parts.join(\"\")\n       end\n     end\n   end\n",
+        "target_version": "v5.2.7",
+        "context_diff": "modified file: actionpack/lib/action_dispatch/http/filter_parameters.rb\n--- workspace/rails/rails/fb493b/newer/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ workspace/rails/rails/fb493b/v5.2.7/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -1,6 +1,6 @@\n  # frozen_string_literal: true\n  \n -require \"active_support/parameter_filter\"\n +require \"action_dispatch/http/parameter_filter\"\n  \n  module ActionDispatch\n    module Http\n@@ -9,8 +9,8 @@\n      # sub-hashes of the params hash to filter. Filtering only certain sub-keys\n      # from a hash is possible by using the dot notation: 'credit_card.number'.\n      # If a block is given, each key and value of the params hash and all\n -    # sub-hashes are passed to it, where the value or the key can be replaced using\n -    # String#replace or similar methods.\n +    # sub-hashes is passed to it, where the value or the key can be replaced using\n +    # String#replace or similar method.\n      #\n      #   env[\"action_dispatch.parameter_filter\"] = [:password]\n      #   => replaces the value to all keys matching /password/i with \"[FILTERED]\"\n@@ -23,13 +23,13 @@\n      #   change { file: { code: \"xxxx\"} }\n      #\n      #   env[\"action_dispatch.parameter_filter\"] = -> (k, v) do\n -    #     v.reverse! if k.match?(/secret/i)\n +    #     v.reverse! if k =~ /secret/i\n      #   end\n      #   => reverses the value to all keys matching /secret/i\n      module FilterParameters\n        ENV_MATCH = [/RAW_POST_DATA/, \"rack.request.form_vars\"] # :nodoc:\n -      NULL_PARAM_FILTER = ActiveSupport::ParameterFilter.new # :nodoc:\n -      NULL_ENV_FILTER   = ActiveSupport::ParameterFilter.new ENV_MATCH # :nodoc:\n +      NULL_PARAM_FILTER = ParameterFilter.new # :nodoc:\n +      NULL_ENV_FILTER   = ParameterFilter.new ENV_MATCH # :nodoc:\n  \n        def initialize\n          super\n@@ -41,8 +41,6 @@\n        # Returns a hash of parameters with all sensitive data replaced.\n        def filtered_parameters\n          @filtered_parameters ||= parameter_filter.filter(parameters)\n -      rescue ActionDispatch::Http::Parameters::ParseError\n -        @filtered_parameters = {}\n        end\n  \n        # Returns a hash of request.env with all sensitive data replaced.\n@@ -56,6 +54,7 @@\n        end\n  \n      private\n +\n        def parameter_filter # :doc:\n          parameter_filter_for fetch_header(\"action_dispatch.parameter_filter\") {\n            return NULL_PARAM_FILTER\n@@ -70,7 +69,7 @@\n        end\n  \n        def parameter_filter_for(filters) # :doc:\n -        ActiveSupport::ParameterFilter.new(filters)\n +        ParameterFilter.new(filters)\n        end\n  \n        KV_RE   = \"[^&;=]+\"\n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/rails/rails/fb493b/llm_output/output_v5.2.7_qwen-plus.patch",
+      "timestamp": "2025-05-08T17:53:27.732062",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch",
+      "total_chunks": 1,
+      "applied_chunks": 0,
+      "applied_chunk_patches": [],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/remaining_chunks_20250508_175327.patch",
+      "timestamp": "2025-05-08T17:53:27.611866",
+      "success": false
+    },
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-05-08T17:53:27.002776",
+    "end_time": "2025-05-08T17:53:27.829563",
+    "total_seconds": 0.826787,
+    "module_execution_seconds": {}
+  },
+  "summary": {
+    "adaptation_status": false,
+    "chunks_info": {
+      "total_chunks": 1,
+      "no_conflict_chunks": 0,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 1,
+      "compilation_failed_chunks": 0
+    },
+    "method": "failed",
+    "timestamp": "2025-05-08T17:53:27.831565"
+  }
+}

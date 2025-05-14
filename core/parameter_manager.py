@@ -246,6 +246,15 @@ class ModuleContext(BaseModel):
     chunk_analyzer_result: List[Dict[str, Any]] = Field(default_factory=list)
     backtrack_result: Optional[Dict[str, Any]] = None
 
+    # 增加更详细的chunk分析信息
+    chunks_detailed_info: Dict[str, Any] = Field(default_factory=lambda: {
+        "total_chunks": 0,
+        "no_conflict_chunks": 0,  # 直接应用成功的块
+        "adapt_succeeded_chunks": 0,  # 处理后成功的块
+        "adapt_failed_chunks": 0,  # 处理失败的块
+        "compilation_failed_chunks": 0,  # 编译失败的块
+    })
+
     # 内核编译器配置
     docker_image_built: bool = True
 
@@ -258,6 +267,9 @@ class ModuleContext(BaseModel):
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
     execution_times: Dict[str, float] = Field(default_factory=dict)  # 各模块执行时间
+    
+    # 处理状态
+    adaptation_status: Optional[bool] = None  # None-直接成功，True-适配成功，False-适配失败
 
     class Config:
         arbitrary_types_allowed = True
