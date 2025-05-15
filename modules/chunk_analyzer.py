@@ -342,12 +342,14 @@ class ChunkAnalyzerModule(BaseModule):
         
         # 尝试应用每个chunk补丁
         for i, patch_file in enumerate(chunk_patches):
+            # 确保使用补丁文件的绝对路径
+            abs_patch_file = Path(patch_file).absolute()
             logger.info(f"尝试应用第 {i+1}/{len(chunk_patches)} 个块补丁: {patch_file.name}")
             
             try:
                 # 应用补丁（允许模糊匹配）
                 result = subprocess.run(
-                    ['git', 'apply', '--ignore-whitespace', '--allow-overlap', str(patch_file)],
+                    ['git', 'apply', '--ignore-whitespace', '--allow-overlap', str(abs_patch_file)],
                     cwd=repo_path,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
@@ -362,7 +364,7 @@ class ChunkAnalyzerModule(BaseModule):
                     error = result.stderr
                     # 尝试反向应用，如果能反向应用，说明可能已经修改过了
                     reverse_result = subprocess.run(
-                        ['git', 'apply', '--ignore-whitespace', '--allow-overlap', '--reverse', str(patch_file)],
+                        ['git', 'apply', '--ignore-whitespace', '--allow-overlap', '--reverse', str(abs_patch_file)],
                         cwd=repo_path,
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE,

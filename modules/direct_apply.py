@@ -418,6 +418,7 @@ class DirectApplyModule(BaseModule):
 
         try:
             # 首先切换回目标版本分支
+            
             subprocess.run(
                 ['git', 'checkout', context.config.branch],
                 cwd=repo_path,

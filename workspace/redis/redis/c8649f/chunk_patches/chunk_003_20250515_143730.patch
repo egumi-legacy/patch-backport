@@ -1,0 +1,23 @@
+From c8649f8e852d1dc388b5446e003bb0eefa33d61f Mon Sep 17 00:00:00 2001
+From: Oran Agra <oran@redislabs.com>
+Date: Wed, 2 Oct 2024 20:11:01 +0300
+Subject: [PATCH] Prevent pattern matching abuse (CVE-2024-31228)
+
+---
+ src/util.c              | 9 ++++++---
+ tests/unit/keyspace.tcl | 6 ++++++
+ 2 files changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/src/util.c b/src/util.c
+index 26d92b92290..c32cbeef96a 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -189,7 +192,7 @@ static int stringmatchlen_impl(const char *pattern, int patternLen,
+ int stringmatchlen(const char *pattern, int patternLen,
+         const char *string, int stringLen, int nocase) {
+     int skipLongerMatches = 0;
+-    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches);
++    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches,0);
+ }
+ 
+ int stringmatch(const char *pattern, const char *string, int nocase) {

@@ -1,0 +1,725 @@
+2025-05-15 15:32:35.392 | INFO     | __main__:_setup_logger:289 - 日志文件: logs/backport_20250515_153235.log
+2025-05-15 15:32:35.393 | INFO     | __main__:run:293 - 开始执行 模式1
+2025-05-15 15:32:35.393 | INFO     | __main__:_process_mode1:313 - 处理补丁: https://github.com/redis/redis/commit/7f486ea6eebf0afce74f2e59763b9b82b78629dc.patch
+2025-05-15 15:32:35.393 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-05-15 15:32:35.393 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-05-15 15:32:35.394 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-05-15 15:32:35.394 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-05-15 15:32:35.395 | INFO     | __main__:_process_mode1:320 - 目标版本: ['4.0.14']
+2025-05-15 15:32:35.395 | INFO     | __main__:_process_mode1:327 - 开始处理版本: 4.0.14
+2025-05-15 15:32:35.396 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: 7f486ea6eebf0afce74f2e59763b9b82b78629dc.patch
+2025-05-15 15:32:35.396 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-05-15 15:32:35.396 | INFO     | modules.direct_apply:_download_patch:231 - 上游补丁文件已存在: workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 15:32:35.396 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-05-15 15:32:35.397 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 15:32:35.412 | INFO     | modules.direct_apply:_prepare_test_branch:346 - 创建测试分支: test_patch_4.0.14
+2025-05-15 15:32:35.435 | ERROR    | modules.direct_apply:_apply_patch:286 - 补丁应用失败: error: patch failed: src/anet.c:407
+error: src/anet.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-05-15 15:32:35.455 | INFO     | modules.direct_apply:_cleanup_test_branch:438 - 清理测试分支: test_patch_4.0.14
+2025-05-15 15:32:35.455 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-05-15 15:32:35.456 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 15:32:35.456 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 15:32:35.456 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 63 行内容
+2025-05-15 15:32:35.456 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/anet.c
+2025-05-15 15:32:35.457 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/anet.c @@ -407,13 +407,16 @@ (modification)
+2025-05-15 15:32:35.457 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/anet.c @@ -457,7 +460,7 @@ (modification)
+2025-05-15 15:32:35.457 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/anet.c @@ -498,10 +501,8 @@ (modification)
+2025-05-15 15:32:35.457 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 3 个修改块
+2025-05-15 15:32:35.457 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 3 个块
+2025-05-15 15:32:35.458 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 15:32:35.458 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/chunk_001_20250515_153235.patch (修改文件: src/anet.c)
+2025-05-15 15:32:35.458 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/chunk_002_20250515_153235.patch (修改文件: src/anet.c)
+2025-05-15 15:32:35.459 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/chunk_003_20250515_153235.patch (修改文件: src/anet.c)
+2025-05-15 15:32:35.459 | INFO     | modules.chunk_analyzer:execute:60 - 已为 3 个块创建单独的补丁文件
+2025-05-15 15:32:35.459 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-05-15 15:32:35.459 | INFO     | modules.chunk_analyzer:execute:66 - From 7f486ea6eebf0afce74f2e59763b9b82b78629dc Mon Sep 17 00:00:00 2001
+From: Yossi Gottlieb <yossigo@gmail.com>
+Date: Wed, 11 Oct 2023 22:45:34 +0300
+Subject: [PATCH] Fix issue of listen before chmod on Unix sockets
+ (CVE-2023-45145)
+
+Before this commit, Unix socket setup performed chmod(2) on the socket
+file after calling listen(2). Depending on what umask is used, this
+could leave the file with the wrong permissions for a short period of
+time. As a result, another process could exploit this race condition and
+establish a connection that would otherwise not be possible.
+
+We now make sure the socket permissions are set up prior to calling
+listen(2).
+
+(cherry picked from commit a11b3bc34a054818f2ac70e50adfc542ca1cba42)
+---
+ src/anet.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/src/anet.c b/src/anet.c
+index 4ea201df57f..10840fca20d 100644
+--- a/src/anet.c
++++ b/src/anet.c
+@@ -407,13 +407,16 @@ int anetUnixGenericConnect(char *err, const char *path, int flags)
+     return s;
+ }
+ 
+-static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog) {
++static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog, mode_t perm) {
+     if (bind(s,sa,len) == -1) {
+         anetSetError(err, "bind: %s", strerror(errno));
+         close(s);
+         return ANET_ERR;
+     }
+ 
++    if (sa->sa_family == AF_LOCAL && perm)
++        chmod(((struct sockaddr_un *) sa)->sun_path, perm);
++
+     if (listen(s, backlog) == -1) {
+         anetSetError(err, "listen: %s", strerror(errno));
+         close(s);
+
+2025-05-15 15:32:35.460 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-05-15 15:32:35.460 | INFO     | modules.chunk_analyzer:execute:66 - From 7f486ea6eebf0afce74f2e59763b9b82b78629dc Mon Sep 17 00:00:00 2001
+From: Yossi Gottlieb <yossigo@gmail.com>
+Date: Wed, 11 Oct 2023 22:45:34 +0300
+Subject: [PATCH] Fix issue of listen before chmod on Unix sockets
+ (CVE-2023-45145)
+
+Before this commit, Unix socket setup performed chmod(2) on the socket
+file after calling listen(2). Depending on what umask is used, this
+could leave the file with the wrong permissions for a short period of
+time. As a result, another process could exploit this race condition and
+establish a connection that would otherwise not be possible.
+
+We now make sure the socket permissions are set up prior to calling
+listen(2).
+
+(cherry picked from commit a11b3bc34a054818f2ac70e50adfc542ca1cba42)
+---
+ src/anet.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/src/anet.c b/src/anet.c
+index 4ea201df57f..10840fca20d 100644
+--- a/src/anet.c
++++ b/src/anet.c
+@@ -457,7 +460,7 @@ static int _anetTcpServer(char *err, int port, char *bindaddr, int af, int backl
+ 
+         if (af == AF_INET6 && anetV6Only(err,s) == ANET_ERR) goto error;
+         if (anetSetReuseAddr(err,s) == ANET_ERR) goto error;
+-        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog) == ANET_ERR) s = ANET_ERR;
++        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog,0) == ANET_ERR) s = ANET_ERR;
+         goto end;
+     }
+     if (p == NULL) {
+
+2025-05-15 15:32:35.460 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-05-15 15:32:35.460 | INFO     | modules.chunk_analyzer:execute:66 - From 7f486ea6eebf0afce74f2e59763b9b82b78629dc Mon Sep 17 00:00:00 2001
+From: Yossi Gottlieb <yossigo@gmail.com>
+Date: Wed, 11 Oct 2023 22:45:34 +0300
+Subject: [PATCH] Fix issue of listen before chmod on Unix sockets
+ (CVE-2023-45145)
+
+Before this commit, Unix socket setup performed chmod(2) on the socket
+file after calling listen(2). Depending on what umask is used, this
+could leave the file with the wrong permissions for a short period of
+time. As a result, another process could exploit this race condition and
+establish a connection that would otherwise not be possible.
+
+We now make sure the socket permissions are set up prior to calling
+listen(2).
+
+(cherry picked from commit a11b3bc34a054818f2ac70e50adfc542ca1cba42)
+---
+ src/anet.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/src/anet.c b/src/anet.c
+index 4ea201df57f..10840fca20d 100644
+--- a/src/anet.c
++++ b/src/anet.c
+@@ -498,10 +501,8 @@ int anetUnixServer(char *err, char *path, mode_t perm, int backlog)
+     memset(&sa,0,sizeof(sa));
+     sa.sun_family = AF_LOCAL;
+     strncpy(sa.sun_path,path,sizeof(sa.sun_path)-1);
+-    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog) == ANET_ERR)
++    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog,perm) == ANET_ERR)
+         return ANET_ERR;
+-    if (perm)
+-        chmod(sa.sun_path, perm);
+     return s;
+ }
+ 
+
+2025-05-15 15:32:35.461 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/3 个块补丁: chunk_001_20250515_153235.patch
+2025-05-15 15:32:35.470 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_001_20250515_153235.patch 应用失败: error: patch failed: src/anet.c:407
+error: src/anet.c: patch does not apply
+
+2025-05-15 15:32:35.470 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/3 个块补丁: chunk_002_20250515_153235.patch
+2025-05-15 15:32:35.474 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_002_20250515_153235.patch
+2025-05-15 15:32:35.475 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/3 个块补丁: chunk_003_20250515_153235.patch
+2025-05-15 15:32:35.480 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_003_20250515_153235.patch
+2025-05-15 15:32:35.480 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-05-15 15:32:35.480 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 3
+2025-05-15 15:32:35.480 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 2
+2025-05-15 15:32:35.481 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 1
+2025-05-15 15:32:35.481 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 2 个块补丁，总共 3 个
+2025-05-15 15:32:35.482 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/remaining_chunks_20250515_153235.patch
+2025-05-15 15:32:35.482 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/remaining_chunks_20250515_153235.patch
+2025-05-15 15:32:35.482 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/remaining_chunks_20250515_153235.patch
+2025-05-15 15:32:35.483 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.03秒
+2025-05-15 15:32:35.483 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/metrics_7f486e_20250515_153235.json
+2025-05-15 15:32:35.485 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_153235
+2025-05-15 15:32:35.485 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_153235
+2025-05-15 15:32:35.485 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_153235/patches
+2025-05-15 15:32:35.486 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_153235/patches
+2025-05-15 15:32:35.486 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_153235/patches/original_patch.txt
+2025-05-15 15:32:35.487 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_153235
+2025-05-15 15:32:35.487 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_153235/patches/applied_chunk_1.txt
+2025-05-15 15:32:35.487 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_153235/patches/applied_chunk_2.txt
+2025-05-15 15:32:35.488 | INFO     | modules.chunk_analyzer:_get_patch_content:1282 - 已将合并的补丁块内容保存到: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_153235/patches/all_applied_chunks.txt
+2025-05-15 15:32:35.488 | INFO     | modules.chunk_analyzer:_get_patch_content:1286 - 从context获取应用成功的补丁内容
+2025-05-15 15:32:35.488 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_153235
+2025-05-15 15:32:35.489 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_153235/patches/remaining_patch.txt
+2025-05-15 15:32:35.489 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/remaining_chunks_20250515_153235.patch
+2025-05-15 15:32:35.489 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_153235
+2025-05-15 15:32:35.492 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: llm_adapter
+2025-05-15 15:32:35.492 | INFO     | modules.llm_adapter:execute:55 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 15:32:35.492 | INFO     | modules.llm_adapter:execute:57 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 15:32:35.493 | INFO     | modules.llm_adapter:_prepare_prompt_data:181 - 使用传统上下文差异
+2025-05-15 15:32:35.493 | INFO     | modules.llm_adapter:_get_context_diff:616 - diff_file: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/diff
+2025-05-15 15:32:35.493 | INFO     | modules.llm_adapter:_get_context_diff:620 - diff_content: modified file: src/anet.c
+--- workspace/redis/redis/7f486e/newer/src/anet.c
++++ workspace/redis/redis/7f486e/4.0.11/src/anet.c
+@@ -47,9 +47,6 @@
+  #include <stdio.h>
+  
+  #include "anet.h"
+ -#include "config.h"
+ -
+ -#define UNUSED(x) (void)(x)
+  
+  static void anetSetError(char *err, const char *fmt, ...)
+  {
+@@ -72,11 +69,6 @@
+          return ANET_ERR;
+      }
+  
+ -    /* Check if this flag has been set or unset, if so, 
+ -     * then there is no need to call fcntl to set/unset it again. */
+ -    if (!!(flags & O_NONBLOCK) == !!non_block)
+ -        return ANET_OK;
+ -
+      if (non_block)
+          flags |= O_NONBLOCK;
+      else
+@@ -95,29 +87,6 @@
+  
+  int anetBlock(char *err, int fd) {
+      return anetSetBlock(err,fd,0);
+ -}
+ -
+ -/* Enable the FD_CLOEXEC on the given fd to avoid fd leaks. 
+ - * This function should be invoked for fd's on specific places 
+ - * where fork + execve system calls are called. */
+ -int anetCloexec(int fd) {
+ -    int r;
+ -    int flags;
+ -
+ -    do {
+ -        r = fcntl(fd, F_GETFD);
+ -    } while (r == -1 && errno == EINTR);
+ -
+ -    if (r == -1 || (r & FD_CLOEXEC))
+ -        return r;
+ -
+ -    flags = r | FD_CLOEXEC;
+ -
+ -    do {
+ -        r = fcntl(fd, F_SETFD, flags);
+ -    } while (r == -1 && errno == EINTR);
+ -
+ -    return r;
+  }
+  
+ -    val = interval;
+ -    if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPALIVE, &val, sizeof(val)) < 0) {
+ -        anetSetError(err, "setsockopt TCP_KEEPALIVE: %s\n", strerror(errno));
+ -        return ANET_ERR;
+ -    }
+  #else
+      ((void) interval); /* Avoid unused var warning for non Linux systems. */
+  #endif
+@@ -194,6 +156,27 @@
+  int anetDisableTcpNoDelay(char *err, int fd)
+  {
+      return anetSetTcpNoDelay(err, fd, 0);
+ +}
+ +
+ +
+ +int anetSetSendBuffer(char *err, int fd, int buffsize)
+ +{
+ +    if (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &buffsize, sizeof(buffsize)) == -1)
+ +    {
+ +        anetSetError(err, "setsockopt SO_SNDBUF: %s", strerror(errno));
+ +        return ANET_ERR;
+ +    }
+ +    return ANET_OK;
+ +}
+ +
+ +int anetTcpKeepAlive(char *err, int fd)
+ +{
+ +    int yes = 1;
+ +    if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(yes)) == -1) {
+ +        anetSetError(err, "setsockopt SO_KEEPALIVE: %s", strerror(errno));
+ +        return ANET_ERR;
+ +    }
+ +    return ANET_OK;
+  }
+  
+ -int anetRecvTimeout(char *err, int fd, long long ms) {
+ -    struct timeval tv;
+ -
+ -    tv.tv_sec = ms/1000;
+ -    tv.tv_usec = (ms%1000)*1000;
+ -    if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) == -1) {
+ -        anetSetError(err, "setsockopt SO_RCVTIMEO: %s", strerror(errno));
+ -        return ANET_ERR;
+ -    }
+ -    return ANET_OK;
+ -}
+ -
+ -/* Resolve the hostname "host" and set the string representation of the
+ - * IP address into the buffer pointed by "ipbuf".
+ +/* anetGenericResolve() is called by anetResolve() and anetResolveIP() to
+ + * do the actual work. It resolves the hostname "host" and set the string
+ + * representation of the IP address into the buffer pointed by "ipbuf".
+   *
+   * If flags is set to ANET_IP_ONLY the function only resolves hostnames
+   * that are actually already IPv4 or IPv6 addresses. This turns the function
+   * into a validating / normalizing function. */
+ -int anetResolve(char *err, char *host, char *ipbuf, size_t ipbuf_len,
+ +int anetGenericResolve(char *err, char *host, char *ipbuf, size_t ipbuf_len,
+                         int flags)
+  {
+      struct addrinfo hints, *info;
+@@ -257,9 +227,17 @@
+      return ANET_OK;
+  }
+  
+ +int anetResolve(char *err, char *host, char *ipbuf, size_t ipbuf_len) {
+ +    return anetGenericResolve(err,host,ipbuf,ipbuf_len,ANET_NONE);
+ +}
+ +
+ +int anetResolveIP(char *err, char *host, char *ipbuf, size_t ipbuf_len) {
+ +    return anetGenericResolve(err,host,ipbuf,ipbuf_len,ANET_IP_ONLY);
+ +}
+ +
+  static int anetSetReuseAddr(char *err, int fd) {
+      int yes = 1;
+ -    /* Make sure connection-intensive things like the redis benchmark
+ +    /* Make sure connection-intensive things like the redis benckmark
+       * will be able to close/open sockets a zillion of times */
+      if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
+          anetSetError(err, "setsockopt SO_REUSEADDR: %s", strerror(errno));
+@@ -287,8 +265,8 @@
+  #define ANET_CONNECT_NONE 0
+  #define ANET_CONNECT_NONBLOCK 1
+  #define ANET_CONNECT_BE_BINDING 2 /* Best effort binding. */
+ -static int anetTcpGenericConnect(char *err, const char *addr, int port,
+ -                                 const char *source_addr, int flags)
+ +static int anetTcpGenericConnect(char *err, char *addr, int port,
+ +                                 char *source_addr, int flags)
+  {
+      int s = ANET_ERR, rv;
+      char portstr[6];  /* strlen("65535") + 1; */
+@@ -367,19 +345,31 @@
+      }
+  }
+  
+ -int anetTcpNonBlockConnect(char *err, const char *addr, int port)
+ +int anetTcpConnect(char *err, char *addr, int port)
+ +{
+ +    return anetTcpGenericConnect(err,addr,port,NULL,ANET_CONNECT_NONE);
+ +}
+ +
+ +int anetTcpNonBlockConnect(char *err, char *addr, int port)
+  {
+      return anetTcpGenericConnect(err,addr,port,NULL,ANET_CONNECT_NONBLOCK);
+  }
+  
+ -int anetTcpNonBlockBestEffortBindConnect(char *err, const char *addr, int port,
+ -                                         const char *source_addr)
+ +int anetTcpNonBlockBindConnect(char *err, char *addr, int port,
+ +                               char *source_addr)
+ +{
+ +    return anetTcpGenericConnect(err,addr,port,source_addr,
+ +            ANET_CONNECT_NONBLOCK);
+ +}
+ +
+ +int anetTcpNonBlockBestEffortBindConnect(char *err, char *addr, int port,
+ +                                         char *source_addr)
+  {
+      return anetTcpGenericConnect(err,addr,port,source_addr,
+              ANET_CONNECT_NONBLOCK|ANET_CONNECT_BE_BINDING);
+  }
+  
+ -int anetUnixGenericConnect(char *err, const char *path, int flags)
+ +int anetUnixGenericConnect(char *err, char *path, int flags)
+  {
+      int s;
+      struct sockaddr_un sa;
+@@ -407,6 +397,46 @@
+      return s;
+  }
+  
+ +int anetUnixConnect(char *err, char *path)
+ +{
+ +    return anetUnixGenericConnect(err,path,ANET_CONNECT_NONE);
+ +}
+ +
+ +int anetUnixNonBlockConnect(char *err, char *path)
+ +{
+ +    return anetUnixGenericConnect(err,path,ANET_CONNECT_NONBLOCK);
+ +}
+ +
+ +/* Like read(2) but make sure 'count' is read before to return
+ + * (unless error or EOF condition is encountered) */
+ +int anetRead(int fd, char *buf, int count)
+ +{
+ +    ssize_t nread, totlen = 0;
+ +    while(totlen != count) {
+ +        nread = read(fd,buf,count-totlen);
+ +        if (nread == 0) return totlen;
+ +        if (nread == -1) return -1;
+ +        totlen += nread;
+ +        buf += nread;
+ +    }
+ +    return totlen;
+ +}
+ +
+ +/* Like write(2) but make sure 'count' is written before to return
+ + * (unless error is encountered) */
+ +int anetWrite(int fd, char *buf, int count)
+ +{
+ +    ssize_t nwritten, totlen = 0;
+ +    while(totlen != count) {
+ +        nwritten = write(fd,buf,count-totlen);
+ +        if (nwritten == 0) return totlen;
+ +        if (nwritten == -1) return -1;
+ +        totlen += nwritten;
+ +        buf += nwritten;
+ +    }
+ +    return totlen;
+ +}
+ +
+  static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog) {
+      if (bind(s,sa,len) == -1) {
+          anetSetError(err, "bind: %s", strerror(errno));
+@@ -426,6 +456,7 @@
+      int yes = 1;
+      if (setsockopt(s,IPPROTO_IPV6,IPV6_V6ONLY,&yes,sizeof(yes)) == -1) {
+          anetSetError(err, "setsockopt: %s", strerror(errno));
+ +        close(s);
+          return ANET_ERR;
+      }
+      return ANET_OK;
+@@ -442,10 +473,6 @@
+      hints.ai_family = af;
+      hints.ai_socktype = SOCK_STREAM;
+      hints.ai_flags = AI_PASSIVE;    /* No effect if bindaddr != NULL */
+ -    if (bindaddr && !strcmp("*", bindaddr))
+ -        bindaddr = NULL;
+ -    if (af == AF_INET6 && bindaddr && !strcmp("::*", bindaddr))
+ -        bindaddr = NULL;
+  
+      if ((rv = getaddrinfo(bindaddr,_port,&hints,&servinfo)) != 0) {
+          anetSetError(err, "%s", gai_strerror(rv));
+@@ -488,10 +515,6 @@
+      int s;
+      struct sockaddr_un sa;
+  
+ -    if (strlen(path) > sizeof(sa.sun_path)-1) {
+ -        anetSetError(err,"unix socket path too long (%zu), must be under %zu", strlen(path), sizeof(sa.sun_path));
+ -        return ANET_ERR;
+ -    }
+      if ((s = anetCreateSocket(err,AF_LOCAL)) == ANET_ERR)
+          return ANET_ERR;
+  
+@@ -505,44 +528,28 @@
+      return s;
+  }
+  
+ -/* Accept a connection and also make sure the socket is non-blocking, and CLOEXEC.
+ - * returns the new socket FD, or -1 on error. */
+  static int anetGenericAccept(char *err, int s, struct sockaddr *sa, socklen_t *len) {
+      int fd;
+ -    do {
+ -        /* Use the accept4() call on linux to simultaneously accept and
+ -         * set a socket as non-blocking. */
+ -#ifdef HAVE_ACCEPT4
+ -        fd = accept4(s, sa, len,  SOCK_NONBLOCK | SOCK_CLOEXEC);
+ -#else
+ +    while(1) {
+          fd = accept(s,sa,len);
+ -#endif
+ -    } while(fd == -1 && errno == EINTR);
+ -    if (fd == -1) {
+ -        anetSetError(err, "accept: %s", strerror(errno));
+ -        return ANET_ERR;
+ -    }
+ -#ifndef HAVE_ACCEPT4
+ -    if (anetCloexec(fd) == -1) {
+ -        anetSetError(err, "anetCloexec: %s", strerror(errno));
+ -        close(fd);
+ -        return ANET_ERR;
+ -    }
+ -    if (anetNonBlock(err, fd) != ANET_OK) {
+ -        close(fd);
+ -        return ANET_ERR;
+ -    }
+ -#endif
+ +        if (fd == -1) {
+ +            if (errno == EINTR)
+ +                continue;
+ +            else {
+ +                anetSetError(err, "accept: %s", strerror(errno));
+ +                return ANET_ERR;
+ +            }
+ +        }
+ +        break;
+ +    }
+      return fd;
+  }
+  
+ -/* Accept a connection and also make sure the socket is non-blocking, and CLOEXEC.
+ - * returns the new socket FD, or -1 on error. */
+ -int anetTcpAccept(char *err, int serversock, char *ip, size_t ip_len, int *port) {
+ +int anetTcpAccept(char *err, int s, char *ip, size_t ip_len, int *port) {
+      int fd;
+      struct sockaddr_storage sa;
+      socklen_t salen = sizeof(sa);
+ -    if ((fd = anetGenericAccept(err,serversock,(struct sockaddr*)&sa,&salen)) == ANET_ERR)
+ +    if ((fd = anetGenericAccept(err,s,(struct sockaddr*)&sa,&salen)) == -1)
+          return ANET_ERR;
+  
+      if (sa.ss_family == AF_INET) {
+@@ -557,47 +564,33 @@
+      return fd;
+  }
+  
+ -/* Accept a connection and also make sure the socket is non-blocking, and CLOEXEC.
+ - * returns the new socket FD, or -1 on error. */
+  int anetUnixAccept(char *err, int s) {
+      int fd;
+      struct sockaddr_un sa;
+      socklen_t salen = sizeof(sa);
+ -    if ((fd = anetGenericAccept(err,s,(struct sockaddr*)&sa,&salen)) == ANET_ERR)
+ +    if ((fd = anetGenericAccept(err,s,(struct sockaddr*)&sa,&salen)) == -1)
+          return ANET_ERR;
+  
+      return fd;
+  }
+  
+ -int anetFdToString(int fd, char *ip, size_t ip_len, int *port, int fd_to_str_type) {
+ +int anetPeerToString(int fd, char *ip, size_t ip_len, int *port) {
+      struct sockaddr_storage sa;
+      socklen_t salen = sizeof(sa);
+  
+ -    if (fd_to_str_type == FD_TO_PEER_NAME) {
+ -        if (getpeername(fd, (struct sockaddr *)&sa, &salen) == -1) goto error;
+ -    } else {
+ -        if (getsockname(fd, (struct sockaddr *)&sa, &salen) == -1) goto error;
+ -    }
+ +    if (getpeername(fd,(struct sockaddr*)&sa,&salen) == -1) goto error;
+ +    if (ip_len == 0) goto error;
+  
+      if (sa.ss_family == AF_INET) {
+          struct sockaddr_in *s = (struct sockaddr_in *)&sa;
+ -        if (ip) {
+ -            if (inet_ntop(AF_INET,(void*)&(s->sin_addr),ip,ip_len) == NULL)
+ -                goto error;
+ -        }
+ +        if (ip) inet_ntop(AF_INET,(void*)&(s->sin_addr),ip,ip_len);
+          if (port) *port = ntohs(s->sin_port);
+      } else if (sa.ss_family == AF_INET6) {
+          struct sockaddr_in6 *s = (struct sockaddr_in6 *)&sa;
+ -        if (ip) {
+ -            if (inet_ntop(AF_INET6,(void*)&(s->sin6_addr),ip,ip_len) == NULL)
+ -                goto error;
+ -        }
+ +        if (ip) inet_ntop(AF_INET6,(void*)&(s->sin6_addr),ip,ip_len);
+          if (port) *port = ntohs(s->sin6_port);
+      } else if (sa.ss_family == AF_UNIX) {
+ -        if (ip) {
+ -            int res = snprintf(ip, ip_len, "/unixsocket");
+ -            if (res < 0 || (unsigned int) res >= ip_len) goto error;
+ -        }
+ +        if (ip) strncpy(ip,"/unixsocket",ip_len);
+          if (port) *port = 0;
+      } else {
+          goto error;
+@@ -625,82 +618,41 @@
+             "[%s]:%d" : "%s:%d", ip, port);
+  }
+  
+ -/* Like anetFormatAddr() but extract ip and port from the socket's peer/sockname. */
+ -int anetFormatFdAddr(int fd, char *buf, size_t buf_len, int fd_to_str_type) {
+ +/* Like anetFormatAddr() but extract ip and port from the socket's peer. */
+ +int anetFormatPeer(int fd, char *buf, size_t buf_len) {
+      char ip[INET6_ADDRSTRLEN];
+      int port;
+  
+ -    anetFdToString(fd,ip,sizeof(ip),&port,fd_to_str_type);
+ +    anetPeerToString(fd,ip,sizeof(ip),&port);
+      return anetFormatAddr(buf, buf_len, ip, port);
+  }
+  
+ -/* Create a pipe buffer with given flags for read end and write end.
+ - * Note that it supports the file flags defined by pipe2() and fcntl(F_SETFL),
+ - * and one of the use cases is O_CLOEXEC|O_NONBLOCK. */
+ -int anetPipe(int fds[2], int read_flags, int write_flags) {
+ -    int pipe_flags = 0;
+ -#if defined(__linux__) || defined(__FreeBSD__)
+ -    /* When possible, try to leverage pipe2() to apply flags that are common to both ends.
+ -     * There is no harm to set O_CLOEXEC to prevent fd leaks. */
+ -    pipe_flags = O_CLOEXEC | (read_flags & write_flags);
+ -    if (pipe2(fds, pipe_flags)) {
+ -        /* Fail on real failures, and fallback to simple pipe if pipe2 is unsupported. */
+ -        if (errno != ENOSYS && errno != EINVAL)
+ -            return -1;
+ -        pipe_flags = 0;
+ +int anetSockName(int fd, char *ip, size_t ip_len, int *port) {
+ +    struct sockaddr_storage sa;
+ +    socklen_t salen = sizeof(sa);
+ +
+ +    if (getsockname(fd,(struct sockaddr*)&sa,&salen) == -1) {
+ +        if (port) *port = 0;
+ +        ip[0] = '?';
+ +        ip[1] = '\0';
+ +        return -1;
+ +    }
+ +    if (sa.ss_family == AF_INET) {
+ +        struct sockaddr_in *s = (struct sockaddr_in *)&sa;
+ +        if (ip) inet_ntop(AF_INET,(void*)&(s->sin_addr),ip,ip_len);
+ +        if (port) *port = ntohs(s->sin_port);
+      } else {
+ -        /* If the flags on both ends are identical, no need to do anything else. */
+ -        if ((O_CLOEXEC | read_flags) == (O_CLOEXEC | write_flags))
+ -            return 0;
+ -        /* Clear the flags which have already been set using pipe2. */
+ -        read_flags &= ~pipe_flags;
+ -        write_flags &= ~pipe_flags;
+ -    }
+ -#endif
+ -
+ -    /* When we reach here with pipe_flags of 0, it means pipe2 failed (or was not attempted),
+ -     * so we try to use pipe. Otherwise, we skip and proceed to set specific flags below. */
+ -    if (pipe_flags == 0 && pipe(fds))
+ -        return -1;
+ -
+ -    /* File descriptor flags.
+ -     * Currently, only one such flag is defined: FD_CLOEXEC, the close-on-exec flag. */
+ -    if (read_flags & O_CLOEXEC)
+ -        if (fcntl(fds[0], F_SETFD, FD_CLOEXEC))
+ -            goto error;
+ -    if (write_flags & O_CLOEXEC)
+ -        if (fcntl(fds[1], F_SETFD, FD_CLOEXEC))
+ -            goto error;
+ -
+ -    /* File status flags after clearing the file descriptor flag O_CLOEXEC. */
+ -    read_flags &= ~O_CLOEXEC;
+ -    if (read_flags)
+ -        if (fcntl(fds[0], F_SETFL, read_flags))
+ -            goto error;
+ -    write_flags &= ~O_CLOEXEC;
+ -    if (write_flags)
+ -        if (fcntl(fds[1], F_SETFL, write_flags))
+ -            goto error;
+ -
+ +        struct sockaddr_in6 *s = (struct sockaddr_in6 *)&sa;
+ +        if (ip) inet_ntop(AF_INET6,(void*)&(s->sin6_addr),ip,ip_len);
+ +        if (port) *port = ntohs(s->sin6_port);
+ +    }
+      return 0;
+ -
+ -error:
+ -    close(fds[0]);
+ -    close(fds[1]);
+ -    return -1;
+ -}
+ -
+ -int anetSetSockMarkId(char *err, int fd, uint32_t id) {
+ -#ifdef HAVE_SOCKOPTMARKID
+ -    if (setsockopt(fd, SOL_SOCKET, SOCKOPTMARKID, (void *)&id, sizeof(id)) == -1) {
+ -        anetSetError(err, "setsockopt: %s", strerror(errno));
+ -        return ANET_ERR;
+ -    }
+ -    return ANET_OK;
+ -#else
+ -    UNUSED(fd);
+ -    UNUSED(id);
+ -    anetSetError(err,"anetSetSockMarkid unsupported on this platform");
+ -    return ANET_OK;
+ -#endif
+ -}
+ +}
+ +
+ +int anetFormatSock(int fd, char *fmt, size_t fmt_len) {
+ +    char ip[INET6_ADDRSTRLEN];
+ +    int port;
+ +
+ +    anetSockName(fd,ip,sizeof(ip),&port);
+ +    return anetFormatAddr(fmt, fmt_len, ip, port);
+ +}
+
+""""""
+
+2025-05-15 15:32:35.582 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-05-15 15:32:36.552 | ERROR    | llm_assistant:call_llm:177 - Error calling OpenAI: Error code: 400 - {'error': {'message': 'currently model qwen-plus-2025-04-28 is not support', 'type': 'error', 'param': None, 'code': None}}
+2025-05-15 15:32:36.553 | ERROR    | llm_assistant:call_llm:182 - No response from OpenAI
+2025-05-15 15:32:36.553 | INFO     | llm_assistant:run:298 - ---responses in run: [{'prompt': [{'role': 'system', 'content': 'You are a senior software engineer who is best in the world at fixing vulnerabilities and patch porting between versions.\nUsers will give you 1. a patch based on a newer version 2. the diff info between the newer version and and older version. \nAnd you will generate a fix patch to the older version in the form of git diff based on the provided INSTRUCTION.\nINSTRUCTION:\nOnly reterun the final result after patch and diff information are entered. When all the information is entered, it will be identified with \u200d\u200d```===end===\u200d\u200d```\nOnly respond with the patch info, do not add any comments or change the indentation.\nThe patch should have no errors, it should compile and user should be able to use the fixed code as a direct replacement of the vulnerable code. The code should not introduce any new dependencies or use API calls that are not present in the code.\nIf you can generate a backport patch for the patch, do a brief change impact analysis to assess how these modifications might affect the overall system, considering both immediate and potential long-term compatibility issues.\nLow: Code diff will be applied to the code base and automatically merged without review.\nMedium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.\nHigh: Code diff will be offered as a suggestion to the developer to review and then apply to the code base. There are likely other changes that need to be done by the developer before the change can be implemented.\nPlease provide a response only in the following format:\n\nA. Commit message:\n<brief summary of the diff>\n\nB. Change summary:\n<description of the changes made in the diff>\n\nC. Compatibility Risk:\n<Low, Medium, High>\n\nD. Fixed Code:\n<original patch info with now backported>\n\n'}, {'role': 'system', 'content': '1. a patch based on a newer version: \nFrom 7f486ea6eebf0afce74f2e59763b9b82b78629dc Mon Sep 17 00:00:00 2001\nFrom: Yossi Gottlieb <yossigo@gmail.com>\nDate: Wed, 11 Oct 2023 22:45:34 +0300\nSubject: [PATCH] Fix issue of listen before chmod on Unix sockets\n (CVE-2023-45145)\n\nBefore this commit, Unix socket setup performed chmod(2) on the socket\nfile after calling listen(2). Depending on what umask is used, this\ncould leave the file with the wrong permissions for a short period of\ntime. As a result, another process could exploit this race condition and\nestablish a connection that would otherwise not be possible.\n\nWe now make sure the socket permissions are set up prior to calling\nlisten(2).\n\n(cherry picked from commit a11b3bc34a054818f2ac70e50adfc542ca1cba42)\n---\n src/anet.c | 11 ++++++-----\n 1 file changed, 6 insertions(+), 5 deletions(-)\n\ndiff --git a/src/anet.c b/src/anet.c\nindex 4ea201df57f..10840fca20d 100644\n--- a/src/anet.c\n+++ b/src/anet.c\n@@ -407,13 +407,16 @@ int anetUnixGenericConnect(char *err, const char *path, int flags)\n     return s;\n }\n \n-static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog) {\n+static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog, mode_t perm) {\n     if (bind(s,sa,len) == -1) {\n         anetSetError(err, "bind: %s", strerror(errno));\n         close(s);\n         return ANET_ERR;\n     }\n \n+    if (sa->sa_family == AF_LOCAL && perm)\n+        chmod(((struct sockaddr_un *) sa)->sun_path, perm);\n+\n     if (listen(s, backlog) == -1) {\n         anetSetError(err, "listen: %s", strerror(errno));\n         close(s);\n@@ -457,7 +460,7 @@ static int _anetTcpServer(char *err, int port, char *bindaddr, int af, int backl\n \n         if (af == AF_INET6 && anetV6Only(err,s) == ANET_ERR) goto error;\n         if (anetSetReuseAddr(err,s) == ANET_ERR) goto error;\n-        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog) == ANET_ERR) s = ANET_ERR;\n+        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog,0) == ANET_ERR) s = ANET_ERR;\n         goto end;\n     }\n     if (p == NULL) {\n@@ -498,10 +501,8 @@ int anetUnixServer(char *err, char *path, mode_t perm, int backlog)\n     memset(&sa,0,sizeof(sa));\n     sa.sun_family = AF_LOCAL;\n     strncpy(sa.sun_path,path,sizeof(sa.sun_path)-1);\n-    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog) == ANET_ERR)\n+    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog,perm) == ANET_ERR)\n         return ANET_ERR;\n-    if (perm)\n-        chmod(sa.sun_path, perm);\n     return s;\n }\n \n'}, {'role': 'system', 'content': '2. the diff info between the newer version and and older version: \nmodified file: src/anet.c\n--- workspace/redis/redis/7f486e/newer/src/anet.c\n+++ workspace/redis/redis/7f486e/4.0.11/src/anet.c\n@@ -47,9 +47,6 @@\n  #include <stdio.h>\n  \n  #include "anet.h"\n -#include "config.h"\n -\n -#define UNUSED(x) (void)(x)\n  \n  static void anetSetError(char *err, const char *fmt, ...)\n  {\n@@ -72,11 +69,6 @@\n          return ANET_ERR;\n      }\n  \n -    /* Check if this flag has been set or unset, if so, \n -     * then there is no need to call fcntl to set/unset it again. */\n -    if (!!(flags & O_NONBLOCK) == !!non_block)\n -        return ANET_OK;\n -\n      if (non_block)\n          flags |= O_NONBLOCK;\n      else\n@@ -95,29 +87,6 @@\n  \n  int anetBlock(char *err, int fd) {\n      return anetSetBlock(err,fd,0);\n -}\n -\n -/* Enable the FD_CLOEXEC on the given fd to avoid fd leaks. \n - * This function should be invoked for fd\'s on specific places \n - * where fork + execve system calls are called. */\n -int anetCloexec(int fd) {\n -    int r;\n -    int flags;\n -\n -    do {\n -        r = fcntl(fd, F_GETFD);\n -    } while (r == -1 && errno == EINTR);\n -\n -    if (r == -1 || (r & FD_CLOEXEC))\n -        return r;\n -\n -    flags = r | FD_CLOEXEC;\n -\n -    do {\n -        r = fcntl(fd, F_SETFD, flags);\n -    } while (r == -1 && errno == EINTR);\n -\n -    return r;\n  }\n  \n -    val = interval;\n -    if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPALIVE, &val, sizeof(val)) < 0) {\n -        anetSetError(err, "setsockopt TCP_KEEPALIVE: %s\\n", strerror(errno));\n -        return ANET_ERR;\n -    }\n  #else\n      ((void) interval); /* Avoid unused var warning for non Linux systems. */\n  #endif\n@@ -194,6 +156,27 @@\n  int anetDisableTcpNoDelay(char *err, int fd)\n  {\n      return anetSetTcpNoDelay(err, fd, 0);\n +}\n +\n +\n +int anetSetSendBuffer(char *err, int fd, int buffsize)\n +{\n +    if (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &buffsize, sizeof(buffsize)) == -1)\n +    {\n +        anetSetError(err, "setsockopt SO_SNDBUF: %s", strerror(errno));\n +        return ANET_ERR;\n +    }\n +    return ANET_OK;\n +}\n +\n +int anetTcpKeepAlive(char *err, int fd)\n +{\n +    int yes = 1;\n +    if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(yes)) == -1) {\n +        anetSetError(err, "setsockopt SO_KEEPALIVE: %s", strerror(errno));\n +        return ANET_ERR;\n +    }\n +    return ANET_OK;\n  }\n  \n -int anetRecvTimeout(char *err, int fd, long long ms) {\n -    struct timeval tv;\n -\n -    tv.tv_sec = ms/1000;\n -    tv.tv_usec = (ms%1000)*1000;\n -    if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) == -1) {\n -        anetSetError(err, "setsockopt SO_RCVTIMEO: %s", strerror(errno));\n -        return ANET_ERR;\n -    }\n -    return ANET_OK;\n -}\n -\n -/* Resolve the hostname "host" and set the string representation of the\n - * IP address into the buffer pointed by "ipbuf".\n +/* anetGenericResolve() is called by anetResolve() and anetResolveIP() to\n + * do the actual work. It resolves the hostname "host" and set the string\n + * representation of the IP address into the buffer pointed by "ipbuf".\n   *\n   * If flags is set to ANET_IP_ONLY the function only resolves hostnames\n   * that are actually already IPv4 or IPv6 addresses. This turns the function\n   * into a validating / normalizing function. */\n -int anetResolve(char *err, char *host, char *ipbuf, size_t ipbuf_len,\n +int anetGenericResolve(char *err, char *host, char *ipbuf, size_t ipbuf_len,\n                         int flags)\n  {\n      struct addrinfo hints, *info;\n@@ -257,9 +227,17 @@\n      return ANET_OK;\n  }\n  \n +int anetResolve(char *err, char *host, char *ipbuf, size_t ipbuf_len) {\n +    return anetGenericResolve(err,host,ipbuf,ipbuf_len,ANET_NONE);\n +}\n +\n +int anetResolveIP(char *err, char *host, char *ipbuf, size_t ipbuf_len) {\n +    return anetGenericResolve(err,host,ipbuf,ipbuf_len,ANET_IP_ONLY);\n +}\n +\n  static int anetSetReuseAddr(char *err, int fd) {\n      int yes = 1;\n -    /* Make sure connection-intensive things like the redis benchmark\n +    /* Make sure connection-intensive things like the redis benckmark\n       * will be able to close/open sockets a zillion of times */\n      if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {\n          anetSetError(err, "setsockopt SO_REUSEADDR: %s", strerror(errno));\n@@ -287,8 +265,8 @@\n  #define ANET_CONNECT_NONE 0\n  #define ANET_CONNECT_NONBLOCK 1\n  #define ANET_CONNECT_BE_BINDING 2 /* Best effort binding. */\n -static int anetTcpGenericConnect(char *err, const char *addr, int port,\n -                                 const char *source_addr, int flags)\n +static int anetTcpGenericConnect(char *err, char *addr, int port,\n +                                 char *source_addr, int flags)\n  {\n      int s = ANET_ERR, rv;\n      char portstr[6];  /* strlen("65535") + 1; */\n@@ -367,19 +345,31 @@\n      }\n  }\n  \n -int anetTcpNonBlockConnect(char *err, const char *addr, int port)\n +int anetTcpConnect(char *err, char *addr, int port)\n +{\n +    return anetTcpGenericConnect(err,addr,port,NULL,ANET_CONNECT_NONE);\n +}\n +\n +int anetTcpNonBlockConnect(char *err, char *addr, int port)\n  {\n      return anetTcpGenericConnect(err,addr,port,NULL,ANET_CONNECT_NONBLOCK);\n  }\n  \n -int anetTcpNonBlockBestEffortBindConnect(char *err, const char *addr, int port,\n -                                         const char *source_addr)\n +int anetTcpNonBlockBindConnect(char *err, char *addr, int port,\n +                               char *source_addr)\n +{\n +    return anetTcpGenericConnect(err,addr,port,source_addr,\n +            ANET_CONNECT_NONBLOCK);\n +}\n +\n +int anetTcpNonBlockBestEffortBindConnect(char *err, char *addr, int port,\n +                                         char *source_addr)\n  {\n      return anetTcpGenericConnect(err,addr,port,source_addr,\n              ANET_CONNECT_NONBLOCK|ANET_CONNECT_BE_BINDING);\n  }\n  \n -int anetUnixGenericConnect(char *err, const char *path, int flags)\n +int anetUnixGenericConnect(char *err, char *path, int flags)\n  {\n      int s;\n      struct sockaddr_un sa;\n@@ -407,6 +397,46 @@\n      return s;\n  }\n  \n +int anetUnixConnect(char *err, char *path)\n +{\n +    return anetUnixGenericConnect(err,path,ANET_CONNECT_NONE);\n +}\n +\n +int anetUnixNonBlockConnect(char *err, char *path)\n +{\n +    return anetUnixGenericConnect(err,path,ANET_CONNECT_NONBLOCK);\n +}\n +\n +/* Like read(2) but make sure \'count\' is read before to return\n + * (unless error or EOF condition is encountered) */\n +int anetRead(int fd, char *buf, int count)\n +{\n +    ssize_t nread, totlen = 0;\n +    while(totlen != count) {\n +        nread = read(fd,buf,count-totlen);\n +        if (nread == 0) return totlen;\n +        if (nread == -1) return -1;\n +        totlen += nread;\n +        buf += nread;\n +    }\n +    return totlen;\n +}\n +\n +/* Like write(2) but make sure \'count\' is written before to return\n + * (unless error is encountered) */\n +int anetWrite(int fd, char *buf, int count)\n +{\n +    ssize_t nwritten, totlen = 0;\n +    while(totlen != count) {\n +        nwritten = write(fd,buf,count-totlen);\n +        if (nwritten == 0) return totlen;\n +        if (nwritten == -1) return -1;\n +        totlen += nwritten;\n +        buf += nwritten;\n +    }\n +    return totlen;\n +}\n +\n  static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog) {\n      if (bind(s,sa,len) == -1) {\n          anetSetError(err, "bind: %s", strerror(errno));\n@@ -426,6 +456,7 @@\n      int yes = 1;\n      if (setsockopt(s,IPPROTO_IPV6,IPV6_V6ONLY,&yes,sizeof(yes)) == -1) {\n          anetSetError(err, "setsockopt: %s", strerror(errno));\n +        close(s);\n          return ANET_ERR;\n      }\n      return ANET_OK;\n@@ -442,10 +473,6 @@\n      hints.ai_family = af;\n      hints.ai_socktype = SOCK_STREAM;\n      hints.ai_flags = AI_PASSIVE;    /* No effect if bindaddr != NULL */\n -    if (bindaddr && !strcmp("*", bindaddr))\n -        bindaddr = NULL;\n -    if (af == AF_INET6 && bindaddr && !strcmp("::*", bindaddr))\n -        bindaddr = NULL;\n  \n      if ((rv = getaddrinfo(bindaddr,_port,&hints,&servinfo)) != 0) {\n          anetSetError(err, "%s", gai_strerror(rv));\n@@ -488,10 +515,6 @@\n      int s;\n      struct sockaddr_un sa;\n  \n -    if (strlen(path) > sizeof(sa.sun_path)-1) {\n -        anetSetError(err,"unix socket path too long (%zu), must be under %zu", strlen(path), sizeof(sa.sun_path));\n -        return ANET_ERR;\n -    }\n      if ((s = anetCreateSocket(err,AF_LOCAL)) == ANET_ERR)\n          return ANET_ERR;\n  \n@@ -505,44 +528,28 @@\n      return s;\n  }\n  \n -/* Accept a connection and also make sure the socket is non-blocking, and CLOEXEC.\n - * returns the new socket FD, or -1 on error. */\n  static int anetGenericAccept(char *err, int s, struct sockaddr *sa, socklen_t *len) {\n      int fd;\n -    do {\n -        /* Use the accept4() call on linux to simultaneously accept and\n -         * set a socket as non-blocking. */\n -#ifdef HAVE_ACCEPT4\n -        fd = accept4(s, sa, len,  SOCK_NONBLOCK | SOCK_CLOEXEC);\n -#else\n +    while(1) {\n          fd = accept(s,sa,len);\n -#endif\n -    } while(fd == -1 && errno == EINTR);\n -    if (fd == -1) {\n -        anetSetError(err, "accept: %s", strerror(errno));\n -        return ANET_ERR;\n -    }\n -#ifndef HAVE_ACCEPT4\n -    if (anetCloexec(fd) == -1) {\n -        anetSetError(err, "anetCloexec: %s", strerror(errno));\n -        close(fd);\n -        return ANET_ERR;\n -    }\n -    if (anetNonBlock(err, fd) != ANET_OK) {\n -        close(fd);\n -        return ANET_ERR;\n -    }\n -#endif\n +        if (fd == -1) {\n +            if (errno == EINTR)\n +                continue;\n +            else {\n +                anetSetError(err, "accept: %s", strerror(errno));\n +                return ANET_ERR;\n +            }\n +        }\n +        break;\n +    }\n      return fd;\n  }\n  \n -/* Accept a connection and also make sure the socket is non-blocking, and CLOEXEC.\n - * returns the new socket FD, or -1 on error. */\n -int anetTcpAccept(char *err, int serversock, char *ip, size_t ip_len, int *port) {\n +int anetTcpAccept(char *err, int s, char *ip, size_t ip_len, int *port) {\n      int fd;\n      struct sockaddr_storage sa;\n      socklen_t salen = sizeof(sa);\n -    if ((fd = anetGenericAccept(err,serversock,(struct sockaddr*)&sa,&salen)) == ANET_ERR)\n +    if ((fd = anetGenericAccept(err,s,(struct sockaddr*)&sa,&salen)) == -1)\n          return ANET_ERR;\n  \n      if (sa.ss_family == AF_INET) {\n@@ -557,47 +564,33 @@\n      return fd;\n  }\n  \n -/* Accept a connection and also make sure the socket is non-blocking, and CLOEXEC.\n - * returns the new socket FD, or -1 on error. */\n  int anetUnixAccept(char *err, int s) {\n      int fd;\n      struct sockaddr_un sa;\n      socklen_t salen = sizeof(sa);\n -    if ((fd = anetGenericAccept(err,s,(struct sockaddr*)&sa,&salen)) == ANET_ERR)\n +    if ((fd = anetGenericAccept(err,s,(struct sockaddr*)&sa,&salen)) == -1)\n          return ANET_ERR;\n  \n      return fd;\n  }\n  \n -int anetFdToString(int fd, char *ip, size_t ip_len, int *port, int fd_to_str_type) {\n +int anetPeerToString(int fd, char *ip, size_t ip_len, int *port) {\n      struct sockaddr_storage sa;\n      socklen_t salen = sizeof(sa);\n  \n -    if (fd_to_str_type == FD_TO_PEER_NAME) {\n -        if (getpeername(fd, (struct sockaddr *)&sa, &salen) == -1) goto error;\n -    } else {\n -        if (getsockname(fd, (struct sockaddr *)&sa, &salen) == -1) goto error;\n -    }\n +    if (getpeername(fd,(struct sockaddr*)&sa,&salen) == -1) goto error;\n +    if (ip_len == 0) goto error;\n  \n      if (sa.ss_family == AF_INET) {\n          struct sockaddr_in *s = (struct sockaddr_in *)&sa;\n -        if (ip) {\n -            if (inet_ntop(AF_INET,(void*)&(s->sin_addr),ip,ip_len) == NULL)\n -                goto error;\n -        }\n +        if (ip) inet_ntop(AF_INET,(void*)&(s->sin_addr),ip,ip_len);\n          if (port) *port = ntohs(s->sin_port);\n      } else if (sa.ss_family == AF_INET6) {\n          struct sockaddr_in6 *s = (struct sockaddr_in6 *)&sa;\n -        if (ip) {\n -            if (inet_ntop(AF_INET6,(void*)&(s->sin6_addr),ip,ip_len) == NULL)\n -                goto error;\n -        }\n +        if (ip) inet_ntop(AF_INET6,(void*)&(s->sin6_addr),ip,ip_len);\n          if (port) *port = ntohs(s->sin6_port);\n      } else if (sa.ss_family == AF_UNIX) {\n -        if (ip) {\n -            int res = snprintf(ip, ip_len, "/unixsocket");\n -            if (res < 0 || (unsigned int) res >= ip_len) goto error;\n -        }\n +        if (ip) strncpy(ip,"/unixsocket",ip_len);\n          if (port) *port = 0;\n      } else {\n          goto error;\n@@ -625,82 +618,41 @@\n             "[%s]:%d" : "%s:%d", ip, port);\n  }\n  \n -/* Like anetFormatAddr() but extract ip and port from the socket\'s peer/sockname. */\n -int anetFormatFdAddr(int fd, char *buf, size_t buf_len, int fd_to_str_type) {\n +/* Like anetFormatAddr() but extract ip and port from the socket\'s peer. */\n +int anetFormatPeer(int fd, char *buf, size_t buf_len) {\n      char ip[INET6_ADDRSTRLEN];\n      int port;\n  \n -    anetFdToString(fd,ip,sizeof(ip),&port,fd_to_str_type);\n +    anetPeerToString(fd,ip,sizeof(ip),&port);\n      return anetFormatAddr(buf, buf_len, ip, port);\n  }\n  \n -/* Create a pipe buffer with given flags for read end and write end.\n - * Note that it supports the file flags defined by pipe2() and fcntl(F_SETFL),\n - * and one of the use cases is O_CLOEXEC|O_NONBLOCK. */\n -int anetPipe(int fds[2], int read_flags, int write_flags) {\n -    int pipe_flags = 0;\n -#if defined(__linux__) || defined(__FreeBSD__)\n -    /* When possible, try to leverage pipe2() to apply flags that are common to both ends.\n -     * There is no harm to set O_CLOEXEC to prevent fd leaks. */\n -    pipe_flags = O_CLOEXEC | (read_flags & write_flags);\n -    if (pipe2(fds, pipe_flags)) {\n -        /* Fail on real failures, and fallback to simple pipe if pipe2 is unsupported. */\n -        if (errno != ENOSYS && errno != EINVAL)\n -            return -1;\n -        pipe_flags = 0;\n +int anetSockName(int fd, char *ip, size_t ip_len, int *port) {\n +    struct sockaddr_storage sa;\n +    socklen_t salen = sizeof(sa);\n +\n +    if (getsockname(fd,(struct sockaddr*)&sa,&salen) == -1) {\n +        if (port) *port = 0;\n +        ip[0] = \'?\';\n +        ip[1] = \'\\0\';\n +        return -1;\n +    }\n +    if (sa.ss_family == AF_INET) {\n +        struct sockaddr_in *s = (struct sockaddr_in *)&sa;\n +        if (ip) inet_ntop(AF_INET,(void*)&(s->sin_addr),ip,ip_len);\n +        if (port) *port = ntohs(s->sin_port);\n      } else {\n -        /* If the flags on both ends are identical, no need to do anything else. */\n -        if ((O_CLOEXEC | read_flags) == (O_CLOEXEC | write_flags))\n -            return 0;\n -        /* Clear the flags which have already been set using pipe2. */\n -        read_flags &= ~pipe_flags;\n -        write_flags &= ~pipe_flags;\n -    }\n -#endif\n -\n -    /* When we reach here with pipe_flags of 0, it means pipe2 failed (or was not attempted),\n -     * so we try to use pipe. Otherwise, we skip and proceed to set specific flags below. */\n -    if (pipe_flags == 0 && pipe(fds))\n -        return -1;\n -\n -    /* File descriptor flags.\n -     * Currently, only one such flag is defined: FD_CLOEXEC, the close-on-exec flag. */\n -    if (read_flags & O_CLOEXEC)\n -        if (fcntl(fds[0], F_SETFD, FD_CLOEXEC))\n -            goto error;\n -    if (write_flags & O_CLOEXEC)\n -        if (fcntl(fds[1], F_SETFD, FD_CLOEXEC))\n -            goto error;\n -\n -    /* File status flags after clearing the file descriptor flag O_CLOEXEC. */\n -    read_flags &= ~O_CLOEXEC;\n -    if (read_flags)\n -        if (fcntl(fds[0], F_SETFL, read_flags))\n -            goto error;\n -    write_flags &= ~O_CLOEXEC;\n -    if (write_flags)\n -        if (fcntl(fds[1], F_SETFL, write_flags))\n -            goto error;\n -\n +        struct sockaddr_in6 *s = (struct sockaddr_in6 *)&sa;\n +        if (ip) inet_ntop(AF_INET6,(void*)&(s->sin6_addr),ip,ip_len);\n +        if (port) *port = ntohs(s->sin6_port);\n +    }\n      return 0;\n -\n -error:\n -    close(fds[0]);\n -    close(fds[1]);\n -    return -1;\n -}\n -\n -int anetSetSockMarkId(char *err, int fd, uint32_t id) {\n -#ifdef HAVE_SOCKOPTMARKID\n -    if (setsockopt(fd, SOL_SOCKET, SOCKOPTMARKID, (void *)&id, sizeof(id)) == -1) {\n -        anetSetError(err, "setsockopt: %s", strerror(errno));\n -        return ANET_ERR;\n -    }\n -    return ANET_OK;\n -#else\n -    UNUSED(fd);\n -    UNUSED(id);\n -    anetSetError(err,"anetSetSockMarkid unsupported on this platform");\n -    return ANET_OK;\n -#endif\n -}\n +}\n +\n +int anetFormatSock(int fd, char *fmt, size_t fmt_len) {\n +    char ip[INET6_ADDRSTRLEN];\n +    int port;\n +\n +    anetSockName(fd,ip,sizeof(ip),&port);\n +    return anetFormatAddr(fmt, fmt_len, ip, port);\n +}\n\n""""""\n\n===end==='}, {'role': 'user', 'content': 'Please return the final result.'}], 'response': '', 'request_token': 0, 'response_token': 0}]
+2025-05-15 15:32:36.555 | INFO     | modules.llm_adapter:_call_llm:737 - llm.run() result:{'openai_responses': [''], 'request_tokens': [0], 'response_tokens': [0]}
+2025-05-15 15:32:36.555 | INFO     | modules.llm_adapter:_parse_llm_response:819 - 原始LLM响应(前100字符): ...
+2025-05-15 15:32:36.556 | WARNING  | modules.llm_adapter:_parse_llm_response:857 - 未找到任何已知补丁格式，返回完整响应
+2025-05-15 15:32:36.557 | INFO     | modules.llm_adapter:_save_llm_response:988 - LLM响应已保存到: workspace/redis/redis/7f486e/llm_output/output_4.0.14_qwen-plus-2025-04-28.patch
+2025-05-15 15:32:36.557 | INFO     | modules.llm_adapter:_save_llm_response:989 - 原始LLM响应已保存到: workspace/redis/redis/7f486e/llm_output/raw_output_4.0.14_qwen-plus-2025-04-28.patch
+2025-05-15 15:32:36.558 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/redis/redis/7f486e/evaluations/llm_adapter/metrics_7f486e_20250515_153236.json
+2025-05-15 15:32:36.558 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: patch_adapter
+2025-05-15 15:32:36.558 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/redis/redis/7f486e/llm_output/output_4.0.14_qwen-plus-2025-04-28.patch
+2025-05-15 15:32:36.559 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_4.0.14_20250515_153236
+2025-05-15 15:32:36.602 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+
+2025-05-15 15:32:36.602 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-05-15 15:32:36.602 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_4.0.14_20250515_153236
+2025-05-15 15:32:36.615 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-05-15 15:32:36.615 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-05-15 15:32:36.616 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/redis/redis/7f486e/metrics/patch_adapter_metrics.json
+2025-05-15 15:32:36.616 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 1.22秒
+2025-05-15 15:32:36.617 | INFO     | __main__:_merge_patches:1030 - 开始合并补丁...
+2025-05-15 15:32:36.617 | INFO     | __main__:_merge_patches:1064 - Chunk分析器应用了 2/3 个chunks
+2025-05-15 15:32:36.617 | WARNING  | __main__:_merge_patches:1153 - 没有找到可合并的补丁
+2025-05-15 15:32:36.618 | INFO     | __main__:_save_results:705 - 已复制最终补丁到结果目录: results/redis_4.0.14_7f486e_20250515_153236/upstream_7f486e.patch
+2025-05-15 15:32:36.619 | INFO     | __main__:_save_results:842 - 结果已保存到: results/redis_4.0.14_7f486e_20250515_153236/result.json
+2025-05-15 15:32:36.619 | INFO     | __main__:_print_summary:884 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-05-15 15:32:36.619 | INFO     | __main__:_print_summary:907 - ==================================================
+2025-05-15 15:32:36.620 | INFO     | __main__:_print_summary:908 - 处理摘要 - 提交: 7f486e
+2025-05-15 15:32:36.620 | INFO     | __main__:_print_summary:909 - 适配状态: 适配失败 (方法: failed)
+2025-05-15 15:32:36.620 | INFO     | __main__:_print_summary:914 - 块分析统计:
+2025-05-15 15:32:36.620 | INFO     | __main__:_print_summary:915 - - 总块数: 3
+2025-05-15 15:32:36.620 | INFO     | __main__:_print_summary:916 - - 无冲突块数: 2
+2025-05-15 15:32:36.621 | INFO     | __main__:_print_summary:917 - - 成功适配块数: 0
+2025-05-15 15:32:36.621 | INFO     | __main__:_print_summary:918 - - 适配失败块数: 1
+2025-05-15 15:32:36.621 | INFO     | __main__:_print_summary:919 - - 编译失败块数: 0
+2025-05-15 15:32:36.621 | INFO     | __main__:_print_summary:923 - 总执行时间: 1.22秒
+2025-05-15 15:32:36.622 | INFO     | __main__:_print_summary:928 - ==================================================
+2025-05-15 15:32:36.622 | INFO     | __main__:_print_multi_version_summary:473 - ================================================================================
+2025-05-15 15:32:36.622 | INFO     | __main__:_print_multi_version_summary:474 - 多版本补丁适配汇总
+2025-05-15 15:32:36.622 | INFO     | __main__:_print_multi_version_summary:475 - ================================================================================
+2025-05-15 15:32:36.622 | INFO     | __main__:_print_multi_version_summary:496 - 版本 4.0.14: 失败 (方法: 块分析器 (2/3))
+2025-05-15 15:32:36.623 | INFO     | __main__:_print_multi_version_summary:502 - 总成功率: 0.0% (0/1)
+2025-05-15 15:32:36.623 | INFO     | __main__:_print_multi_version_summary:560 - 多版本统计结果已保存到: statistics/redis_multi_version_stats_7f486e_20250515_153236.json
+2025-05-15 15:32:36.623 | INFO     | __main__:run:302 - 处理完成

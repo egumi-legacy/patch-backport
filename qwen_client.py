@@ -6,6 +6,7 @@ from dashscope import get_tokenizer
 class QWen_Client:
     __MODEL_LIMITS = {
         "qwen-max": 32_768,
+        "qwen-plus-latest": 129_024,
         "qwen-plus": 131_072,
         "qwen-turbo": 131_072,
         "qwen-long": 10_000_000

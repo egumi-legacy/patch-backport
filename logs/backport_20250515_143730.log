@@ -1,0 +1,244 @@
+2025-05-15 14:37:30.129 | INFO     | __main__:_setup_logger:289 - 日志文件: logs/backport_20250515_143730.log
+2025-05-15 14:37:30.131 | INFO     | __main__:process_multiple_commits:1492 - 处理第 1/2 个commit: c8649f8e852d1dc388b5446e003bb0eefa33d61f
+2025-05-15 14:37:30.274 | INFO     | __main__:_setup_logger:289 - 日志文件: logs/backport_20250515_143730.log
+2025-05-15 14:37:30.275 | INFO     | __main__:run:293 - 开始执行 模式1
+2025-05-15 14:37:30.276 | INFO     | __main__:_process_mode1:313 - 处理补丁: https://github.com/redis/redis/commit/c8649f8e852d1dc388b5446e003bb0eefa33d61f.patch
+2025-05-15 14:37:30.279 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-05-15 14:37:30.282 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-05-15 14:37:30.293 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-05-15 14:37:30.295 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-05-15 14:37:30.296 | INFO     | __main__:_process_mode1:320 - 目标版本: ['4.0.14']
+2025-05-15 14:37:30.298 | INFO     | __main__:_process_mode1:327 - 开始处理版本: 4.0.14
+2025-05-15 14:37:30.300 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: c8649f8e852d1dc388b5446e003bb0eefa33d61f.patch
+2025-05-15 14:37:30.301 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-05-15 14:37:30.303 | INFO     | modules.direct_apply:_download_patch:231 - 上游补丁文件已存在: workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 14:37:30.304 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-05-15 14:37:30.305 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 14:37:30.427 | INFO     | modules.direct_apply:_prepare_test_branch:346 - 创建测试分支: test_patch_4.0.14
+2025-05-15 14:37:30.639 | ERROR    | modules.direct_apply:_apply_patch:286 - 补丁应用失败: error: patch failed: src/util.c:54
+error: src/util.c: patch does not apply
+error: patch failed: tests/unit/keyspace.tcl:499
+error: tests/unit/keyspace.tcl: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-05-15 14:37:30.747 | INFO     | modules.direct_apply:_cleanup_test_branch:438 - 清理测试分支: test_patch_4.0.14
+2025-05-15 14:37:30.749 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-05-15 14:37:30.750 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 14:37:30.752 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 14:37:30.753 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 60 行内容
+2025-05-15 14:37:30.755 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/util.c
+2025-05-15 14:37:30.757 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/util.c @@ -54,8 +54,11 @@ (modification)
+2025-05-15 14:37:30.758 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/util.c @@ -67,7 +70,7 @@ (modification)
+2025-05-15 14:37:30.760 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/util.c @@ -189,7 +192,7 @@ (modification)
+2025-05-15 14:37:30.761 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: tests/unit/keyspace.tcl
+2025-05-15 14:37:30.763 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: tests/unit/keyspace.tcl @@ -499,4 +499,10 @@ (modification)
+2025-05-15 14:37:30.765 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 4 个修改块
+2025-05-15 14:37:30.767 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 4 个块
+2025-05-15 14:37:30.769 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 14:37:30.776 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/chunk_001_20250515_143730.patch (修改文件: src/util.c)
+2025-05-15 14:37:30.779 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/chunk_002_20250515_143730.patch (修改文件: src/util.c)
+2025-05-15 14:37:30.782 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/chunk_003_20250515_143730.patch (修改文件: src/util.c)
+2025-05-15 14:37:30.785 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/chunk_004_20250515_143730.patch (修改文件: tests/unit/keyspace.tcl)
+2025-05-15 14:37:30.786 | INFO     | modules.chunk_analyzer:execute:60 - 已为 4 个块创建单独的补丁文件
+2025-05-15 14:37:30.788 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-05-15 14:37:30.793 | INFO     | modules.chunk_analyzer:execute:66 - From c8649f8e852d1dc388b5446e003bb0eefa33d61f Mon Sep 17 00:00:00 2001
+From: Oran Agra <oran@redislabs.com>
+Date: Wed, 2 Oct 2024 20:11:01 +0300
+Subject: [PATCH] Prevent pattern matching abuse (CVE-2024-31228)
+
+---
+ src/util.c              | 9 ++++++---
+ tests/unit/keyspace.tcl | 6 ++++++
+ 2 files changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/src/util.c b/src/util.c
+index 26d92b92290..c32cbeef96a 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -54,8 +54,11 @@
+ 
+ /* Glob-style pattern matching. */
+ static int stringmatchlen_impl(const char *pattern, int patternLen,
+-        const char *string, int stringLen, int nocase, int *skipLongerMatches)
++        const char *string, int stringLen, int nocase, int *skipLongerMatches, int nesting)
+ {
++    /* Protection against abusive patterns. */
++    if (nesting > 1000) return 0;
++
+     while(patternLen && stringLen) {
+         switch(pattern[0]) {
+         case '*':
+
+2025-05-15 14:37:30.796 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-05-15 14:37:30.797 | INFO     | modules.chunk_analyzer:execute:66 - From c8649f8e852d1dc388b5446e003bb0eefa33d61f Mon Sep 17 00:00:00 2001
+From: Oran Agra <oran@redislabs.com>
+Date: Wed, 2 Oct 2024 20:11:01 +0300
+Subject: [PATCH] Prevent pattern matching abuse (CVE-2024-31228)
+
+---
+ src/util.c              | 9 ++++++---
+ tests/unit/keyspace.tcl | 6 ++++++
+ 2 files changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/src/util.c b/src/util.c
+index 26d92b92290..c32cbeef96a 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -67,7 +70,7 @@ static int stringmatchlen_impl(const char *pattern, int patternLen,
+                 return 1; /* match */
+             while(stringLen) {
+                 if (stringmatchlen_impl(pattern+1, patternLen-1,
+-                            string, stringLen, nocase, skipLongerMatches))
++                            string, stringLen, nocase, skipLongerMatches, nesting+1))
+                     return 1; /* match */
+                 if (*skipLongerMatches)
+                     return 0; /* no match */
+
+2025-05-15 14:37:30.799 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-05-15 14:37:30.801 | INFO     | modules.chunk_analyzer:execute:66 - From c8649f8e852d1dc388b5446e003bb0eefa33d61f Mon Sep 17 00:00:00 2001
+From: Oran Agra <oran@redislabs.com>
+Date: Wed, 2 Oct 2024 20:11:01 +0300
+Subject: [PATCH] Prevent pattern matching abuse (CVE-2024-31228)
+
+---
+ src/util.c              | 9 ++++++---
+ tests/unit/keyspace.tcl | 6 ++++++
+ 2 files changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/src/util.c b/src/util.c
+index 26d92b92290..c32cbeef96a 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -189,7 +192,7 @@ static int stringmatchlen_impl(const char *pattern, int patternLen,
+ int stringmatchlen(const char *pattern, int patternLen,
+         const char *string, int stringLen, int nocase) {
+     int skipLongerMatches = 0;
+-    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches);
++    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches,0);
+ }
+ 
+ int stringmatch(const char *pattern, const char *string, int nocase) {
+
+2025-05-15 14:37:30.803 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-05-15 14:37:30.804 | INFO     | modules.chunk_analyzer:execute:66 - From c8649f8e852d1dc388b5446e003bb0eefa33d61f Mon Sep 17 00:00:00 2001
+From: Oran Agra <oran@redislabs.com>
+Date: Wed, 2 Oct 2024 20:11:01 +0300
+Subject: [PATCH] Prevent pattern matching abuse (CVE-2024-31228)
+
+---
+ src/util.c              | 9 ++++++---
+ tests/unit/keyspace.tcl | 6 ++++++
+ 2 files changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/tests/unit/keyspace.tcl b/tests/unit/keyspace.tcl
+index 43690d06b32..b42421221cd 100644
+--- a/tests/unit/keyspace.tcl
++++ b/tests/unit/keyspace.tcl
+@@ -499,4 +499,10 @@ foreach {type large} [array get largevalue] {
+         r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1
+         r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"
+     } {}
++
++    test {Regression for pattern matching very long nested loops} {
++        r flushdb
++        r SET [string repeat "a" 50000] 1
++        r KEYS [string repeat "*?" 50000]
++    } {}
+ }
+
+2025-05-15 14:37:30.809 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/4 个块补丁: chunk_001_20250515_143730.patch
+2025-05-15 14:37:30.865 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_001_20250515_143730.patch 应用失败: error: patch failed: src/util.c:54
+error: src/util.c: patch does not apply
+
+2025-05-15 14:37:30.866 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/4 个块补丁: chunk_002_20250515_143730.patch
+2025-05-15 14:37:30.892 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_002_20250515_143730.patch 应用失败: error: patch failed: src/util.c:67
+error: src/util.c: patch does not apply
+
+2025-05-15 14:37:30.893 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/4 个块补丁: chunk_003_20250515_143730.patch
+2025-05-15 14:37:30.909 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_003_20250515_143730.patch 应用失败: error: patch failed: src/util.c:189
+error: src/util.c: patch does not apply
+
+2025-05-15 14:37:30.910 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 4/4 个块补丁: chunk_004_20250515_143730.patch
+2025-05-15 14:37:30.928 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_004_20250515_143730.patch 应用失败: error: patch failed: tests/unit/keyspace.tcl:499
+error: tests/unit/keyspace.tcl: patch does not apply
+
+2025-05-15 14:37:30.929 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-05-15 14:37:30.929 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 4
+2025-05-15 14:37:30.930 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 0
+2025-05-15 14:37:30.930 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 4
+2025-05-15 14:37:30.931 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 0 个块补丁，总共 4 个
+2025-05-15 14:37:30.933 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/remaining_chunks_20250515_143730.patch
+2025-05-15 14:37:30.934 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 4 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/remaining_chunks_20250515_143730.patch
+2025-05-15 14:37:30.935 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/remaining_chunks_20250515_143730.patch
+2025-05-15 14:37:30.935 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.18秒
+2025-05-15 14:37:30.936 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/metrics_c8649f_20250515_143730.json
+2025-05-15 14:37:30.938 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_143730
+2025-05-15 14:37:30.939 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_143730
+2025-05-15 14:37:30.939 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_143730/patches
+2025-05-15 14:37:30.940 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_143730/patches
+2025-05-15 14:37:30.941 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_143730/patches/original_patch.txt
+2025-05-15 14:37:30.941 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_143730
+2025-05-15 14:37:30.942 | WARNING  | modules.chunk_analyzer:_get_patch_content:1289 - 未找到任何应用成功的补丁文件
+2025-05-15 14:37:30.943 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_143730
+2025-05-15 14:37:30.943 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_143730/patches/remaining_patch.txt
+2025-05-15 14:37:30.944 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/remaining_chunks_20250515_143730.patch
+2025-05-15 14:37:30.945 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_143730
+2025-05-15 14:37:30.950 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: llm_adapter
+2025-05-15 14:37:30.951 | INFO     | modules.llm_adapter:execute:55 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 14:37:30.952 | INFO     | modules.llm_adapter:execute:57 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 14:37:30.952 | INFO     | modules.llm_adapter:_prepare_prompt_data:181 - 使用传统上下文差异
+2025-05-15 14:37:30.953 | INFO     | modules.llm_adapter:_get_context_diff:618 - diff_content: The file does not exist in the older (target) version: src/util.c
+
+""""""
+The file does not exist in the older (target) version: tests/unit/keyspace.tcl
+
+""""""
+
+2025-05-15 14:37:31.254 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-05-15 14:37:31.255 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/redis/redis/c8649f/llm_output/output_4.0.14_qwen-plus.patch
+2025-05-15 14:37:31.256 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-05-15 14:37:31.257 | INFO     | modules.llm_adapter:_call_llm:735 - llm.run() result:{'openai_responses': [''], 'request_tokens': [0], 'response_tokens': [0]}
+2025-05-15 14:37:31.259 | INFO     | modules.llm_adapter:_parse_llm_response:817 - 原始LLM响应(前100字符): ...
+2025-05-15 14:37:31.262 | WARNING  | modules.llm_adapter:_parse_llm_response:855 - 未找到任何已知补丁格式，返回完整响应
+2025-05-15 14:37:31.274 | INFO     | modules.llm_adapter:_save_llm_response:986 - LLM响应已保存到: workspace/redis/redis/c8649f/llm_output/output_4.0.14_qwen-plus.patch
+2025-05-15 14:37:31.275 | INFO     | modules.llm_adapter:_save_llm_response:987 - 原始LLM响应已保存到: workspace/redis/redis/c8649f/llm_output/raw_output_4.0.14_qwen-plus.patch
+2025-05-15 14:37:31.279 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/redis/redis/c8649f/evaluations/llm_adapter/metrics_c8649f_20250515_143731.json
+2025-05-15 14:37:31.280 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: patch_adapter
+2025-05-15 14:37:31.282 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/redis/redis/c8649f/llm_output/output_4.0.14_qwen-plus.patch
+2025-05-15 14:37:31.288 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_4.0.14_20250515_143731
+2025-05-15 14:37:31.392 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+
+2025-05-15 14:37:31.394 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-05-15 14:37:31.396 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_4.0.14_20250515_143731
+2025-05-15 14:37:31.452 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-05-15 14:37:31.455 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-05-15 14:37:31.459 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/redis/redis/c8649f/metrics/patch_adapter_metrics.json
+2025-05-15 14:37:31.461 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 1.16秒
+2025-05-15 14:37:31.462 | INFO     | __main__:_merge_patches:1030 - 开始合并补丁...
+2025-05-15 14:37:31.464 | WARNING  | __main__:_merge_patches:1153 - 没有找到可合并的补丁
+2025-05-15 14:37:31.471 | INFO     | __main__:_save_results:705 - 已复制最终补丁到结果目录: results/redis_4.0.14_c8649f_20250515_143731/upstream_c8649f.patch
+2025-05-15 14:37:31.475 | INFO     | __main__:_save_results:842 - 结果已保存到: results/redis_4.0.14_c8649f_20250515_143731/result.json
+2025-05-15 14:37:31.476 | INFO     | __main__:_print_summary:884 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-05-15 14:37:31.477 | INFO     | __main__:_print_summary:907 - ==================================================
+2025-05-15 14:37:31.478 | INFO     | __main__:_print_summary:908 - 处理摘要 - 提交: c8649f
+2025-05-15 14:37:31.479 | INFO     | __main__:_print_summary:909 - 适配状态: 适配失败 (方法: failed)
+2025-05-15 14:37:31.482 | INFO     | __main__:_print_summary:914 - 块分析统计:
+2025-05-15 14:37:31.486 | INFO     | __main__:_print_summary:915 - - 总块数: 4
+2025-05-15 14:37:31.487 | INFO     | __main__:_print_summary:916 - - 无冲突块数: 0
+2025-05-15 14:37:31.489 | INFO     | __main__:_print_summary:917 - - 成功适配块数: 0
+2025-05-15 14:37:31.490 | INFO     | __main__:_print_summary:918 - - 适配失败块数: 4
+2025-05-15 14:37:31.492 | INFO     | __main__:_print_summary:919 - - 编译失败块数: 0
+2025-05-15 14:37:31.493 | INFO     | __main__:_print_summary:923 - 总执行时间: 1.16秒
+2025-05-15 14:37:31.495 | INFO     | __main__:_print_summary:928 - ==================================================
+2025-05-15 14:37:31.495 | INFO     | __main__:_print_multi_version_summary:473 - ================================================================================
+2025-05-15 14:37:31.498 | INFO     | __main__:_print_multi_version_summary:474 - 多版本补丁适配汇总
+2025-05-15 14:37:31.500 | INFO     | __main__:_print_multi_version_summary:475 - ================================================================================
+2025-05-15 14:37:31.501 | INFO     | __main__:_print_multi_version_summary:496 - 版本 4.0.14: 失败 (方法: 所有方法失败)
+2025-05-15 14:37:31.502 | INFO     | __main__:_print_multi_version_summary:502 - 总成功率: 0.0% (0/1)
+2025-05-15 14:37:31.508 | INFO     | __main__:_print_multi_version_summary:560 - 多版本统计结果已保存到: statistics/redis_multi_version_stats_c8649f_20250515_143731.json
+2025-05-15 14:37:31.509 | INFO     | __main__:run:302 - 处理完成
+2025-05-15 14:37:31.511 | INFO     | __main__:process_multiple_commits:1492 - 处理第 2/2 个commit: 7f486ea6eebf0afce74f2e59763b9b82b78629dc

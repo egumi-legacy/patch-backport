@@ -166,7 +166,9 @@ class LLMAdapterModule(BaseModule):
     def _prepare_prompt_data(self, context: ModuleContext, is_retry: bool = False) -> Dict[str, Any]:
         """准备LLM输入数据"""
         # 读取补丁内容
-        with open(context.commit.patch_path, 'r') as f:
+        # with open(context.commit.patch_path, 'r') as f:
+        #     patch_content = f.read()
+        with open(context.commit.optimized_patch_path, 'r') as f:
             patch_content = f.read()
         
         # 检查是否使用增强提示模式（函数级上下文）
@@ -180,7 +182,6 @@ class LLMAdapterModule(BaseModule):
             # 获取传统的上下文差异
             logger.info("使用传统上下文差异") #1.PATCH 2.DIFF
             context_diff = self._get_context_diff(context, patch_content)
-            
             # 构建标准提示数据
             prompt_data = {
                 'patch_content': patch_content,
@@ -614,8 +615,12 @@ class LLMAdapterModule(BaseModule):
         try:
             # 从commit目录中直接读取diff文件
             diff_file = context.commit.base_dir / 'diff'
+            logger.info(f"diff_file: {diff_file.absolute()}")
+            # logger.info(f"absolute diff_file: {diff_file.absolute()}")
             if diff_file.exists():
-                return html.unescape(diff_file.read_text())
+                clean_diff_content = html.unescape(diff_file.read_text())
+                logger.info(f"diff_content: {clean_diff_content}")
+                return clean_diff_content
                 
             # 如果diff文件不存在，直接使用PatchProcessor的功能来获取差异
             from patch_processor import PatchProcessor

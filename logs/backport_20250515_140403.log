@@ -1,0 +1,233 @@
+2025-05-15 14:04:03.058 | INFO     | __main__:_setup_logger:289 - 日志文件: logs/backport_20250515_140403.log
+2025-05-15 14:04:03.058 | INFO     | __main__:run:293 - 开始执行 模式1
+2025-05-15 14:04:03.059 | INFO     | __main__:_process_mode1:313 - 处理补丁: https://github.com/redis/redis/commit/7f486ea6eebf0afce74f2e59763b9b82b78629dc.patch
+2025-05-15 14:04:03.060 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-05-15 14:04:03.062 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-05-15 14:04:03.063 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-05-15 14:04:03.064 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-05-15 14:04:03.065 | INFO     | __main__:_process_mode1:320 - 目标版本: ['4.0.14']
+2025-05-15 14:04:03.065 | INFO     | __main__:_process_mode1:327 - 开始处理版本: 4.0.14
+2025-05-15 14:04:03.066 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: 7f486ea6eebf0afce74f2e59763b9b82b78629dc.patch
+2025-05-15 14:04:03.066 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-05-15 14:04:03.067 | INFO     | modules.direct_apply:_download_patch:231 - 上游补丁文件已存在: workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 14:04:03.067 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-05-15 14:04:03.068 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 14:04:03.116 | INFO     | modules.direct_apply:_prepare_test_branch:346 - 创建测试分支: test_patch_4.0.14
+2025-05-15 14:04:03.179 | ERROR    | modules.direct_apply:_apply_patch:286 - 补丁应用失败: error: patch failed: src/anet.c:407
+error: src/anet.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-05-15 14:04:03.273 | INFO     | modules.direct_apply:_cleanup_test_branch:438 - 清理测试分支: test_patch_4.0.14
+2025-05-15 14:04:03.274 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-05-15 14:04:03.276 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 14:04:03.277 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 14:04:03.279 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 63 行内容
+2025-05-15 14:04:03.281 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/anet.c
+2025-05-15 14:04:03.282 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/anet.c @@ -407,13 +407,16 @@ (modification)
+2025-05-15 14:04:03.284 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/anet.c @@ -457,7 +460,7 @@ (modification)
+2025-05-15 14:04:03.286 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/anet.c @@ -498,10 +501,8 @@ (modification)
+2025-05-15 14:04:03.288 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 3 个修改块
+2025-05-15 14:04:03.289 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 3 个块
+2025-05-15 14:04:03.291 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 14:04:03.294 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/chunk_001_20250515_140403.patch (修改文件: src/anet.c)
+2025-05-15 14:04:03.297 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/chunk_002_20250515_140403.patch (修改文件: src/anet.c)
+2025-05-15 14:04:03.299 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/chunk_003_20250515_140403.patch (修改文件: src/anet.c)
+2025-05-15 14:04:03.301 | INFO     | modules.chunk_analyzer:execute:60 - 已为 3 个块创建单独的补丁文件
+2025-05-15 14:04:03.302 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-05-15 14:04:03.304 | INFO     | modules.chunk_analyzer:execute:66 - From 7f486ea6eebf0afce74f2e59763b9b82b78629dc Mon Sep 17 00:00:00 2001
+From: Yossi Gottlieb <yossigo@gmail.com>
+Date: Wed, 11 Oct 2023 22:45:34 +0300
+Subject: [PATCH] Fix issue of listen before chmod on Unix sockets
+ (CVE-2023-45145)
+
+Before this commit, Unix socket setup performed chmod(2) on the socket
+file after calling listen(2). Depending on what umask is used, this
+could leave the file with the wrong permissions for a short period of
+time. As a result, another process could exploit this race condition and
+establish a connection that would otherwise not be possible.
+
+We now make sure the socket permissions are set up prior to calling
+listen(2).
+
+(cherry picked from commit a11b3bc34a054818f2ac70e50adfc542ca1cba42)
+---
+ src/anet.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/src/anet.c b/src/anet.c
+index 4ea201df57f..10840fca20d 100644
+--- a/src/anet.c
++++ b/src/anet.c
+@@ -407,13 +407,16 @@ int anetUnixGenericConnect(char *err, const char *path, int flags)
+     return s;
+ }
+ 
+-static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog) {
++static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog, mode_t perm) {
+     if (bind(s,sa,len) == -1) {
+         anetSetError(err, "bind: %s", strerror(errno));
+         close(s);
+         return ANET_ERR;
+     }
+ 
++    if (sa->sa_family == AF_LOCAL && perm)
++        chmod(((struct sockaddr_un *) sa)->sun_path, perm);
++
+     if (listen(s, backlog) == -1) {
+         anetSetError(err, "listen: %s", strerror(errno));
+         close(s);
+
+2025-05-15 14:04:03.308 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-05-15 14:04:03.315 | INFO     | modules.chunk_analyzer:execute:66 - From 7f486ea6eebf0afce74f2e59763b9b82b78629dc Mon Sep 17 00:00:00 2001
+From: Yossi Gottlieb <yossigo@gmail.com>
+Date: Wed, 11 Oct 2023 22:45:34 +0300
+Subject: [PATCH] Fix issue of listen before chmod on Unix sockets
+ (CVE-2023-45145)
+
+Before this commit, Unix socket setup performed chmod(2) on the socket
+file after calling listen(2). Depending on what umask is used, this
+could leave the file with the wrong permissions for a short period of
+time. As a result, another process could exploit this race condition and
+establish a connection that would otherwise not be possible.
+
+We now make sure the socket permissions are set up prior to calling
+listen(2).
+
+(cherry picked from commit a11b3bc34a054818f2ac70e50adfc542ca1cba42)
+---
+ src/anet.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/src/anet.c b/src/anet.c
+index 4ea201df57f..10840fca20d 100644
+--- a/src/anet.c
++++ b/src/anet.c
+@@ -457,7 +460,7 @@ static int _anetTcpServer(char *err, int port, char *bindaddr, int af, int backl
+ 
+         if (af == AF_INET6 && anetV6Only(err,s) == ANET_ERR) goto error;
+         if (anetSetReuseAddr(err,s) == ANET_ERR) goto error;
+-        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog) == ANET_ERR) s = ANET_ERR;
++        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog,0) == ANET_ERR) s = ANET_ERR;
+         goto end;
+     }
+     if (p == NULL) {
+
+2025-05-15 14:04:03.316 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-05-15 14:04:03.318 | INFO     | modules.chunk_analyzer:execute:66 - From 7f486ea6eebf0afce74f2e59763b9b82b78629dc Mon Sep 17 00:00:00 2001
+From: Yossi Gottlieb <yossigo@gmail.com>
+Date: Wed, 11 Oct 2023 22:45:34 +0300
+Subject: [PATCH] Fix issue of listen before chmod on Unix sockets
+ (CVE-2023-45145)
+
+Before this commit, Unix socket setup performed chmod(2) on the socket
+file after calling listen(2). Depending on what umask is used, this
+could leave the file with the wrong permissions for a short period of
+time. As a result, another process could exploit this race condition and
+establish a connection that would otherwise not be possible.
+
+We now make sure the socket permissions are set up prior to calling
+listen(2).
+
+(cherry picked from commit a11b3bc34a054818f2ac70e50adfc542ca1cba42)
+---
+ src/anet.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/src/anet.c b/src/anet.c
+index 4ea201df57f..10840fca20d 100644
+--- a/src/anet.c
++++ b/src/anet.c
+@@ -498,10 +501,8 @@ int anetUnixServer(char *err, char *path, mode_t perm, int backlog)
+     memset(&sa,0,sizeof(sa));
+     sa.sun_family = AF_LOCAL;
+     strncpy(sa.sun_path,path,sizeof(sa.sun_path)-1);
+-    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog) == ANET_ERR)
++    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog,perm) == ANET_ERR)
+         return ANET_ERR;
+-    if (perm)
+-        chmod(sa.sun_path, perm);
+     return s;
+ }
+ 
+
+2025-05-15 14:04:03.320 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:345 - 尝试应用第 1/3 个块补丁: chunk_001_20250515_140403.patch
+2025-05-15 14:04:03.368 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:377 - 块补丁 chunk_001_20250515_140403.patch 应用失败: error: can't open patch 'workspace/redis/redis/7f486e/chunk_patches/chunk_001_20250515_140403.patch': No such file or directory
+
+2025-05-15 14:04:03.369 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:345 - 尝试应用第 2/3 个块补丁: chunk_002_20250515_140403.patch
+2025-05-15 14:04:03.420 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:377 - 块补丁 chunk_002_20250515_140403.patch 应用失败: error: can't open patch 'workspace/redis/redis/7f486e/chunk_patches/chunk_002_20250515_140403.patch': No such file or directory
+
+2025-05-15 14:04:03.421 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:345 - 尝试应用第 3/3 个块补丁: chunk_003_20250515_140403.patch
+2025-05-15 14:04:03.472 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:377 - 块补丁 chunk_003_20250515_140403.patch 应用失败: error: can't open patch 'workspace/redis/redis/7f486e/chunk_patches/chunk_003_20250515_140403.patch': No such file or directory
+
+2025-05-15 14:04:03.473 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:387 - 块补丁应用统计信息:
+2025-05-15 14:04:03.474 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - - 总块数: 3
+2025-05-15 14:04:03.476 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - - 无冲突块数: 0
+2025-05-15 14:04:03.477 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 适配失败块数: 3
+2025-05-15 14:04:03.479 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 0 个块补丁，总共 3 个
+2025-05-15 14:04:03.484 | INFO     | modules.chunk_analyzer:_create_remaining_patch:463 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/remaining_chunks_20250515_140403.patch
+2025-05-15 14:04:03.486 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 3 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/remaining_chunks_20250515_140403.patch
+2025-05-15 14:04:03.490 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/remaining_chunks_20250515_140403.patch
+2025-05-15 14:04:03.491 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.22秒
+2025-05-15 14:04:03.494 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/metrics_7f486e_20250515_140403.json
+2025-05-15 14:04:03.502 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:853 - 找到当前评估会话目录: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_140403
+2025-05-15 14:04:03.503 | INFO     | modules.chunk_analyzer:_get_patch_content:1087 - 使用当前会话评估目录: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_140403
+2025-05-15 14:04:03.504 | WARNING  | modules.chunk_analyzer:_get_patch_content:1143 - 补丁目录不存在: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_140403/patches
+2025-05-15 14:04:03.505 | INFO     | modules.chunk_analyzer:_get_patch_content:1148 - 成功创建补丁目录: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_140403/patches
+2025-05-15 14:04:03.506 | INFO     | modules.chunk_analyzer:_get_patch_content:1166 - 已将原始补丁内容保存到: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_140403/patches/original_patch.txt
+2025-05-15 14:04:03.507 | INFO     | modules.chunk_analyzer:_get_patch_content:1087 - 使用当前会话评估目录: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_140403
+2025-05-15 14:04:03.508 | WARNING  | modules.chunk_analyzer:_get_patch_content:1287 - 未找到任何应用成功的补丁文件
+2025-05-15 14:04:03.509 | INFO     | modules.chunk_analyzer:_get_patch_content:1087 - 使用当前会话评估目录: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_140403
+2025-05-15 14:04:03.517 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将剩余补丁内容保存到: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_140403/patches/remaining_patch.txt
+2025-05-15 14:04:03.517 | INFO     | modules.chunk_analyzer:_get_patch_content:1339 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/remaining_chunks_20250515_140403.patch
+2025-05-15 14:04:03.518 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/redis/redis/7f486e/evaluations/chunk_analyzer/details_7f486e_20250515_140403
+2025-05-15 14:04:03.521 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: llm_adapter
+2025-05-15 14:04:03.522 | INFO     | modules.llm_adapter:execute:55 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 14:04:03.523 | INFO     | modules.llm_adapter:execute:57 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/patches/upstream_7f486e.patch
+2025-05-15 14:04:03.524 | INFO     | modules.llm_adapter:_prepare_prompt_data:181 - 使用传统上下文差异
+2025-05-15 14:04:03.693 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-05-15 14:04:03.694 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/redis/redis/7f486e/llm_output/output_4.0.14_qwen-plus.patch
+2025-05-15 14:04:03.695 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-05-15 14:04:03.696 | INFO     | modules.llm_adapter:_call_llm:734 - llm.run() result:{'openai_responses': [''], 'request_tokens': [0], 'response_tokens': [0]}
+2025-05-15 14:04:03.696 | INFO     | modules.llm_adapter:_parse_llm_response:816 - 原始LLM响应(前100字符): ...
+2025-05-15 14:04:03.697 | WARNING  | modules.llm_adapter:_parse_llm_response:854 - 未找到任何已知补丁格式，返回完整响应
+2025-05-15 14:04:03.698 | INFO     | modules.llm_adapter:_save_llm_response:985 - LLM响应已保存到: workspace/redis/redis/7f486e/llm_output/output_4.0.14_qwen-plus.patch
+2025-05-15 14:04:03.698 | INFO     | modules.llm_adapter:_save_llm_response:986 - 原始LLM响应已保存到: workspace/redis/redis/7f486e/llm_output/raw_output_4.0.14_qwen-plus.patch
+2025-05-15 14:04:03.700 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/redis/redis/7f486e/evaluations/llm_adapter/metrics_7f486e_20250515_140403.json
+2025-05-15 14:04:03.701 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: patch_adapter
+2025-05-15 14:04:03.701 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/redis/redis/7f486e/llm_output/output_4.0.14_qwen-plus.patch
+2025-05-15 14:04:03.702 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_4.0.14_20250515_140403
+2025-05-15 14:04:03.760 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+
+2025-05-15 14:04:03.761 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-05-15 14:04:03.762 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_4.0.14_20250515_140403
+2025-05-15 14:04:03.789 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-05-15 14:04:03.790 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-05-15 14:04:03.791 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/redis/redis/7f486e/metrics/patch_adapter_metrics.json
+2025-05-15 14:04:03.792 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 0.73秒
+2025-05-15 14:04:03.792 | INFO     | __main__:_merge_patches:1030 - 开始合并补丁...
+2025-05-15 14:04:03.793 | WARNING  | __main__:_merge_patches:1153 - 没有找到可合并的补丁
+2025-05-15 14:04:03.796 | INFO     | __main__:_save_results:705 - 已复制最终补丁到结果目录: results/redis_4.0.14_7f486e_20250515_140403/upstream_7f486e.patch
+2025-05-15 14:04:03.798 | INFO     | __main__:_save_results:842 - 结果已保存到: results/redis_4.0.14_7f486e_20250515_140403/result.json
+2025-05-15 14:04:03.798 | INFO     | __main__:_print_summary:884 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-05-15 14:04:03.799 | INFO     | __main__:_print_summary:907 - ==================================================
+2025-05-15 14:04:03.799 | INFO     | __main__:_print_summary:908 - 处理摘要 - 提交: 7f486e
+2025-05-15 14:04:03.800 | INFO     | __main__:_print_summary:909 - 适配状态: 适配失败 (方法: failed)
+2025-05-15 14:04:03.800 | INFO     | __main__:_print_summary:914 - 块分析统计:
+2025-05-15 14:04:03.801 | INFO     | __main__:_print_summary:915 - - 总块数: 3
+2025-05-15 14:04:03.802 | INFO     | __main__:_print_summary:916 - - 无冲突块数: 0
+2025-05-15 14:04:03.803 | INFO     | __main__:_print_summary:917 - - 成功适配块数: 0
+2025-05-15 14:04:03.803 | INFO     | __main__:_print_summary:918 - - 适配失败块数: 3
+2025-05-15 14:04:03.804 | INFO     | __main__:_print_summary:919 - - 编译失败块数: 0
+2025-05-15 14:04:03.805 | INFO     | __main__:_print_summary:923 - 总执行时间: 0.73秒
+2025-05-15 14:04:03.805 | INFO     | __main__:_print_summary:928 - ==================================================
+2025-05-15 14:04:03.806 | INFO     | __main__:_print_multi_version_summary:473 - ================================================================================
+2025-05-15 14:04:03.807 | INFO     | __main__:_print_multi_version_summary:474 - 多版本补丁适配汇总
+2025-05-15 14:04:03.808 | INFO     | __main__:_print_multi_version_summary:475 - ================================================================================
+2025-05-15 14:04:03.808 | INFO     | __main__:_print_multi_version_summary:496 - 版本 4.0.14: 失败 (方法: 所有方法失败)
+2025-05-15 14:04:03.810 | INFO     | __main__:_print_multi_version_summary:502 - 总成功率: 0.0% (0/1)
+2025-05-15 14:04:03.811 | INFO     | __main__:_print_multi_version_summary:560 - 多版本统计结果已保存到: statistics/redis_multi_version_stats_7f486e_20250515_140403.json
+2025-05-15 14:04:03.812 | INFO     | __main__:run:302 - 处理完成

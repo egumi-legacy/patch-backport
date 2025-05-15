@@ -1,0 +1,1971 @@
+2025-05-15 16:40:53.012 | INFO     | __main__:_setup_logger:289 - 日志文件: logs/backport_20250515_164053.log
+2025-05-15 16:40:53.012 | INFO     | __main__:run:293 - 开始执行 模式1
+2025-05-15 16:40:53.012 | INFO     | __main__:_process_mode1:313 - 处理补丁: https://github.com/redis/redis/commit/c8649f8e852d1dc388b5446e003bb0eefa33d61f.patch
+2025-05-15 16:40:53.013 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-05-15 16:40:53.013 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-05-15 16:40:53.013 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-05-15 16:40:53.014 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-05-15 16:40:53.014 | INFO     | __main__:_process_mode1:320 - 目标版本: ['4.0.14']
+2025-05-15 16:40:53.014 | INFO     | __main__:_process_mode1:327 - 开始处理版本: 4.0.14
+2025-05-15 16:40:53.015 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: c8649f8e852d1dc388b5446e003bb0eefa33d61f.patch
+2025-05-15 16:40:53.015 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-05-15 16:40:53.016 | INFO     | modules.direct_apply:_download_patch:231 - 上游补丁文件已存在: workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 16:40:53.017 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-05-15 16:40:53.017 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 16:40:53.035 | INFO     | modules.direct_apply:_prepare_test_branch:346 - 创建测试分支: test_patch_4.0.14
+2025-05-15 16:40:53.060 | ERROR    | modules.direct_apply:_apply_patch:286 - 补丁应用失败: error: patch failed: src/util.c:54
+error: src/util.c: patch does not apply
+error: patch failed: tests/unit/keyspace.tcl:499
+error: tests/unit/keyspace.tcl: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-05-15 16:40:53.082 | INFO     | modules.direct_apply:_cleanup_test_branch:438 - 清理测试分支: test_patch_4.0.14
+2025-05-15 16:40:53.083 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-05-15 16:40:53.083 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 16:40:53.083 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 16:40:53.083 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 60 行内容
+2025-05-15 16:40:53.084 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/util.c
+2025-05-15 16:40:53.084 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/util.c @@ -54,8 +54,11 @@ (modification)
+2025-05-15 16:40:53.084 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/util.c @@ -67,7 +70,7 @@ (modification)
+2025-05-15 16:40:53.085 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/util.c @@ -189,7 +192,7 @@ (modification)
+2025-05-15 16:40:53.085 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: tests/unit/keyspace.tcl
+2025-05-15 16:40:53.085 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: tests/unit/keyspace.tcl @@ -499,4 +499,10 @@ (modification)
+2025-05-15 16:40:53.085 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 4 个修改块
+2025-05-15 16:40:53.085 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 4 个块
+2025-05-15 16:40:53.086 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 16:40:53.086 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/chunk_001_20250515_164053.patch (修改文件: src/util.c)
+2025-05-15 16:40:53.086 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/chunk_002_20250515_164053.patch (修改文件: src/util.c)
+2025-05-15 16:40:53.087 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/chunk_003_20250515_164053.patch (修改文件: src/util.c)
+2025-05-15 16:40:53.087 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/chunk_004_20250515_164053.patch (修改文件: tests/unit/keyspace.tcl)
+2025-05-15 16:40:53.087 | INFO     | modules.chunk_analyzer:execute:60 - 已为 4 个块创建单独的补丁文件
+2025-05-15 16:40:53.088 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-05-15 16:40:53.088 | INFO     | modules.chunk_analyzer:execute:66 - From c8649f8e852d1dc388b5446e003bb0eefa33d61f Mon Sep 17 00:00:00 2001
+From: Oran Agra <oran@redislabs.com>
+Date: Wed, 2 Oct 2024 20:11:01 +0300
+Subject: [PATCH] Prevent pattern matching abuse (CVE-2024-31228)
+
+---
+ src/util.c              | 9 ++++++---
+ tests/unit/keyspace.tcl | 6 ++++++
+ 2 files changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/src/util.c b/src/util.c
+index 26d92b92290..c32cbeef96a 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -54,8 +54,11 @@
+ 
+ /* Glob-style pattern matching. */
+ static int stringmatchlen_impl(const char *pattern, int patternLen,
+-        const char *string, int stringLen, int nocase, int *skipLongerMatches)
++        const char *string, int stringLen, int nocase, int *skipLongerMatches, int nesting)
+ {
++    /* Protection against abusive patterns. */
++    if (nesting > 1000) return 0;
++
+     while(patternLen && stringLen) {
+         switch(pattern[0]) {
+         case '*':
+
+2025-05-15 16:40:53.088 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-05-15 16:40:53.088 | INFO     | modules.chunk_analyzer:execute:66 - From c8649f8e852d1dc388b5446e003bb0eefa33d61f Mon Sep 17 00:00:00 2001
+From: Oran Agra <oran@redislabs.com>
+Date: Wed, 2 Oct 2024 20:11:01 +0300
+Subject: [PATCH] Prevent pattern matching abuse (CVE-2024-31228)
+
+---
+ src/util.c              | 9 ++++++---
+ tests/unit/keyspace.tcl | 6 ++++++
+ 2 files changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/src/util.c b/src/util.c
+index 26d92b92290..c32cbeef96a 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -67,7 +70,7 @@ static int stringmatchlen_impl(const char *pattern, int patternLen,
+                 return 1; /* match */
+             while(stringLen) {
+                 if (stringmatchlen_impl(pattern+1, patternLen-1,
+-                            string, stringLen, nocase, skipLongerMatches))
++                            string, stringLen, nocase, skipLongerMatches, nesting+1))
+                     return 1; /* match */
+                 if (*skipLongerMatches)
+                     return 0; /* no match */
+
+2025-05-15 16:40:53.088 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-05-15 16:40:53.089 | INFO     | modules.chunk_analyzer:execute:66 - From c8649f8e852d1dc388b5446e003bb0eefa33d61f Mon Sep 17 00:00:00 2001
+From: Oran Agra <oran@redislabs.com>
+Date: Wed, 2 Oct 2024 20:11:01 +0300
+Subject: [PATCH] Prevent pattern matching abuse (CVE-2024-31228)
+
+---
+ src/util.c              | 9 ++++++---
+ tests/unit/keyspace.tcl | 6 ++++++
+ 2 files changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/src/util.c b/src/util.c
+index 26d92b92290..c32cbeef96a 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -189,7 +192,7 @@ static int stringmatchlen_impl(const char *pattern, int patternLen,
+ int stringmatchlen(const char *pattern, int patternLen,
+         const char *string, int stringLen, int nocase) {
+     int skipLongerMatches = 0;
+-    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches);
++    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches,0);
+ }
+ 
+ int stringmatch(const char *pattern, const char *string, int nocase) {
+
+2025-05-15 16:40:53.089 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-05-15 16:40:53.089 | INFO     | modules.chunk_analyzer:execute:66 - From c8649f8e852d1dc388b5446e003bb0eefa33d61f Mon Sep 17 00:00:00 2001
+From: Oran Agra <oran@redislabs.com>
+Date: Wed, 2 Oct 2024 20:11:01 +0300
+Subject: [PATCH] Prevent pattern matching abuse (CVE-2024-31228)
+
+---
+ src/util.c              | 9 ++++++---
+ tests/unit/keyspace.tcl | 6 ++++++
+ 2 files changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/tests/unit/keyspace.tcl b/tests/unit/keyspace.tcl
+index 43690d06b32..b42421221cd 100644
+--- a/tests/unit/keyspace.tcl
++++ b/tests/unit/keyspace.tcl
+@@ -499,4 +499,10 @@ foreach {type large} [array get largevalue] {
+         r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1
+         r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"
+     } {}
++
++    test {Regression for pattern matching very long nested loops} {
++        r flushdb
++        r SET [string repeat "a" 50000] 1
++        r KEYS [string repeat "*?" 50000]
++    } {}
+ }
+
+2025-05-15 16:40:53.089 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/4 个块补丁: chunk_001_20250515_164053.patch
+2025-05-15 16:40:53.098 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_001_20250515_164053.patch 应用失败: error: patch failed: src/util.c:54
+error: src/util.c: patch does not apply
+
+2025-05-15 16:40:53.099 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/4 个块补丁: chunk_002_20250515_164053.patch
+2025-05-15 16:40:53.109 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_002_20250515_164053.patch 应用失败: error: patch failed: src/util.c:67
+error: src/util.c: patch does not apply
+
+2025-05-15 16:40:53.109 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/4 个块补丁: chunk_003_20250515_164053.patch
+2025-05-15 16:40:53.117 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_003_20250515_164053.patch 应用失败: error: patch failed: src/util.c:189
+error: src/util.c: patch does not apply
+
+2025-05-15 16:40:53.118 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 4/4 个块补丁: chunk_004_20250515_164053.patch
+2025-05-15 16:40:53.127 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_004_20250515_164053.patch 应用失败: error: patch failed: tests/unit/keyspace.tcl:499
+error: tests/unit/keyspace.tcl: patch does not apply
+
+2025-05-15 16:40:53.127 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-05-15 16:40:53.127 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 4
+2025-05-15 16:40:53.127 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 0
+2025-05-15 16:40:53.128 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 4
+2025-05-15 16:40:53.128 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 0 个块补丁，总共 4 个
+2025-05-15 16:40:53.129 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/remaining_chunks_20250515_164053.patch
+2025-05-15 16:40:53.129 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 4 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/remaining_chunks_20250515_164053.patch
+2025-05-15 16:40:53.130 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/remaining_chunks_20250515_164053.patch
+2025-05-15 16:40:53.130 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.05秒
+2025-05-15 16:40:53.130 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/metrics_c8649f_20250515_164053.json
+2025-05-15 16:40:53.132 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_164053
+2025-05-15 16:40:53.132 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_164053
+2025-05-15 16:40:53.132 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_164053/patches
+2025-05-15 16:40:53.132 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_164053/patches
+2025-05-15 16:40:53.133 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_164053/patches/original_patch.txt
+2025-05-15 16:40:53.133 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_164053
+2025-05-15 16:40:53.133 | WARNING  | modules.chunk_analyzer:_get_patch_content:1289 - 未找到任何应用成功的补丁文件
+2025-05-15 16:40:53.134 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_164053
+2025-05-15 16:40:53.134 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_164053/patches/remaining_patch.txt
+2025-05-15 16:40:53.134 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/chunk_patches/remaining_chunks_20250515_164053.patch
+2025-05-15 16:40:53.135 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/redis/redis/c8649f/evaluations/chunk_analyzer/details_c8649f_20250515_164053
+2025-05-15 16:40:53.136 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: llm_adapter
+2025-05-15 16:40:53.136 | INFO     | modules.llm_adapter:execute:55 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 16:40:53.137 | INFO     | modules.llm_adapter:execute:57 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/upstream_c8649f.patch
+2025-05-15 16:40:53.137 | INFO     | modules.llm_adapter:_prepare_prompt_data:183 - 使用传统上下文差异
+2025-05-15 16:40:53.137 | INFO     | modules.llm_adapter:_get_context_diff:618 - diff_file: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/diff
+2025-05-15 16:40:53.138 | INFO     | modules.llm_adapter:_get_context_diff:622 - diff_content: modified file: src/util.c
+--- workspace/redis/redis/c8649f/newer/src/util.c
++++ workspace/redis/redis/c8649f/4.0.14/src/util.c
+@@ -28,7 +28,6 @@
+   */
+  
+  #include "fmacros.h"
+ -#include "fpconv_dtoa.h"
+  #include <stdlib.h>
+  #include <stdio.h>
+  #include <string.h>
+@@ -40,54 +39,35 @@
+  #include <float.h>
+  #include <stdint.h>
+  #include <errno.h>
+ -#include <time.h>
+ -#include <sys/stat.h>
+ -#include <dirent.h>
+ -#include <fcntl.h>
+ -#include <libgen.h>
+  
+  #include "util.h"
+ -#include "sha256.h"
+ -#include "config.h"
+ -
+ -#define UNUSED(x) ((void)(x))
+ +#include "sha1.h"
+  
+ -static int stringmatchlen_impl(const char *pattern, int patternLen,
+ -        const char *string, int stringLen, int nocase, int *skipLongerMatches)
+ +int stringmatchlen(const char *pattern, int patternLen,
+ +        const char *string, int stringLen, int nocase)
+  {
+      while(patternLen && stringLen) {
+          switch(pattern[0]) {
+          case '*':
+ -            while (patternLen && pattern[1] == '*') {
+ +            while (pattern[1] == '*') {
+                  pattern++;
+                  patternLen--;
+              }
+              if (patternLen == 1)
+                  return 1; /* match */
+              while(stringLen) {
+ -                if (stringmatchlen_impl(pattern+1, patternLen-1,
+ -                            string, stringLen, nocase, skipLongerMatches))
+ +                if (stringmatchlen(pattern+1, patternLen-1,
+ +                            string, stringLen, nocase))
+                      return 1; /* match */
+ -                if (*skipLongerMatches)
+ -                    return 0; /* no match */
+                  string++;
+                  stringLen--;
+              }
+ -            /* There was no match for the rest of the pattern starting
+ -             * from anywhere in the rest of the string. If there were
+ -             * any '*' earlier in the pattern, we can terminate the
+ -             * search early without trying to match them to longer
+ -             * substrings. This is because a longer match for the
+ -             * earlier part of the pattern would require the rest of the
+ -             * pattern to match starting later in the string, and we
+ -             * have just determined that there is no match for the rest
+ -             * of the pattern starting from anywhere in the current
+ -             * string. */
+ -            *skipLongerMatches = 1;
+              return 0; /* no match */
+              break;
+          case '?':
+ +            if (stringLen == 0)
+ +                return 0; /* no match */
+              string++;
+              stringLen--;
+              break;
+@@ -115,7 +95,7 @@
+                      pattern--;
+                      patternLen++;
+                      break;
+ -                } else if (patternLen >= 3 && pattern[1] == '-') {
+ +                } else if (pattern[1] == '-' && patternLen >= 3) {
+                      int start = pattern[0];
+                      int end = pattern[2];
+                      int c = string[0];
+@@ -186,55 +166,29 @@
+      return 0;
+  }
+  
+ -int stringmatchlen(const char *pattern, int patternLen,
+ -        const char *string, int stringLen, int nocase) {
+ -    int skipLongerMatches = 0;
+ -    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches);
+ -}
+ -
+  int stringmatch(const char *pattern, const char *string, int nocase) {
+      return stringmatchlen(pattern,strlen(pattern),string,strlen(string),nocase);
+  }
+  
+ -/* Fuzz stringmatchlen() trying to crash it with bad input. */
+ -int stringmatchlen_fuzz_test(void) {
+ -    char str[32];
+ -    char pat[32];
+ -    int cycles = 10000000;
+ -    int total_matches = 0;
+ -    while(cycles--) {
+ -        int strlen = rand() % sizeof(str);
+ -        int patlen = rand() % sizeof(pat);
+ -        for (int j = 0; j < strlen; j++) str[j] = rand() % 128;
+ -        for (int j = 0; j < patlen; j++) pat[j] = rand() % 128;
+ -        total_matches += stringmatchlen(pat, patlen, str, strlen, 0);
+ -    }
+ -    return total_matches;
+ -}
+ -
+ -
+ -unsigned long long memtoull(const char *p, int *err) {
+ +long long memtoll(const char *p, int *err) {
+      const char *u;
+      char buf[128];
+      long mul; /* unit multiplier */
+ -    unsigned long long val;
+ +    long long val;
+      unsigned int digits;
+  
+      if (err) *err = 0;
+  
+      u = p;
+ -    if (*u == '-') {
+ -        if (err) *err = 1;
+ -        return 0;
+ -    }
+ +    if (*u == '-') u++;
+      while(*u && isdigit(*u)) u++;
+      if (*u == '\0' || !strcasecmp(u,"b")) {
+          mul = 1;
+@@ -267,39 +221,12 @@
+  
+      char *endptr;
+      errno = 0;
+ -    val = strtoull(buf,&endptr,10);
+ +    val = strtoll(buf,&endptr,10);
+      if ((val == 0 && errno == EINVAL) || *endptr != '\0') {
+          if (err) *err = 1;
+          return 0;
+      }
+      return val*mul;
+ -}
+ -
+ -/* Search a memory buffer for any set of bytes, like strpbrk().
+ - * Returns pointer to first found char or NULL.
+ - */
+ -const char *mempbrk(const char *s, size_t len, const char *chars, size_t charslen) {
+ -    for (size_t j = 0; j < len; j++) {
+ -        for (size_t n = 0; n < charslen; n++)
+ -            if (s[j] == chars[n]) return &s[j];
+ -    }
+ -
+ -    return NULL;
+ -}
+ -
+ -/* Modify the buffer replacing all occurrences of chars from the 'from'
+ - * set with the corresponding char in the 'to' set. Always returns s.
+ - */
+ -char *memmapchars(char *s, size_t len, const char *from, const char *to, size_t setlen) {
+ -    for (size_t j = 0; j < len; j++) {
+ -        for (size_t i = 0; i < setlen; i++) {
+ -            if (s[j] == from[i]) {
+ -                s[j] = to[i];
+ -                break;
+ -            }
+ -        }
+ -    }
+ -    return s;
+  }
+  
+ + * If the buffer is not big enough to store the string, 0 is returned.
+ + *
+ + * Based on the following article (that apparently does not provide a
+ + * novel approach but only publicizes an already used technique):
+ + *
+ + * https://www.facebook.com/notes/facebook-engineering/three-optimization-tips-for-c/10151361643253920
+ + *
+ + * Modified in order to handle signed integers since the original code was
+ + * designed for unsigned integers. */
+  int ll2string(char *dst, size_t dstlen, long long svalue) {
+ +    static const char digits[201] =
+ +        "0001020304050607080910111213141516171819"
+ +        "2021222324252627282930313233343536373839"
+ +        "4041424344454647484950515253545556575859"
+ +        "6061626364656667686970717273747576777879"
+ +        "8081828384858687888990919293949596979899";
+ +    int negative;
+      unsigned long long value;
+ -    int negative = 0;
+ -
+ -    /* The ull2string function with 64bit unsigned integers for simplicity, so
+ +
+ +    /* The main loop works with 64bit unsigned integers for simplicity, so
+       * we convert the number here and remember if it is negative. */
+      if (svalue < 0) {
+          if (svalue != LLONG_MIN) {
+@@ -351,51 +292,20 @@
+          } else {
+              value = ((unsigned long long) LLONG_MAX)+1;
+          }
+ -        if (dstlen < 2)
+ -            goto err;
+          negative = 1;
+ -        dst[0] = '-';
+ -        dst++;
+ -        dstlen--;
+      } else {
+          value = svalue;
+ -    }
+ -
+ -    /* Converts the unsigned long long value to string*/
+ -    int length = ull2string(dst, dstlen, value);
+ -    if (length == 0) return 0;
+ -    return length + negative;
+ -
+ -err:
+ -    /* force add Null termination */
+ -    if (dstlen > 0)
+ -        dst[0] = '\0';
+ -    return 0;
+ -}
+ -
+ -/* Convert a unsigned long long into a string. Returns the number of
+ - * characters needed to represent the number.
+ - * If the buffer is not big enough to store the string, 0 is returned.
+ - *
+ - * Based on the following article (that apparently does not provide a
+ - * novel approach but only publicizes an already used technique):
+ - *
+ - * https://www.facebook.com/notes/facebook-engineering/three-optimization-tips-for-c/10151361643253920 */
+ -int ull2string(char *dst, size_t dstlen, unsigned long long value) {
+ -    static const char digits[201] =
+ -        "0001020304050607080910111213141516171819"
+ -        "2021222324252627282930313233343536373839"
+ -        "4041424344454647484950515253545556575859"
+ -        "6061626364656667686970717273747576777879"
+ -        "8081828384858687888990919293949596979899";
+ +        negative = 0;
+ +    }
+  
+ -    uint32_t length = digits10(value);
+ -    if (length >= dstlen) goto err;;
+ +    uint32_t const length = digits10(value)+negative;
+ +    if (length >= dstlen) return 0;
+  
+ -    uint32_t next = length - 1;
+ -    dst[next + 1] = '\0';
+ +    uint32_t next = length;
+ +    dst[next] = '\0';
+ +    next--;
+      while (value >= 100) {
+          int const i = (value % 100) * 2;
+          value /= 100;
+@@ -412,12 +322,10 @@
+          dst[next] = digits[i + 1];
+          dst[next - 1] = digits[i];
+      }
+ +
+ +    /* Add sign. */
+ +    if (negative) dst[0] = '-';
+      return length;
+ -err:
+ -    /* force add Null termination */
+ -    if (dstlen > 0)
+ -        dst[0] = '\0';
+ -    return 0;
+  }
+  
+ -    if (plen == slen || slen >= LONG_STR_SIZE)
+ +    if (plen == slen)
+          return 0;
+  
+@@ -448,8 +355,6 @@
+          return 1;
+      }
+  
+ -    /* Handle negative numbers: just set a flag and continue like if it
+ -     * was a positive number. Later convert into negative. */
+      if (p[0] == '-') {
+          negative = 1;
+          p++; plen++;
+@@ -463,11 +368,13 @@
+      if (p[0] >= '1' && p[0] <= '9') {
+          v = p[0]-'0';
+          p++; plen++;
+ +    } else if (p[0] == '0' && slen == 1) {
+ +        *value = 0;
+ +        return 1;
+      } else {
+          return 0;
+      }
+  
+ -    /* Parse all the other digits, checking for overflow at every step. */
+      while (plen < slen && p[0] >= '0' && p[0] <= '9') {
+          if (v > (ULLONG_MAX / 10)) /* Overflow. */
+              return 0;
+@@ -484,8 +391,6 @@
+      if (plen < slen)
+          return 0;
+  
+ -    /* Convert to negative if needed, and do the final overflow check when
+ -     * converting from unsigned long long to long long. */
+      if (negative) {
+          if (v > ((unsigned long long)(-(LLONG_MIN+1))+1)) /* Overflow. */
+              return 0;
+@@ -498,26 +403,6 @@
+      return 1;
+  }
+  
+ -/* Helper function to convert a string to an unsigned long long value.
+ - * The function attempts to use the faster string2ll() function inside
+ - * Redis: if it fails, strtoull() is used instead. The function returns
+ - * 1 if the conversion happened successfully or 0 if the number is
+ - * invalid or out of range. */
+ -int string2ull(const char *s, unsigned long long *value) {
+ -    long long ll;
+ -    if (string2ll(s,strlen(s),&ll)) {
+ -        if (ll < 0) return 0; /* Negative values are out of range. */
+ -        *value = ll;
+ -        return 1;
+ -    }
+ -    errno = 0;
+ -    char *endptr = NULL;
+ -    *value = strtoull(s,&endptr,10);
+ -    if (errno == EINVAL || errno == ERANGE || !(*s != '\0' && *endptr == '\0'))
+ -        return 0; /* strtoull() failed. */
+ -    return 1; /* Conversion done! */
+ -}
+ -
+@@ -542,20 +427,19 @@
+   * a double: no spaces or other characters before or after the string
+   * representing the number are accepted. */
+  int string2ld(const char *s, size_t slen, long double *dp) {
+ -    char buf[MAX_LONG_DOUBLE_CHARS];
+ +    char buf[256];
+      long double value;
+      char *eptr;
+  
+ -    if (slen == 0 || slen >= sizeof(buf)) return 0;
+ +    if (slen >= sizeof(buf)) return 0;
+      memcpy(buf,s,slen);
+      buf[slen] = '\0';
+  
+      errno = 0;
+      value = strtold(buf, &eptr);
+      if (isspace(buf[0]) || eptr[0] != '\0' ||
+ -        (size_t)(eptr-buf) != slen ||
+          (errno == ERANGE &&
+ -            (value == HUGE_VAL || value == -HUGE_VAL || fpclassify(value) == FP_ZERO)) ||
+ +            (value == HUGE_VAL || value == -HUGE_VAL || value == 0)) ||
+          errno == EINVAL ||
+          isnan(value))
+          return 0;
+@@ -564,71 +448,15 @@
+      return 1;
+  }
+  
+ -/* Convert a string into a double. Returns 1 if the string could be parsed
+ - * into a (non-overflowing) double, 0 otherwise. The value will be set to
+ - * the parsed value when appropriate.
+ - *
+ - * Note that this function demands that the string strictly represents
+ - * a double: no spaces or other characters before or after the string
+ - * representing the number are accepted. */
+ -int string2d(const char *s, size_t slen, double *dp) {
+ -    errno = 0;
+ -    char *eptr;
+ -    *dp = strtod(s, &eptr);
+ -    if (slen == 0 ||
+ -        isspace(((const char*)s)[0]) ||
+ -        (size_t)(eptr-(char*)s) != slen ||
+ -        (errno == ERANGE &&
+ -            (*dp == HUGE_VAL || *dp == -HUGE_VAL || fpclassify(*dp) == FP_ZERO)) ||
+ -        isnan(*dp))
+ -        return 0;
+ -    return 1;
+ -}
+ -
+ -/* Returns 1 if the double value can safely be represented in long long without
+ - * precision loss, in which case the corresponding long long is stored in the out variable. */
+ -int double2ll(double d, long long *out) {
+ -#if (DBL_MANT_DIG >= 52) && (DBL_MANT_DIG <= 63) && (LLONG_MAX == 0x7fffffffffffffffLL)
+ -    /* Check if the float is in a safe range to be casted into a
+ -     * long long. We are assuming that long long is 64 bit here.
+ -     * Also we are assuming that there are no implementations around where
+ -     * double has precision < 52 bit.
+ -     *
+ -     * Under this assumptions we test if a double is inside a range
+ -     * where casting to long long is safe. Then using two castings we
+ -     * make sure the decimal part is zero. If all this is true we can use
+ -     * integer without precision loss.
+ -     *
+ -     * Note that numbers above 2^52 and below 2^63 use all the fraction bits as real part,
+ -     * and the exponent bits are positive, which means the "decimal" part must be 0.
+ -     * i.e. all double values in that range are representable as a long without precision loss,
+ -     * but not all long values in that range can be represented as a double.
+ -     * we only care about the first part here. */
+ -    if (d < (double)(-LLONG_MAX/2) || d > (double)(LLONG_MAX/2))
+ -        return 0;
+ -    long long ll = d;
+ -    if (ll == d) {
+ -        *out = ll;
+ -        return 1;
+ -    }
+ -#endif
+ -    return 0;
+ -}
+ -
+ + * does. It is intented mainly to be used inside t_zset.c when writing scores
+ + * into a ziplist representing a sorted set. */
+  int d2string(char *buf, size_t len, double value) {
+      if (isnan(value)) {
+ -        /* Libc in some systems will format nan in a different way,
+ -         * like nan, -nan, NAN, nan(char-sequence).
+ -         * So we normalize it and create a single nan form in an explicit way. */
+          len = snprintf(buf,len,"nan");
+      } else if (isinf(value)) {
+ -        /* Libc in odd systems (Hi Solaris!) will format infinite in a
+ -         * different way, so better to handle it in an explicit way. */
+          if (value < 0)
+              len = snprintf(buf,len,"-inf");
+          else
+@@ -640,160 +468,42 @@
+          else
+              len = snprintf(buf,len,"0");
+      } else {
+ -        long long lvalue;
+ -        /* Integer printing function is much faster, check if we can safely use it. */
+ -        if (double2ll(value, &lvalue))
+ -            len = ll2string(buf,len,lvalue);
+ -        else {
+ -            len = fpconv_dtoa(value, buf);
+ -            buf[len] = '\0';
+ -        }
+ +#if (DBL_MANT_DIG >= 52) && (LLONG_MAX == 0x7fffffffffffffffLL)
+ +        /* Check if the float is in a safe range to be casted into a
+ +         * long long. We are assuming that long long is 64 bit here.
+ +         * Also we are assuming that there are no implementations around where
+ +         * double has precision < 52 bit.
+ +         *
+ +         * Under this assumptions we test if a double is inside an interval
+ +         * where casting to long long is safe. Then using two castings we
+ +         * make sure the decimal part is zero. If all this is true we use
+ +         * integer printing function that is much faster. */
+ +        double min = -4503599627370495; /* (2^52)-1 */
+ +        double max = 4503599627370496; /* -(2^52) */
+ +        if (value > min && value < max && value == ((double)((long long)value)))
+ +            len = ll2string(buf,len,(long long)value);
+ +        else
+ +#endif
+ +            len = snprintf(buf,len,"%.17g",value);
+      }
+  
+      return len;
+  }
+  
+ -/* Convert a double into a string with 'fractional_digits' digits after the dot precision.
+ - * This is an optimized version of snprintf "%.<fractional_digits>f".
+ - * We convert the double to long and multiply it  by 10 ^ <fractional_digits> to shift
+ - * the decimal places.
+ - * Note that multiply it of input value by 10 ^ <fractional_digits> can overflow but on the scenario
+ - * that we currently use within redis this that is not possible.
+ - * After we get the long representation we use the logic from ull2string function on this file
+ - * which is based on the following article:
+ - * https://www.facebook.com/notes/facebook-engineering/three-optimization-tips-for-c/10151361643253920
+ - *
+ - * Input values:
+ - * char: the buffer to store the string representation
+ - * dstlen: the buffer length
+ - * dvalue: the input double
+ - * fractional_digits: the number of fractional digits after the dot precision. between 1 and 17
+ - *
+ - * Return values:
+ - * Returns the number of characters needed to represent the number.
+ - * If the buffer is not big enough to store the string, 0 is returned.
+ - */
+ -int fixedpoint_d2string(char *dst, size_t dstlen, double dvalue, int fractional_digits) {
+ -    if (fractional_digits < 1 || fractional_digits > 17)
+ -        goto err;
+ -    /* min size of 2 ( due to 0. ) + n fractional_digitits + \0 */
+ -    if ((int)dstlen < (fractional_digits+3))
+ -        goto err;
+ -    if (dvalue == 0) {
+ -        dst[0] = '0';
+ -        dst[1] = '.';
+ -        memset(dst + 2, '0', fractional_digits);
+ -        dst[fractional_digits+2] = '\0';
+ -        return fractional_digits + 2;
+ -    }
+ -    /* scale and round */
+ -    static double powers_of_ten[] = {1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0,
+ -    10000000.0, 100000000.0, 1000000000.0, 10000000000.0, 100000000000.0, 1000000000000.0,
+ -    10000000000000.0, 100000000000000.0, 1000000000000000.0, 10000000000000000.0,
+ -    100000000000000000.0 };
+ -    long long svalue = llrint(dvalue * powers_of_ten[fractional_digits]);
+ -    unsigned long long value;
+ -    /* write sign */
+ -    int negative = 0;
+ -    if (svalue < 0) {
+ -        if (svalue != LLONG_MIN) {
+ -            value = -svalue;
+ -        } else {
+ -            value = ((unsigned long long) LLONG_MAX)+1;
+ -        }
+ -        if (dstlen < 2)
+ -            goto err;
+ -        negative = 1;
+ -        dst[0] = '-';
+ -        dst++;
+ -        dstlen--;
+ -    } else {
+ -        value = svalue;
+ -    }
+ -
+ -    static const char digitsd[201] =
+ -        "0001020304050607080910111213141516171819"
+ -        "2021222324252627282930313233343536373839"
+ -        "4041424344454647484950515253545556575859"
+ -        "6061626364656667686970717273747576777879"
+ -        "8081828384858687888990919293949596979899";
+ -
+ -    /* Check length. */
+ -    uint32_t ndigits = digits10(value);
+ -    if (ndigits >= dstlen) goto err;
+ -    int integer_digits = ndigits - fractional_digits;
+ -    /* Fractional only check to avoid representing 0.7750 as .7750.
+ -     * This means we need to increment the length and store 0 as the first character.
+ -     */
+ -    if (integer_digits < 1) {
+ -        dst[0] = '0';
+ -        integer_digits = 1;
+ -    }
+ -    dst[integer_digits] = '.';
+ -    int size = integer_digits + 1 + fractional_digits;
+ -    /* fill with 0 from fractional digits until size */
+ -    memset(dst + integer_digits + 1, '0', fractional_digits);
+ -    int next = size - 1;
+ -    while (value >= 100) {
+ -        int const i = (value % 100) * 2;
+ -        value /= 100;
+ -        dst[next] = digitsd[i + 1];
+ -        dst[next - 1] = digitsd[i];
+ -        next -= 2;
+ -        /* dot position */
+ -        if (next == integer_digits) {
+ -            next--;
+ -        }
+ -    }
+ -
+ -    /* Handle last 1-2 digits. */
+ -    if (value < 10) {
+ -        dst[next] = '0' + (uint32_t) value;
+ -    } else {
+ -        int i = (uint32_t) value * 2;
+ -        dst[next] = digitsd[i + 1];
+ -        dst[next - 1] = digitsd[i];
+ -    }
+ -    /* Null term. */
+ -    dst[size] = '\0';
+ -    return size + negative;
+ -err:
+ -    /* force add Null termination */
+ -    if (dstlen > 0)
+ -        dst[0] = '\0';
+ -    return 0;
+ -}
+ -
+ -/* Trims off trailing zeros from a string representing a double. */
+ -int trimDoubleString(char *buf, size_t len) {
+ -    if (strchr(buf,'.') != NULL) {
+ -        char *p = buf+len-1;
+ -        while(*p == '0') {
+ -            p--;
+ -            len--;
+ -        }
+ -        if (*p == '.') len--;
+ -    }
+ -    buf[len] = '\0';
+ -    return len;
+ -}
+ -
+ -/* Create a string object from a long double.
+ - * If mode is humanfriendly it does not use exponential format and trims trailing
+ - * zeroes at the end (may result in loss of precision).
+ - * If mode is default exp format is used and the output of snprintf()
+ - * is not modified (may result in loss of precision).
+ - * If mode is hex hexadecimal format is used (no loss of precision)
+ +/* Convert a long double into a string. If humanfriendly is non-zero
+ + * it does not use exponential format and trims trailing zeroes at the end,
+ + * however this results in loss of precision. Otherwise exp format is used
+ + * and the output of snprintf() is not modified.
+   *
+   * The function returns the length of the string or zero if there was not
+   * enough buffer room to store it. */
+ -int ld2string(char *buf, size_t len, long double value, ld2string_mode mode) {
+ -    size_t l = 0;
+ +int ld2string(char *buf, size_t len, long double value, int humanfriendly) {
+ +    size_t l;
+  
+      if (isinf(value)) {
+ -        if (len < 5) goto err; /* No room. 5 is "-inf\0" */
+ +        if (len < 5) return 0; /* No room. 5 is "-inf\0" */
+          if (value > 0) {
+              memcpy(buf,"inf",3);
+              l = 3;
+@@ -801,66 +511,42 @@
+              memcpy(buf,"-inf",4);
+              l = 4;
+          }
+ -    } else if (isnan(value)) {
+ -        /* Libc in some systems will format nan in a different way,
+ -         * like nan, -nan, NAN, nan(char-sequence).
+ -         * So we normalize it and create a single nan form in an explicit way. */
+ -        if (len < 4) goto err; /* No room. 4 is "nan\0" */
+ -        memcpy(buf, "nan", 3);
+ -        l = 3;
+ +    } else if (humanfriendly) {
+ +        /* We use 17 digits precision since with 128 bit floats that precision
+ +         * after rounding is able to represent most small decimal numbers in a
+ +         * way that is "non surprising" for the user (that is, most small
+ +         * decimal numbers will be represented in a way that when converted
+ +         * back into a string are exactly the same as what the user typed.) */
+ +        l = snprintf(buf,len,"%.17Lf", value);
+ +        if (l+1 > len) return 0; /* No room. */
+ +        /* Now remove trailing zeroes after the '.' */
+ +        if (strchr(buf,'.') != NULL) {
+ +            char *p = buf+l-1;
+ +            while(*p == '0') {
+ +                p--;
+ +                l--;
+ +            }
+ +            if (*p == '.') l--;
+ +        }
+      } else {
+ -        switch (mode) {
+ -        case LD_STR_AUTO:
+ -            l = snprintf(buf,len,"%.17Lg",value);
+ -            if (l+1 > len) goto err;; /* No room. */
+ -            break;
+ -        case LD_STR_HEX:
+ -            l = snprintf(buf,len,"%La",value);
+ -            if (l+1 > len) goto err; /* No room. */
+ -            break;
+ -        case LD_STR_HUMAN:
+ -            /* We use 17 digits precision since with 128 bit floats that precision
+ -             * after rounding is able to represent most small decimal numbers in a
+ -             * way that is "non surprising" for the user (that is, most small
+ -             * decimal numbers will be represented in a way that when converted
+ -             * back into a string are exactly the same as what the user typed.) */
+ -            l = snprintf(buf,len,"%.17Lf",value);
+ -            if (l+1 > len) goto err; /* No room. */
+ -            /* Now remove trailing zeroes after the '.' */
+ -            if (strchr(buf,'.') != NULL) {
+ -                char *p = buf+l-1;
+ -                while(*p == '0') {
+ -                    p--;
+ -                    l--;
+ -                }
+ -                if (*p == '.') l--;
+ -            }
+ -            if (l == 2 && buf[0] == '-' && buf[1] == '0') {
+ -                buf[0] = '0';
+ -                l = 1;
+ -            }
+ -            break;
+ -        default: goto err; /* Invalid mode. */
+ -        }
+ +        l = snprintf(buf,len,"%.17Lg", value);
+ +        if (l+1 > len) return 0; /* No room. */
+      }
+      buf[l] = '\0';
+      return l;
+ -err:
+ -    /* force add Null termination */
+ -    if (len > 0)
+ -        buf[0] = '\0';
+ -    return 0;
+ -}
+ -
+ -/* Get random bytes, attempts to get an initial seed from /dev/urandom and
+ - * the uses a one way hash function in counter mode to generate a random
+ - * stream. However if /dev/urandom is not available, a weaker seed is used.
+ - *
+ - * This function is not thread safe, since the state is global. */
+ -void getRandomBytes(unsigned char *p, size_t len) {
+ +}
+ +
+ +/* Generate the Redis "Run ID", a SHA1-sized random number that identifies a
+ + * given execution of Redis, so that if you are talking with an instance
+ + * having run_id == A, and you reconnect and it has run_id == B, you can be
+ + * sure that it is either a different instance or it was restarted. */
+ +void getRandomHexChars(char *p, unsigned int len) {
+ +    char *charset = "0123456789abcdef";
+ +    unsigned int j;
+ +
+      static int seed_initialized = 0;
+ -    static unsigned char seed[64]; /* 512 bit internal block size. */
+ +    static unsigned char seed[20]; /* The SHA1 seed, from /dev/urandom. */
+      static uint64_t counter = 0; /* The counter we hash with the seed. */
+  
+      if (!seed_initialized) {
+@@ -869,68 +555,62 @@
+           * function we just need non-colliding strings, there are no
+           * cryptographic security needs. */
+          FILE *fp = fopen("/dev/urandom","r");
+ -        if (fp == NULL || fread(seed,sizeof(seed),1,fp) != 1) {
+ -            /* Revert to a weaker seed, and in this case reseed again
+ -             * at every call.*/
+ -            for (unsigned int j = 0; j < sizeof(seed); j++) {
+ -                struct timeval tv;
+ -                gettimeofday(&tv,NULL);
+ -                pid_t pid = getpid();
+ -                seed[j] = tv.tv_sec ^ tv.tv_usec ^ pid ^ (long)fp;
+ -            }
+ -        } else {
+ +        if (fp && fread(seed,sizeof(seed),1,fp) == 1)
+              seed_initialized = 1;
+ -        }
+          if (fp) fclose(fp);
+      }
+  
+ -    while(len) {
+ -        /* This implements SHA256-HMAC. */
+ -        unsigned char digest[SHA256_BLOCK_SIZE];
+ -        unsigned char kxor[64];
+ -        unsigned int copylen =
+ -            len > SHA256_BLOCK_SIZE ? SHA256_BLOCK_SIZE : len;
+ -
+ -        /* IKEY: key xored with 0x36. */
+ -        memcpy(kxor,seed,sizeof(kxor));
+ -        for (unsigned int i = 0; i < sizeof(kxor); i++) kxor[i] ^= 0x36;
+ -
+ -        /* Obtain HASH(IKEY||MESSAGE). */
+ -        SHA256_CTX ctx;
+ -        sha256_init(&ctx);
+ -        sha256_update(&ctx,kxor,sizeof(kxor));
+ -        sha256_update(&ctx,(unsigned char*)&counter,sizeof(counter));
+ -        sha256_final(&ctx,digest);
+ -
+ -        /* OKEY: key xored with 0x5c. */
+ -        memcpy(kxor,seed,sizeof(kxor));
+ -        for (unsigned int i = 0; i < sizeof(kxor); i++) kxor[i] ^= 0x5C;
+ -
+ -        /* Obtain HASH(OKEY || HASH(IKEY||MESSAGE)). */
+ -        sha256_init(&ctx);
+ -        sha256_update(&ctx,kxor,sizeof(kxor));
+ -        sha256_update(&ctx,digest,SHA256_BLOCK_SIZE);
+ -        sha256_final(&ctx,digest);
+ -
+ -        /* Increment the counter for the next iteration. */
+ -        counter++;
+ -
+ -        memcpy(p,digest,copylen);
+ -        len -= copylen;
+ -        p += copylen;
+ -    }
+ -}
+ -
+ -/* Generate the Redis "Run ID", a SHA1-sized random number that identifies a
+ - * given execution of Redis, so that if you are talking with an instance
+ - * having run_id == A, and you reconnect and it has run_id == B, you can be
+ - * sure that it is either a different instance or it was restarted. */
+ -void getRandomHexChars(char *p, size_t len) {
+ -    char *charset = "0123456789abcdef";
+ -    size_t j;
+ -
+ -    getRandomBytes((unsigned char*)p,len);
+ -    for (j = 0; j < len; j++) p[j] = charset[p[j] & 0x0F];
+ +    if (seed_initialized) {
+ +        while(len) {
+ +            unsigned char digest[20];
+ +            SHA1_CTX ctx;
+ +            unsigned int copylen = len > 20 ? 20 : len;
+ +
+ +            SHA1Init(&ctx);
+ +            SHA1Update(&ctx, seed, sizeof(seed));
+ +            SHA1Update(&ctx, (unsigned char*)&counter,sizeof(counter));
+ +            SHA1Final(digest, &ctx);
+ +            counter++;
+ +
+ +            memcpy(p,digest,copylen);
+ +            /* Convert to hex digits. */
+ +            for (j = 0; j < copylen; j++) p[j] = charset[p[j] & 0x0F];
+ +            len -= copylen;
+ +            p += copylen;
+ +        }
+ +    } else {
+ +        /* If we can't read from /dev/urandom, do some reasonable effort
+ +         * in order to create some entropy, since this function is used to
+ +         * generate run_id and cluster instance IDs */
+ +        char *x = p;
+ +        unsigned int l = len;
+ +        struct timeval tv;
+ +        pid_t pid = getpid();
+ +
+ +        /* Use time and PID to fill the initial array. */
+ +        gettimeofday(&tv,NULL);
+ +        if (l >= sizeof(tv.tv_usec)) {
+ +            memcpy(x,&tv.tv_usec,sizeof(tv.tv_usec));
+ +            l -= sizeof(tv.tv_usec);
+ +            x += sizeof(tv.tv_usec);
+ +        }
+ +        if (l >= sizeof(tv.tv_sec)) {
+ +            memcpy(x,&tv.tv_sec,sizeof(tv.tv_sec));
+ +            l -= sizeof(tv.tv_sec);
+ +            x += sizeof(tv.tv_sec);
+ +        }
+ +        if (l >= sizeof(pid)) {
+ +            memcpy(x,&pid,sizeof(pid));
+ +            l -= sizeof(pid);
+ +            x += sizeof(pid);
+ +        }
+ +        /* Finally xor it with rand() output, that was already seeded with
+ +         * time() at startup, and convert to hex digits. */
+ +        for (j = 0; j < len; j++) {
+ +            p[j] ^= rand();
+ +            p[j] = charset[p[j] & 0x0F];
+ +        }
+ +    }
+  }
+  
+  sds getAbsolutePath(char *filename) {
+      char cwd[1024];
+@@ -985,23 +665,6 @@
+      return abspath;
+  }
+  
+ -/*
+ - * Gets the proper timezone in a more portable fashion
+ - * i.e timezone variables are linux specific.
+ - */
+ -long getTimeZone(void) {
+ -#if defined(__linux__) || defined(__sun)
+ -    return timezone;
+ -#else
+ -    struct timeval tv;
+ -    struct timezone tz;
+ -
+ -    gettimeofday(&tv, &tz);
+ -
+ -    return tz.tz_minuteswest * 60L;
+ -#endif
+ -}
+ -
+ -int fsyncFileDir(const char *filename) {
+ -#ifdef _AIX
+ -    /* AIX is unable to fsync a directory */
+ -    return 0;
+ -#endif
+ -    char temp_filename[PATH_MAX + 1];
+ -    char *dname;
+ -    int dir_fd;
+ -
+ -    if (strlen(filename) > PATH_MAX) {
+ -        errno = ENAMETOOLONG;
+ -        return -1;
+ -    }
+ -
+ -    /* In the glibc implementation dirname may modify their argument. */
+ -    memcpy(temp_filename, filename, strlen(filename) + 1);
+ -    dname = dirname(temp_filename);
+ -
+ -    dir_fd = open(dname, O_RDONLY);
+ -    if (dir_fd == -1) {
+ -        /* Some OSs don't allow us to open directories at all, just
+ -         * ignore the error in that case */
+ -        if (errno == EISDIR) {
+ -            return 0;
+ -        }
+ -        return -1;
+ -    }
+ -    /* Some OSs don't allow us to fsync directories at all, so we can ignore
+ -     * those errors. */
+ -    if (redis_fsync(dir_fd) == -1 && !(errno == EBADF || errno == EINVAL)) {
+ -        int save_errno = errno;
+ -        close(dir_fd);
+ -        errno = save_errno;
+ -        return -1;
+ -    }
+ -    
+ -    close(dir_fd);
+ -    return 0;
+ -}
+ -
+ - /* free OS pages backed by file */
+ -int reclaimFilePageCache(int fd, size_t offset, size_t length) {
+ -#ifdef HAVE_FADVISE
+ -    int ret = posix_fadvise(fd, offset, length, POSIX_FADV_DONTNEED);
+ -    if (ret) return -1;
+ -    return 0;
+ -#else
+ -    UNUSED(fd);
+ -    UNUSED(offset);
+ -    UNUSED(length);
+ -    return 0;
+ -#endif
+ -}
+ -
+  #ifdef REDIS_TEST
+  #include <assert.h>
+ -#include <sys/mman.h>
+ -#include "testhelp.h"
+  
+  static void test_string2ll(void) {
+      char buf[32];
+      long long v;
+  
+ -    redis_strlcpy(buf,"+1",sizeof(buf));
+ +    strcpy(buf,"+1");
+      assert(string2ll(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf," 1",sizeof(buf));
+ +    strcpy(buf," 1");
+      assert(string2ll(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"1 ",sizeof(buf));
+ +    strcpy(buf,"1 ");
+      assert(string2ll(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"01",sizeof(buf));
+ +    strcpy(buf,"01");
+      assert(string2ll(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"-1",sizeof(buf));
+ +    strcpy(buf,"-1");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == -1);
+  
+ -    redis_strlcpy(buf,"0",sizeof(buf));
+ +    strcpy(buf,"0");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == 0);
+  
+ -    redis_strlcpy(buf,"1",sizeof(buf));
+ +    strcpy(buf,"1");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == 1);
+  
+ -    redis_strlcpy(buf,"99",sizeof(buf));
+ +    strcpy(buf,"99");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == 99);
+  
+ -    redis_strlcpy(buf,"-99",sizeof(buf));
+ +    strcpy(buf,"-99");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == -99);
+  
+ -    redis_strlcpy(buf,"-9223372036854775808",sizeof(buf));
+ +    strcpy(buf,"-9223372036854775808");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == LLONG_MIN);
+  
+ -    redis_strlcpy(buf,"-9223372036854775809",sizeof(buf)); /* overflow */
+ +    strcpy(buf,"-9223372036854775809"); /* overflow */
+      assert(string2ll(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"9223372036854775807",sizeof(buf));
+ +    strcpy(buf,"9223372036854775807");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == LLONG_MAX);
+  
+ -    redis_strlcpy(buf,"9223372036854775808",sizeof(buf)); /* overflow */
+ +    strcpy(buf,"9223372036854775808"); /* overflow */
+      assert(string2ll(buf,strlen(buf),&v) == 0);
+  }
+  
+@@ -1213,46 +736,46 @@
+      long v;
+  
+ -    redis_strlcpy(buf,"+1",sizeof(buf));
+ +    strcpy(buf,"+1");
+      assert(string2l(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"01",sizeof(buf));
+ +    strcpy(buf,"01");
+      assert(string2l(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"-1",sizeof(buf));
+ +    strcpy(buf,"-1");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == -1);
+  
+ -    redis_strlcpy(buf,"0",sizeof(buf));
+ +    strcpy(buf,"0");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == 0);
+  
+ -    redis_strlcpy(buf,"1",sizeof(buf));
+ +    strcpy(buf,"1");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == 1);
+  
+ -    redis_strlcpy(buf,"99",sizeof(buf));
+ +    strcpy(buf,"99");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == 99);
+  
+ -    redis_strlcpy(buf,"-99",sizeof(buf));
+ +    strcpy(buf,"-99");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == -99);
+  
+  #if LONG_MAX != LLONG_MAX
+ -    redis_strlcpy(buf,"-2147483648",sizeof(buf));
+ +    strcpy(buf,"-2147483648");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == LONG_MIN);
+  
+ -    redis_strlcpy(buf,"-2147483649",sizeof(buf)); /* overflow */
+ +    strcpy(buf,"-2147483649"); /* overflow */
+      assert(string2l(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"2147483647",sizeof(buf));
+ +    strcpy(buf,"2147483647");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == LONG_MAX);
+  
+ -    redis_strlcpy(buf,"2147483648",sizeof(buf)); /* overflow */
+ +    strcpy(buf,"2147483648"); /* overflow */
+      assert(string2l(buf,strlen(buf),&v) == 0);
+  #endif
+  }
+@@ -1298,134 +821,14 @@
+      assert(!strcmp(buf, "9223372036854775807"));
+  }
+  
+ -static void test_ld2string(void) {
+ -    char buf[32];
+ -    long double v;
+ -    int sz;
+ -
+ -    v = 0.0 / 0.0;
+ -    sz = ld2string(buf, sizeof(buf), v, LD_STR_AUTO);
+ -    assert(sz == 3);
+ -    assert(!strcmp(buf, "nan"));
+ -}
+ -
+ -static void test_fixedpoint_d2string(void) {
+ -    char buf[32];
+ -    double v;
+ -    int sz;
+ -    v = 0.0;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);
+ -    assert(sz == 6);
+ -    assert(!strcmp(buf, "0.0000"));
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 1);
+ -    assert(sz == 3);
+ -    assert(!strcmp(buf, "0.0"));
+ -    /* set junk in buffer */
+ -    memset(buf,'A',32);
+ -    v = 0.0001;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);
+ -    assert(sz == 6);
+ -    assert(buf[sz] == '\0');
+ -    assert(!strcmp(buf, "0.0001"));
+ -    /* set junk in buffer */
+ -    memset(buf,'A',32);
+ -    v = 6.0642951598391699e-05;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);
+ -    assert(sz == 6);
+ -    assert(buf[sz] == '\0');
+ -    assert(!strcmp(buf, "0.0001"));
+ -    v = 0.01;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);
+ -    assert(sz == 6);
+ -    assert(!strcmp(buf, "0.0100"));
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 1);
+ -    assert(sz == 3);
+ -    assert(!strcmp(buf, "0.0"));
+ -    v = -0.01;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);
+ -    assert(sz == 7);
+ -    assert(!strcmp(buf, "-0.0100"));
+ -     v = -0.1;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 1);
+ -    assert(sz == 4);
+ -    assert(!strcmp(buf, "-0.1"));
+ -    v = 0.1;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 1);
+ -    assert(sz == 3);
+ -    assert(!strcmp(buf, "0.1"));
+ -    v = 0.01;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 17);
+ -    assert(sz == 19);
+ -    assert(!strcmp(buf, "0.01000000000000000"));
+ -    v = 10.01;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);
+ -    assert(sz == 7);
+ -    assert(!strcmp(buf, "10.0100"));
+ -    /* negative tests */
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 18);
+ -    assert(sz == 0);
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 0);
+ -    assert(sz == 0);
+ -    sz = fixedpoint_d2string(buf, 1, v, 1);
+ -    assert(sz == 0);
+ -}
+ -
+ -#if defined(__linux__)
+ -/* Since fadvise and mincore is only supported in specific platforms like
+ - * Linux, we only verify the fadvise mechanism works in Linux */
+ -static int cache_exist(int fd) {
+ -    unsigned char flag;
+ -    void *m = mmap(NULL, 4096, PROT_READ, MAP_SHARED, fd, 0);
+ -    assert(m);
+ -    assert(mincore(m, 4096, &flag) == 0);
+ -    munmap(m, 4096);
+ -    /* the least significant bit of the byte will be set if the corresponding
+ -     * page is currently resident in memory */
+ -    return flag&1;
+ -}
+ -
+ -static void test_reclaimFilePageCache(void) {
+ -    char *tmpfile = "/tmp/redis-reclaim-cache-test";
+ -    int fd = open(tmpfile, O_RDWR|O_CREAT, 0644);
+ -    assert(fd >= 0);
+ -
+ -    /* test write file */
+ -    char buf[4] = "foo";
+ -    assert(write(fd, buf, sizeof(buf)) > 0);
+ -    assert(cache_exist(fd));
+ -    assert(redis_fsync(fd) == 0);
+ -    assert(reclaimFilePageCache(fd, 0, 0) == 0);
+ -    assert(!cache_exist(fd));
+ -
+ -    /* test read file */
+ -    assert(pread(fd, buf, sizeof(buf), 0) > 0);
+ -    assert(cache_exist(fd));
+ -    assert(reclaimFilePageCache(fd, 0, 0) == 0);
+ -    assert(!cache_exist(fd));
+ -
+ -    unlink(tmpfile);
+ -    printf("reclaimFilePageCach test is ok\n");
+ -}
+ -#endif
+ -
+ -int utilTest(int argc, char **argv, int flags) {
+ +#define UNUSED(x) (void)(x)
+ +int utilTest(int argc, char **argv) {
+      UNUSED(argc);
+      UNUSED(argv);
+ -    UNUSED(flags);
+  
+      test_string2ll();
+      test_string2l();
+      test_ll2string();
+ -    test_ld2string();
+ -    test_fixedpoint_d2string();
+ -#if defined(__linux__)
+ -    if (!(flags & REDIS_TEST_VALGRIND)) {
+ -        test_reclaimFilePageCache();
+ -    }
+ +    return 0;
+ +}
+  #endif
+ -    printf("Done testing util\n");
+ -    return 0;
+ -}
+ -#endif
+ -
+ -
+
+""""""
+modified file: tests/unit/keyspace.tcl
+--- workspace/redis/redis/c8649f/newer/tests/unit/keyspace.tcl
++++ workspace/redis/redis/c8649f/4.0.14/tests/unit/keyspace.tcl
+@@ -7,17 +7,11 @@
+      } {}
+  
+      test {Vararg DEL} {
+ -        r set foo1{t} a
+ -        r set foo2{t} b
+ -        r set foo3{t} c
+ -        list [r del foo1{t} foo2{t} foo3{t} foo4{t}] [r mget foo1{t} foo2{t} foo3{t}]
+ +        r set foo1 a
+ +        r set foo2 b
+ +        r set foo3 c
+ +        list [r del foo1 foo2 foo3 foo4] [r mget foo1 foo2 foo3]
+      } {3 {{} {} {}}}
+ -
+ -    test {Untagged multi-key commands} {
+ -        r mset foo1 a foo2 b foo3 c
+ -        assert_equal {a b c {}} [r mget foo1 foo2 foo3 foo4]
+ -        r del foo1 foo2 foo3 foo4
+ -    } {3} {cluster:skip}
+  
+      test {KEYS with pattern} {
+          foreach key {key_x key_y key_z foo_a foo_b foo_c} {
+@@ -45,7 +39,7 @@
+          after 1100
+          assert_equal 0 [r del keyExpire]
+          r debug set-active-expire 1
+ -    } {OK} {needs:debug}
+ +    }
+  
+      test {EXISTS} {
+          set res {}
+@@ -80,10 +74,10 @@
+      } {1}
+  
+      test {RENAME basic usage} {
+ -        r set mykey{t} hello
+ -        r rename mykey{t} mykey1{t}
+ -        r rename mykey1{t} mykey2{t}
+ -        r get mykey2{t}
+ +        r set mykey hello
+ +        r rename mykey mykey1
+ +        r rename mykey1 mykey2
+ +        r get mykey2
+      } {hello}
+  
+      test {RENAME source key should no longer exist} {
+@@ -91,35 +85,35 @@
+      } {0}
+  
+      test {RENAME against already existing key} {
+ -        r set mykey{t} a
+ -        r set mykey2{t} b
+ -        r rename mykey2{t} mykey{t}
+ -        set res [r get mykey{t}]
+ -        append res [r exists mykey2{t}]
+ +        r set mykey a
+ +        r set mykey2 b
+ +        r rename mykey2 mykey
+ +        set res [r get mykey]
+ +        append res [r exists mykey2]
+      } {b0}
+  
+      test {RENAMENX basic usage} {
+ -        r del mykey{t}
+ -        r del mykey2{t}
+ -        r set mykey{t} foobar
+ -        r renamenx mykey{t} mykey2{t}
+ -        set res [r get mykey2{t}]
+ -        append res [r exists mykey{t}]
+ +        r del mykey
+ +        r del mykey2
+ +        r set mykey foobar
+ +        r renamenx mykey mykey2
+ +        set res [r get mykey2]
+ +        append res [r exists mykey]
+      } {foobar0}
+  
+      test {RENAMENX against already existing key} {
+ -        r set mykey{t} foo
+ -        r set mykey2{t} bar
+ -        r renamenx mykey{t} mykey2{t}
+ +        r set mykey foo
+ +        r set mykey2 bar
+ +        r renamenx mykey mykey2
+      } {0}
+  
+      test {RENAMENX against already existing key (2)} {
+ -        set res [r get mykey{t}]
+ -        append res [r get mykey2{t}]
+ +        set res [r get mykey]
+ +        append res [r get mykey2]
+      } {foobar}
+  
+      test {RENAME against non existing source key} {
+ -        catch {r rename nokey{t} foobar{t}} err
+ +        catch {r rename nokey foobar} err
+          format $err
+      } {ERR*}
+  
+@@ -140,22 +134,22 @@
+      } {ERR*}
+  
+      test {RENAME with volatile key, should move the TTL as well} {
+ -        r del mykey{t} mykey2{t}
+ -        r set mykey{t} foo
+ -        r expire mykey{t} 100
+ -        assert {[r ttl mykey{t}] > 95 && [r ttl mykey{t}] <= 100}
+ -        r rename mykey{t} mykey2{t}
+ -        assert {[r ttl mykey2{t}] > 95 && [r ttl mykey2{t}] <= 100}
+ +        r del mykey mykey2
+ +        r set mykey foo
+ +        r expire mykey 100
+ +        assert {[r ttl mykey] > 95 && [r ttl mykey] <= 100}
+ +        r rename mykey mykey2
+ +        assert {[r ttl mykey2] > 95 && [r ttl mykey2] <= 100}
+      }
+  
+      test {RENAME with volatile key, should not inherit TTL of target key} {
+ -        r del mykey{t} mykey2{t}
+ -        r set mykey{t} foo
+ -        r set mykey2{t} bar
+ -        r expire mykey2{t} 100
+ -        assert {[r ttl mykey{t}] == -1 && [r ttl mykey2{t}] > 0}
+ -        r rename mykey{t} mykey2{t}
+ -        r ttl mykey2{t}
+ +        r del mykey mykey2
+ +        r set mykey foo
+ +        r set mykey2 bar
+ +        r expire mykey2 100
+ +        assert {[r ttl mykey] == -1 && [r ttl mykey2] > 0}
+ +        r rename mykey mykey2
+ +        r ttl mykey2
+      } {-1}
+  
+      test {DEL all keys again (DB 0)} {
+@@ -173,222 +167,7 @@
+          set res [r dbsize]
+          r select 9
+          format $res
+ -    } {0} {singledb:skip}
+ -
+ -    test {COPY basic usage for string} {
+ -        r set mykey{t} foobar
+ -        set res {}
+ -        r copy mykey{t} mynewkey{t}
+ -        lappend res [r get mynewkey{t}]
+ -        lappend res [r dbsize]
+ -        if {$::singledb} {
+ -            assert_equal [list foobar 2] [format $res]
+ -        } else {
+ -            r copy mykey{t} mynewkey{t} DB 10
+ -            r select 10
+ -            lappend res [r get mynewkey{t}]
+ -            lappend res [r dbsize]
+ -            r select 9
+ -            assert_equal [list foobar 2 foobar 1] [format $res]
+ -        }
+ -    } 
+ -
+ -    test {COPY for string does not replace an existing key without REPLACE option} {
+ -        r set mykey2{t} hello
+ -        catch {r copy mykey2{t} mynewkey{t} DB 10} e
+ -        set e
+ -    } {0} {singledb:skip}
+ -
+ -    test {COPY for string can replace an existing key with REPLACE option} {
+ -        r copy mykey2{t} mynewkey{t} DB 10 REPLACE
+ -        r select 10
+ -        r get mynewkey{t}
+ -    } {hello} {singledb:skip}
+ -
+ -    test {COPY for string ensures that copied data is independent of copying data} {
+ -        r flushdb
+ -        r select 9
+ -        r set mykey{t} foobar
+ -        set res {}
+ -        r copy mykey{t} mynewkey{t} DB 10
+ -        r select 10
+ -        lappend res [r get mynewkey{t}]
+ -        r set mynewkey{t} hoge
+ -        lappend res [r get mynewkey{t}]
+ -        r select 9
+ -        lappend res [r get mykey{t}]
+ -        r select 10
+ -        r flushdb
+ -        r select 9
+ -        format $res
+ -    } [list foobar hoge foobar] {singledb:skip}
+ -
+ -    test {COPY for string does not copy data to no-integer DB} {
+ -        r set mykey{t} foobar
+ -        catch {r copy mykey{t} mynewkey{t} DB notanumber} e
+ -        set e
+ -    } {ERR value is not an integer or out of range}
+ -
+ -    test {COPY can copy key expire metadata as well} {
+ -        r set mykey{t} foobar ex 100
+ -        r copy mykey{t} mynewkey{t} REPLACE
+ -        assert {[r ttl mynewkey{t}] > 0 && [r ttl mynewkey{t}] <= 100}
+ -        assert {[r get mynewkey{t}] eq "foobar"}
+ -    }
+ -
+ -    test {COPY does not create an expire if it does not exist} {
+ -        r set mykey{t} foobar
+ -        assert {[r ttl mykey{t}] == -1}
+ -        r copy mykey{t} mynewkey{t} REPLACE
+ -        assert {[r ttl mynewkey{t}] == -1}
+ -        assert {[r get mynewkey{t}] eq "foobar"}
+ -    }
+ -
+ -source "tests/unit/type/list-common.tcl"
+ -foreach {type large} [array get largevalue] {
+ -    set origin_config [config_get_set list-max-listpack-size -1]
+ -    test "COPY basic usage for list - $type" {
+ -        r del mylist{t} mynewlist{t}
+ -        r lpush mylist{t} a b $large c d
+ -        assert_encoding $type mylist{t}
+ -        r copy mylist{t} mynewlist{t}
+ -        assert_encoding $type mynewlist{t}
+ -        set digest [debug_digest_value mylist{t}]
+ -        assert_equal $digest [debug_digest_value mynewlist{t}]
+ -        assert_refcount 1 mylist{t}
+ -        assert_refcount 1 mynewlist{t}
+ -        r del mylist{t}
+ -        assert_equal $digest [debug_digest_value mynewlist{t}]
+ -    }
+ -    config_set list-max-listpack-size $origin_config
+ -}
+ -
+ -    foreach type {intset listpack hashtable} {
+ -        test {COPY basic usage for $type set} {
+ -            r del set1{t} newset1{t}
+ -            r sadd set1{t} 1 2 3
+ -            if {$type ne "intset"} {
+ -                r sadd set1{t} a
+ -            }
+ -            if {$type eq "hashtable"} {
+ -                for {set i 4} {$i < 200} {incr i} {
+ -                    r sadd set1{t} $i
+ -                }
+ -            }
+ -            assert_encoding $type set1{t}
+ -            r copy set1{t} newset1{t}
+ -            set digest [debug_digest_value set1{t}]
+ -            assert_equal $digest [debug_digest_value newset1{t}]
+ -            assert_refcount 1 set1{t}
+ -            assert_refcount 1 newset1{t}
+ -            r del set1{t}
+ -            assert_equal $digest [debug_digest_value newset1{t}]
+ -        }
+ -    }
+ -
+ -    test {COPY basic usage for listpack sorted set} {
+ -        r del zset1{t} newzset1{t}
+ -        r zadd zset1{t} 123 foobar
+ -        assert_encoding listpack zset1{t}
+ -        r copy zset1{t} newzset1{t}
+ -        set digest [debug_digest_value zset1{t}]
+ -        assert_equal $digest [debug_digest_value newzset1{t}]
+ -        assert_refcount 1 zset1{t}
+ -        assert_refcount 1 newzset1{t}
+ -        r del zset1{t}
+ -        assert_equal $digest [debug_digest_value newzset1{t}]
+ -    }
+ -
+ -     test {COPY basic usage for skiplist sorted set} {
+ -        r del zset2{t} newzset2{t}
+ -        set original_max [lindex [r config get zset-max-ziplist-entries] 1]
+ -        r config set zset-max-ziplist-entries 0
+ -        for {set j 0} {$j < 130} {incr j} {
+ -            r zadd zset2{t} [randomInt 50] ele-[randomInt 10]
+ -        }
+ -        assert_encoding skiplist zset2{t}
+ -        r copy zset2{t} newzset2{t}
+ -        set digest [debug_digest_value zset2{t}]
+ -        assert_equal $digest [debug_digest_value newzset2{t}]
+ -        assert_refcount 1 zset2{t}
+ -        assert_refcount 1 newzset2{t}
+ -        r del zset2{t}
+ -        assert_equal $digest [debug_digest_value newzset2{t}]
+ -        r config set zset-max-ziplist-entries $original_max
+ -    }
+ -
+ -    test {COPY basic usage for listpack hash} {
+ -        r del hash1{t} newhash1{t}
+ -        r hset hash1{t} tmp 17179869184
+ -        assert_encoding listpack hash1{t}
+ -        r copy hash1{t} newhash1{t}
+ -        set digest [debug_digest_value hash1{t}]
+ -        assert_equal $digest [debug_digest_value newhash1{t}]
+ -        assert_refcount 1 hash1{t}
+ -        assert_refcount 1 newhash1{t}
+ -        r del hash1{t}
+ -        assert_equal $digest [debug_digest_value newhash1{t}]
+ -    }
+ -
+ -    test {COPY basic usage for hashtable hash} {
+ -        r del hash2{t} newhash2{t}
+ -        set original_max [lindex [r config get hash-max-ziplist-entries] 1]
+ -        r config set hash-max-ziplist-entries 0
+ -        for {set i 0} {$i < 64} {incr i} {
+ -            r hset hash2{t} [randomValue] [randomValue]
+ -        }
+ -        assert_encoding hashtable hash2{t}
+ -        r copy hash2{t} newhash2{t}
+ -        set digest [debug_digest_value hash2{t}]
+ -        assert_equal $digest [debug_digest_value newhash2{t}]
+ -        assert_refcount 1 hash2{t}
+ -        assert_refcount 1 newhash2{t}
+ -        r del hash2{t}
+ -        assert_equal $digest [debug_digest_value newhash2{t}]
+ -        r config set hash-max-ziplist-entries $original_max
+ -    }
+ -
+ -    test {COPY basic usage for stream} {
+ -        r del mystream{t} mynewstream{t}
+ -        for {set i 0} {$i < 1000} {incr i} {
+ -            r XADD mystream{t} * item 2 value b
+ -        }
+ -        r copy mystream{t} mynewstream{t}
+ -        set digest [debug_digest_value mystream{t}]
+ -        assert_equal $digest [debug_digest_value mynewstream{t}]
+ -        assert_refcount 1 mystream{t}
+ -        assert_refcount 1 mynewstream{t}
+ -        r del mystream{t}
+ -        assert_equal $digest [debug_digest_value mynewstream{t}]
+ -    }
+ -
+ -    test {COPY basic usage for stream-cgroups} {
+ -        r del x{t}
+ -        r XADD x{t} 100 a 1
+ -        set id [r XADD x{t} 101 b 1]
+ -        r XADD x{t} 102 c 1
+ -        r XADD x{t} 103 e 1
+ -        r XADD x{t} 104 f 1
+ -        r XADD x{t} 105 g 1
+ -        r XGROUP CREATE x{t} g1 0
+ -        r XGROUP CREATE x{t} g2 0
+ -        r XREADGROUP GROUP g1 Alice COUNT 1 STREAMS x{t} >
+ -        r XREADGROUP GROUP g1 Bob COUNT 1 STREAMS x{t} >
+ -        r XREADGROUP GROUP g1 Bob NOACK COUNT 1 STREAMS x{t} >
+ -        r XREADGROUP GROUP g2 Charlie COUNT 4 STREAMS x{t} >
+ -        r XGROUP SETID x{t} g1 $id
+ -        r XREADGROUP GROUP g1 Dave COUNT 3 STREAMS x{t} >
+ -        r XDEL x{t} 103
+ -
+ -        r copy x{t} newx{t}
+ -        set info [r xinfo stream x{t} full]
+ -        assert_equal $info [r xinfo stream newx{t} full]
+ -        assert_refcount 1 x{t}
+ -        assert_refcount 1 newx{t}
+ -        r del x{t}
+ -        assert_equal $info [r xinfo stream newx{t} full]
+ -        r flushdb
+ -    }
+ +    } {0}
+  
+      test {MOVE basic usage} {
+          r set mykey foobar
+@@ -401,18 +180,18 @@
+          lappend res [r dbsize]
+          r select 9
+          format $res
+ -    } [list 0 0 foobar 1] {singledb:skip}
+ +    } [list 0 0 foobar 1]
+  
+      test {MOVE against key existing in the target DB} {
+          r set mykey hello
+          r move mykey 10
+ -    } {0} {singledb:skip}
+ +    } {0}
+  
+      test {MOVE against non-integer DB (#1428)} {
+          r set mykey hello
+          catch {r move mykey notanumber} e
+          set e
+ -    } {ERR value is not an integer or out of range} {singledb:skip}
+ +    } {*ERR*index out of range}
+  
+      test {MOVE can move key expire metadata as well} {
+          r select 10
+@@ -425,7 +204,7 @@
+          assert {[r ttl mykey] > 0 && [r ttl mykey] <= 100}
+          assert {[r get mykey] eq "foo"}
+          r select 9
+ -    } {OK} {singledb:skip}
+ +    }
+  
+      test {MOVE does not create an expire if it does not exist} {
+          r select 10
+@@ -438,7 +217,7 @@
+          assert {[r ttl mykey] == -1}
+          assert {[r get mykey] eq "foo"}
+          r select 9
+ -    } {OK} {singledb:skip}
+ +    }
+  
+      test {SET/GET keys in different DBs} {
+          r set a hello
+@@ -455,7 +234,7 @@
+          lappend res [r get b]
+          r select 9
+          format $res
+ -    } {hello world foo bared} {singledb:skip}
+ +    } {hello world foo bared}
+  
+      test {RANDOMKEY} {
+          r flushdb
+@@ -493,10 +272,4 @@
+          r keys *
+          r keys *
+      } {dlskeriewrioeuwqoirueioqwrueoqwrueqw}
+ -
+ -    test {Regression for pattern matching long nested loops} {
+ -        r flushdb
+ -        r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1
+ -        r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"
+ -    } {}
+  }
+
+""""""
+
+2025-05-15 16:40:53.231 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-05-15 16:41:34.009 | INFO     | llm_assistant:run:298 - ---responses in run: [{'prompt': [{'role': 'system', 'content': 'You are a senior software engineer who is best in the world at fixing vulnerabilities and patch porting between versions.\nUsers will give you 1. a patch based on a newer version 2. the diff info between the newer version and and older version. \nAnd you will generate a fix patch to the older version in the form of git diff based on the provided INSTRUCTION.\nINSTRUCTION:\nOnly reterun the final result after patch and diff information are entered. When all the information is entered, it will be identified with \u200d\u200d```===end===\u200d\u200d```\nOnly respond with the patch info, do not add any comments or change the indentation.\nThe patch should have no errors, it should compile and user should be able to use the fixed code as a direct replacement of the vulnerable code. The code should not introduce any new dependencies or use API calls that are not present in the code.\nIf you can generate a backport patch for the patch, do a brief change impact analysis to assess how these modifications might affect the overall system, considering both immediate and potential long-term compatibility issues.\nLow: Code diff will be applied to the code base and automatically merged without review.\nMedium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.\nHigh: Code diff will be offered as a suggestion to the developer to review and then apply to the code base. There are likely other changes that need to be done by the developer before the change can be implemented.\nPlease provide a response only in the following format:\n\nA. Commit message:\n<brief summary of the diff>\n\nB. Change summary:\n<description of the changes made in the diff>\n\nC. Compatibility Risk:\n<Low, Medium, High>\n\nD. Fixed Code:\n<original patch info with now backported>\n\n'}, {'role': 'system', 'content': '1. a patch based on a newer version: \nFrom c8649f8e852d1dc388b5446e003bb0eefa33d61f Mon Sep 17 00:00:00 2001\nFrom: Oran Agra <oran@redislabs.com>\nDate: Wed, 2 Oct 2024 20:11:01 +0300\nSubject: [PATCH] Prevent pattern matching abuse (CVE-2024-31228)\n\n---\n src/util.c              | 9 ++++++---\n tests/unit/keyspace.tcl | 6 ++++++\n 2 files changed, 12 insertions(+), 3 deletions(-)\n\ndiff --git a/src/util.c b/src/util.c\nindex 26d92b92290..c32cbeef96a 100644\n--- a/src/util.c\n+++ b/src/util.c\n@@ -54,8 +54,11 @@\n \n /* Glob-style pattern matching. */\n static int stringmatchlen_impl(const char *pattern, int patternLen,\n-        const char *string, int stringLen, int nocase, int *skipLongerMatches)\n+        const char *string, int stringLen, int nocase, int *skipLongerMatches, int nesting)\n {\n+    /* Protection against abusive patterns. */\n+    if (nesting > 1000) return 0;\n+\n     while(patternLen && stringLen) {\n         switch(pattern[0]) {\n         case \'*\':\n@@ -67,7 +70,7 @@ static int stringmatchlen_impl(const char *pattern, int patternLen,\n                 return 1; /* match */\n             while(stringLen) {\n                 if (stringmatchlen_impl(pattern+1, patternLen-1,\n-                            string, stringLen, nocase, skipLongerMatches))\n+                            string, stringLen, nocase, skipLongerMatches, nesting+1))\n                     return 1; /* match */\n                 if (*skipLongerMatches)\n                     return 0; /* no match */\n@@ -189,7 +192,7 @@ static int stringmatchlen_impl(const char *pattern, int patternLen,\n int stringmatchlen(const char *pattern, int patternLen,\n         const char *string, int stringLen, int nocase) {\n     int skipLongerMatches = 0;\n-    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches);\n+    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches,0);\n }\n \n int stringmatch(const char *pattern, const char *string, int nocase) {\ndiff --git a/tests/unit/keyspace.tcl b/tests/unit/keyspace.tcl\nindex 43690d06b32..b42421221cd 100644\n--- a/tests/unit/keyspace.tcl\n+++ b/tests/unit/keyspace.tcl\n@@ -499,4 +499,10 @@ foreach {type large} [array get largevalue] {\n         r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1\n         r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"\n     } {}\n+\n+    test {Regression for pattern matching very long nested loops} {\n+        r flushdb\n+        r SET [string repeat "a" 50000] 1\n+        r KEYS [string repeat "*?" 50000]\n+    } {}\n }\n'}, {'role': 'system', 'content': '2. the diff info between the newer version and and older version: \nmodified file: src/util.c\n--- workspace/redis/redis/c8649f/newer/src/util.c\n+++ workspace/redis/redis/c8649f/4.0.14/src/util.c\n@@ -28,7 +28,6 @@\n   */\n  \n  #include "fmacros.h"\n -#include "fpconv_dtoa.h"\n  #include <stdlib.h>\n  #include <stdio.h>\n  #include <string.h>\n@@ -40,54 +39,35 @@\n  #include <float.h>\n  #include <stdint.h>\n  #include <errno.h>\n -#include <time.h>\n -#include <sys/stat.h>\n -#include <dirent.h>\n -#include <fcntl.h>\n -#include <libgen.h>\n  \n  #include "util.h"\n -#include "sha256.h"\n -#include "config.h"\n -\n -#define UNUSED(x) ((void)(x))\n +#include "sha1.h"\n  \n -static int stringmatchlen_impl(const char *pattern, int patternLen,\n -        const char *string, int stringLen, int nocase, int *skipLongerMatches)\n +int stringmatchlen(const char *pattern, int patternLen,\n +        const char *string, int stringLen, int nocase)\n  {\n      while(patternLen && stringLen) {\n          switch(pattern[0]) {\n          case \'*\':\n -            while (patternLen && pattern[1] == \'*\') {\n +            while (pattern[1] == \'*\') {\n                  pattern++;\n                  patternLen--;\n              }\n              if (patternLen == 1)\n                  return 1; /* match */\n              while(stringLen) {\n -                if (stringmatchlen_impl(pattern+1, patternLen-1,\n -                            string, stringLen, nocase, skipLongerMatches))\n +                if (stringmatchlen(pattern+1, patternLen-1,\n +                            string, stringLen, nocase))\n                      return 1; /* match */\n -                if (*skipLongerMatches)\n -                    return 0; /* no match */\n                  string++;\n                  stringLen--;\n              }\n -            /* There was no match for the rest of the pattern starting\n -             * from anywhere in the rest of the string. If there were\n -             * any \'*\' earlier in the pattern, we can terminate the\n -             * search early without trying to match them to longer\n -             * substrings. This is because a longer match for the\n -             * earlier part of the pattern would require the rest of the\n -             * pattern to match starting later in the string, and we\n -             * have just determined that there is no match for the rest\n -             * of the pattern starting from anywhere in the current\n -             * string. */\n -            *skipLongerMatches = 1;\n              return 0; /* no match */\n              break;\n          case \'?\':\n +            if (stringLen == 0)\n +                return 0; /* no match */\n              string++;\n              stringLen--;\n              break;\n@@ -115,7 +95,7 @@\n                      pattern--;\n                      patternLen++;\n                      break;\n -                } else if (patternLen >= 3 && pattern[1] == \'-\') {\n +                } else if (pattern[1] == \'-\' && patternLen >= 3) {\n                      int start = pattern[0];\n                      int end = pattern[2];\n                      int c = string[0];\n@@ -186,55 +166,29 @@\n      return 0;\n  }\n  \n -int stringmatchlen(const char *pattern, int patternLen,\n -        const char *string, int stringLen, int nocase) {\n -    int skipLongerMatches = 0;\n -    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches);\n -}\n -\n  int stringmatch(const char *pattern, const char *string, int nocase) {\n      return stringmatchlen(pattern,strlen(pattern),string,strlen(string),nocase);\n  }\n  \n -/* Fuzz stringmatchlen() trying to crash it with bad input. */\n -int stringmatchlen_fuzz_test(void) {\n -    char str[32];\n -    char pat[32];\n -    int cycles = 10000000;\n -    int total_matches = 0;\n -    while(cycles--) {\n -        int strlen = rand() % sizeof(str);\n -        int patlen = rand() % sizeof(pat);\n -        for (int j = 0; j < strlen; j++) str[j] = rand() % 128;\n -        for (int j = 0; j < patlen; j++) pat[j] = rand() % 128;\n -        total_matches += stringmatchlen(pat, patlen, str, strlen, 0);\n -    }\n -    return total_matches;\n -}\n -\n -\n -unsigned long long memtoull(const char *p, int *err) {\n +long long memtoll(const char *p, int *err) {\n      const char *u;\n      char buf[128];\n      long mul; /* unit multiplier */\n -    unsigned long long val;\n +    long long val;\n      unsigned int digits;\n  \n      if (err) *err = 0;\n  \n      u = p;\n -    if (*u == \'-\') {\n -        if (err) *err = 1;\n -        return 0;\n -    }\n +    if (*u == \'-\') u++;\n      while(*u && isdigit(*u)) u++;\n      if (*u == \'\\0\' || !strcasecmp(u,"b")) {\n          mul = 1;\n@@ -267,39 +221,12 @@\n  \n      char *endptr;\n      errno = 0;\n -    val = strtoull(buf,&endptr,10);\n +    val = strtoll(buf,&endptr,10);\n      if ((val == 0 && errno == EINVAL) || *endptr != \'\\0\') {\n          if (err) *err = 1;\n          return 0;\n      }\n      return val*mul;\n -}\n -\n -/* Search a memory buffer for any set of bytes, like strpbrk().\n - * Returns pointer to first found char or NULL.\n - */\n -const char *mempbrk(const char *s, size_t len, const char *chars, size_t charslen) {\n -    for (size_t j = 0; j < len; j++) {\n -        for (size_t n = 0; n < charslen; n++)\n -            if (s[j] == chars[n]) return &s[j];\n -    }\n -\n -    return NULL;\n -}\n -\n -/* Modify the buffer replacing all occurrences of chars from the \'from\'\n - * set with the corresponding char in the \'to\' set. Always returns s.\n - */\n -char *memmapchars(char *s, size_t len, const char *from, const char *to, size_t setlen) {\n -    for (size_t j = 0; j < len; j++) {\n -        for (size_t i = 0; i < setlen; i++) {\n -            if (s[j] == from[i]) {\n -                s[j] = to[i];\n -                break;\n -            }\n -        }\n -    }\n -    return s;\n  }\n  \n + * If the buffer is not big enough to store the string, 0 is returned.\n + *\n + * Based on the following article (that apparently does not provide a\n + * novel approach but only publicizes an already used technique):\n + *\n + * https://www.facebook.com/notes/facebook-engineering/three-optimization-tips-for-c/10151361643253920\n + *\n + * Modified in order to handle signed integers since the original code was\n + * designed for unsigned integers. */\n  int ll2string(char *dst, size_t dstlen, long long svalue) {\n +    static const char digits[201] =\n +        "0001020304050607080910111213141516171819"\n +        "2021222324252627282930313233343536373839"\n +        "4041424344454647484950515253545556575859"\n +        "6061626364656667686970717273747576777879"\n +        "8081828384858687888990919293949596979899";\n +    int negative;\n      unsigned long long value;\n -    int negative = 0;\n -\n -    /* The ull2string function with 64bit unsigned integers for simplicity, so\n +\n +    /* The main loop works with 64bit unsigned integers for simplicity, so\n       * we convert the number here and remember if it is negative. */\n      if (svalue < 0) {\n          if (svalue != LLONG_MIN) {\n@@ -351,51 +292,20 @@\n          } else {\n              value = ((unsigned long long) LLONG_MAX)+1;\n          }\n -        if (dstlen < 2)\n -            goto err;\n          negative = 1;\n -        dst[0] = \'-\';\n -        dst++;\n -        dstlen--;\n      } else {\n          value = svalue;\n -    }\n -\n -    /* Converts the unsigned long long value to string*/\n -    int length = ull2string(dst, dstlen, value);\n -    if (length == 0) return 0;\n -    return length + negative;\n -\n -err:\n -    /* force add Null termination */\n -    if (dstlen > 0)\n -        dst[0] = \'\\0\';\n -    return 0;\n -}\n -\n -/* Convert a unsigned long long into a string. Returns the number of\n - * characters needed to represent the number.\n - * If the buffer is not big enough to store the string, 0 is returned.\n - *\n - * Based on the following article (that apparently does not provide a\n - * novel approach but only publicizes an already used technique):\n - *\n - * https://www.facebook.com/notes/facebook-engineering/three-optimization-tips-for-c/10151361643253920 */\n -int ull2string(char *dst, size_t dstlen, unsigned long long value) {\n -    static const char digits[201] =\n -        "0001020304050607080910111213141516171819"\n -        "2021222324252627282930313233343536373839"\n -        "4041424344454647484950515253545556575859"\n -        "6061626364656667686970717273747576777879"\n -        "8081828384858687888990919293949596979899";\n +        negative = 0;\n +    }\n  \n -    uint32_t length = digits10(value);\n -    if (length >= dstlen) goto err;;\n +    uint32_t const length = digits10(value)+negative;\n +    if (length >= dstlen) return 0;\n  \n -    uint32_t next = length - 1;\n -    dst[next + 1] = \'\\0\';\n +    uint32_t next = length;\n +    dst[next] = \'\\0\';\n +    next--;\n      while (value >= 100) {\n          int const i = (value % 100) * 2;\n          value /= 100;\n@@ -412,12 +322,10 @@\n          dst[next] = digits[i + 1];\n          dst[next - 1] = digits[i];\n      }\n +\n +    /* Add sign. */\n +    if (negative) dst[0] = \'-\';\n      return length;\n -err:\n -    /* force add Null termination */\n -    if (dstlen > 0)\n -        dst[0] = \'\\0\';\n -    return 0;\n  }\n  \n -    if (plen == slen || slen >= LONG_STR_SIZE)\n +    if (plen == slen)\n          return 0;\n  \n@@ -448,8 +355,6 @@\n          return 1;\n      }\n  \n -    /* Handle negative numbers: just set a flag and continue like if it\n -     * was a positive number. Later convert into negative. */\n      if (p[0] == \'-\') {\n          negative = 1;\n          p++; plen++;\n@@ -463,11 +368,13 @@\n      if (p[0] >= \'1\' && p[0] <= \'9\') {\n          v = p[0]-\'0\';\n          p++; plen++;\n +    } else if (p[0] == \'0\' && slen == 1) {\n +        *value = 0;\n +        return 1;\n      } else {\n          return 0;\n      }\n  \n -    /* Parse all the other digits, checking for overflow at every step. */\n      while (plen < slen && p[0] >= \'0\' && p[0] <= \'9\') {\n          if (v > (ULLONG_MAX / 10)) /* Overflow. */\n              return 0;\n@@ -484,8 +391,6 @@\n      if (plen < slen)\n          return 0;\n  \n -    /* Convert to negative if needed, and do the final overflow check when\n -     * converting from unsigned long long to long long. */\n      if (negative) {\n          if (v > ((unsigned long long)(-(LLONG_MIN+1))+1)) /* Overflow. */\n              return 0;\n@@ -498,26 +403,6 @@\n      return 1;\n  }\n  \n -/* Helper function to convert a string to an unsigned long long value.\n - * The function attempts to use the faster string2ll() function inside\n - * Redis: if it fails, strtoull() is used instead. The function returns\n - * 1 if the conversion happened successfully or 0 if the number is\n - * invalid or out of range. */\n -int string2ull(const char *s, unsigned long long *value) {\n -    long long ll;\n -    if (string2ll(s,strlen(s),&ll)) {\n -        if (ll < 0) return 0; /* Negative values are out of range. */\n -        *value = ll;\n -        return 1;\n -    }\n -    errno = 0;\n -    char *endptr = NULL;\n -    *value = strtoull(s,&endptr,10);\n -    if (errno == EINVAL || errno == ERANGE || !(*s != \'\\0\' && *endptr == \'\\0\'))\n -        return 0; /* strtoull() failed. */\n -    return 1; /* Conversion done! */\n -}\n -\n@@ -542,20 +427,19 @@\n   * a double: no spaces or other characters before or after the string\n   * representing the number are accepted. */\n  int string2ld(const char *s, size_t slen, long double *dp) {\n -    char buf[MAX_LONG_DOUBLE_CHARS];\n +    char buf[256];\n      long double value;\n      char *eptr;\n  \n -    if (slen == 0 || slen >= sizeof(buf)) return 0;\n +    if (slen >= sizeof(buf)) return 0;\n      memcpy(buf,s,slen);\n      buf[slen] = \'\\0\';\n  \n      errno = 0;\n      value = strtold(buf, &eptr);\n      if (isspace(buf[0]) || eptr[0] != \'\\0\' ||\n -        (size_t)(eptr-buf) != slen ||\n          (errno == ERANGE &&\n -            (value == HUGE_VAL || value == -HUGE_VAL || fpclassify(value) == FP_ZERO)) ||\n +            (value == HUGE_VAL || value == -HUGE_VAL || value == 0)) ||\n          errno == EINVAL ||\n          isnan(value))\n          return 0;\n@@ -564,71 +448,15 @@\n      return 1;\n  }\n  \n -/* Convert a string into a double. Returns 1 if the string could be parsed\n - * into a (non-overflowing) double, 0 otherwise. The value will be set to\n - * the parsed value when appropriate.\n - *\n - * Note that this function demands that the string strictly represents\n - * a double: no spaces or other characters before or after the string\n - * representing the number are accepted. */\n -int string2d(const char *s, size_t slen, double *dp) {\n -    errno = 0;\n -    char *eptr;\n -    *dp = strtod(s, &eptr);\n -    if (slen == 0 ||\n -        isspace(((const char*)s)[0]) ||\n -        (size_t)(eptr-(char*)s) != slen ||\n -        (errno == ERANGE &&\n -            (*dp == HUGE_VAL || *dp == -HUGE_VAL || fpclassify(*dp) == FP_ZERO)) ||\n -        isnan(*dp))\n -        return 0;\n -    return 1;\n -}\n -\n -/* Returns 1 if the double value can safely be represented in long long without\n - * precision loss, in which case the corresponding long long is stored in the out variable. */\n -int double2ll(double d, long long *out) {\n -#if (DBL_MANT_DIG >= 52) && (DBL_MANT_DIG <= 63) && (LLONG_MAX == 0x7fffffffffffffffLL)\n -    /* Check if the float is in a safe range to be casted into a\n -     * long long. We are assuming that long long is 64 bit here.\n -     * Also we are assuming that there are no implementations around where\n -     * double has precision < 52 bit.\n -     *\n -     * Under this assumptions we test if a double is inside a range\n -     * where casting to long long is safe. Then using two castings we\n -     * make sure the decimal part is zero. If all this is true we can use\n -     * integer without precision loss.\n -     *\n -     * Note that numbers above 2^52 and below 2^63 use all the fraction bits as real part,\n -     * and the exponent bits are positive, which means the "decimal" part must be 0.\n -     * i.e. all double values in that range are representable as a long without precision loss,\n -     * but not all long values in that range can be represented as a double.\n -     * we only care about the first part here. */\n -    if (d < (double)(-LLONG_MAX/2) || d > (double)(LLONG_MAX/2))\n -        return 0;\n -    long long ll = d;\n -    if (ll == d) {\n -        *out = ll;\n -        return 1;\n -    }\n -#endif\n -    return 0;\n -}\n -\n + * does. It is intented mainly to be used inside t_zset.c when writing scores\n + * into a ziplist representing a sorted set. */\n  int d2string(char *buf, size_t len, double value) {\n      if (isnan(value)) {\n -        /* Libc in some systems will format nan in a different way,\n -         * like nan, -nan, NAN, nan(char-sequence).\n -         * So we normalize it and create a single nan form in an explicit way. */\n          len = snprintf(buf,len,"nan");\n      } else if (isinf(value)) {\n -        /* Libc in odd systems (Hi Solaris!) will format infinite in a\n -         * different way, so better to handle it in an explicit way. */\n          if (value < 0)\n              len = snprintf(buf,len,"-inf");\n          else\n@@ -640,160 +468,42 @@\n          else\n              len = snprintf(buf,len,"0");\n      } else {\n -        long long lvalue;\n -        /* Integer printing function is much faster, check if we can safely use it. */\n -        if (double2ll(value, &lvalue))\n -            len = ll2string(buf,len,lvalue);\n -        else {\n -            len = fpconv_dtoa(value, buf);\n -            buf[len] = \'\\0\';\n -        }\n +#if (DBL_MANT_DIG >= 52) && (LLONG_MAX == 0x7fffffffffffffffLL)\n +        /* Check if the float is in a safe range to be casted into a\n +         * long long. We are assuming that long long is 64 bit here.\n +         * Also we are assuming that there are no implementations around where\n +         * double has precision < 52 bit.\n +         *\n +         * Under this assumptions we test if a double is inside an interval\n +         * where casting to long long is safe. Then using two castings we\n +         * make sure the decimal part is zero. If all this is true we use\n +         * integer printing function that is much faster. */\n +        double min = -4503599627370495; /* (2^52)-1 */\n +        double max = 4503599627370496; /* -(2^52) */\n +        if (value > min && value < max && value == ((double)((long long)value)))\n +            len = ll2string(buf,len,(long long)value);\n +        else\n +#endif\n +            len = snprintf(buf,len,"%.17g",value);\n      }\n  \n      return len;\n  }\n  \n -/* Convert a double into a string with \'fractional_digits\' digits after the dot precision.\n - * This is an optimized version of snprintf "%.<fractional_digits>f".\n - * We convert the double to long and multiply it  by 10 ^ <fractional_digits> to shift\n - * the decimal places.\n - * Note that multiply it of input value by 10 ^ <fractional_digits> can overflow but on the scenario\n - * that we currently use within redis this that is not possible.\n - * After we get the long representation we use the logic from ull2string function on this file\n - * which is based on the following article:\n - * https://www.facebook.com/notes/facebook-engineering/three-optimization-tips-for-c/10151361643253920\n - *\n - * Input values:\n - * char: the buffer to store the string representation\n - * dstlen: the buffer length\n - * dvalue: the input double\n - * fractional_digits: the number of fractional digits after the dot precision. between 1 and 17\n - *\n - * Return values:\n - * Returns the number of characters needed to represent the number.\n - * If the buffer is not big enough to store the string, 0 is returned.\n - */\n -int fixedpoint_d2string(char *dst, size_t dstlen, double dvalue, int fractional_digits) {\n -    if (fractional_digits < 1 || fractional_digits > 17)\n -        goto err;\n -    /* min size of 2 ( due to 0. ) + n fractional_digitits + \\0 */\n -    if ((int)dstlen < (fractional_digits+3))\n -        goto err;\n -    if (dvalue == 0) {\n -        dst[0] = \'0\';\n -        dst[1] = \'.\';\n -        memset(dst + 2, \'0\', fractional_digits);\n -        dst[fractional_digits+2] = \'\\0\';\n -        return fractional_digits + 2;\n -    }\n -    /* scale and round */\n -    static double powers_of_ten[] = {1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0,\n -    10000000.0, 100000000.0, 1000000000.0, 10000000000.0, 100000000000.0, 1000000000000.0,\n -    10000000000000.0, 100000000000000.0, 1000000000000000.0, 10000000000000000.0,\n -    100000000000000000.0 };\n -    long long svalue = llrint(dvalue * powers_of_ten[fractional_digits]);\n -    unsigned long long value;\n -    /* write sign */\n -    int negative = 0;\n -    if (svalue < 0) {\n -        if (svalue != LLONG_MIN) {\n -            value = -svalue;\n -        } else {\n -            value = ((unsigned long long) LLONG_MAX)+1;\n -        }\n -        if (dstlen < 2)\n -            goto err;\n -        negative = 1;\n -        dst[0] = \'-\';\n -        dst++;\n -        dstlen--;\n -    } else {\n -        value = svalue;\n -    }\n -\n -    static const char digitsd[201] =\n -        "0001020304050607080910111213141516171819"\n -        "2021222324252627282930313233343536373839"\n -        "4041424344454647484950515253545556575859"\n -        "6061626364656667686970717273747576777879"\n -        "8081828384858687888990919293949596979899";\n -\n -    /* Check length. */\n -    uint32_t ndigits = digits10(value);\n -    if (ndigits >= dstlen) goto err;\n -    int integer_digits = ndigits - fractional_digits;\n -    /* Fractional only check to avoid representing 0.7750 as .7750.\n -     * This means we need to increment the length and store 0 as the first character.\n -     */\n -    if (integer_digits < 1) {\n -        dst[0] = \'0\';\n -        integer_digits = 1;\n -    }\n -    dst[integer_digits] = \'.\';\n -    int size = integer_digits + 1 + fractional_digits;\n -    /* fill with 0 from fractional digits until size */\n -    memset(dst + integer_digits + 1, \'0\', fractional_digits);\n -    int next = size - 1;\n -    while (value >= 100) {\n -        int const i = (value % 100) * 2;\n -        value /= 100;\n -        dst[next] = digitsd[i + 1];\n -        dst[next - 1] = digitsd[i];\n -        next -= 2;\n -        /* dot position */\n -        if (next == integer_digits) {\n -            next--;\n -        }\n -    }\n -\n -    /* Handle last 1-2 digits. */\n -    if (value < 10) {\n -        dst[next] = \'0\' + (uint32_t) value;\n -    } else {\n -        int i = (uint32_t) value * 2;\n -        dst[next] = digitsd[i + 1];\n -        dst[next - 1] = digitsd[i];\n -    }\n -    /* Null term. */\n -    dst[size] = \'\\0\';\n -    return size + negative;\n -err:\n -    /* force add Null termination */\n -    if (dstlen > 0)\n -        dst[0] = \'\\0\';\n -    return 0;\n -}\n -\n -/* Trims off trailing zeros from a string representing a double. */\n -int trimDoubleString(char *buf, size_t len) {\n -    if (strchr(buf,\'.\') != NULL) {\n -        char *p = buf+len-1;\n -        while(*p == \'0\') {\n -            p--;\n -            len--;\n -        }\n -        if (*p == \'.\') len--;\n -    }\n -    buf[len] = \'\\0\';\n -    return len;\n -}\n -\n -/* Create a string object from a long double.\n - * If mode is humanfriendly it does not use exponential format and trims trailing\n - * zeroes at the end (may result in loss of precision).\n - * If mode is default exp format is used and the output of snprintf()\n - * is not modified (may result in loss of precision).\n - * If mode is hex hexadecimal format is used (no loss of precision)\n +/* Convert a long double into a string. If humanfriendly is non-zero\n + * it does not use exponential format and trims trailing zeroes at the end,\n + * however this results in loss of precision. Otherwise exp format is used\n + * and the output of snprintf() is not modified.\n   *\n   * The function returns the length of the string or zero if there was not\n   * enough buffer room to store it. */\n -int ld2string(char *buf, size_t len, long double value, ld2string_mode mode) {\n -    size_t l = 0;\n +int ld2string(char *buf, size_t len, long double value, int humanfriendly) {\n +    size_t l;\n  \n      if (isinf(value)) {\n -        if (len < 5) goto err; /* No room. 5 is "-inf\\0" */\n +        if (len < 5) return 0; /* No room. 5 is "-inf\\0" */\n          if (value > 0) {\n              memcpy(buf,"inf",3);\n              l = 3;\n@@ -801,66 +511,42 @@\n              memcpy(buf,"-inf",4);\n              l = 4;\n          }\n -    } else if (isnan(value)) {\n -        /* Libc in some systems will format nan in a different way,\n -         * like nan, -nan, NAN, nan(char-sequence).\n -         * So we normalize it and create a single nan form in an explicit way. */\n -        if (len < 4) goto err; /* No room. 4 is "nan\\0" */\n -        memcpy(buf, "nan", 3);\n -        l = 3;\n +    } else if (humanfriendly) {\n +        /* We use 17 digits precision since with 128 bit floats that precision\n +         * after rounding is able to represent most small decimal numbers in a\n +         * way that is "non surprising" for the user (that is, most small\n +         * decimal numbers will be represented in a way that when converted\n +         * back into a string are exactly the same as what the user typed.) */\n +        l = snprintf(buf,len,"%.17Lf", value);\n +        if (l+1 > len) return 0; /* No room. */\n +        /* Now remove trailing zeroes after the \'.\' */\n +        if (strchr(buf,\'.\') != NULL) {\n +            char *p = buf+l-1;\n +            while(*p == \'0\') {\n +                p--;\n +                l--;\n +            }\n +            if (*p == \'.\') l--;\n +        }\n      } else {\n -        switch (mode) {\n -        case LD_STR_AUTO:\n -            l = snprintf(buf,len,"%.17Lg",value);\n -            if (l+1 > len) goto err;; /* No room. */\n -            break;\n -        case LD_STR_HEX:\n -            l = snprintf(buf,len,"%La",value);\n -            if (l+1 > len) goto err; /* No room. */\n -            break;\n -        case LD_STR_HUMAN:\n -            /* We use 17 digits precision since with 128 bit floats that precision\n -             * after rounding is able to represent most small decimal numbers in a\n -             * way that is "non surprising" for the user (that is, most small\n -             * decimal numbers will be represented in a way that when converted\n -             * back into a string are exactly the same as what the user typed.) */\n -            l = snprintf(buf,len,"%.17Lf",value);\n -            if (l+1 > len) goto err; /* No room. */\n -            /* Now remove trailing zeroes after the \'.\' */\n -            if (strchr(buf,\'.\') != NULL) {\n -                char *p = buf+l-1;\n -                while(*p == \'0\') {\n -                    p--;\n -                    l--;\n -                }\n -                if (*p == \'.\') l--;\n -            }\n -            if (l == 2 && buf[0] == \'-\' && buf[1] == \'0\') {\n -                buf[0] = \'0\';\n -                l = 1;\n -            }\n -            break;\n -        default: goto err; /* Invalid mode. */\n -        }\n +        l = snprintf(buf,len,"%.17Lg", value);\n +        if (l+1 > len) return 0; /* No room. */\n      }\n      buf[l] = \'\\0\';\n      return l;\n -err:\n -    /* force add Null termination */\n -    if (len > 0)\n -        buf[0] = \'\\0\';\n -    return 0;\n -}\n -\n -/* Get random bytes, attempts to get an initial seed from /dev/urandom and\n - * the uses a one way hash function in counter mode to generate a random\n - * stream. However if /dev/urandom is not available, a weaker seed is used.\n - *\n - * This function is not thread safe, since the state is global. */\n -void getRandomBytes(unsigned char *p, size_t len) {\n +}\n +\n +/* Generate the Redis "Run ID", a SHA1-sized random number that identifies a\n + * given execution of Redis, so that if you are talking with an instance\n + * having run_id == A, and you reconnect and it has run_id == B, you can be\n + * sure that it is either a different instance or it was restarted. */\n +void getRandomHexChars(char *p, unsigned int len) {\n +    char *charset = "0123456789abcdef";\n +    unsigned int j;\n +\n      static int seed_initialized = 0;\n -    static unsigned char seed[64]; /* 512 bit internal block size. */\n +    static unsigned char seed[20]; /* The SHA1 seed, from /dev/urandom. */\n      static uint64_t counter = 0; /* The counter we hash with the seed. */\n  \n      if (!seed_initialized) {\n@@ -869,68 +555,62 @@\n           * function we just need non-colliding strings, there are no\n           * cryptographic security needs. */\n          FILE *fp = fopen("/dev/urandom","r");\n -        if (fp == NULL || fread(seed,sizeof(seed),1,fp) != 1) {\n -            /* Revert to a weaker seed, and in this case reseed again\n -             * at every call.*/\n -            for (unsigned int j = 0; j < sizeof(seed); j++) {\n -                struct timeval tv;\n -                gettimeofday(&tv,NULL);\n -                pid_t pid = getpid();\n -                seed[j] = tv.tv_sec ^ tv.tv_usec ^ pid ^ (long)fp;\n -            }\n -        } else {\n +        if (fp && fread(seed,sizeof(seed),1,fp) == 1)\n              seed_initialized = 1;\n -        }\n          if (fp) fclose(fp);\n      }\n  \n -    while(len) {\n -        /* This implements SHA256-HMAC. */\n -        unsigned char digest[SHA256_BLOCK_SIZE];\n -        unsigned char kxor[64];\n -        unsigned int copylen =\n -            len > SHA256_BLOCK_SIZE ? SHA256_BLOCK_SIZE : len;\n -\n -        /* IKEY: key xored with 0x36. */\n -        memcpy(kxor,seed,sizeof(kxor));\n -        for (unsigned int i = 0; i < sizeof(kxor); i++) kxor[i] ^= 0x36;\n -\n -        /* Obtain HASH(IKEY||MESSAGE). */\n -        SHA256_CTX ctx;\n -        sha256_init(&ctx);\n -        sha256_update(&ctx,kxor,sizeof(kxor));\n -        sha256_update(&ctx,(unsigned char*)&counter,sizeof(counter));\n -        sha256_final(&ctx,digest);\n -\n -        /* OKEY: key xored with 0x5c. */\n -        memcpy(kxor,seed,sizeof(kxor));\n -        for (unsigned int i = 0; i < sizeof(kxor); i++) kxor[i] ^= 0x5C;\n -\n -        /* Obtain HASH(OKEY || HASH(IKEY||MESSAGE)). */\n -        sha256_init(&ctx);\n -        sha256_update(&ctx,kxor,sizeof(kxor));\n -        sha256_update(&ctx,digest,SHA256_BLOCK_SIZE);\n -        sha256_final(&ctx,digest);\n -\n -        /* Increment the counter for the next iteration. */\n -        counter++;\n -\n -        memcpy(p,digest,copylen);\n -        len -= copylen;\n -        p += copylen;\n -    }\n -}\n -\n -/* Generate the Redis "Run ID", a SHA1-sized random number that identifies a\n - * given execution of Redis, so that if you are talking with an instance\n - * having run_id == A, and you reconnect and it has run_id == B, you can be\n - * sure that it is either a different instance or it was restarted. */\n -void getRandomHexChars(char *p, size_t len) {\n -    char *charset = "0123456789abcdef";\n -    size_t j;\n -\n -    getRandomBytes((unsigned char*)p,len);\n -    for (j = 0; j < len; j++) p[j] = charset[p[j] & 0x0F];\n +    if (seed_initialized) {\n +        while(len) {\n +            unsigned char digest[20];\n +            SHA1_CTX ctx;\n +            unsigned int copylen = len > 20 ? 20 : len;\n +\n +            SHA1Init(&ctx);\n +            SHA1Update(&ctx, seed, sizeof(seed));\n +            SHA1Update(&ctx, (unsigned char*)&counter,sizeof(counter));\n +            SHA1Final(digest, &ctx);\n +            counter++;\n +\n +            memcpy(p,digest,copylen);\n +            /* Convert to hex digits. */\n +            for (j = 0; j < copylen; j++) p[j] = charset[p[j] & 0x0F];\n +            len -= copylen;\n +            p += copylen;\n +        }\n +    } else {\n +        /* If we can\'t read from /dev/urandom, do some reasonable effort\n +         * in order to create some entropy, since this function is used to\n +         * generate run_id and cluster instance IDs */\n +        char *x = p;\n +        unsigned int l = len;\n +        struct timeval tv;\n +        pid_t pid = getpid();\n +\n +        /* Use time and PID to fill the initial array. */\n +        gettimeofday(&tv,NULL);\n +        if (l >= sizeof(tv.tv_usec)) {\n +            memcpy(x,&tv.tv_usec,sizeof(tv.tv_usec));\n +            l -= sizeof(tv.tv_usec);\n +            x += sizeof(tv.tv_usec);\n +        }\n +        if (l >= sizeof(tv.tv_sec)) {\n +            memcpy(x,&tv.tv_sec,sizeof(tv.tv_sec));\n +            l -= sizeof(tv.tv_sec);\n +            x += sizeof(tv.tv_sec);\n +        }\n +        if (l >= sizeof(pid)) {\n +            memcpy(x,&pid,sizeof(pid));\n +            l -= sizeof(pid);\n +            x += sizeof(pid);\n +        }\n +        /* Finally xor it with rand() output, that was already seeded with\n +         * time() at startup, and convert to hex digits. */\n +        for (j = 0; j < len; j++) {\n +            p[j] ^= rand();\n +            p[j] = charset[p[j] & 0x0F];\n +        }\n +    }\n  }\n  \n  sds getAbsolutePath(char *filename) {\n      char cwd[1024];\n@@ -985,23 +665,6 @@\n      return abspath;\n  }\n  \n -/*\n - * Gets the proper timezone in a more portable fashion\n - * i.e timezone variables are linux specific.\n - */\n -long getTimeZone(void) {\n -#if defined(__linux__) || defined(__sun)\n -    return timezone;\n -#else\n -    struct timeval tv;\n -    struct timezone tz;\n -\n -    gettimeofday(&tv, &tz);\n -\n -    return tz.tz_minuteswest * 60L;\n -#endif\n -}\n -\n -int fsyncFileDir(const char *filename) {\n -#ifdef _AIX\n -    /* AIX is unable to fsync a directory */\n -    return 0;\n -#endif\n -    char temp_filename[PATH_MAX + 1];\n -    char *dname;\n -    int dir_fd;\n -\n -    if (strlen(filename) > PATH_MAX) {\n -        errno = ENAMETOOLONG;\n -        return -1;\n -    }\n -\n -    /* In the glibc implementation dirname may modify their argument. */\n -    memcpy(temp_filename, filename, strlen(filename) + 1);\n -    dname = dirname(temp_filename);\n -\n -    dir_fd = open(dname, O_RDONLY);\n -    if (dir_fd == -1) {\n -        /* Some OSs don\'t allow us to open directories at all, just\n -         * ignore the error in that case */\n -        if (errno == EISDIR) {\n -            return 0;\n -        }\n -        return -1;\n -    }\n -    /* Some OSs don\'t allow us to fsync directories at all, so we can ignore\n -     * those errors. */\n -    if (redis_fsync(dir_fd) == -1 && !(errno == EBADF || errno == EINVAL)) {\n -        int save_errno = errno;\n -        close(dir_fd);\n -        errno = save_errno;\n -        return -1;\n -    }\n -    \n -    close(dir_fd);\n -    return 0;\n -}\n -\n - /* free OS pages backed by file */\n -int reclaimFilePageCache(int fd, size_t offset, size_t length) {\n -#ifdef HAVE_FADVISE\n -    int ret = posix_fadvise(fd, offset, length, POSIX_FADV_DONTNEED);\n -    if (ret) return -1;\n -    return 0;\n -#else\n -    UNUSED(fd);\n -    UNUSED(offset);\n -    UNUSED(length);\n -    return 0;\n -#endif\n -}\n -\n  #ifdef REDIS_TEST\n  #include <assert.h>\n -#include <sys/mman.h>\n -#include "testhelp.h"\n  \n  static void test_string2ll(void) {\n      char buf[32];\n      long long v;\n  \n -    redis_strlcpy(buf,"+1",sizeof(buf));\n +    strcpy(buf,"+1");\n      assert(string2ll(buf,strlen(buf),&v) == 0);\n  \n -    redis_strlcpy(buf," 1",sizeof(buf));\n +    strcpy(buf," 1");\n      assert(string2ll(buf,strlen(buf),&v) == 0);\n  \n -    redis_strlcpy(buf,"1 ",sizeof(buf));\n +    strcpy(buf,"1 ");\n      assert(string2ll(buf,strlen(buf),&v) == 0);\n  \n -    redis_strlcpy(buf,"01",sizeof(buf));\n +    strcpy(buf,"01");\n      assert(string2ll(buf,strlen(buf),&v) == 0);\n  \n -    redis_strlcpy(buf,"-1",sizeof(buf));\n +    strcpy(buf,"-1");\n      assert(string2ll(buf,strlen(buf),&v) == 1);\n      assert(v == -1);\n  \n -    redis_strlcpy(buf,"0",sizeof(buf));\n +    strcpy(buf,"0");\n      assert(string2ll(buf,strlen(buf),&v) == 1);\n      assert(v == 0);\n  \n -    redis_strlcpy(buf,"1",sizeof(buf));\n +    strcpy(buf,"1");\n      assert(string2ll(buf,strlen(buf),&v) == 1);\n      assert(v == 1);\n  \n -    redis_strlcpy(buf,"99",sizeof(buf));\n +    strcpy(buf,"99");\n      assert(string2ll(buf,strlen(buf),&v) == 1);\n      assert(v == 99);\n  \n -    redis_strlcpy(buf,"-99",sizeof(buf));\n +    strcpy(buf,"-99");\n      assert(string2ll(buf,strlen(buf),&v) == 1);\n      assert(v == -99);\n  \n -    redis_strlcpy(buf,"-9223372036854775808",sizeof(buf));\n +    strcpy(buf,"-9223372036854775808");\n      assert(string2ll(buf,strlen(buf),&v) == 1);\n      assert(v == LLONG_MIN);\n  \n -    redis_strlcpy(buf,"-9223372036854775809",sizeof(buf)); /* overflow */\n +    strcpy(buf,"-9223372036854775809"); /* overflow */\n      assert(string2ll(buf,strlen(buf),&v) == 0);\n  \n -    redis_strlcpy(buf,"9223372036854775807",sizeof(buf));\n +    strcpy(buf,"9223372036854775807");\n      assert(string2ll(buf,strlen(buf),&v) == 1);\n      assert(v == LLONG_MAX);\n  \n -    redis_strlcpy(buf,"9223372036854775808",sizeof(buf)); /* overflow */\n +    strcpy(buf,"9223372036854775808"); /* overflow */\n      assert(string2ll(buf,strlen(buf),&v) == 0);\n  }\n  \n@@ -1213,46 +736,46 @@\n      long v;\n  \n -    redis_strlcpy(buf,"+1",sizeof(buf));\n +    strcpy(buf,"+1");\n      assert(string2l(buf,strlen(buf),&v) == 0);\n  \n -    redis_strlcpy(buf,"01",sizeof(buf));\n +    strcpy(buf,"01");\n      assert(string2l(buf,strlen(buf),&v) == 0);\n  \n -    redis_strlcpy(buf,"-1",sizeof(buf));\n +    strcpy(buf,"-1");\n      assert(string2l(buf,strlen(buf),&v) == 1);\n      assert(v == -1);\n  \n -    redis_strlcpy(buf,"0",sizeof(buf));\n +    strcpy(buf,"0");\n      assert(string2l(buf,strlen(buf),&v) == 1);\n      assert(v == 0);\n  \n -    redis_strlcpy(buf,"1",sizeof(buf));\n +    strcpy(buf,"1");\n      assert(string2l(buf,strlen(buf),&v) == 1);\n      assert(v == 1);\n  \n -    redis_strlcpy(buf,"99",sizeof(buf));\n +    strcpy(buf,"99");\n      assert(string2l(buf,strlen(buf),&v) == 1);\n      assert(v == 99);\n  \n -    redis_strlcpy(buf,"-99",sizeof(buf));\n +    strcpy(buf,"-99");\n      assert(string2l(buf,strlen(buf),&v) == 1);\n      assert(v == -99);\n  \n  #if LONG_MAX != LLONG_MAX\n -    redis_strlcpy(buf,"-2147483648",sizeof(buf));\n +    strcpy(buf,"-2147483648");\n      assert(string2l(buf,strlen(buf),&v) == 1);\n      assert(v == LONG_MIN);\n  \n -    redis_strlcpy(buf,"-2147483649",sizeof(buf)); /* overflow */\n +    strcpy(buf,"-2147483649"); /* overflow */\n      assert(string2l(buf,strlen(buf),&v) == 0);\n  \n -    redis_strlcpy(buf,"2147483647",sizeof(buf));\n +    strcpy(buf,"2147483647");\n      assert(string2l(buf,strlen(buf),&v) == 1);\n      assert(v == LONG_MAX);\n  \n -    redis_strlcpy(buf,"2147483648",sizeof(buf)); /* overflow */\n +    strcpy(buf,"2147483648"); /* overflow */\n      assert(string2l(buf,strlen(buf),&v) == 0);\n  #endif\n  }\n@@ -1298,134 +821,14 @@\n      assert(!strcmp(buf, "9223372036854775807"));\n  }\n  \n -static void test_ld2string(void) {\n -    char buf[32];\n -    long double v;\n -    int sz;\n -\n -    v = 0.0 / 0.0;\n -    sz = ld2string(buf, sizeof(buf), v, LD_STR_AUTO);\n -    assert(sz == 3);\n -    assert(!strcmp(buf, "nan"));\n -}\n -\n -static void test_fixedpoint_d2string(void) {\n -    char buf[32];\n -    double v;\n -    int sz;\n -    v = 0.0;\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);\n -    assert(sz == 6);\n -    assert(!strcmp(buf, "0.0000"));\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 1);\n -    assert(sz == 3);\n -    assert(!strcmp(buf, "0.0"));\n -    /* set junk in buffer */\n -    memset(buf,\'A\',32);\n -    v = 0.0001;\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);\n -    assert(sz == 6);\n -    assert(buf[sz] == \'\\0\');\n -    assert(!strcmp(buf, "0.0001"));\n -    /* set junk in buffer */\n -    memset(buf,\'A\',32);\n -    v = 6.0642951598391699e-05;\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);\n -    assert(sz == 6);\n -    assert(buf[sz] == \'\\0\');\n -    assert(!strcmp(buf, "0.0001"));\n -    v = 0.01;\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);\n -    assert(sz == 6);\n -    assert(!strcmp(buf, "0.0100"));\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 1);\n -    assert(sz == 3);\n -    assert(!strcmp(buf, "0.0"));\n -    v = -0.01;\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);\n -    assert(sz == 7);\n -    assert(!strcmp(buf, "-0.0100"));\n -     v = -0.1;\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 1);\n -    assert(sz == 4);\n -    assert(!strcmp(buf, "-0.1"));\n -    v = 0.1;\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 1);\n -    assert(sz == 3);\n -    assert(!strcmp(buf, "0.1"));\n -    v = 0.01;\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 17);\n -    assert(sz == 19);\n -    assert(!strcmp(buf, "0.01000000000000000"));\n -    v = 10.01;\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);\n -    assert(sz == 7);\n -    assert(!strcmp(buf, "10.0100"));\n -    /* negative tests */\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 18);\n -    assert(sz == 0);\n -    sz = fixedpoint_d2string(buf, sizeof buf, v, 0);\n -    assert(sz == 0);\n -    sz = fixedpoint_d2string(buf, 1, v, 1);\n -    assert(sz == 0);\n -}\n -\n -#if defined(__linux__)\n -/* Since fadvise and mincore is only supported in specific platforms like\n - * Linux, we only verify the fadvise mechanism works in Linux */\n -static int cache_exist(int fd) {\n -    unsigned char flag;\n -    void *m = mmap(NULL, 4096, PROT_READ, MAP_SHARED, fd, 0);\n -    assert(m);\n -    assert(mincore(m, 4096, &flag) == 0);\n -    munmap(m, 4096);\n -    /* the least significant bit of the byte will be set if the corresponding\n -     * page is currently resident in memory */\n -    return flag&1;\n -}\n -\n -static void test_reclaimFilePageCache(void) {\n -    char *tmpfile = "/tmp/redis-reclaim-cache-test";\n -    int fd = open(tmpfile, O_RDWR|O_CREAT, 0644);\n -    assert(fd >= 0);\n -\n -    /* test write file */\n -    char buf[4] = "foo";\n -    assert(write(fd, buf, sizeof(buf)) > 0);\n -    assert(cache_exist(fd));\n -    assert(redis_fsync(fd) == 0);\n -    assert(reclaimFilePageCache(fd, 0, 0) == 0);\n -    assert(!cache_exist(fd));\n -\n -    /* test read file */\n -    assert(pread(fd, buf, sizeof(buf), 0) > 0);\n -    assert(cache_exist(fd));\n -    assert(reclaimFilePageCache(fd, 0, 0) == 0);\n -    assert(!cache_exist(fd));\n -\n -    unlink(tmpfile);\n -    printf("reclaimFilePageCach test is ok\\n");\n -}\n -#endif\n -\n -int utilTest(int argc, char **argv, int flags) {\n +#define UNUSED(x) (void)(x)\n +int utilTest(int argc, char **argv) {\n      UNUSED(argc);\n      UNUSED(argv);\n -    UNUSED(flags);\n  \n      test_string2ll();\n      test_string2l();\n      test_ll2string();\n -    test_ld2string();\n -    test_fixedpoint_d2string();\n -#if defined(__linux__)\n -    if (!(flags & REDIS_TEST_VALGRIND)) {\n -        test_reclaimFilePageCache();\n -    }\n +    return 0;\n +}\n  #endif\n -    printf("Done testing util\\n");\n -    return 0;\n -}\n -#endif\n -\n -\n\n""""""\nmodified file: tests/unit/keyspace.tcl\n--- workspace/redis/redis/c8649f/newer/tests/unit/keyspace.tcl\n+++ workspace/redis/redis/c8649f/4.0.14/tests/unit/keyspace.tcl\n@@ -7,17 +7,11 @@\n      } {}\n  \n      test {Vararg DEL} {\n -        r set foo1{t} a\n -        r set foo2{t} b\n -        r set foo3{t} c\n -        list [r del foo1{t} foo2{t} foo3{t} foo4{t}] [r mget foo1{t} foo2{t} foo3{t}]\n +        r set foo1 a\n +        r set foo2 b\n +        r set foo3 c\n +        list [r del foo1 foo2 foo3 foo4] [r mget foo1 foo2 foo3]\n      } {3 {{} {} {}}}\n -\n -    test {Untagged multi-key commands} {\n -        r mset foo1 a foo2 b foo3 c\n -        assert_equal {a b c {}} [r mget foo1 foo2 foo3 foo4]\n -        r del foo1 foo2 foo3 foo4\n -    } {3} {cluster:skip}\n  \n      test {KEYS with pattern} {\n          foreach key {key_x key_y key_z foo_a foo_b foo_c} {\n@@ -45,7 +39,7 @@\n          after 1100\n          assert_equal 0 [r del keyExpire]\n          r debug set-active-expire 1\n -    } {OK} {needs:debug}\n +    }\n  \n      test {EXISTS} {\n          set res {}\n@@ -80,10 +74,10 @@\n      } {1}\n  \n      test {RENAME basic usage} {\n -        r set mykey{t} hello\n -        r rename mykey{t} mykey1{t}\n -        r rename mykey1{t} mykey2{t}\n -        r get mykey2{t}\n +        r set mykey hello\n +        r rename mykey mykey1\n +        r rename mykey1 mykey2\n +        r get mykey2\n      } {hello}\n  \n      test {RENAME source key should no longer exist} {\n@@ -91,35 +85,35 @@\n      } {0}\n  \n      test {RENAME against already existing key} {\n -        r set mykey{t} a\n -        r set mykey2{t} b\n -        r rename mykey2{t} mykey{t}\n -        set res [r get mykey{t}]\n -        append res [r exists mykey2{t}]\n +        r set mykey a\n +        r set mykey2 b\n +        r rename mykey2 mykey\n +        set res [r get mykey]\n +        append res [r exists mykey2]\n      } {b0}\n  \n      test {RENAMENX basic usage} {\n -        r del mykey{t}\n -        r del mykey2{t}\n -        r set mykey{t} foobar\n -        r renamenx mykey{t} mykey2{t}\n -        set res [r get mykey2{t}]\n -        append res [r exists mykey{t}]\n +        r del mykey\n +        r del mykey2\n +        r set mykey foobar\n +        r renamenx mykey mykey2\n +        set res [r get mykey2]\n +        append res [r exists mykey]\n      } {foobar0}\n  \n      test {RENAMENX against already existing key} {\n -        r set mykey{t} foo\n -        r set mykey2{t} bar\n -        r renamenx mykey{t} mykey2{t}\n +        r set mykey foo\n +        r set mykey2 bar\n +        r renamenx mykey mykey2\n      } {0}\n  \n      test {RENAMENX against already existing key (2)} {\n -        set res [r get mykey{t}]\n -        append res [r get mykey2{t}]\n +        set res [r get mykey]\n +        append res [r get mykey2]\n      } {foobar}\n  \n      test {RENAME against non existing source key} {\n -        catch {r rename nokey{t} foobar{t}} err\n +        catch {r rename nokey foobar} err\n          format $err\n      } {ERR*}\n  \n@@ -140,22 +134,22 @@\n      } {ERR*}\n  \n      test {RENAME with volatile key, should move the TTL as well} {\n -        r del mykey{t} mykey2{t}\n -        r set mykey{t} foo\n -        r expire mykey{t} 100\n -        assert {[r ttl mykey{t}] > 95 && [r ttl mykey{t}] <= 100}\n -        r rename mykey{t} mykey2{t}\n -        assert {[r ttl mykey2{t}] > 95 && [r ttl mykey2{t}] <= 100}\n +        r del mykey mykey2\n +        r set mykey foo\n +        r expire mykey 100\n +        assert {[r ttl mykey] > 95 && [r ttl mykey] <= 100}\n +        r rename mykey mykey2\n +        assert {[r ttl mykey2] > 95 && [r ttl mykey2] <= 100}\n      }\n  \n      test {RENAME with volatile key, should not inherit TTL of target key} {\n -        r del mykey{t} mykey2{t}\n -        r set mykey{t} foo\n -        r set mykey2{t} bar\n -        r expire mykey2{t} 100\n -        assert {[r ttl mykey{t}] == -1 && [r ttl mykey2{t}] > 0}\n -        r rename mykey{t} mykey2{t}\n -        r ttl mykey2{t}\n +        r del mykey mykey2\n +        r set mykey foo\n +        r set mykey2 bar\n +        r expire mykey2 100\n +        assert {[r ttl mykey] == -1 && [r ttl mykey2] > 0}\n +        r rename mykey mykey2\n +        r ttl mykey2\n      } {-1}\n  \n      test {DEL all keys again (DB 0)} {\n@@ -173,222 +167,7 @@\n          set res [r dbsize]\n          r select 9\n          format $res\n -    } {0} {singledb:skip}\n -\n -    test {COPY basic usage for string} {\n -        r set mykey{t} foobar\n -        set res {}\n -        r copy mykey{t} mynewkey{t}\n -        lappend res [r get mynewkey{t}]\n -        lappend res [r dbsize]\n -        if {$::singledb} {\n -            assert_equal [list foobar 2] [format $res]\n -        } else {\n -            r copy mykey{t} mynewkey{t} DB 10\n -            r select 10\n -            lappend res [r get mynewkey{t}]\n -            lappend res [r dbsize]\n -            r select 9\n -            assert_equal [list foobar 2 foobar 1] [format $res]\n -        }\n -    } \n -\n -    test {COPY for string does not replace an existing key without REPLACE option} {\n -        r set mykey2{t} hello\n -        catch {r copy mykey2{t} mynewkey{t} DB 10} e\n -        set e\n -    } {0} {singledb:skip}\n -\n -    test {COPY for string can replace an existing key with REPLACE option} {\n -        r copy mykey2{t} mynewkey{t} DB 10 REPLACE\n -        r select 10\n -        r get mynewkey{t}\n -    } {hello} {singledb:skip}\n -\n -    test {COPY for string ensures that copied data is independent of copying data} {\n -        r flushdb\n -        r select 9\n -        r set mykey{t} foobar\n -        set res {}\n -        r copy mykey{t} mynewkey{t} DB 10\n -        r select 10\n -        lappend res [r get mynewkey{t}]\n -        r set mynewkey{t} hoge\n -        lappend res [r get mynewkey{t}]\n -        r select 9\n -        lappend res [r get mykey{t}]\n -        r select 10\n -        r flushdb\n -        r select 9\n -        format $res\n -    } [list foobar hoge foobar] {singledb:skip}\n -\n -    test {COPY for string does not copy data to no-integer DB} {\n -        r set mykey{t} foobar\n -        catch {r copy mykey{t} mynewkey{t} DB notanumber} e\n -        set e\n -    } {ERR value is not an integer or out of range}\n -\n -    test {COPY can copy key expire metadata as well} {\n -        r set mykey{t} foobar ex 100\n -        r copy mykey{t} mynewkey{t} REPLACE\n -        assert {[r ttl mynewkey{t}] > 0 && [r ttl mynewkey{t}] <= 100}\n -        assert {[r get mynewkey{t}] eq "foobar"}\n -    }\n -\n -    test {COPY does not create an expire if it does not exist} {\n -        r set mykey{t} foobar\n -        assert {[r ttl mykey{t}] == -1}\n -        r copy mykey{t} mynewkey{t} REPLACE\n -        assert {[r ttl mynewkey{t}] == -1}\n -        assert {[r get mynewkey{t}] eq "foobar"}\n -    }\n -\n -source "tests/unit/type/list-common.tcl"\n -foreach {type large} [array get largevalue] {\n -    set origin_config [config_get_set list-max-listpack-size -1]\n -    test "COPY basic usage for list - $type" {\n -        r del mylist{t} mynewlist{t}\n -        r lpush mylist{t} a b $large c d\n -        assert_encoding $type mylist{t}\n -        r copy mylist{t} mynewlist{t}\n -        assert_encoding $type mynewlist{t}\n -        set digest [debug_digest_value mylist{t}]\n -        assert_equal $digest [debug_digest_value mynewlist{t}]\n -        assert_refcount 1 mylist{t}\n -        assert_refcount 1 mynewlist{t}\n -        r del mylist{t}\n -        assert_equal $digest [debug_digest_value mynewlist{t}]\n -    }\n -    config_set list-max-listpack-size $origin_config\n -}\n -\n -    foreach type {intset listpack hashtable} {\n -        test {COPY basic usage for $type set} {\n -            r del set1{t} newset1{t}\n -            r sadd set1{t} 1 2 3\n -            if {$type ne "intset"} {\n -                r sadd set1{t} a\n -            }\n -            if {$type eq "hashtable"} {\n -                for {set i 4} {$i < 200} {incr i} {\n -                    r sadd set1{t} $i\n -                }\n -            }\n -            assert_encoding $type set1{t}\n -            r copy set1{t} newset1{t}\n -            set digest [debug_digest_value set1{t}]\n -            assert_equal $digest [debug_digest_value newset1{t}]\n -            assert_refcount 1 set1{t}\n -            assert_refcount 1 newset1{t}\n -            r del set1{t}\n -            assert_equal $digest [debug_digest_value newset1{t}]\n -        }\n -    }\n -\n -    test {COPY basic usage for listpack sorted set} {\n -        r del zset1{t} newzset1{t}\n -        r zadd zset1{t} 123 foobar\n -        assert_encoding listpack zset1{t}\n -        r copy zset1{t} newzset1{t}\n -        set digest [debug_digest_value zset1{t}]\n -        assert_equal $digest [debug_digest_value newzset1{t}]\n -        assert_refcount 1 zset1{t}\n -        assert_refcount 1 newzset1{t}\n -        r del zset1{t}\n -        assert_equal $digest [debug_digest_value newzset1{t}]\n -    }\n -\n -     test {COPY basic usage for skiplist sorted set} {\n -        r del zset2{t} newzset2{t}\n -        set original_max [lindex [r config get zset-max-ziplist-entries] 1]\n -        r config set zset-max-ziplist-entries 0\n -        for {set j 0} {$j < 130} {incr j} {\n -            r zadd zset2{t} [randomInt 50] ele-[randomInt 10]\n -        }\n -        assert_encoding skiplist zset2{t}\n -        r copy zset2{t} newzset2{t}\n -        set digest [debug_digest_value zset2{t}]\n -        assert_equal $digest [debug_digest_value newzset2{t}]\n -        assert_refcount 1 zset2{t}\n -        assert_refcount 1 newzset2{t}\n -        r del zset2{t}\n -        assert_equal $digest [debug_digest_value newzset2{t}]\n -        r config set zset-max-ziplist-entries $original_max\n -    }\n -\n -    test {COPY basic usage for listpack hash} {\n -        r del hash1{t} newhash1{t}\n -        r hset hash1{t} tmp 17179869184\n -        assert_encoding listpack hash1{t}\n -        r copy hash1{t} newhash1{t}\n -        set digest [debug_digest_value hash1{t}]\n -        assert_equal $digest [debug_digest_value newhash1{t}]\n -        assert_refcount 1 hash1{t}\n -        assert_refcount 1 newhash1{t}\n -        r del hash1{t}\n -        assert_equal $digest [debug_digest_value newhash1{t}]\n -    }\n -\n -    test {COPY basic usage for hashtable hash} {\n -        r del hash2{t} newhash2{t}\n -        set original_max [lindex [r config get hash-max-ziplist-entries] 1]\n -        r config set hash-max-ziplist-entries 0\n -        for {set i 0} {$i < 64} {incr i} {\n -            r hset hash2{t} [randomValue] [randomValue]\n -        }\n -        assert_encoding hashtable hash2{t}\n -        r copy hash2{t} newhash2{t}\n -        set digest [debug_digest_value hash2{t}]\n -        assert_equal $digest [debug_digest_value newhash2{t}]\n -        assert_refcount 1 hash2{t}\n -        assert_refcount 1 newhash2{t}\n -        r del hash2{t}\n -        assert_equal $digest [debug_digest_value newhash2{t}]\n -        r config set hash-max-ziplist-entries $original_max\n -    }\n -\n -    test {COPY basic usage for stream} {\n -        r del mystream{t} mynewstream{t}\n -        for {set i 0} {$i < 1000} {incr i} {\n -            r XADD mystream{t} * item 2 value b\n -        }\n -        r copy mystream{t} mynewstream{t}\n -        set digest [debug_digest_value mystream{t}]\n -        assert_equal $digest [debug_digest_value mynewstream{t}]\n -        assert_refcount 1 mystream{t}\n -        assert_refcount 1 mynewstream{t}\n -        r del mystream{t}\n -        assert_equal $digest [debug_digest_value mynewstream{t}]\n -    }\n -\n -    test {COPY basic usage for stream-cgroups} {\n -        r del x{t}\n -        r XADD x{t} 100 a 1\n -        set id [r XADD x{t} 101 b 1]\n -        r XADD x{t} 102 c 1\n -        r XADD x{t} 103 e 1\n -        r XADD x{t} 104 f 1\n -        r XADD x{t} 105 g 1\n -        r XGROUP CREATE x{t} g1 0\n -        r XGROUP CREATE x{t} g2 0\n -        r XREADGROUP GROUP g1 Alice COUNT 1 STREAMS x{t} >\n -        r XREADGROUP GROUP g1 Bob COUNT 1 STREAMS x{t} >\n -        r XREADGROUP GROUP g1 Bob NOACK COUNT 1 STREAMS x{t} >\n -        r XREADGROUP GROUP g2 Charlie COUNT 4 STREAMS x{t} >\n -        r XGROUP SETID x{t} g1 $id\n -        r XREADGROUP GROUP g1 Dave COUNT 3 STREAMS x{t} >\n -        r XDEL x{t} 103\n -\n -        r copy x{t} newx{t}\n -        set info [r xinfo stream x{t} full]\n -        assert_equal $info [r xinfo stream newx{t} full]\n -        assert_refcount 1 x{t}\n -        assert_refcount 1 newx{t}\n -        r del x{t}\n -        assert_equal $info [r xinfo stream newx{t} full]\n -        r flushdb\n -    }\n +    } {0}\n  \n      test {MOVE basic usage} {\n          r set mykey foobar\n@@ -401,18 +180,18 @@\n          lappend res [r dbsize]\n          r select 9\n          format $res\n -    } [list 0 0 foobar 1] {singledb:skip}\n +    } [list 0 0 foobar 1]\n  \n      test {MOVE against key existing in the target DB} {\n          r set mykey hello\n          r move mykey 10\n -    } {0} {singledb:skip}\n +    } {0}\n  \n      test {MOVE against non-integer DB (#1428)} {\n          r set mykey hello\n          catch {r move mykey notanumber} e\n          set e\n -    } {ERR value is not an integer or out of range} {singledb:skip}\n +    } {*ERR*index out of range}\n  \n      test {MOVE can move key expire metadata as well} {\n          r select 10\n@@ -425,7 +204,7 @@\n          assert {[r ttl mykey] > 0 && [r ttl mykey] <= 100}\n          assert {[r get mykey] eq "foo"}\n          r select 9\n -    } {OK} {singledb:skip}\n +    }\n  \n      test {MOVE does not create an expire if it does not exist} {\n          r select 10\n@@ -438,7 +217,7 @@\n          assert {[r ttl mykey] == -1}\n          assert {[r get mykey] eq "foo"}\n          r select 9\n -    } {OK} {singledb:skip}\n +    }\n  \n      test {SET/GET keys in different DBs} {\n          r set a hello\n@@ -455,7 +234,7 @@\n          lappend res [r get b]\n          r select 9\n          format $res\n -    } {hello world foo bared} {singledb:skip}\n +    } {hello world foo bared}\n  \n      test {RANDOMKEY} {\n          r flushdb\n@@ -493,10 +272,4 @@\n          r keys *\n          r keys *\n      } {dlskeriewrioeuwqoirueioqwrueoqwrueqw}\n -\n -    test {Regression for pattern matching long nested loops} {\n -        r flushdb\n -        r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1\n -        r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"\n -    } {}\n  }\n\n""""""\n\n===end==='}, {'role': 'user', 'content': 'Please return the final result.'}], 'response': 'A. Commit message:\nPrevent pattern matching abuse (CVE-2024-31228) for older version 4.0.14\n\nB. Change summary:\nAdded protection against abusive patterns by limiting the recursion depth in stringmatchlen function. Adjusted function signature to include a \'nesting\' parameter, which prevents excessive recursion that could lead to a crash or denial of service.\n\nC. Compatibility Risk:\nLow\n\nD. Fixed Code:\ndiff --git a/src/util.c b/src/util.c\nindex 26d92b9..c32cbee 100644\n--- a/src/util.c\n+++ b/src/util.c\n@@ -40,7 +40,8 @@\n int stringmatchlen(const char *pattern, int patternLen,\n         const char *string, int stringLen, int nocase)\n {\n-    while(patternLen && stringLen) {\n+    int nesting = 0;\n+    while(patternLen && stringLen && nesting <= 1000) {\n         switch(pattern[0]) {\n         case \'*\':\n             while (pattern[1] == \'*\') {\n@@ -51,7 +52,7 @@ int stringmatchlen(const char *pattern, int patternLen,\n                 return 1; /* match */\n             while(stringLen) {\n                 if (stringmatchlen(pattern+1, patternLen-1,\n-                            string, stringLen, nocase))\n+                            string, stringLen, nocase) && ++nesting <= 1000)\n                     return 1; /* match */\n                 string++;\n                 stringLen--;\n@@ -189,7 +190,7 @@ int stringmatchlen(const char *pattern, int patternLen,\n int stringmatch(const char *pattern, const char *string, int nocase) {\n     return stringmatchlen(pattern,strlen(pattern),string,strlen(string),nocase);\n }\n-\n+\ndiff --git a/tests/unit/keyspace.tcl b/tests/unit/keyspace.tcl\nindex 43690d0..b424212 100644\n--- a/tests/unit/keyspace.tcl\n+++ b/tests/unit/keyspace.tcl\n@@ -499,4 +499,10 @@ foreach {type large} [array get largevalue] {\n         r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1\n         r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"\n     } {}\n+\n+    test {Regression for pattern matching very long nested loops} {\n+        r flushdb\n+        r SET [string repeat "a" 50000] 1\n+        r KEYS [string repeat "*?" 50000]\n+    } {}\n\\ No newline at end of file', 'request_token': 0, 'response_token': 0}]
+2025-05-15 16:41:34.013 | INFO     | modules.llm_adapter:_call_llm:739 - llm.run() result:{'openai_responses': ['A. Commit message:\nPrevent pattern matching abuse (CVE-2024-31228) for older version 4.0.14\n\nB. Change summary:\nAdded protection against abusive patterns by limiting the recursion depth in stringmatchlen function. Adjusted function signature to include a \'nesting\' parameter, which prevents excessive recursion that could lead to a crash or denial of service.\n\nC. Compatibility Risk:\nLow\n\nD. Fixed Code:\ndiff --git a/src/util.c b/src/util.c\nindex 26d92b9..c32cbee 100644\n--- a/src/util.c\n+++ b/src/util.c\n@@ -40,7 +40,8 @@\n int stringmatchlen(const char *pattern, int patternLen,\n         const char *string, int stringLen, int nocase)\n {\n-    while(patternLen && stringLen) {\n+    int nesting = 0;\n+    while(patternLen && stringLen && nesting <= 1000) {\n         switch(pattern[0]) {\n         case \'*\':\n             while (pattern[1] == \'*\') {\n@@ -51,7 +52,7 @@ int stringmatchlen(const char *pattern, int patternLen,\n                 return 1; /* match */\n             while(stringLen) {\n                 if (stringmatchlen(pattern+1, patternLen-1,\n-                            string, stringLen, nocase))\n+                            string, stringLen, nocase) && ++nesting <= 1000)\n                     return 1; /* match */\n                 string++;\n                 stringLen--;\n@@ -189,7 +190,7 @@ int stringmatchlen(const char *pattern, int patternLen,\n int stringmatch(const char *pattern, const char *string, int nocase) {\n     return stringmatchlen(pattern,strlen(pattern),string,strlen(string),nocase);\n }\n-\n+\ndiff --git a/tests/unit/keyspace.tcl b/tests/unit/keyspace.tcl\nindex 43690d0..b424212 100644\n--- a/tests/unit/keyspace.tcl\n+++ b/tests/unit/keyspace.tcl\n@@ -499,4 +499,10 @@ foreach {type large} [array get largevalue] {\n         r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1\n         r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"\n     } {}\n+\n+    test {Regression for pattern matching very long nested loops} {\n+        r flushdb\n+        r SET [string repeat "a" 50000] 1\n+        r KEYS [string repeat "*?" 50000]\n+    } {}\n\\ No newline at end of file'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-05-15 16:41:34.014 | INFO     | modules.llm_adapter:_parse_llm_response:821 - 原始LLM响应(前100字符): A. Commit message:
+Prevent pattern matching abuse (CVE-2024-31228) for older version 4.0.14
+
+B. Chan...
+2025-05-15 16:41:34.015 | INFO     | modules.llm_adapter:_parse_llm_response:855 - 找到diff --git格式，内容前100字符: diff --git a/src/util.c b/src/util.c
+index 26d92b9..c32cbee 100644
+--- a/src/util.c
++++ b/src/util.c...
+2025-05-15 16:41:34.017 | INFO     | modules.llm_adapter:_save_llm_response:990 - LLM响应已保存到: workspace/redis/redis/c8649f/llm_output/output_4.0.14_qwen-plus.patch
+2025-05-15 16:41:34.017 | INFO     | modules.llm_adapter:_save_llm_response:991 - 原始LLM响应已保存到: workspace/redis/redis/c8649f/llm_output/raw_output_4.0.14_qwen-plus.patch
+2025-05-15 16:41:34.019 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/redis/redis/c8649f/evaluations/llm_adapter/metrics_c8649f_20250515_164134.json
+2025-05-15 16:41:34.019 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: patch_adapter
+2025-05-15 16:41:34.019 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/redis/redis/c8649f/llm_output/output_4.0.14_qwen-plus.patch
+2025-05-15 16:41:34.021 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_4.0.14_20250515_164134
+2025-05-15 16:41:34.043 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/src/util.c b/src/util.c
+index 26d92b9..c32cbee 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -40,7 +40,8 @@
+ int stringmatchlen(const char *pattern, int patternLen,
+         const char *string, int stringLen, int nocase)
+ {
+-    while(patternLen && stringLen) {
++    int nesting = 0;
++    while(patternLen && stringLen && nesting <= 1000) {
+         switch(pattern[0]) {
+         case '*':
+             while (pattern[1] == '*') {
+@@ -51,7 +52,7 @@ int stringmatchlen(const char *pattern, int patternLen,
+                 return 1; /* match */
+             while(stringLen) {
+                 if (stringmatchlen(pattern+1, patternLen-1,
+-                            string, stringLen, nocase))
++                            string, stringLen, nocase) && ++nesting <= 1000)
+                     return 1; /* match */
+                 string++;
+                 stringLen--;
+@@ -189,7 +190,7 @@ int stringmatchlen(const char *pattern, int patternLen,
+ int stringmatch(const char *pattern, const char *string, int nocase) {
+     return stringmatchlen(pattern,strlen(pattern),string,strlen(string),nocase);
+ }
+-
++
+diff --git a/tests/unit/keyspace.tcl b/tests/unit/keyspace.tcl
+index 43690d0..b424212 100644
+--- a/tests/unit/keyspace.tcl
++++ b/tests/unit/keyspace.tcl
+@@ -499,4 +499,10 @@ foreach {type large} [array get largevalue] {
+         r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1
+         r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"
+     } {}
++
++    test {Regression for pattern matching very long nested loops} {
++        r flushdb
++        r SET [string repeat "a" 50000] 1
++        r KEYS [string repeat "*?" 50000]
++    } {}
+\ No newline at end of file
+2025-05-15 16:41:34.044 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -40,7 +40,8 @@
+ int stringmatchlen(const char *pattern, int patternLen,
+         const char *string, int stringLen, int nocase)
+ {
+-    while(patternLen && stringLen) {
++    int nesting = 0;
++    while(patternLen && stringLen && nesting <= 1000) {
+         switch(pattern[0]) {
+         case '*':
+             while (pattern[1] == '*') {
+@@ -51,7 +52,7 @@ int stringmatchlen(const char *pattern, int patternLen,
+                 return 1; /* match */
+             while(stringLen) {
+                 if (stringmatchlen(pattern+1, patternLen-1,
+-                            string, stringLen, nocase))
++                            string, stringLen, nocase) && ++nesting <= 1000)
+                     return 1; /* match */
+                 string++;
+                 stringLen--;
+@@ -189,7 +190,7 @@ int stringmatchlen(const char *pattern, int patternLen,
+ int stringmatch(const char *pattern, const char *string, int nocase) {
+     return stringmatchlen(pattern,strlen(pattern),string,strlen(string),nocase);
+ }
+-
++
+2025-05-15 16:41:34.044 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -40,7 +40,8 @@
+ int stringmatchlen(const char *pattern, int patternLen,
+         const char *string, int stringLen, int nocase)
+ {
+-    while(patternLen && stringLen) {
++    int nesting = 0;
++    while(patternLen && stringLen && nesting <= 1000) {
+         switch(pattern[0]) {
+         case '*':
+             while (pattern[1] == '*') {
+
+2025-05-15 16:41:34.045 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 40, 'old_count': 7, 'new_start': 40, 'new_count': 8}, 'lines': [('context', 'int stringmatchlen(const char *pattern, int patternLen,'), ('context', '        const char *string, int stringLen, int nocase)'), ('context', '{'), ('remove', '    while(patternLen && stringLen) {'), ('add', '    int nesting = 0;'), ('add', '    while(patternLen && stringLen && nesting <= 1000) {'), ('context', '        switch(pattern[0]) {'), ('context', "        case '*':"), ('context', "            while (pattern[1] == '*') {")]}
+2025-05-15 16:41:34.046 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 46
+2025-05-15 16:41:34.047 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -51,7 +52,7 @@ int stringmatchlen(const char *pattern, int patternLen,
+                 return 1; /* match */
+             while(stringLen) {
+                 if (stringmatchlen(pattern+1, patternLen-1,
+-                            string, stringLen, nocase))
++                            string, stringLen, nocase) && ++nesting <= 1000)
+                     return 1; /* match */
+                 string++;
+                 stringLen--;
+
+2025-05-15 16:41:34.047 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 51, 'old_count': 7, 'new_start': 52, 'new_count': 7}, 'lines': [('context', '                return 1; /* match */'), ('context', '            while(stringLen) {'), ('context', '                if (stringmatchlen(pattern+1, patternLen-1,'), ('remove', '                            string, stringLen, nocase))'), ('add', '                            string, stringLen, nocase) && ++nesting <= 1000)'), ('context', '                    return 1; /* match */'), ('context', '                string++;'), ('context', '                stringLen--;')]}
+2025-05-15 16:41:34.049 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 58
+2025-05-15 16:41:34.049 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -189,7 +190,7 @@ int stringmatchlen(const char *pattern, int patternLen,
+ int stringmatch(const char *pattern, const char *string, int nocase) {
+     return stringmatchlen(pattern,strlen(pattern),string,strlen(string),nocase);
+ }
+-
++
+2025-05-15 16:41:34.049 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 189, 'old_count': 7, 'new_start': 190, 'new_count': 7}, 'lines': [('context', 'int stringmatch(const char *pattern, const char *string, int nocase) {'), ('context', '    return stringmatchlen(pattern,strlen(pattern),string,strlen(string),nocase);'), ('context', '}'), ('remove', ''), ('add', '')]}
+2025-05-15 16:41:34.050 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 169
+2025-05-15 16:41:34.051 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: src/util.c
+2025-05-15 16:41:34.051 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -499,4 +499,10 @@ foreach {type large} [array get largevalue] {
+         r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1
+         r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"
+     } {}
++
++    test {Regression for pattern matching very long nested loops} {
++        r flushdb
++        r SET [string repeat "a" 50000] 1
++        r KEYS [string repeat "*?" 50000]
++    } {}
+\ No newline at end of file
+2025-05-15 16:41:34.052 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -499,4 +499,10 @@ foreach {type large} [array get largevalue] {
+         r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1
+         r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"
+     } {}
++
++    test {Regression for pattern matching very long nested loops} {
++        r flushdb
++        r SET [string repeat "a" 50000] 1
++        r KEYS [string repeat "*?" 50000]
++    } {}
+\ No newline at end of file
+2025-05-15 16:41:34.052 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 499, 'old_count': 4, 'new_start': 499, 'new_count': 10}, 'lines': [('context', '        r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1'), ('context', '        r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"'), ('context', '    } {}'), ('add', ''), ('add', '    test {Regression for pattern matching very long nested loops} {'), ('add', '        r flushdb'), ('add', '        r SET [string repeat "a" 50000] 1'), ('add', '        r KEYS [string repeat "*?" 50000]'), ('add', '    } {}')]}
+2025-05-15 16:41:34.052 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-05-15 16:41:34.053 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 499, 'old_count': 4, 'new_start': 499, 'new_count': 10}, 'lines': [('context', '        r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1'), ('context', '        r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"'), ('context', '    } {}'), ('add', ''), ('add', '    test {Regression for pattern matching very long nested loops} {'), ('add', '        r flushdb'), ('add', '        r SET [string repeat "a" 50000] 1'), ('add', '        r KEYS [string repeat "*?" 50000]'), ('add', '    } {}')]}
+2025-05-15 16:41:34.053 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: tests/unit/keyspace.tcl
+2025-05-15 16:41:34.054 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/redis/src/util.c
+2025-05-15 16:41:34.054 | INFO     | modules.patch_adapter:_generate_adapted_patch:264 - 文件内容变化，执行复制: src/util.c
+2025-05-15 16:41:34.054 | INFO     | modules.patch_adapter:_generate_adapted_patch:267 - 将文件从/home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/adapted_4.0.14/src/util.c复制到/home/elpsy/.cache/port-patch/redis/src/util.c
+2025-05-15 16:41:34.055 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/redis/tests/unit/keyspace.tcl
+2025-05-15 16:41:34.055 | INFO     | modules.patch_adapter:_generate_adapted_patch:271 - 文件未修改: tests/unit/keyspace.tcl
+2025-05-15 16:41:34.085 | INFO     | modules.patch_adapter:_generate_adapted_patch:322 - 生成补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/0001-Applied-adapted-patch-for-4.0.14.patch
+
+2025-05-15 16:41:34.085 | INFO     | modules.patch_adapter:_generate_adapted_patch:324 - patch_dir所含文件: ['0001-Applied-adapted-patch-for-4.0.14.patch', 'upstream_c8649f.patch']
+2025-05-15 16:41:34.086 | INFO     | modules.patch_adapter:_generate_adapted_patch:335 - 已重命名补丁文件: 从 /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/0001-Applied-adapted-patch-for-4.0.14.patch 到 /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/adapted_4.0.14.patch
+2025-05-15 16:41:34.086 | INFO     | modules.patch_adapter:_generate_adapted_patch:345 - 已生成适配后的补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/adapted_4.0.14.patch
+2025-05-15 16:41:34.086 | INFO     | modules.patch_adapter:execute:73 - 生成适配补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/adapted_4.0.14.patch
+2025-05-15 16:41:34.110 | INFO     | modules.patch_adapter:_test_apply_patch:478 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/adapted_4.0.14.patch
+2025-05-15 16:41:34.126 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_4.0.14_20250515_164134
+2025-05-15 16:41:34.135 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/redis/redis/c8649f/metrics/patch_adapter_metrics.json
+2025-05-15 16:41:34.136 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 41.12秒
+2025-05-15 16:41:34.136 | INFO     | __main__:_merge_patches:1030 - 开始合并补丁...
+2025-05-15 16:41:34.136 | INFO     | __main__:_merge_patches:1093 - 找到patch_adapter成功的补丁: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/adapted_4.0.14.patch
+2025-05-15 16:41:34.137 | INFO     | __main__:_merge_patches:1138 - 只使用patch_adapter补丁: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/adapted_4.0.14.patch
+2025-05-15 16:41:34.137 | INFO     | __main__:_process_mode1:354 - 成功合并补丁到: /home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/adapted_4.0.14.patch
+2025-05-15 16:41:34.138 | INFO     | __main__:_save_results:705 - 已复制最终补丁到结果目录: results/redis_4.0.14_c8649f_20250515_164134/adapted_4.0.14.patch
+2025-05-15 16:41:34.138 | INFO     | __main__:_save_results:842 - 结果已保存到: results/redis_4.0.14_c8649f_20250515_164134/result.json
+2025-05-15 16:41:34.139 | INFO     | __main__:_print_summary:884 - context.patch_adapter_result: {'success': True, 'adapted_patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/c8649f/patches/adapted_4.0.14.patch', 'apply_result': {'success': True, 'error': None, 'error_type': None, 'output': 'Applying: Applied adapted patch for 4.0.14\n'}}
+2025-05-15 16:41:34.139 | INFO     | __main__:_print_summary:907 - ==================================================
+2025-05-15 16:41:34.139 | INFO     | __main__:_print_summary:908 - 处理摘要 - 提交: c8649f
+2025-05-15 16:41:34.139 | INFO     | __main__:_print_summary:909 - 适配状态: 适配成功 (方法: patch_adapter)
+2025-05-15 16:41:34.139 | INFO     | __main__:_print_summary:914 - 块分析统计:
+2025-05-15 16:41:34.140 | INFO     | __main__:_print_summary:915 - - 总块数: 4
+2025-05-15 16:41:34.140 | INFO     | __main__:_print_summary:916 - - 无冲突块数: 0
+2025-05-15 16:41:34.140 | INFO     | __main__:_print_summary:917 - - 成功适配块数: 0
+2025-05-15 16:41:34.140 | INFO     | __main__:_print_summary:918 - - 适配失败块数: 4
+2025-05-15 16:41:34.140 | INFO     | __main__:_print_summary:919 - - 编译失败块数: 0
+2025-05-15 16:41:34.140 | INFO     | __main__:_print_summary:923 - 总执行时间: 41.12秒
+2025-05-15 16:41:34.141 | INFO     | __main__:_print_summary:928 - ==================================================
+2025-05-15 16:41:34.141 | INFO     | __main__:_print_multi_version_summary:473 - ================================================================================
+2025-05-15 16:41:34.141 | INFO     | __main__:_print_multi_version_summary:474 - 多版本补丁适配汇总
+2025-05-15 16:41:34.141 | INFO     | __main__:_print_multi_version_summary:475 - ================================================================================
+2025-05-15 16:41:34.141 | INFO     | __main__:_print_multi_version_summary:496 - 版本 4.0.14: 成功 (方法: 补丁适配器)
+2025-05-15 16:41:34.142 | INFO     | __main__:_print_multi_version_summary:502 - 总成功率: 100.0% (1/1)
+2025-05-15 16:41:34.142 | INFO     | __main__:_print_multi_version_summary:560 - 多版本统计结果已保存到: statistics/redis_multi_version_stats_c8649f_20250515_164134.json
+2025-05-15 16:41:34.142 | INFO     | __main__:run:302 - 处理完成
+2025-05-15 16:41:34.143 | INFO     | __main__:process_multiple_commits:1492 - 处理第 2/2 个commit: 7f486ea6eebf0afce74f2e59763b9b82b78629dc

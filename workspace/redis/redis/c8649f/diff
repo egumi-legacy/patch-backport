@@ -1,6 +1,1591 @@
-The file does not exist in the older (target) version: src/util.c
+modified file: src/util.c
+--- workspace/redis/redis/c8649f/newer/src/util.c
++++ workspace/redis/redis/c8649f/4.0.14/src/util.c
+@@ -28,7 +28,6 @@
+   */
+  
+  #include "fmacros.h"
+ -#include "fpconv_dtoa.h"
+  #include <stdlib.h>
+  #include <stdio.h>
+  #include <string.h>
+@@ -40,54 +39,35 @@
+  #include <float.h>
+  #include <stdint.h>
+  #include <errno.h>
+ -#include <time.h>
+ -#include <sys/stat.h>
+ -#include <dirent.h>
+ -#include <fcntl.h>
+ -#include <libgen.h>
+  
+  #include "util.h"
+ -#include "sha256.h"
+ -#include "config.h"
+ -
+ -#define UNUSED(x) ((void)(x))
+ +#include "sha1.h"
+  
+ -static int stringmatchlen_impl(const char *pattern, int patternLen,
+ -        const char *string, int stringLen, int nocase, int *skipLongerMatches)
+ +int stringmatchlen(const char *pattern, int patternLen,
+ +        const char *string, int stringLen, int nocase)
+  {
+      while(patternLen && stringLen) {
+          switch(pattern[0]) {
+          case '*':
+ -            while (patternLen && pattern[1] == '*') {
+ +            while (pattern[1] == '*') {
+                  pattern++;
+                  patternLen--;
+              }
+              if (patternLen == 1)
+                  return 1; /* match */
+              while(stringLen) {
+ -                if (stringmatchlen_impl(pattern+1, patternLen-1,
+ -                            string, stringLen, nocase, skipLongerMatches))
+ +                if (stringmatchlen(pattern+1, patternLen-1,
+ +                            string, stringLen, nocase))
+                      return 1; /* match */
+ -                if (*skipLongerMatches)
+ -                    return 0; /* no match */
+                  string++;
+                  stringLen--;
+              }
+ -            /* There was no match for the rest of the pattern starting
+ -             * from anywhere in the rest of the string. If there were
+ -             * any '*' earlier in the pattern, we can terminate the
+ -             * search early without trying to match them to longer
+ -             * substrings. This is because a longer match for the
+ -             * earlier part of the pattern would require the rest of the
+ -             * pattern to match starting later in the string, and we
+ -             * have just determined that there is no match for the rest
+ -             * of the pattern starting from anywhere in the current
+ -             * string. */
+ -            *skipLongerMatches = 1;
+              return 0; /* no match */
+              break;
+          case '?':
+ +            if (stringLen == 0)
+ +                return 0; /* no match */
+              string++;
+              stringLen--;
+              break;
+@@ -115,7 +95,7 @@
+                      pattern--;
+                      patternLen++;
+                      break;
+ -                } else if (patternLen >= 3 && pattern[1] == '-') {
+ +                } else if (pattern[1] == '-' && patternLen >= 3) {
+                      int start = pattern[0];
+                      int end = pattern[2];
+                      int c = string[0];
+@@ -186,55 +166,29 @@
+      return 0;
+  }
+  
+ -int stringmatchlen(const char *pattern, int patternLen,
+ -        const char *string, int stringLen, int nocase) {
+ -    int skipLongerMatches = 0;
+ -    return stringmatchlen_impl(pattern,patternLen,string,stringLen,nocase,&skipLongerMatches);
+ -}
+ -
+  int stringmatch(const char *pattern, const char *string, int nocase) {
+      return stringmatchlen(pattern,strlen(pattern),string,strlen(string),nocase);
+  }
+  
+ -/* Fuzz stringmatchlen() trying to crash it with bad input. */
+ -int stringmatchlen_fuzz_test(void) {
+ -    char str[32];
+ -    char pat[32];
+ -    int cycles = 10000000;
+ -    int total_matches = 0;
+ -    while(cycles--) {
+ -        int strlen = rand() % sizeof(str);
+ -        int patlen = rand() % sizeof(pat);
+ -        for (int j = 0; j < strlen; j++) str[j] = rand() % 128;
+ -        for (int j = 0; j < patlen; j++) pat[j] = rand() % 128;
+ -        total_matches += stringmatchlen(pat, patlen, str, strlen, 0);
+ -    }
+ -    return total_matches;
+ -}
+ -
+ -
+ -unsigned long long memtoull(const char *p, int *err) {
+ +long long memtoll(const char *p, int *err) {
+      const char *u;
+      char buf[128];
+      long mul; /* unit multiplier */
+ -    unsigned long long val;
+ +    long long val;
+      unsigned int digits;
+  
+      if (err) *err = 0;
+  
+      u = p;
+ -    if (*u == '-') {
+ -        if (err) *err = 1;
+ -        return 0;
+ -    }
+ +    if (*u == '-') u++;
+      while(*u && isdigit(*u)) u++;
+      if (*u == '\0' || !strcasecmp(u,"b")) {
+          mul = 1;
+@@ -267,39 +221,12 @@
+  
+      char *endptr;
+      errno = 0;
+ -    val = strtoull(buf,&endptr,10);
+ +    val = strtoll(buf,&endptr,10);
+      if ((val == 0 && errno == EINVAL) || *endptr != '\0') {
+          if (err) *err = 1;
+          return 0;
+      }
+      return val*mul;
+ -}
+ -
+ -/* Search a memory buffer for any set of bytes, like strpbrk().
+ - * Returns pointer to first found char or NULL.
+ - */
+ -const char *mempbrk(const char *s, size_t len, const char *chars, size_t charslen) {
+ -    for (size_t j = 0; j < len; j++) {
+ -        for (size_t n = 0; n < charslen; n++)
+ -            if (s[j] == chars[n]) return &s[j];
+ -    }
+ -
+ -    return NULL;
+ -}
+ -
+ -/* Modify the buffer replacing all occurrences of chars from the 'from'
+ - * set with the corresponding char in the 'to' set. Always returns s.
+ - */
+ -char *memmapchars(char *s, size_t len, const char *from, const char *to, size_t setlen) {
+ -    for (size_t j = 0; j < len; j++) {
+ -        for (size_t i = 0; i < setlen; i++) {
+ -            if (s[j] == from[i]) {
+ -                s[j] = to[i];
+ -                break;
+ -            }
+ -        }
+ -    }
+ -    return s;
+  }
+  
+ + * If the buffer is not big enough to store the string, 0 is returned.
+ + *
+ + * Based on the following article (that apparently does not provide a
+ + * novel approach but only publicizes an already used technique):
+ + *
+ + * https://www.facebook.com/notes/facebook-engineering/three-optimization-tips-for-c/10151361643253920
+ + *
+ + * Modified in order to handle signed integers since the original code was
+ + * designed for unsigned integers. */
+  int ll2string(char *dst, size_t dstlen, long long svalue) {
+ +    static const char digits[201] =
+ +        "0001020304050607080910111213141516171819"
+ +        "2021222324252627282930313233343536373839"
+ +        "4041424344454647484950515253545556575859"
+ +        "6061626364656667686970717273747576777879"
+ +        "8081828384858687888990919293949596979899";
+ +    int negative;
+      unsigned long long value;
+ -    int negative = 0;
+ -
+ -    /* The ull2string function with 64bit unsigned integers for simplicity, so
+ +
+ +    /* The main loop works with 64bit unsigned integers for simplicity, so
+       * we convert the number here and remember if it is negative. */
+      if (svalue < 0) {
+          if (svalue != LLONG_MIN) {
+@@ -351,51 +292,20 @@
+          } else {
+              value = ((unsigned long long) LLONG_MAX)+1;
+          }
+ -        if (dstlen < 2)
+ -            goto err;
+          negative = 1;
+ -        dst[0] = '-';
+ -        dst++;
+ -        dstlen--;
+      } else {
+          value = svalue;
+ -    }
+ -
+ -    /* Converts the unsigned long long value to string*/
+ -    int length = ull2string(dst, dstlen, value);
+ -    if (length == 0) return 0;
+ -    return length + negative;
+ -
+ -err:
+ -    /* force add Null termination */
+ -    if (dstlen > 0)
+ -        dst[0] = '\0';
+ -    return 0;
+ -}
+ -
+ -/* Convert a unsigned long long into a string. Returns the number of
+ - * characters needed to represent the number.
+ - * If the buffer is not big enough to store the string, 0 is returned.
+ - *
+ - * Based on the following article (that apparently does not provide a
+ - * novel approach but only publicizes an already used technique):
+ - *
+ - * https://www.facebook.com/notes/facebook-engineering/three-optimization-tips-for-c/10151361643253920 */
+ -int ull2string(char *dst, size_t dstlen, unsigned long long value) {
+ -    static const char digits[201] =
+ -        "0001020304050607080910111213141516171819"
+ -        "2021222324252627282930313233343536373839"
+ -        "4041424344454647484950515253545556575859"
+ -        "6061626364656667686970717273747576777879"
+ -        "8081828384858687888990919293949596979899";
+ +        negative = 0;
+ +    }
+  
+ -    uint32_t length = digits10(value);
+ -    if (length >= dstlen) goto err;;
+ +    uint32_t const length = digits10(value)+negative;
+ +    if (length >= dstlen) return 0;
+  
+ -    uint32_t next = length - 1;
+ -    dst[next + 1] = '\0';
+ +    uint32_t next = length;
+ +    dst[next] = '\0';
+ +    next--;
+      while (value >= 100) {
+          int const i = (value % 100) * 2;
+          value /= 100;
+@@ -412,12 +322,10 @@
+          dst[next] = digits[i + 1];
+          dst[next - 1] = digits[i];
+      }
+ +
+ +    /* Add sign. */
+ +    if (negative) dst[0] = '-';
+      return length;
+ -err:
+ -    /* force add Null termination */
+ -    if (dstlen > 0)
+ -        dst[0] = '\0';
+ -    return 0;
+  }
+  
+ -    if (plen == slen || slen >= LONG_STR_SIZE)
+ +    if (plen == slen)
+          return 0;
+  
+@@ -448,8 +355,6 @@
+          return 1;
+      }
+  
+ -    /* Handle negative numbers: just set a flag and continue like if it
+ -     * was a positive number. Later convert into negative. */
+      if (p[0] == '-') {
+          negative = 1;
+          p++; plen++;
+@@ -463,11 +368,13 @@
+      if (p[0] >= '1' && p[0] <= '9') {
+          v = p[0]-'0';
+          p++; plen++;
+ +    } else if (p[0] == '0' && slen == 1) {
+ +        *value = 0;
+ +        return 1;
+      } else {
+          return 0;
+      }
+  
+ -    /* Parse all the other digits, checking for overflow at every step. */
+      while (plen < slen && p[0] >= '0' && p[0] <= '9') {
+          if (v > (ULLONG_MAX / 10)) /* Overflow. */
+              return 0;
+@@ -484,8 +391,6 @@
+      if (plen < slen)
+          return 0;
+  
+ -    /* Convert to negative if needed, and do the final overflow check when
+ -     * converting from unsigned long long to long long. */
+      if (negative) {
+          if (v > ((unsigned long long)(-(LLONG_MIN+1))+1)) /* Overflow. */
+              return 0;
+@@ -498,26 +403,6 @@
+      return 1;
+  }
+  
+ -/* Helper function to convert a string to an unsigned long long value.
+ - * The function attempts to use the faster string2ll() function inside
+ - * Redis: if it fails, strtoull() is used instead. The function returns
+ - * 1 if the conversion happened successfully or 0 if the number is
+ - * invalid or out of range. */
+ -int string2ull(const char *s, unsigned long long *value) {
+ -    long long ll;
+ -    if (string2ll(s,strlen(s),&ll)) {
+ -        if (ll < 0) return 0; /* Negative values are out of range. */
+ -        *value = ll;
+ -        return 1;
+ -    }
+ -    errno = 0;
+ -    char *endptr = NULL;
+ -    *value = strtoull(s,&endptr,10);
+ -    if (errno == EINVAL || errno == ERANGE || !(*s != '\0' && *endptr == '\0'))
+ -        return 0; /* strtoull() failed. */
+ -    return 1; /* Conversion done! */
+ -}
+ -
+@@ -542,20 +427,19 @@
+   * a double: no spaces or other characters before or after the string
+   * representing the number are accepted. */
+  int string2ld(const char *s, size_t slen, long double *dp) {
+ -    char buf[MAX_LONG_DOUBLE_CHARS];
+ +    char buf[256];
+      long double value;
+      char *eptr;
+  
+ -    if (slen == 0 || slen >= sizeof(buf)) return 0;
+ +    if (slen >= sizeof(buf)) return 0;
+      memcpy(buf,s,slen);
+      buf[slen] = '\0';
+  
+      errno = 0;
+      value = strtold(buf, &eptr);
+      if (isspace(buf[0]) || eptr[0] != '\0' ||
+ -        (size_t)(eptr-buf) != slen ||
+          (errno == ERANGE &&
+ -            (value == HUGE_VAL || value == -HUGE_VAL || fpclassify(value) == FP_ZERO)) ||
+ +            (value == HUGE_VAL || value == -HUGE_VAL || value == 0)) ||
+          errno == EINVAL ||
+          isnan(value))
+          return 0;
+@@ -564,71 +448,15 @@
+      return 1;
+  }
+  
+ -/* Convert a string into a double. Returns 1 if the string could be parsed
+ - * into a (non-overflowing) double, 0 otherwise. The value will be set to
+ - * the parsed value when appropriate.
+ - *
+ - * Note that this function demands that the string strictly represents
+ - * a double: no spaces or other characters before or after the string
+ - * representing the number are accepted. */
+ -int string2d(const char *s, size_t slen, double *dp) {
+ -    errno = 0;
+ -    char *eptr;
+ -    *dp = strtod(s, &eptr);
+ -    if (slen == 0 ||
+ -        isspace(((const char*)s)[0]) ||
+ -        (size_t)(eptr-(char*)s) != slen ||
+ -        (errno == ERANGE &&
+ -            (*dp == HUGE_VAL || *dp == -HUGE_VAL || fpclassify(*dp) == FP_ZERO)) ||
+ -        isnan(*dp))
+ -        return 0;
+ -    return 1;
+ -}
+ -
+ -/* Returns 1 if the double value can safely be represented in long long without
+ - * precision loss, in which case the corresponding long long is stored in the out variable. */
+ -int double2ll(double d, long long *out) {
+ -#if (DBL_MANT_DIG >= 52) && (DBL_MANT_DIG <= 63) && (LLONG_MAX == 0x7fffffffffffffffLL)
+ -    /* Check if the float is in a safe range to be casted into a
+ -     * long long. We are assuming that long long is 64 bit here.
+ -     * Also we are assuming that there are no implementations around where
+ -     * double has precision < 52 bit.
+ -     *
+ -     * Under this assumptions we test if a double is inside a range
+ -     * where casting to long long is safe. Then using two castings we
+ -     * make sure the decimal part is zero. If all this is true we can use
+ -     * integer without precision loss.
+ -     *
+ -     * Note that numbers above 2^52 and below 2^63 use all the fraction bits as real part,
+ -     * and the exponent bits are positive, which means the "decimal" part must be 0.
+ -     * i.e. all double values in that range are representable as a long without precision loss,
+ -     * but not all long values in that range can be represented as a double.
+ -     * we only care about the first part here. */
+ -    if (d < (double)(-LLONG_MAX/2) || d > (double)(LLONG_MAX/2))
+ -        return 0;
+ -    long long ll = d;
+ -    if (ll == d) {
+ -        *out = ll;
+ -        return 1;
+ -    }
+ -#endif
+ -    return 0;
+ -}
+ -
+ + * does. It is intented mainly to be used inside t_zset.c when writing scores
+ + * into a ziplist representing a sorted set. */
+  int d2string(char *buf, size_t len, double value) {
+      if (isnan(value)) {
+ -        /* Libc in some systems will format nan in a different way,
+ -         * like nan, -nan, NAN, nan(char-sequence).
+ -         * So we normalize it and create a single nan form in an explicit way. */
+          len = snprintf(buf,len,"nan");
+      } else if (isinf(value)) {
+ -        /* Libc in odd systems (Hi Solaris!) will format infinite in a
+ -         * different way, so better to handle it in an explicit way. */
+          if (value < 0)
+              len = snprintf(buf,len,"-inf");
+          else
+@@ -640,160 +468,42 @@
+          else
+              len = snprintf(buf,len,"0");
+      } else {
+ -        long long lvalue;
+ -        /* Integer printing function is much faster, check if we can safely use it. */
+ -        if (double2ll(value, &lvalue))
+ -            len = ll2string(buf,len,lvalue);
+ -        else {
+ -            len = fpconv_dtoa(value, buf);
+ -            buf[len] = '\0';
+ -        }
+ +#if (DBL_MANT_DIG >= 52) && (LLONG_MAX == 0x7fffffffffffffffLL)
+ +        /* Check if the float is in a safe range to be casted into a
+ +         * long long. We are assuming that long long is 64 bit here.
+ +         * Also we are assuming that there are no implementations around where
+ +         * double has precision < 52 bit.
+ +         *
+ +         * Under this assumptions we test if a double is inside an interval
+ +         * where casting to long long is safe. Then using two castings we
+ +         * make sure the decimal part is zero. If all this is true we use
+ +         * integer printing function that is much faster. */
+ +        double min = -4503599627370495; /* (2^52)-1 */
+ +        double max = 4503599627370496; /* -(2^52) */
+ +        if (value > min && value < max && value == ((double)((long long)value)))
+ +            len = ll2string(buf,len,(long long)value);
+ +        else
+ +#endif
+ +            len = snprintf(buf,len,"%.17g",value);
+      }
+  
+      return len;
+  }
+  
+ -/* Convert a double into a string with 'fractional_digits' digits after the dot precision.
+ - * This is an optimized version of snprintf "%.<fractional_digits>f".
+ - * We convert the double to long and multiply it  by 10 ^ <fractional_digits> to shift
+ - * the decimal places.
+ - * Note that multiply it of input value by 10 ^ <fractional_digits> can overflow but on the scenario
+ - * that we currently use within redis this that is not possible.
+ - * After we get the long representation we use the logic from ull2string function on this file
+ - * which is based on the following article:
+ - * https://www.facebook.com/notes/facebook-engineering/three-optimization-tips-for-c/10151361643253920
+ - *
+ - * Input values:
+ - * char: the buffer to store the string representation
+ - * dstlen: the buffer length
+ - * dvalue: the input double
+ - * fractional_digits: the number of fractional digits after the dot precision. between 1 and 17
+ - *
+ - * Return values:
+ - * Returns the number of characters needed to represent the number.
+ - * If the buffer is not big enough to store the string, 0 is returned.
+ - */
+ -int fixedpoint_d2string(char *dst, size_t dstlen, double dvalue, int fractional_digits) {
+ -    if (fractional_digits < 1 || fractional_digits > 17)
+ -        goto err;
+ -    /* min size of 2 ( due to 0. ) + n fractional_digitits + \0 */
+ -    if ((int)dstlen < (fractional_digits+3))
+ -        goto err;
+ -    if (dvalue == 0) {
+ -        dst[0] = '0';
+ -        dst[1] = '.';
+ -        memset(dst + 2, '0', fractional_digits);
+ -        dst[fractional_digits+2] = '\0';
+ -        return fractional_digits + 2;
+ -    }
+ -    /* scale and round */
+ -    static double powers_of_ten[] = {1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0,
+ -    10000000.0, 100000000.0, 1000000000.0, 10000000000.0, 100000000000.0, 1000000000000.0,
+ -    10000000000000.0, 100000000000000.0, 1000000000000000.0, 10000000000000000.0,
+ -    100000000000000000.0 };
+ -    long long svalue = llrint(dvalue * powers_of_ten[fractional_digits]);
+ -    unsigned long long value;
+ -    /* write sign */
+ -    int negative = 0;
+ -    if (svalue < 0) {
+ -        if (svalue != LLONG_MIN) {
+ -            value = -svalue;
+ -        } else {
+ -            value = ((unsigned long long) LLONG_MAX)+1;
+ -        }
+ -        if (dstlen < 2)
+ -            goto err;
+ -        negative = 1;
+ -        dst[0] = '-';
+ -        dst++;
+ -        dstlen--;
+ -    } else {
+ -        value = svalue;
+ -    }
+ -
+ -    static const char digitsd[201] =
+ -        "0001020304050607080910111213141516171819"
+ -        "2021222324252627282930313233343536373839"
+ -        "4041424344454647484950515253545556575859"
+ -        "6061626364656667686970717273747576777879"
+ -        "8081828384858687888990919293949596979899";
+ -
+ -    /* Check length. */
+ -    uint32_t ndigits = digits10(value);
+ -    if (ndigits >= dstlen) goto err;
+ -    int integer_digits = ndigits - fractional_digits;
+ -    /* Fractional only check to avoid representing 0.7750 as .7750.
+ -     * This means we need to increment the length and store 0 as the first character.
+ -     */
+ -    if (integer_digits < 1) {
+ -        dst[0] = '0';
+ -        integer_digits = 1;
+ -    }
+ -    dst[integer_digits] = '.';
+ -    int size = integer_digits + 1 + fractional_digits;
+ -    /* fill with 0 from fractional digits until size */
+ -    memset(dst + integer_digits + 1, '0', fractional_digits);
+ -    int next = size - 1;
+ -    while (value >= 100) {
+ -        int const i = (value % 100) * 2;
+ -        value /= 100;
+ -        dst[next] = digitsd[i + 1];
+ -        dst[next - 1] = digitsd[i];
+ -        next -= 2;
+ -        /* dot position */
+ -        if (next == integer_digits) {
+ -            next--;
+ -        }
+ -    }
+ -
+ -    /* Handle last 1-2 digits. */
+ -    if (value < 10) {
+ -        dst[next] = '0' + (uint32_t) value;
+ -    } else {
+ -        int i = (uint32_t) value * 2;
+ -        dst[next] = digitsd[i + 1];
+ -        dst[next - 1] = digitsd[i];
+ -    }
+ -    /* Null term. */
+ -    dst[size] = '\0';
+ -    return size + negative;
+ -err:
+ -    /* force add Null termination */
+ -    if (dstlen > 0)
+ -        dst[0] = '\0';
+ -    return 0;
+ -}
+ -
+ -/* Trims off trailing zeros from a string representing a double. */
+ -int trimDoubleString(char *buf, size_t len) {
+ -    if (strchr(buf,'.') != NULL) {
+ -        char *p = buf+len-1;
+ -        while(*p == '0') {
+ -            p--;
+ -            len--;
+ -        }
+ -        if (*p == '.') len--;
+ -    }
+ -    buf[len] = '\0';
+ -    return len;
+ -}
+ -
+ -/* Create a string object from a long double.
+ - * If mode is humanfriendly it does not use exponential format and trims trailing
+ - * zeroes at the end (may result in loss of precision).
+ - * If mode is default exp format is used and the output of snprintf()
+ - * is not modified (may result in loss of precision).
+ - * If mode is hex hexadecimal format is used (no loss of precision)
+ +/* Convert a long double into a string. If humanfriendly is non-zero
+ + * it does not use exponential format and trims trailing zeroes at the end,
+ + * however this results in loss of precision. Otherwise exp format is used
+ + * and the output of snprintf() is not modified.
+   *
+   * The function returns the length of the string or zero if there was not
+   * enough buffer room to store it. */
+ -int ld2string(char *buf, size_t len, long double value, ld2string_mode mode) {
+ -    size_t l = 0;
+ +int ld2string(char *buf, size_t len, long double value, int humanfriendly) {
+ +    size_t l;
+  
+      if (isinf(value)) {
+ -        if (len < 5) goto err; /* No room. 5 is "-inf\0" */
+ +        if (len < 5) return 0; /* No room. 5 is "-inf\0" */
+          if (value > 0) {
+              memcpy(buf,"inf",3);
+              l = 3;
+@@ -801,66 +511,42 @@
+              memcpy(buf,"-inf",4);
+              l = 4;
+          }
+ -    } else if (isnan(value)) {
+ -        /* Libc in some systems will format nan in a different way,
+ -         * like nan, -nan, NAN, nan(char-sequence).
+ -         * So we normalize it and create a single nan form in an explicit way. */
+ -        if (len < 4) goto err; /* No room. 4 is "nan\0" */
+ -        memcpy(buf, "nan", 3);
+ -        l = 3;
+ +    } else if (humanfriendly) {
+ +        /* We use 17 digits precision since with 128 bit floats that precision
+ +         * after rounding is able to represent most small decimal numbers in a
+ +         * way that is "non surprising" for the user (that is, most small
+ +         * decimal numbers will be represented in a way that when converted
+ +         * back into a string are exactly the same as what the user typed.) */
+ +        l = snprintf(buf,len,"%.17Lf", value);
+ +        if (l+1 > len) return 0; /* No room. */
+ +        /* Now remove trailing zeroes after the '.' */
+ +        if (strchr(buf,'.') != NULL) {
+ +            char *p = buf+l-1;
+ +            while(*p == '0') {
+ +                p--;
+ +                l--;
+ +            }
+ +            if (*p == '.') l--;
+ +        }
+      } else {
+ -        switch (mode) {
+ -        case LD_STR_AUTO:
+ -            l = snprintf(buf,len,"%.17Lg",value);
+ -            if (l+1 > len) goto err;; /* No room. */
+ -            break;
+ -        case LD_STR_HEX:
+ -            l = snprintf(buf,len,"%La",value);
+ -            if (l+1 > len) goto err; /* No room. */
+ -            break;
+ -        case LD_STR_HUMAN:
+ -            /* We use 17 digits precision since with 128 bit floats that precision
+ -             * after rounding is able to represent most small decimal numbers in a
+ -             * way that is "non surprising" for the user (that is, most small
+ -             * decimal numbers will be represented in a way that when converted
+ -             * back into a string are exactly the same as what the user typed.) */
+ -            l = snprintf(buf,len,"%.17Lf",value);
+ -            if (l+1 > len) goto err; /* No room. */
+ -            /* Now remove trailing zeroes after the '.' */
+ -            if (strchr(buf,'.') != NULL) {
+ -                char *p = buf+l-1;
+ -                while(*p == '0') {
+ -                    p--;
+ -                    l--;
+ -                }
+ -                if (*p == '.') l--;
+ -            }
+ -            if (l == 2 && buf[0] == '-' && buf[1] == '0') {
+ -                buf[0] = '0';
+ -                l = 1;
+ -            }
+ -            break;
+ -        default: goto err; /* Invalid mode. */
+ -        }
+ +        l = snprintf(buf,len,"%.17Lg", value);
+ +        if (l+1 > len) return 0; /* No room. */
+      }
+      buf[l] = '\0';
+      return l;
+ -err:
+ -    /* force add Null termination */
+ -    if (len > 0)
+ -        buf[0] = '\0';
+ -    return 0;
+ -}
+ -
+ -/* Get random bytes, attempts to get an initial seed from /dev/urandom and
+ - * the uses a one way hash function in counter mode to generate a random
+ - * stream. However if /dev/urandom is not available, a weaker seed is used.
+ - *
+ - * This function is not thread safe, since the state is global. */
+ -void getRandomBytes(unsigned char *p, size_t len) {
+ +}
+ +
+ +/* Generate the Redis "Run ID", a SHA1-sized random number that identifies a
+ + * given execution of Redis, so that if you are talking with an instance
+ + * having run_id == A, and you reconnect and it has run_id == B, you can be
+ + * sure that it is either a different instance or it was restarted. */
+ +void getRandomHexChars(char *p, unsigned int len) {
+ +    char *charset = "0123456789abcdef";
+ +    unsigned int j;
+ +
+      static int seed_initialized = 0;
+ -    static unsigned char seed[64]; /* 512 bit internal block size. */
+ +    static unsigned char seed[20]; /* The SHA1 seed, from /dev/urandom. */
+      static uint64_t counter = 0; /* The counter we hash with the seed. */
+  
+      if (!seed_initialized) {
+@@ -869,68 +555,62 @@
+           * function we just need non-colliding strings, there are no
+           * cryptographic security needs. */
+          FILE *fp = fopen("/dev/urandom","r");
+ -        if (fp == NULL || fread(seed,sizeof(seed),1,fp) != 1) {
+ -            /* Revert to a weaker seed, and in this case reseed again
+ -             * at every call.*/
+ -            for (unsigned int j = 0; j < sizeof(seed); j++) {
+ -                struct timeval tv;
+ -                gettimeofday(&tv,NULL);
+ -                pid_t pid = getpid();
+ -                seed[j] = tv.tv_sec ^ tv.tv_usec ^ pid ^ (long)fp;
+ -            }
+ -        } else {
+ +        if (fp && fread(seed,sizeof(seed),1,fp) == 1)
+              seed_initialized = 1;
+ -        }
+          if (fp) fclose(fp);
+      }
+  
+ -    while(len) {
+ -        /* This implements SHA256-HMAC. */
+ -        unsigned char digest[SHA256_BLOCK_SIZE];
+ -        unsigned char kxor[64];
+ -        unsigned int copylen =
+ -            len > SHA256_BLOCK_SIZE ? SHA256_BLOCK_SIZE : len;
+ -
+ -        /* IKEY: key xored with 0x36. */
+ -        memcpy(kxor,seed,sizeof(kxor));
+ -        for (unsigned int i = 0; i < sizeof(kxor); i++) kxor[i] ^= 0x36;
+ -
+ -        /* Obtain HASH(IKEY||MESSAGE). */
+ -        SHA256_CTX ctx;
+ -        sha256_init(&ctx);
+ -        sha256_update(&ctx,kxor,sizeof(kxor));
+ -        sha256_update(&ctx,(unsigned char*)&counter,sizeof(counter));
+ -        sha256_final(&ctx,digest);
+ -
+ -        /* OKEY: key xored with 0x5c. */
+ -        memcpy(kxor,seed,sizeof(kxor));
+ -        for (unsigned int i = 0; i < sizeof(kxor); i++) kxor[i] ^= 0x5C;
+ -
+ -        /* Obtain HASH(OKEY || HASH(IKEY||MESSAGE)). */
+ -        sha256_init(&ctx);
+ -        sha256_update(&ctx,kxor,sizeof(kxor));
+ -        sha256_update(&ctx,digest,SHA256_BLOCK_SIZE);
+ -        sha256_final(&ctx,digest);
+ -
+ -        /* Increment the counter for the next iteration. */
+ -        counter++;
+ -
+ -        memcpy(p,digest,copylen);
+ -        len -= copylen;
+ -        p += copylen;
+ -    }
+ -}
+ -
+ -/* Generate the Redis "Run ID", a SHA1-sized random number that identifies a
+ - * given execution of Redis, so that if you are talking with an instance
+ - * having run_id == A, and you reconnect and it has run_id == B, you can be
+ - * sure that it is either a different instance or it was restarted. */
+ -void getRandomHexChars(char *p, size_t len) {
+ -    char *charset = "0123456789abcdef";
+ -    size_t j;
+ -
+ -    getRandomBytes((unsigned char*)p,len);
+ -    for (j = 0; j < len; j++) p[j] = charset[p[j] & 0x0F];
+ +    if (seed_initialized) {
+ +        while(len) {
+ +            unsigned char digest[20];
+ +            SHA1_CTX ctx;
+ +            unsigned int copylen = len > 20 ? 20 : len;
+ +
+ +            SHA1Init(&ctx);
+ +            SHA1Update(&ctx, seed, sizeof(seed));
+ +            SHA1Update(&ctx, (unsigned char*)&counter,sizeof(counter));
+ +            SHA1Final(digest, &ctx);
+ +            counter++;
+ +
+ +            memcpy(p,digest,copylen);
+ +            /* Convert to hex digits. */
+ +            for (j = 0; j < copylen; j++) p[j] = charset[p[j] & 0x0F];
+ +            len -= copylen;
+ +            p += copylen;
+ +        }
+ +    } else {
+ +        /* If we can't read from /dev/urandom, do some reasonable effort
+ +         * in order to create some entropy, since this function is used to
+ +         * generate run_id and cluster instance IDs */
+ +        char *x = p;
+ +        unsigned int l = len;
+ +        struct timeval tv;
+ +        pid_t pid = getpid();
+ +
+ +        /* Use time and PID to fill the initial array. */
+ +        gettimeofday(&tv,NULL);
+ +        if (l >= sizeof(tv.tv_usec)) {
+ +            memcpy(x,&tv.tv_usec,sizeof(tv.tv_usec));
+ +            l -= sizeof(tv.tv_usec);
+ +            x += sizeof(tv.tv_usec);
+ +        }
+ +        if (l >= sizeof(tv.tv_sec)) {
+ +            memcpy(x,&tv.tv_sec,sizeof(tv.tv_sec));
+ +            l -= sizeof(tv.tv_sec);
+ +            x += sizeof(tv.tv_sec);
+ +        }
+ +        if (l >= sizeof(pid)) {
+ +            memcpy(x,&pid,sizeof(pid));
+ +            l -= sizeof(pid);
+ +            x += sizeof(pid);
+ +        }
+ +        /* Finally xor it with rand() output, that was already seeded with
+ +         * time() at startup, and convert to hex digits. */
+ +        for (j = 0; j < len; j++) {
+ +            p[j] ^= rand();
+ +            p[j] = charset[p[j] & 0x0F];
+ +        }
+ +    }
+  }
+  
+  sds getAbsolutePath(char *filename) {
+      char cwd[1024];
+@@ -985,23 +665,6 @@
+      return abspath;
+  }
+  
+ -/*
+ - * Gets the proper timezone in a more portable fashion
+ - * i.e timezone variables are linux specific.
+ - */
+ -long getTimeZone(void) {
+ -#if defined(__linux__) || defined(__sun)
+ -    return timezone;
+ -#else
+ -    struct timeval tv;
+ -    struct timezone tz;
+ -
+ -    gettimeofday(&tv, &tz);
+ -
+ -    return tz.tz_minuteswest * 60L;
+ -#endif
+ -}
+ -
+ -int fsyncFileDir(const char *filename) {
+ -#ifdef _AIX
+ -    /* AIX is unable to fsync a directory */
+ -    return 0;
+ -#endif
+ -    char temp_filename[PATH_MAX + 1];
+ -    char *dname;
+ -    int dir_fd;
+ -
+ -    if (strlen(filename) > PATH_MAX) {
+ -        errno = ENAMETOOLONG;
+ -        return -1;
+ -    }
+ -
+ -    /* In the glibc implementation dirname may modify their argument. */
+ -    memcpy(temp_filename, filename, strlen(filename) + 1);
+ -    dname = dirname(temp_filename);
+ -
+ -    dir_fd = open(dname, O_RDONLY);
+ -    if (dir_fd == -1) {
+ -        /* Some OSs don't allow us to open directories at all, just
+ -         * ignore the error in that case */
+ -        if (errno == EISDIR) {
+ -            return 0;
+ -        }
+ -        return -1;
+ -    }
+ -    /* Some OSs don't allow us to fsync directories at all, so we can ignore
+ -     * those errors. */
+ -    if (redis_fsync(dir_fd) == -1 && !(errno == EBADF || errno == EINVAL)) {
+ -        int save_errno = errno;
+ -        close(dir_fd);
+ -        errno = save_errno;
+ -        return -1;
+ -    }
+ -    
+ -    close(dir_fd);
+ -    return 0;
+ -}
+ -
+ - /* free OS pages backed by file */
+ -int reclaimFilePageCache(int fd, size_t offset, size_t length) {
+ -#ifdef HAVE_FADVISE
+ -    int ret = posix_fadvise(fd, offset, length, POSIX_FADV_DONTNEED);
+ -    if (ret) return -1;
+ -    return 0;
+ -#else
+ -    UNUSED(fd);
+ -    UNUSED(offset);
+ -    UNUSED(length);
+ -    return 0;
+ -#endif
+ -}
+ -
+  #ifdef REDIS_TEST
+  #include <assert.h>
+ -#include <sys/mman.h>
+ -#include "testhelp.h"
+  
+  static void test_string2ll(void) {
+      char buf[32];
+      long long v;
+  
+ -    redis_strlcpy(buf,"+1",sizeof(buf));
+ +    strcpy(buf,"+1");
+      assert(string2ll(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf," 1",sizeof(buf));
+ +    strcpy(buf," 1");
+      assert(string2ll(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"1 ",sizeof(buf));
+ +    strcpy(buf,"1 ");
+      assert(string2ll(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"01",sizeof(buf));
+ +    strcpy(buf,"01");
+      assert(string2ll(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"-1",sizeof(buf));
+ +    strcpy(buf,"-1");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == -1);
+  
+ -    redis_strlcpy(buf,"0",sizeof(buf));
+ +    strcpy(buf,"0");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == 0);
+  
+ -    redis_strlcpy(buf,"1",sizeof(buf));
+ +    strcpy(buf,"1");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == 1);
+  
+ -    redis_strlcpy(buf,"99",sizeof(buf));
+ +    strcpy(buf,"99");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == 99);
+  
+ -    redis_strlcpy(buf,"-99",sizeof(buf));
+ +    strcpy(buf,"-99");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == -99);
+  
+ -    redis_strlcpy(buf,"-9223372036854775808",sizeof(buf));
+ +    strcpy(buf,"-9223372036854775808");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == LLONG_MIN);
+  
+ -    redis_strlcpy(buf,"-9223372036854775809",sizeof(buf)); /* overflow */
+ +    strcpy(buf,"-9223372036854775809"); /* overflow */
+      assert(string2ll(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"9223372036854775807",sizeof(buf));
+ +    strcpy(buf,"9223372036854775807");
+      assert(string2ll(buf,strlen(buf),&v) == 1);
+      assert(v == LLONG_MAX);
+  
+ -    redis_strlcpy(buf,"9223372036854775808",sizeof(buf)); /* overflow */
+ +    strcpy(buf,"9223372036854775808"); /* overflow */
+      assert(string2ll(buf,strlen(buf),&v) == 0);
+  }
+  
+@@ -1213,46 +736,46 @@
+      long v;
+  
+ -    redis_strlcpy(buf,"+1",sizeof(buf));
+ +    strcpy(buf,"+1");
+      assert(string2l(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"01",sizeof(buf));
+ +    strcpy(buf,"01");
+      assert(string2l(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"-1",sizeof(buf));
+ +    strcpy(buf,"-1");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == -1);
+  
+ -    redis_strlcpy(buf,"0",sizeof(buf));
+ +    strcpy(buf,"0");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == 0);
+  
+ -    redis_strlcpy(buf,"1",sizeof(buf));
+ +    strcpy(buf,"1");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == 1);
+  
+ -    redis_strlcpy(buf,"99",sizeof(buf));
+ +    strcpy(buf,"99");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == 99);
+  
+ -    redis_strlcpy(buf,"-99",sizeof(buf));
+ +    strcpy(buf,"-99");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == -99);
+  
+  #if LONG_MAX != LLONG_MAX
+ -    redis_strlcpy(buf,"-2147483648",sizeof(buf));
+ +    strcpy(buf,"-2147483648");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == LONG_MIN);
+  
+ -    redis_strlcpy(buf,"-2147483649",sizeof(buf)); /* overflow */
+ +    strcpy(buf,"-2147483649"); /* overflow */
+      assert(string2l(buf,strlen(buf),&v) == 0);
+  
+ -    redis_strlcpy(buf,"2147483647",sizeof(buf));
+ +    strcpy(buf,"2147483647");
+      assert(string2l(buf,strlen(buf),&v) == 1);
+      assert(v == LONG_MAX);
+  
+ -    redis_strlcpy(buf,"2147483648",sizeof(buf)); /* overflow */
+ +    strcpy(buf,"2147483648"); /* overflow */
+      assert(string2l(buf,strlen(buf),&v) == 0);
+  #endif
+  }
+@@ -1298,134 +821,14 @@
+      assert(!strcmp(buf, "9223372036854775807"));
+  }
+  
+ -static void test_ld2string(void) {
+ -    char buf[32];
+ -    long double v;
+ -    int sz;
+ -
+ -    v = 0.0 / 0.0;
+ -    sz = ld2string(buf, sizeof(buf), v, LD_STR_AUTO);
+ -    assert(sz == 3);
+ -    assert(!strcmp(buf, "nan"));
+ -}
+ -
+ -static void test_fixedpoint_d2string(void) {
+ -    char buf[32];
+ -    double v;
+ -    int sz;
+ -    v = 0.0;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);
+ -    assert(sz == 6);
+ -    assert(!strcmp(buf, "0.0000"));
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 1);
+ -    assert(sz == 3);
+ -    assert(!strcmp(buf, "0.0"));
+ -    /* set junk in buffer */
+ -    memset(buf,'A',32);
+ -    v = 0.0001;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);
+ -    assert(sz == 6);
+ -    assert(buf[sz] == '\0');
+ -    assert(!strcmp(buf, "0.0001"));
+ -    /* set junk in buffer */
+ -    memset(buf,'A',32);
+ -    v = 6.0642951598391699e-05;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);
+ -    assert(sz == 6);
+ -    assert(buf[sz] == '\0');
+ -    assert(!strcmp(buf, "0.0001"));
+ -    v = 0.01;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);
+ -    assert(sz == 6);
+ -    assert(!strcmp(buf, "0.0100"));
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 1);
+ -    assert(sz == 3);
+ -    assert(!strcmp(buf, "0.0"));
+ -    v = -0.01;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);
+ -    assert(sz == 7);
+ -    assert(!strcmp(buf, "-0.0100"));
+ -     v = -0.1;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 1);
+ -    assert(sz == 4);
+ -    assert(!strcmp(buf, "-0.1"));
+ -    v = 0.1;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 1);
+ -    assert(sz == 3);
+ -    assert(!strcmp(buf, "0.1"));
+ -    v = 0.01;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 17);
+ -    assert(sz == 19);
+ -    assert(!strcmp(buf, "0.01000000000000000"));
+ -    v = 10.01;
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 4);
+ -    assert(sz == 7);
+ -    assert(!strcmp(buf, "10.0100"));
+ -    /* negative tests */
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 18);
+ -    assert(sz == 0);
+ -    sz = fixedpoint_d2string(buf, sizeof buf, v, 0);
+ -    assert(sz == 0);
+ -    sz = fixedpoint_d2string(buf, 1, v, 1);
+ -    assert(sz == 0);
+ -}
+ -
+ -#if defined(__linux__)
+ -/* Since fadvise and mincore is only supported in specific platforms like
+ - * Linux, we only verify the fadvise mechanism works in Linux */
+ -static int cache_exist(int fd) {
+ -    unsigned char flag;
+ -    void *m = mmap(NULL, 4096, PROT_READ, MAP_SHARED, fd, 0);
+ -    assert(m);
+ -    assert(mincore(m, 4096, &flag) == 0);
+ -    munmap(m, 4096);
+ -    /* the least significant bit of the byte will be set if the corresponding
+ -     * page is currently resident in memory */
+ -    return flag&1;
+ -}
+ -
+ -static void test_reclaimFilePageCache(void) {
+ -    char *tmpfile = "/tmp/redis-reclaim-cache-test";
+ -    int fd = open(tmpfile, O_RDWR|O_CREAT, 0644);
+ -    assert(fd >= 0);
+ -
+ -    /* test write file */
+ -    char buf[4] = "foo";
+ -    assert(write(fd, buf, sizeof(buf)) > 0);
+ -    assert(cache_exist(fd));
+ -    assert(redis_fsync(fd) == 0);
+ -    assert(reclaimFilePageCache(fd, 0, 0) == 0);
+ -    assert(!cache_exist(fd));
+ -
+ -    /* test read file */
+ -    assert(pread(fd, buf, sizeof(buf), 0) > 0);
+ -    assert(cache_exist(fd));
+ -    assert(reclaimFilePageCache(fd, 0, 0) == 0);
+ -    assert(!cache_exist(fd));
+ -
+ -    unlink(tmpfile);
+ -    printf("reclaimFilePageCach test is ok\n");
+ -}
+ -#endif
+ -
+ -int utilTest(int argc, char **argv, int flags) {
+ +#define UNUSED(x) (void)(x)
+ +int utilTest(int argc, char **argv) {
+      UNUSED(argc);
+      UNUSED(argv);
+ -    UNUSED(flags);
+  
+      test_string2ll();
+      test_string2l();
+      test_ll2string();
+ -    test_ld2string();
+ -    test_fixedpoint_d2string();
+ -#if defined(__linux__)
+ -    if (!(flags & REDIS_TEST_VALGRIND)) {
+ -        test_reclaimFilePageCache();
+ -    }
+ +    return 0;
+ +}
+  #endif
+ -    printf("Done testing util\n");
+ -    return 0;
+ -}
+ -#endif
+ -
+ -
 
 """"""
-The file does not exist in the older (target) version: tests/unit/keyspace.tcl
+modified file: tests/unit/keyspace.tcl
+--- workspace/redis/redis/c8649f/newer/tests/unit/keyspace.tcl
++++ workspace/redis/redis/c8649f/4.0.14/tests/unit/keyspace.tcl
+@@ -7,17 +7,11 @@
+      } {}
+  
+      test {Vararg DEL} {
+ -        r set foo1{t} a
+ -        r set foo2{t} b
+ -        r set foo3{t} c
+ -        list [r del foo1{t} foo2{t} foo3{t} foo4{t}] [r mget foo1{t} foo2{t} foo3{t}]
+ +        r set foo1 a
+ +        r set foo2 b
+ +        r set foo3 c
+ +        list [r del foo1 foo2 foo3 foo4] [r mget foo1 foo2 foo3]
+      } {3 {{} {} {}}}
+ -
+ -    test {Untagged multi-key commands} {
+ -        r mset foo1 a foo2 b foo3 c
+ -        assert_equal {a b c {}} [r mget foo1 foo2 foo3 foo4]
+ -        r del foo1 foo2 foo3 foo4
+ -    } {3} {cluster:skip}
+  
+      test {KEYS with pattern} {
+          foreach key {key_x key_y key_z foo_a foo_b foo_c} {
+@@ -45,7 +39,7 @@
+          after 1100
+          assert_equal 0 [r del keyExpire]
+          r debug set-active-expire 1
+ -    } {OK} {needs:debug}
+ +    }
+  
+      test {EXISTS} {
+          set res {}
+@@ -80,10 +74,10 @@
+      } {1}
+  
+      test {RENAME basic usage} {
+ -        r set mykey{t} hello
+ -        r rename mykey{t} mykey1{t}
+ -        r rename mykey1{t} mykey2{t}
+ -        r get mykey2{t}
+ +        r set mykey hello
+ +        r rename mykey mykey1
+ +        r rename mykey1 mykey2
+ +        r get mykey2
+      } {hello}
+  
+      test {RENAME source key should no longer exist} {
+@@ -91,35 +85,35 @@
+      } {0}
+  
+      test {RENAME against already existing key} {
+ -        r set mykey{t} a
+ -        r set mykey2{t} b
+ -        r rename mykey2{t} mykey{t}
+ -        set res [r get mykey{t}]
+ -        append res [r exists mykey2{t}]
+ +        r set mykey a
+ +        r set mykey2 b
+ +        r rename mykey2 mykey
+ +        set res [r get mykey]
+ +        append res [r exists mykey2]
+      } {b0}
+  
+      test {RENAMENX basic usage} {
+ -        r del mykey{t}
+ -        r del mykey2{t}
+ -        r set mykey{t} foobar
+ -        r renamenx mykey{t} mykey2{t}
+ -        set res [r get mykey2{t}]
+ -        append res [r exists mykey{t}]
+ +        r del mykey
+ +        r del mykey2
+ +        r set mykey foobar
+ +        r renamenx mykey mykey2
+ +        set res [r get mykey2]
+ +        append res [r exists mykey]
+      } {foobar0}
+  
+      test {RENAMENX against already existing key} {
+ -        r set mykey{t} foo
+ -        r set mykey2{t} bar
+ -        r renamenx mykey{t} mykey2{t}
+ +        r set mykey foo
+ +        r set mykey2 bar
+ +        r renamenx mykey mykey2
+      } {0}
+  
+      test {RENAMENX against already existing key (2)} {
+ -        set res [r get mykey{t}]
+ -        append res [r get mykey2{t}]
+ +        set res [r get mykey]
+ +        append res [r get mykey2]
+      } {foobar}
+  
+      test {RENAME against non existing source key} {
+ -        catch {r rename nokey{t} foobar{t}} err
+ +        catch {r rename nokey foobar} err
+          format $err
+      } {ERR*}
+  
+@@ -140,22 +134,22 @@
+      } {ERR*}
+  
+      test {RENAME with volatile key, should move the TTL as well} {
+ -        r del mykey{t} mykey2{t}
+ -        r set mykey{t} foo
+ -        r expire mykey{t} 100
+ -        assert {[r ttl mykey{t}] > 95 && [r ttl mykey{t}] <= 100}
+ -        r rename mykey{t} mykey2{t}
+ -        assert {[r ttl mykey2{t}] > 95 && [r ttl mykey2{t}] <= 100}
+ +        r del mykey mykey2
+ +        r set mykey foo
+ +        r expire mykey 100
+ +        assert {[r ttl mykey] > 95 && [r ttl mykey] <= 100}
+ +        r rename mykey mykey2
+ +        assert {[r ttl mykey2] > 95 && [r ttl mykey2] <= 100}
+      }
+  
+      test {RENAME with volatile key, should not inherit TTL of target key} {
+ -        r del mykey{t} mykey2{t}
+ -        r set mykey{t} foo
+ -        r set mykey2{t} bar
+ -        r expire mykey2{t} 100
+ -        assert {[r ttl mykey{t}] == -1 && [r ttl mykey2{t}] > 0}
+ -        r rename mykey{t} mykey2{t}
+ -        r ttl mykey2{t}
+ +        r del mykey mykey2
+ +        r set mykey foo
+ +        r set mykey2 bar
+ +        r expire mykey2 100
+ +        assert {[r ttl mykey] == -1 && [r ttl mykey2] > 0}
+ +        r rename mykey mykey2
+ +        r ttl mykey2
+      } {-1}
+  
+      test {DEL all keys again (DB 0)} {
+@@ -173,222 +167,7 @@
+          set res [r dbsize]
+          r select 9
+          format $res
+ -    } {0} {singledb:skip}
+ -
+ -    test {COPY basic usage for string} {
+ -        r set mykey{t} foobar
+ -        set res {}
+ -        r copy mykey{t} mynewkey{t}
+ -        lappend res [r get mynewkey{t}]
+ -        lappend res [r dbsize]
+ -        if {$::singledb} {
+ -            assert_equal [list foobar 2] [format $res]
+ -        } else {
+ -            r copy mykey{t} mynewkey{t} DB 10
+ -            r select 10
+ -            lappend res [r get mynewkey{t}]
+ -            lappend res [r dbsize]
+ -            r select 9
+ -            assert_equal [list foobar 2 foobar 1] [format $res]
+ -        }
+ -    } 
+ -
+ -    test {COPY for string does not replace an existing key without REPLACE option} {
+ -        r set mykey2{t} hello
+ -        catch {r copy mykey2{t} mynewkey{t} DB 10} e
+ -        set e
+ -    } {0} {singledb:skip}
+ -
+ -    test {COPY for string can replace an existing key with REPLACE option} {
+ -        r copy mykey2{t} mynewkey{t} DB 10 REPLACE
+ -        r select 10
+ -        r get mynewkey{t}
+ -    } {hello} {singledb:skip}
+ -
+ -    test {COPY for string ensures that copied data is independent of copying data} {
+ -        r flushdb
+ -        r select 9
+ -        r set mykey{t} foobar
+ -        set res {}
+ -        r copy mykey{t} mynewkey{t} DB 10
+ -        r select 10
+ -        lappend res [r get mynewkey{t}]
+ -        r set mynewkey{t} hoge
+ -        lappend res [r get mynewkey{t}]
+ -        r select 9
+ -        lappend res [r get mykey{t}]
+ -        r select 10
+ -        r flushdb
+ -        r select 9
+ -        format $res
+ -    } [list foobar hoge foobar] {singledb:skip}
+ -
+ -    test {COPY for string does not copy data to no-integer DB} {
+ -        r set mykey{t} foobar
+ -        catch {r copy mykey{t} mynewkey{t} DB notanumber} e
+ -        set e
+ -    } {ERR value is not an integer or out of range}
+ -
+ -    test {COPY can copy key expire metadata as well} {
+ -        r set mykey{t} foobar ex 100
+ -        r copy mykey{t} mynewkey{t} REPLACE
+ -        assert {[r ttl mynewkey{t}] > 0 && [r ttl mynewkey{t}] <= 100}
+ -        assert {[r get mynewkey{t}] eq "foobar"}
+ -    }
+ -
+ -    test {COPY does not create an expire if it does not exist} {
+ -        r set mykey{t} foobar
+ -        assert {[r ttl mykey{t}] == -1}
+ -        r copy mykey{t} mynewkey{t} REPLACE
+ -        assert {[r ttl mynewkey{t}] == -1}
+ -        assert {[r get mynewkey{t}] eq "foobar"}
+ -    }
+ -
+ -source "tests/unit/type/list-common.tcl"
+ -foreach {type large} [array get largevalue] {
+ -    set origin_config [config_get_set list-max-listpack-size -1]
+ -    test "COPY basic usage for list - $type" {
+ -        r del mylist{t} mynewlist{t}
+ -        r lpush mylist{t} a b $large c d
+ -        assert_encoding $type mylist{t}
+ -        r copy mylist{t} mynewlist{t}
+ -        assert_encoding $type mynewlist{t}
+ -        set digest [debug_digest_value mylist{t}]
+ -        assert_equal $digest [debug_digest_value mynewlist{t}]
+ -        assert_refcount 1 mylist{t}
+ -        assert_refcount 1 mynewlist{t}
+ -        r del mylist{t}
+ -        assert_equal $digest [debug_digest_value mynewlist{t}]
+ -    }
+ -    config_set list-max-listpack-size $origin_config
+ -}
+ -
+ -    foreach type {intset listpack hashtable} {
+ -        test {COPY basic usage for $type set} {
+ -            r del set1{t} newset1{t}
+ -            r sadd set1{t} 1 2 3
+ -            if {$type ne "intset"} {
+ -                r sadd set1{t} a
+ -            }
+ -            if {$type eq "hashtable"} {
+ -                for {set i 4} {$i < 200} {incr i} {
+ -                    r sadd set1{t} $i
+ -                }
+ -            }
+ -            assert_encoding $type set1{t}
+ -            r copy set1{t} newset1{t}
+ -            set digest [debug_digest_value set1{t}]
+ -            assert_equal $digest [debug_digest_value newset1{t}]
+ -            assert_refcount 1 set1{t}
+ -            assert_refcount 1 newset1{t}
+ -            r del set1{t}
+ -            assert_equal $digest [debug_digest_value newset1{t}]
+ -        }
+ -    }
+ -
+ -    test {COPY basic usage for listpack sorted set} {
+ -        r del zset1{t} newzset1{t}
+ -        r zadd zset1{t} 123 foobar
+ -        assert_encoding listpack zset1{t}
+ -        r copy zset1{t} newzset1{t}
+ -        set digest [debug_digest_value zset1{t}]
+ -        assert_equal $digest [debug_digest_value newzset1{t}]
+ -        assert_refcount 1 zset1{t}
+ -        assert_refcount 1 newzset1{t}
+ -        r del zset1{t}
+ -        assert_equal $digest [debug_digest_value newzset1{t}]
+ -    }
+ -
+ -     test {COPY basic usage for skiplist sorted set} {
+ -        r del zset2{t} newzset2{t}
+ -        set original_max [lindex [r config get zset-max-ziplist-entries] 1]
+ -        r config set zset-max-ziplist-entries 0
+ -        for {set j 0} {$j < 130} {incr j} {
+ -            r zadd zset2{t} [randomInt 50] ele-[randomInt 10]
+ -        }
+ -        assert_encoding skiplist zset2{t}
+ -        r copy zset2{t} newzset2{t}
+ -        set digest [debug_digest_value zset2{t}]
+ -        assert_equal $digest [debug_digest_value newzset2{t}]
+ -        assert_refcount 1 zset2{t}
+ -        assert_refcount 1 newzset2{t}
+ -        r del zset2{t}
+ -        assert_equal $digest [debug_digest_value newzset2{t}]
+ -        r config set zset-max-ziplist-entries $original_max
+ -    }
+ -
+ -    test {COPY basic usage for listpack hash} {
+ -        r del hash1{t} newhash1{t}
+ -        r hset hash1{t} tmp 17179869184
+ -        assert_encoding listpack hash1{t}
+ -        r copy hash1{t} newhash1{t}
+ -        set digest [debug_digest_value hash1{t}]
+ -        assert_equal $digest [debug_digest_value newhash1{t}]
+ -        assert_refcount 1 hash1{t}
+ -        assert_refcount 1 newhash1{t}
+ -        r del hash1{t}
+ -        assert_equal $digest [debug_digest_value newhash1{t}]
+ -    }
+ -
+ -    test {COPY basic usage for hashtable hash} {
+ -        r del hash2{t} newhash2{t}
+ -        set original_max [lindex [r config get hash-max-ziplist-entries] 1]
+ -        r config set hash-max-ziplist-entries 0
+ -        for {set i 0} {$i < 64} {incr i} {
+ -            r hset hash2{t} [randomValue] [randomValue]
+ -        }
+ -        assert_encoding hashtable hash2{t}
+ -        r copy hash2{t} newhash2{t}
+ -        set digest [debug_digest_value hash2{t}]
+ -        assert_equal $digest [debug_digest_value newhash2{t}]
+ -        assert_refcount 1 hash2{t}
+ -        assert_refcount 1 newhash2{t}
+ -        r del hash2{t}
+ -        assert_equal $digest [debug_digest_value newhash2{t}]
+ -        r config set hash-max-ziplist-entries $original_max
+ -    }
+ -
+ -    test {COPY basic usage for stream} {
+ -        r del mystream{t} mynewstream{t}
+ -        for {set i 0} {$i < 1000} {incr i} {
+ -            r XADD mystream{t} * item 2 value b
+ -        }
+ -        r copy mystream{t} mynewstream{t}
+ -        set digest [debug_digest_value mystream{t}]
+ -        assert_equal $digest [debug_digest_value mynewstream{t}]
+ -        assert_refcount 1 mystream{t}
+ -        assert_refcount 1 mynewstream{t}
+ -        r del mystream{t}
+ -        assert_equal $digest [debug_digest_value mynewstream{t}]
+ -    }
+ -
+ -    test {COPY basic usage for stream-cgroups} {
+ -        r del x{t}
+ -        r XADD x{t} 100 a 1
+ -        set id [r XADD x{t} 101 b 1]
+ -        r XADD x{t} 102 c 1
+ -        r XADD x{t} 103 e 1
+ -        r XADD x{t} 104 f 1
+ -        r XADD x{t} 105 g 1
+ -        r XGROUP CREATE x{t} g1 0
+ -        r XGROUP CREATE x{t} g2 0
+ -        r XREADGROUP GROUP g1 Alice COUNT 1 STREAMS x{t} >
+ -        r XREADGROUP GROUP g1 Bob COUNT 1 STREAMS x{t} >
+ -        r XREADGROUP GROUP g1 Bob NOACK COUNT 1 STREAMS x{t} >
+ -        r XREADGROUP GROUP g2 Charlie COUNT 4 STREAMS x{t} >
+ -        r XGROUP SETID x{t} g1 $id
+ -        r XREADGROUP GROUP g1 Dave COUNT 3 STREAMS x{t} >
+ -        r XDEL x{t} 103
+ -
+ -        r copy x{t} newx{t}
+ -        set info [r xinfo stream x{t} full]
+ -        assert_equal $info [r xinfo stream newx{t} full]
+ -        assert_refcount 1 x{t}
+ -        assert_refcount 1 newx{t}
+ -        r del x{t}
+ -        assert_equal $info [r xinfo stream newx{t} full]
+ -        r flushdb
+ -    }
+ +    } {0}
+  
+      test {MOVE basic usage} {
+          r set mykey foobar
+@@ -401,18 +180,18 @@
+          lappend res [r dbsize]
+          r select 9
+          format $res
+ -    } [list 0 0 foobar 1] {singledb:skip}
+ +    } [list 0 0 foobar 1]
+  
+      test {MOVE against key existing in the target DB} {
+          r set mykey hello
+          r move mykey 10
+ -    } {0} {singledb:skip}
+ +    } {0}
+  
+      test {MOVE against non-integer DB (#1428)} {
+          r set mykey hello
+          catch {r move mykey notanumber} e
+          set e
+ -    } {ERR value is not an integer or out of range} {singledb:skip}
+ +    } {*ERR*index out of range}
+  
+      test {MOVE can move key expire metadata as well} {
+          r select 10
+@@ -425,7 +204,7 @@
+          assert {[r ttl mykey] > 0 && [r ttl mykey] <= 100}
+          assert {[r get mykey] eq "foo"}
+          r select 9
+ -    } {OK} {singledb:skip}
+ +    }
+  
+      test {MOVE does not create an expire if it does not exist} {
+          r select 10
+@@ -438,7 +217,7 @@
+          assert {[r ttl mykey] == -1}
+          assert {[r get mykey] eq "foo"}
+          r select 9
+ -    } {OK} {singledb:skip}
+ +    }
+  
+      test {SET/GET keys in different DBs} {
+          r set a hello
+@@ -455,7 +234,7 @@
+          lappend res [r get b]
+          r select 9
+          format $res
+ -    } {hello world foo bared} {singledb:skip}
+ +    } {hello world foo bared}
+  
+      test {RANDOMKEY} {
+          r flushdb
+@@ -493,10 +272,4 @@
+          r keys *
+          r keys *
+      } {dlskeriewrioeuwqoirueioqwrueoqwrueqw}
+ -
+ -    test {Regression for pattern matching long nested loops} {
+ -        r flushdb
+ -        r SET aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1
+ -        r KEYS "a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*b"
+ -    } {}
+  }
 
 """"""

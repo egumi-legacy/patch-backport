@@ -1,0 +1,18 @@
+[
+  {
+    "索引": 1,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/chunk_002_20250515_143731.patch",
+    "实际补丁": null,
+    "修改文件": "src/anet.c",
+    "修改位置": "457-460",
+    "内容": "From 7f486ea6eebf0afce74f2e59763b9b82b78629dc Mon Sep 17 00:00:00 2001\nFrom: Yossi Gottlieb <yossigo@gmail.com>\nDate: Wed, 11 Oct 2023 22:45:34 +0300\nSubject: [PATCH] Fix issue of listen before chmod on Unix sockets\n (CVE-2023-45145)\n\nBefore this commit, Unix socket setup performed chmod(2) on the socket\nfile after calling listen(2). Depending on what umask is used, this\ncould leave the file with the wrong permissions for a short period of\ntime. As a result, another process could exploit this race condition and\nestablish a connection that would otherwise not be possible.\n\nWe now make sure the socket permissions are set up prior to calling\nlisten(2).\n\n(cherry picked from commit a11b3bc34a054818f2ac70e50adfc542ca1cba42)\n---\n src/anet.c | 11 ++++++-----\n 1 file changed, 6 insertions(+), 5 deletions(-)\n\ndiff --git a/src/anet.c b/src/anet.c\nindex 4ea201df57f..10840fca20d 100644\n--- a/src/anet.c\n+++ b/src/anet.c\n@@ -457,7 +460,7 @@ static int _anetTcpServer(char *err, int port, char *bindaddr, int af, int backl\n \n         if (af == AF_INET6 && anetV6Only(err,s) == ANET_ERR) goto error;\n         if (anetSetReuseAddr(err,s) == ANET_ERR) goto error;\n-        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog) == ANET_ERR) s = ANET_ERR;\n+        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog,0) == ANET_ERR) s = ANET_ERR;\n         goto end;\n     }\n     if (p == NULL) {\n"
+  },
+  {
+    "索引": 2,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/redis/redis/7f486e/chunk_patches/chunk_003_20250515_143731.patch",
+    "实际补丁": null,
+    "修改文件": "src/anet.c",
+    "修改位置": "498-501",
+    "内容": "From 7f486ea6eebf0afce74f2e59763b9b82b78629dc Mon Sep 17 00:00:00 2001\nFrom: Yossi Gottlieb <yossigo@gmail.com>\nDate: Wed, 11 Oct 2023 22:45:34 +0300\nSubject: [PATCH] Fix issue of listen before chmod on Unix sockets\n (CVE-2023-45145)\n\nBefore this commit, Unix socket setup performed chmod(2) on the socket\nfile after calling listen(2). Depending on what umask is used, this\ncould leave the file with the wrong permissions for a short period of\ntime. As a result, another process could exploit this race condition and\nestablish a connection that would otherwise not be possible.\n\nWe now make sure the socket permissions are set up prior to calling\nlisten(2).\n\n(cherry picked from commit a11b3bc34a054818f2ac70e50adfc542ca1cba42)\n---\n src/anet.c | 11 ++++++-----\n 1 file changed, 6 insertions(+), 5 deletions(-)\n\ndiff --git a/src/anet.c b/src/anet.c\nindex 4ea201df57f..10840fca20d 100644\n--- a/src/anet.c\n+++ b/src/anet.c\n@@ -498,10 +501,8 @@ int anetUnixServer(char *err, char *path, mode_t perm, int backlog)\n     memset(&sa,0,sizeof(sa));\n     sa.sun_family = AF_LOCAL;\n     strncpy(sa.sun_path,path,sizeof(sa.sun_path)-1);\n-    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog) == ANET_ERR)\n+    if (anetListen(err,s,(struct sockaddr*)&sa,sizeof(sa),backlog,perm) == ANET_ERR)\n         return ANET_ERR;\n-    if (perm)\n-        chmod(sa.sun_path, perm);\n     return s;\n }\n \n"
+  }
+]

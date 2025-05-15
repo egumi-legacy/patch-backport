@@ -1,0 +1,35 @@
+From 9638ec1a566887da5e107e3495c29febb9cb3010 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 15 May 2025 16:41:34 +0800
+Subject: [PATCH] Applied adapted patch for 4.0.14
+
+---
+ src/util.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/util.c b/src/util.c
+index feb443c10..a31b7d6ce 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -47,7 +47,8 @@
+ int stringmatchlen(const char *pattern, int patternLen,
+         const char *string, int stringLen, int nocase)
+ {
+-    while(patternLen && stringLen) {
++    int nesting = 0;
++    while(patternLen && stringLen && nesting <= 1000) {
+         switch(pattern[0]) {
+         case '*':
+             while (pattern[1] == '*') {
+@@ -58,7 +59,7 @@ int stringmatchlen(const char *pattern, int patternLen,
+                 return 1; /* match */
+             while(stringLen) {
+                 if (stringmatchlen(pattern+1, patternLen-1,
+-                            string, stringLen, nocase))
++                            string, stringLen, nocase) && ++nesting <= 1000)
+                     return 1; /* match */
+                 string++;
+                 stringLen--;
+-- 
+2.25.1
+

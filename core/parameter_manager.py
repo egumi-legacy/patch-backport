@@ -43,6 +43,7 @@ class BaseConfig(BaseModel):
 
     # target_version: str 
     target_version: Union[str, List[str]] = Field(default=None)
+    branch: str = None
 
     module_configs: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
 
@@ -76,6 +77,7 @@ class Mode1Config(BaseConfig):
     """模式1配置 - 包含所有必需参数和基础配置"""
     # 必需参数
     patch_url: str
+    # branch: str
 
     # 下面三个不用输入，会统一预处理赋值
     repo_name: str
