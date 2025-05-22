@@ -271,7 +271,9 @@ class ModuleContext(BaseModel):
     execution_times: Dict[str, float] = Field(default_factory=dict)  # 各模块执行时间
     
     # 处理状态
-    adaptation_status: Optional[bool] = None  # None-直接成功，True-适配成功，False-适配失败
+    adaptation_status: Optional[bool] = None  # 已废弃: None-直接成功，True-适配成功，False-适配失败
+    need_adapt: bool = False  # 是否需要适配：True-需要适配，False-不需要适配(直接应用成功)
+    adapt_success: Optional[bool] = None  # 适配结果：True-适配成功，False-适配失败，None-不需要适配
 
     class Config:
         arbitrary_types_allowed = True

@@ -22,6 +22,7 @@ from ruamel.yaml import YAML
 import pprint
 import yaml
 import dotenv
+import subprocess
 
 # 本地模块
 from core.adaptation_pipeline import AdaptationPipeline
@@ -367,7 +368,7 @@ class PatchBackportTool:
             }
         
         # 打印所有版本的汇总结果
-        self._print_multi_version_summary(version_results)
+        # self._print_multi_version_summary(version_results)
         
         return version_results
     
@@ -525,17 +526,14 @@ class PatchBackportTool:
         # 添加每个版本的详细信息
         for version, result in version_results.items():
             context = result['context']
-            # 确定适配状态
+            # 确定是否需要适配和适配结果
             direct_success = bool(context.direct_apply_result and context.direct_apply_result.get('success'))
-            if direct_success:
-                adaptation_status = None  # 直接成功，不需要适配
-            elif success:
-                adaptation_status = True  # 适配成功
-            else:
-                adaptation_status = False  # 适配失败
+            need_adapt = not direct_success  # 如果直接应用失败，则需要适配
+            adapt_success = success if need_adapt else None  # 只有需要适配时才有适配结果
             
             stats_data['version_details'][version] = {
-                'adaptation_status': adaptation_status,
+                'need_adapt': need_adapt,
+                'adapt_success': adapt_success,
                 'success': success,
                 'method': method,
                 'execution_time': context.execution_time,
@@ -734,16 +732,15 @@ class PatchBackportTool:
         chunk_analyzer_success = bool(context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') == context.chunk_analyzer_result.get('total_chunks'))
         overall_success = direct_success or patch_adapter_success or chunk_analyzer_success
         
-        # 适配状态: None-直接成功，True-适配成功，False-适配失败
-        if direct_success:
-            adaptation_status = None  # 直接成功，不需要适配
-        elif overall_success:
-            adaptation_status = True  # 适配成功
-        else:
-            adaptation_status = False  # 适配失败
+        # 确定是否需要适配和适配结果
+        need_adapt = not direct_success  # 如果直接应用失败，则需要适配
+        adapt_success = patch_adapter_success or chunk_analyzer_success if need_adapt else None  # 只有需要适配时才有适配结果
             
-        # 更新上下文中的适配状态
-        context.adaptation_status = adaptation_status
+        # 更新上下文中的适配状态（保留旧字段以维持兼容性）
+        context.adaptation_status = None if not need_adapt else adapt_success
+        # 添加新的字段
+        context.need_adapt = need_adapt
+        context.adapt_success = adapt_success
         
         # 准备块分析信息
         chunks_info = {
@@ -780,7 +777,8 @@ class PatchBackportTool:
         result = {
             # 摘要信息放在最前面
             'summary': {
-                'adaptation_status': adaptation_status,  # 适配状态: None-直接成功，True-适配成功，False-适配失败
+                'need_adapt': need_adapt,  # 是否需要适配：True-需要适配，False-不需要适配(直接应用成功)
+                'adapt_success': adapt_success,  # 适配结果：True-适配成功，False-适配失败，None-不需要适配
                 'chunks_info': chunks_info,  # 块分析详细信息
                 'method': next(
                     method for method, condition in [
@@ -794,7 +792,7 @@ class PatchBackportTool:
                 ),
                 'timestamp': datetime.now().isoformat()
             },
-            'commit': commit_info,
+            'to_adapt_commit': commit_info,
             'config': {
                 'mode': context.config.mode,
                 'target_version': context.config.target_version,
@@ -802,9 +800,9 @@ class PatchBackportTool:
             },
             'results': {
                 'direct_apply': context.direct_apply_result,
+                'chunk_analyzer': context.chunk_analyzer_result,
                 'llm_adapter': context.llm_output,
                 'patch_adapter': context.patch_adapter_result,
-                'chunk_analyzer': context.chunk_analyzer_result,
                 'final_patch_path': str(context.commit.patch_path) if hasattr(context.commit, 'patch_path') and context.commit.patch_path else None,
                 'last_error': context.last_error
             },
@@ -816,7 +814,8 @@ class PatchBackportTool:
             },
             # 详细报告部分
             'detailed': {
-                'adaptation_status': adaptation_status,
+                'need_adapt': need_adapt,
+                'adapt_success': adapt_success,
                 'patch_content': final_patch_content,
                 'llm_output': llm_output,
                 'model': context.config.model,
@@ -1058,8 +1057,13 @@ class PatchBackportTool:
                 all_chunks_applied = applied_chunks == total_chunks and total_chunks > 0
                 
                 # 收集应用成功的chunk补丁
-                if 'applied_patch_paths' in chunk_results:
-                    chunk_patches = [Path(p) for p in chunk_results['applied_patch_paths'] if p]
+                # logger.info("chunk_results1:")
+                # pprint.pprint(chunk_results)
+                if 'applied_chunk_patches' in chunk_results:
+                    chunk_patches = [Path(p) for p in chunk_results['applied_chunk_patches'] if p]
+                    logger.info("chunk_results2:")
+                    pprint.pprint(chunk_results)
+                    logger.info(f"chunk_patches: {chunk_patches}")
                     
                 logger.info(f"Chunk分析器应用了 {applied_chunks}/{total_chunks} 个chunks")
                 
@@ -1075,7 +1079,13 @@ class PatchBackportTool:
                     
                 # 合并多个chunk补丁
                 elif len(chunk_patches) > 1:
+                    # 使用新的方法通过Git操作来合并补丁
                     merged_patch_content = self._combine_patch_files(chunk_patches)
+                    
+                    if not merged_patch_content:
+                        logger.error("合并chunk补丁失败，使用第一个补丁作为后备方案")
+                        context.commit.patch_path = chunk_patches[0]
+                        return context.commit.patch_path
                     
                     with open(merged_patch_path, 'w', encoding='utf-8') as f:
                         f.write(merged_patch_content)
@@ -1103,30 +1113,20 @@ class PatchBackportTool:
                 # 合并chunk补丁和patch_adapter补丁
                 logger.info(f"合并 {len(chunk_patches)} 个chunk补丁和patch_adapter补丁")
                 
-                # 先合并所有chunk补丁
-                chunk_merged_content = self._combine_patch_files(chunk_patches)
+                # 合并所有需要应用的补丁，包括chunk补丁和patch_adapter补丁
+                all_patches = chunk_patches + [patch_adapter_path]
                 
-                # 再与patch_adapter补丁合并
-                with open(patch_adapter_path, 'r', encoding='utf-8') as f:
-                    adapter_content = f.read()
+                # 使用新的方法通过Git操作来合并补丁
+                merged_content = self._combine_patch_files(all_patches)
                 
-                # 提取两个补丁的文件修改
-                chunk_files = self._parse_patch_files(chunk_merged_content)
-                adapter_files = self._parse_patch_files(adapter_content)
-                
-                # 选择最终的文件修改
-                final_files = {**chunk_files, **adapter_files}  # patch_adapter优先
-                
-                # 提取补丁头信息
-                patch_header = self._extract_patch_header(adapter_content)
+                if not merged_content:
+                    logger.error("合并补丁失败，使用patch_adapter的补丁作为后备方案")
+                    context.commit.patch_path = patch_adapter_path
+                    return patch_adapter_path
                 
                 # 写入最终合并的补丁
                 with open(merged_patch_path, 'w', encoding='utf-8') as f:
-                    f.write(patch_header)
-                    
-                    # 写入每个文件的修改
-                    for file_path, content in final_files.items():
-                        f.write(content)
+                    f.write(merged_content)
                 
                 context.commit.patch_path = merged_patch_path
                 logger.info(f"成功合并chunk补丁和patch_adapter补丁到: {merged_patch_path}")
@@ -1160,7 +1160,7 @@ class PatchBackportTool:
     
     def _combine_patch_files(self, patch_files: List[Path]) -> str:
         """
-        合并多个补丁文件内容
+        通过实际应用补丁到测试分支上，然后使用git format-patch生成最终的合并补丁
         
         Args:
             patch_files: 补丁文件路径列表
@@ -1170,32 +1170,210 @@ class PatchBackportTool:
         """
         if not patch_files:
             return ""
-            
-        # 读取所有补丁文件内容
-        file_contents = []
-        for path in patch_files:
-            if path.exists():
-                with open(path, 'r', encoding='utf-8') as f:
-                    file_contents.append(f.read())
         
-        if not file_contents:
+        # 确保所有补丁文件都存在
+        valid_patches = [p for p in patch_files if p.exists()]
+        if not valid_patches:
+            logger.error("没有有效的补丁文件")
+            return ""
+        
+        # 创建临时工作目录
+        temp_dir = Path("temp_patch_merge")
+        temp_dir.mkdir(parents=True, exist_ok=True)
+        
+        # 确定仓库路径和目标版本
+        repo_path = self.config.repo_path
+        # 确保target_version是字符串而不是列表
+        target_version = self.config.target_version
+        if isinstance(target_version, list):
+            target_version = target_version[0]  # 取第一个元素作为字符串
+        
+        # 创建临时分支名称
+        import uuid
+        branch_name = f"patch_merge_{uuid.uuid4().hex[:8]}"
+        
+        try:
+            # 准备临时测试分支
+            logger.info(f"创建临时测试分支: {branch_name}")
+            
+            # 先切换到目标版本 (确保target_version是字符串)
+            target_version_str = target_version
+            if isinstance(target_version_str, list):
+                target_version_str = target_version_str[0]
+                
+            result = subprocess.run(
+                ['git', 'checkout', target_version_str],
+                cwd=repo_path,
+                capture_output=True,
+                text=True
+            )
+            if result.returncode != 0:
+                logger.error(f"切换到目标版本失败: {result.stderr}")
+                return ""
+            
+            # 创建新分支
+            result = subprocess.run(
+                ['git', 'checkout', '-b', branch_name],
+                cwd=repo_path,
+                capture_output=True,
+                text=True
+            )
+            if result.returncode != 0:
+                logger.error(f"创建临时分支失败: {result.stderr}")
+                return ""
+            
+            # 清理工作区
+            subprocess.run(['git', 'reset', '--hard', 'HEAD'], cwd=repo_path)
+            subprocess.run(['git', 'clean', '-fd'], cwd=repo_path)
+            
+            # 依次应用每个补丁
+            for patch_path in valid_patches:
+                logger.info(f"应用补丁: {patch_path}")
+                
+                # 尝试使用git apply而不是git am，因为apply不会自动提交
+                logger.info(f"执行命令: git apply --ignore-whitespace {str(patch_path)}")
+                result = subprocess.run(
+                    ['git', 'apply', '--ignore-whitespace', str(patch_path)],
+                    cwd=repo_path,
+                    capture_output=True,
+                    text=True
+                )
+                
+                # 打印应用结果以便调试
+                if result.returncode == 0:
+                    logger.info(f"成功应用补丁: {patch_path}")
+                else:
+                    logger.info(f"应用补丁失败，返回码: {result.returncode}")
+                    if result.stderr:
+                        logger.info(f"错误输出: {result.stderr}")
+                
+                if result.returncode != 0:
+                    logger.warning(f"应用补丁 {patch_path} 失败: {result.stderr}")
+                    # 尝试使用 -3way 选项来处理冲突
+                    result = subprocess.run(
+                        ['git', 'apply', '--ignore-whitespace', '--3way', str(patch_path)],
+                        cwd=repo_path,
+                        capture_output=True,
+                        text=True
+                    )
+                    
+                    if result.returncode != 0:
+                        logger.error(f"尝试3way应用补丁 {patch_path} 也失败: {result.stderr}")
+                        # 中止合并
+                        subprocess.run(['git', 'reset', '--hard', 'HEAD'], cwd=repo_path)
+                        continue
+                    else:
+                        # 检查是否有冲突
+                        result = subprocess.run(
+                            ['git', 'diff', '--name-only', '--diff-filter=U'],
+                            cwd=repo_path,
+                            capture_output=True,
+                            text=True
+                        )
+                        
+                        if result.stdout.strip():
+                            logger.error(f"应用补丁 {patch_path} 时有未解决的冲突")
+                            # 中止合并
+                            subprocess.run(['git', 'reset', '--hard', 'HEAD'], cwd=repo_path)
+                            continue
+            
+            # 检查是否有更改
+            result = subprocess.run(
+                ['git', 'diff', '--name-only', 'HEAD'],
+                cwd=repo_path,
+                capture_output=True,
+                text=True
+            )
+            
+            if not result.stdout.strip():
+                logger.warning("合并后没有任何更改")
+                return ""
+            
+            # 添加所有更改并提交
+            subprocess.run(['git', 'add', '-A'], cwd=repo_path)
+            
+            # 创建提交
+            commit_msg = f"合并补丁：{len(valid_patches)}个补丁文件"
+            result = subprocess.run(
+                ['git', 'commit', '-m', commit_msg],
+                cwd=repo_path,
+                capture_output=True,
+                text=True
+            )
+            
+            if result.returncode != 0:
+                logger.error(f"创建提交失败: {result.stderr}")
+                return ""
+            
+            # 使用format-patch生成最终的补丁
+            merged_patch_path = temp_dir / "merged.patch"
+            logger.info(f"执行命令: git format-patch -1 HEAD --stdout > {merged_patch_path}")
+            
+            try:
+                result = subprocess.run(
+                    ['git', 'format-patch', '-1', 'HEAD', '--stdout'],
+                    cwd=repo_path,
+                    capture_output=True,
+                    text=True
+                )
+            except Exception as e:
+                logger.error(f"执行git format-patch命令失败: {e}")
+                # 尝试检查git状态，收集更多信息
+                try:
+                    status_result = subprocess.run(
+                        ['git', 'status'],
+                        cwd=repo_path,
+                        capture_output=True,
+                        text=True
+                    )
+                    logger.info(f"Git状态: {status_result.stdout}")
+                except:
+                    pass
+                raise
+            
+            if result.returncode != 0:
+                logger.error(f"生成合并补丁失败: {result.stderr}")
+                return ""
+            
+            # 保存合并后的补丁内容
+            merged_content = result.stdout
+            
+            # 检查内容是否为空
+            if not merged_content.strip():
+                logger.error("生成的补丁内容为空")
+                return ""
+                
+            # 写入文件
+            with open(merged_patch_path, 'w', encoding='utf-8') as f:
+                f.write(merged_content)
+            
+            # 验证文件是否存在并且有内容
+            if merged_patch_path.exists() and merged_patch_path.stat().st_size > 0:
+                logger.info(f"成功生成合并补丁: {merged_patch_path} (大小: {merged_patch_path.stat().st_size} 字节)")
+            else:
+                logger.error(f"生成补丁文件失败: {merged_patch_path}")
+                return ""
+            return merged_content
+            
+        except Exception as e:
+            logger.error(f"合并补丁过程中发生错误: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return ""
             
-        # 使用第一个补丁的头信息
-        patch_header = self._extract_patch_header(file_contents[0])
-        
-        # 提取每个补丁的文件修改
-        all_file_changes = {}
-        for content in file_contents:
-            file_changes = self._parse_patch_files(content)
-            all_file_changes.update(file_changes)  # 后面的优先
-        
-        # 构建合并后的补丁内容
-        merged_content = patch_header
-        for file_path, content in all_file_changes.items():
-            merged_content += content
-            
-        return merged_content
+        finally:
+            # 清理：切换回原分支并删除临时分支
+            try:
+                logger.info(f"清理临时分支: {branch_name}")
+                # 确保使用正确的字符串格式
+                checkout_version = target_version
+                if isinstance(checkout_version, list):
+                    checkout_version = checkout_version[0]
+                    
+                subprocess.run(['git', 'checkout', checkout_version], cwd=repo_path)
+                subprocess.run(['git', 'branch', '-D', branch_name], cwd=repo_path)
+            except Exception as e:
+                logger.warning(f"清理临时分支时发生错误: {e}")
     
     def _extract_patch_header(self, patch_content: str) -> str:
         """

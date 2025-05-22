@@ -26,20 +26,36 @@ import time
     
 #     return download_patch(patch_url, cache_path, self.use_cached_patches)
 def parse_github_url(url):
-    """处理输入可能是patch_url或repo_url的情况"""
+    """处理输入可能是patch_url或repo_url的情况，支持GitHub和Gitee"""
     # 解析github url，获取owner, repo, commit_sha
-    pattern = r'https://github\.com/([^/]+)/([^/]+)/commit/([^/]+)'
-    match = re.search(pattern, url)
+    github_pattern = r'https://github\.com/([^/]+)/([^/]+)/commit/([^/]+)'
+    match = re.search(github_pattern, url)
     if match:
         owner, repo, commit_sha = match.groups()
         return {'owner': owner, 'repo': repo, 'commit_sha': commit_sha}
-    else:
-        pattern = r'https://github\.com/([^/]+)/([^/]+)'
-        match = re.match(pattern, url)
-        if not match:
-            raise ValueError("无效的 GitHub 仓库 URL")
+    
+    # 解析gitee url，获取owner, repo, commit_sha
+    gitee_pattern = r'https://gitee\.com/([^/]+)/([^/]+)/commit/([^/]+)'
+    match = re.search(gitee_pattern, url)
+    if match:
+        owner, repo, commit_sha = match.groups()
+        return {'owner': owner, 'repo': repo, 'commit_sha': commit_sha}
+    
+    # 解析仓库URL（没有commit信息）
+    github_repo_pattern = r'https://github\.com/([^/]+)/([^/]+)'
+    match = re.match(github_repo_pattern, url)
+    if match:
         owner, repo = match.groups()
         return {'owner': owner, 'repo': repo, 'commit_sha': None}
+    
+    # 解析gitee仓库URL（没有commit信息）
+    gitee_repo_pattern = r'https://gitee\.com/([^/]+)/([^/]+)'
+    match = re.match(gitee_repo_pattern, url)
+    if match:
+        owner, repo = match.groups()
+        return {'owner': owner, 'repo': repo, 'commit_sha': None}
+    
+    raise ValueError("无效的 GitHub 或 Gitee 仓库 URL")
 
 def download_patch(patch_url: str, output_path: Path = None) -> Path:
     """
