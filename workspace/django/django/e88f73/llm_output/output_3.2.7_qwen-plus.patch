@@ -1,0 +1,65 @@
+diff --git a/django/utils/text.py b/django/utils/text.py
+index e1b835e0e219..abcdef123456 100644
+--- a/django/utils/text.py
++++ b/django/utils/text.py
+@@ -1,6 +1,7 @@
+ import gzip
+ import re
+ import unicodedata
++import textwrap
+ from gzip import GzipFile
+ from gzip import compress as gzip_compress
+ 
+@@ -97,24 +98,15 @@ def wrap(text, width):
+     ``width``.
+     """
+ 
+-    def _generator():
+-        for line in text.splitlines(True):  # True keeps trailing linebreaks
+-            max_width = min((line.endswith("\n") and width + 1 or width), width)
+-            while len(line) > max_width:
+-                space = line[: max_width + 1].rfind(" ") + 1
+-                if space == 0:
+-                    space = line.find(" ") + 1
+-                    if space == 0:
+-                        yield line
+-                        line = ""
+-                        break
+-                yield "%s\n" % line[: space - 1]
+-                line = line[space:]
+-                max_width = min((line.endswith("\n") and width + 1 or width), width)
+-            if line:
+-                yield line
+-
+-    return "".join(_generator())
++    wrapper = textwrap.TextWrapper(
++        width=width,
++        break_long_words=False,
++        break_on_hyphens=False,
++    )
++    result = []
++    for line in text.splitlines(True):
++        result.extend(wrapper.wrap(line))
++    return "\n".join(result)
+ 
+ 
+ class Truncator(SimpleLazyObject):
+diff --git a/tests/template_tests/filter_tests/test_wordwrap.py b/tests/template_tests/filter_tests/test_wordwrap.py
+index 88fbd274da94..bcdefghijklm 100644
+--- a/tests/template_tests/filter_tests/test_wordwrap.py
++++ b/tests/template_tests/filter_tests/test_wordwrap.py
+@@ -10,6 +10,14 @@ def test_wordwrap02(self):
+             'wordwrap02', {'a': 'a & b', 'b': mark_safe('a & b')})
+         self.assertEqual(output, 'a &\nb a &\nb')
+ 
++    def test_wrap_long_text(self):
++        long_text = (
++            "this is a long paragraph of text that really needs"
++            " to be wrapped I'm afraid " * 20_000
++        )
++        self.assertIn(
++            "this is a\nlong\nparagraph\nof text\nthat\nreally\nneeds to\nbe wrapped\n"
++            "I'm afraid", wordwrap(long_text, 10))
+ 
+     def test_wrap(self):
+         self.assertEqual(

@@ -1,0 +1,41 @@
+From 3d2f29c88f9b073cb0fd3b9c7f85430e2170acbb Mon Sep 17 00:00:00 2001
+From: Masakazu Kitajo <maskit@apache.org>
+Date: Tue, 1 Apr 2025 12:15:16 -0600
+Subject: [PATCH] Require the use of CRLF in chunked message body (#12150)
+
+* Require the use of CRLF in chunked message body
+
+* Fix docs
+---
+ doc/admin-guide/files/records.config.en.rst   |  9 +++
+ .../functions/TSHttpOverridableConfig.en.rst  |  1 +
+ .../api/types/TSOverridableConfigKey.en.rst   |  1 +
+ include/ts/apidefs.h.in                       |  1 +
+ mgmt/RecordsConfig.cc                         |  2 +
+ plugins/lua/ts_lua_http_config.c              |  2 +
+ proxy/http/HttpConfig.cc                      |  2 +
+ proxy/http/HttpConfig.h                       |  1 +
+ proxy/http/HttpSM.cc                          | 28 +++++---
+ proxy/http/HttpTunnel.cc                      | 72 ++++++++++++-------
+ proxy/http/HttpTunnel.h                       | 15 +++-
+ src/shared/overridable_txn_vars.cc            |  1 +
+ src/traffic_server/FetchSM.cc                 |  3 +-
+ src/traffic_server/InkAPI.cc                  |  3 +
+ src/traffic_server/InkAPITest.cc              |  3 +-
+ .../malformed_chunked_header.replay.yaml      | 44 ++++++++++++
+ 16 files changed, 150 insertions(+), 38 deletions(-)
+
+diff --git a/proxy/http/HttpSM.cc b/proxy/http/HttpSM.cc
+index cdc05461320..c0ba82641e1 100644
+--- a/proxy/http/HttpSM.cc
++++ b/proxy/http/HttpSM.cc
+@@ -978,7 +978,8 @@ HttpSM::wait_for_full_body()
+   p = tunnel.add_producer(ua_entry->vc, post_bytes, buf_start, &HttpSM::tunnel_handler_post_ua, HT_BUFFER_READ, "ua post buffer");
+   if (chunked) {
+     bool const drop_chunked_trailers = t_state.http_config_param->oride.http_drop_chunked_trailers == 1;
+-    tunnel.set_producer_chunking_action(p, 0, TCA_PASSTHRU_CHUNKED_CONTENT, drop_chunked_trailers);
++    bool const parse_chunk_strictly  = t_state.http_config_param->oride.http_strict_chunk_parsing == 1;
++    tunnel.set_producer_chunking_action(p, 0, TCA_PASSTHRU_CHUNKED_CONTENT, drop_chunked_trailers, parse_chunk_strictly);
+   }
+   ua_entry->in_tunnel = true;
+   ua_txn->set_inactivity_timeout(HRTIME_SECONDS(t_state.txn_conf->transaction_no_activity_timeout_in));

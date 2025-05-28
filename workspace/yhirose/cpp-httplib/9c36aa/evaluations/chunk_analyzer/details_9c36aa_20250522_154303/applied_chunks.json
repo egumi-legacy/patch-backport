@@ -1,0 +1,18 @@
+[
+  {
+    "索引": 1,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/yhirose/cpp-httplib/9c36aa/chunk_patches/chunk_002_20250522_154303.patch",
+    "实际补丁": null,
+    "修改文件": "httplib.h",
+    "修改位置": "5699-5753",
+    "内容": "From 9c36aae4b73e2b6e493f4133e4173103c9266289 Mon Sep 17 00:00:00 2001\nFrom: yhirose <yuji.hirose.bug@gmail.com>\nDate: Thu, 16 Jan 2025 00:04:17 -0500\nSubject: [PATCH] Fix HTTP Response Splitting Vulnerability\n\n---\n httplib.h    | 62 +++++++++++++++++++++++++++++++++++++--\n test/test.cc | 82 ++++++++++++++++++++++++++++++++++++++++++++++++++++\n 2 files changed, 141 insertions(+), 3 deletions(-)\n\ndiff --git a/httplib.h b/httplib.h\nindex 7743f9fd6f..27141f0bf4 100644\n--- a/httplib.h\n+++ b/httplib.h\n@@ -5699,7 +5753,8 @@ inline size_t Request::get_header_value_count(const std::string &key) const {\n \n inline void Request::set_header(const std::string &key,\n                                 const std::string &val) {\n-  if (!detail::has_crlf(key) && !detail::has_crlf(val)) {\n+  if (detail::fields::is_field_name(key) &&\n+      detail::fields::is_field_value(val)) {\n     headers.emplace(key, val);\n   }\n }\n"
+  },
+  {
+    "索引": 2,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/yhirose/cpp-httplib/9c36aa/chunk_patches/chunk_003_20250522_154303.patch",
+    "实际补丁": null,
+    "修改文件": "httplib.h",
+    "修改位置": "5765-5820",
+    "内容": "From 9c36aae4b73e2b6e493f4133e4173103c9266289 Mon Sep 17 00:00:00 2001\nFrom: yhirose <yuji.hirose.bug@gmail.com>\nDate: Thu, 16 Jan 2025 00:04:17 -0500\nSubject: [PATCH] Fix HTTP Response Splitting Vulnerability\n\n---\n httplib.h    | 62 +++++++++++++++++++++++++++++++++++++--\n test/test.cc | 82 ++++++++++++++++++++++++++++++++++++++++++++++++++++\n 2 files changed, 141 insertions(+), 3 deletions(-)\n\ndiff --git a/httplib.h b/httplib.h\nindex 7743f9fd6f..27141f0bf4 100644\n--- a/httplib.h\n+++ b/httplib.h\n@@ -5765,13 +5820,14 @@ inline size_t Response::get_header_value_count(const std::string &key) const {\n \n inline void Response::set_header(const std::string &key,\n                                  const std::string &val) {\n-  if (!detail::has_crlf(key) && !detail::has_crlf(val)) {\n+  if (detail::fields::is_field_name(key) &&\n+      detail::fields::is_field_value(val)) {\n     headers.emplace(key, val);\n   }\n }\n \n inline void Response::set_redirect(const std::string &url, int stat) {\n-  if (!detail::has_crlf(url)) {\n+  if (detail::fields::is_field_value(url)) {\n     set_header(\"Location\", url);\n     if (300 <= stat && stat < 400) {\n       this->status = stat;\n"
+  }
+]

@@ -1,0 +1,48 @@
+From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia <124304+nessita@users.noreply.github.com>
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia <124304+nessita@users.noreply.github.com>
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/django/utils/ipv6.py b/django/utils/ipv6.py
+index 88dd6ecb4b84..de41a97f7210 100644
+--- a/django/utils/ipv6.py
++++ b/django/utils/ipv6.py
+@@ -3,9 +3,22 @@
+ from django.core.exceptions import ValidationError
+ from django.utils.translation import gettext_lazy as _
+ 
++MAX_IPV6_ADDRESS_LENGTH = 39
++
++
++def _ipv6_address_from_str(ip_str, max_length=MAX_IPV6_ADDRESS_LENGTH):
++    if len(ip_str) > max_length:
++        raise ValueError(
++            f"Unable to convert {ip_str} to an IPv6 address (value too long)."
++        )
++    return ipaddress.IPv6Address(int(ipaddress.IPv6Address(ip_str)))
++
+ 
+ def clean_ipv6_address(
+-    ip_str, unpack_ipv4=False, error_message=_("This is not a valid IPv6 address.")
++    ip_str,
++    unpack_ipv4=False,
++    error_message=_("This is not a valid IPv6 address."),
++    max_length=MAX_IPV6_ADDRESS_LENGTH,
+ ):
+     """
+     Clean an IPv6 address string.

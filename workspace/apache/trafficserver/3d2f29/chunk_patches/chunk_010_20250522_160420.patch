@@ -1,0 +1,39 @@
+From 3d2f29c88f9b073cb0fd3b9c7f85430e2170acbb Mon Sep 17 00:00:00 2001
+From: Masakazu Kitajo <maskit@apache.org>
+Date: Tue, 1 Apr 2025 12:15:16 -0600
+Subject: [PATCH] Require the use of CRLF in chunked message body (#12150)
+
+* Require the use of CRLF in chunked message body
+
+* Fix docs
+---
+ doc/admin-guide/files/records.config.en.rst   |  9 +++
+ .../functions/TSHttpOverridableConfig.en.rst  |  1 +
+ .../api/types/TSOverridableConfigKey.en.rst   |  1 +
+ include/ts/apidefs.h.in                       |  1 +
+ mgmt/RecordsConfig.cc                         |  2 +
+ plugins/lua/ts_lua_http_config.c              |  2 +
+ proxy/http/HttpConfig.cc                      |  2 +
+ proxy/http/HttpConfig.h                       |  1 +
+ proxy/http/HttpSM.cc                          | 28 +++++---
+ proxy/http/HttpTunnel.cc                      | 72 ++++++++++++-------
+ proxy/http/HttpTunnel.h                       | 15 +++-
+ src/shared/overridable_txn_vars.cc            |  1 +
+ src/traffic_server/FetchSM.cc                 |  3 +-
+ src/traffic_server/InkAPI.cc                  |  3 +
+ src/traffic_server/InkAPITest.cc              |  3 +-
+ .../malformed_chunked_header.replay.yaml      | 44 ++++++++++++
+ 16 files changed, 150 insertions(+), 38 deletions(-)
+
+diff --git a/proxy/http/HttpConfig.h b/proxy/http/HttpConfig.h
+index 6c1763f84e8..53450bdbb25 100644
+--- a/proxy/http/HttpConfig.h
++++ b/proxy/http/HttpConfig.h
+@@ -703,6 +703,7 @@ struct OverridableHttpConfigParams {
+ 
+   MgmtInt http_chunking_size          = 4096; // Maximum chunk size for chunked output.
+   MgmtByte http_drop_chunked_trailers = 0;    ///< Whether to drop chunked trailers.
++  MgmtByte http_strict_chunk_parsing  = 1;    ///< Whether to parse chunked body strictly.
+   MgmtInt flow_high_water_mark        = 0;    ///< Flow control high water mark.
+   MgmtInt flow_low_water_mark         = 0;    ///< Flow control low water mark.
+ 

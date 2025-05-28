@@ -1,0 +1,41 @@
+From 3d2f29c88f9b073cb0fd3b9c7f85430e2170acbb Mon Sep 17 00:00:00 2001
+From: Masakazu Kitajo <maskit@apache.org>
+Date: Tue, 1 Apr 2025 12:15:16 -0600
+Subject: [PATCH] Require the use of CRLF in chunked message body (#12150)
+
+* Require the use of CRLF in chunked message body
+
+* Fix docs
+---
+ doc/admin-guide/files/records.config.en.rst   |  9 +++
+ .../functions/TSHttpOverridableConfig.en.rst  |  1 +
+ .../api/types/TSOverridableConfigKey.en.rst   |  1 +
+ include/ts/apidefs.h.in                       |  1 +
+ mgmt/RecordsConfig.cc                         |  2 +
+ plugins/lua/ts_lua_http_config.c              |  2 +
+ proxy/http/HttpConfig.cc                      |  2 +
+ proxy/http/HttpConfig.h                       |  1 +
+ proxy/http/HttpSM.cc                          | 28 +++++---
+ proxy/http/HttpTunnel.cc                      | 72 ++++++++++++-------
+ proxy/http/HttpTunnel.h                       | 15 +++-
+ src/shared/overridable_txn_vars.cc            |  1 +
+ src/traffic_server/FetchSM.cc                 |  3 +-
+ src/traffic_server/InkAPI.cc                  |  3 +
+ src/traffic_server/InkAPITest.cc              |  3 +-
+ .../malformed_chunked_header.replay.yaml      | 44 ++++++++++++
+ 16 files changed, 150 insertions(+), 38 deletions(-)
+
+diff --git a/proxy/http/HttpTunnel.h b/proxy/http/HttpTunnel.h
+index 3aac38aca68..9b7d1876425 100644
+--- a/proxy/http/HttpTunnel.h
++++ b/proxy/http/HttpTunnel.h
+@@ -483,6 +489,9 @@ class HttpTunnel : public Continuation
+   /// Corresponds to proxy.config.http.drop_chunked_trailers having a value of 1.
+   bool http_drop_chunked_trailers = false;
+ 
++  /// Corresponds to proxy.config.http.strict_chunk_parsing having a value of 1.
++  bool http_strict_chunk_parsing = false;
++
+   /** The number of body bytes processed in this last execution of the tunnel.
+    *
+    * This accounting is used to determine how many bytes to copy into the body

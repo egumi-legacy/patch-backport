@@ -1,0 +1,23 @@
+From bb15591646687064ab2d578d5f9660b2a4168017 Mon Sep 17 00:00:00 2001
+From: Camden Narzt <c.narzt@me.com>
+Date: Tue, 18 Feb 2025 07:57:54 -0700
+Subject: [PATCH] Fix header parser
+
+---
+ CHANGELOG                                     |  2 +-
+ .../ServerKit/HttpHeaderParser.h              | 40 +++++++++----------
+ test/cxx/ServerKit/HttpServerTest.cpp         | 27 ++++++++++++-
+ 3 files changed, 46 insertions(+), 23 deletions(-)
+
+diff --git a/test/cxx/ServerKit/HttpServerTest.cpp b/test/cxx/ServerKit/HttpServerTest.cpp
+index df87b5daaf..9fb0ad952f 100644
+--- a/test/cxx/ServerKit/HttpServerTest.cpp
++++ b/test/cxx/ServerKit/HttpServerTest.cpp
+@@ -1477,7 +1503,6 @@ namespace tut {
+ 		ensure("(1)", containsSubstring(response, "HTTP/1.1 400 Bad Request\r\n"));
+ 	}
+ 
+-
+ 	/***** Secure headers handling *****/
+ 
+ 	TEST_METHOD(60) {

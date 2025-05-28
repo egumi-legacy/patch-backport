@@ -1,0 +1,35 @@
+From 8def647eea27f7fd7ad33ff79c2d6d3e39948dce Mon Sep 17 00:00:00 2001
+From: Ileana Dumitrescu <ileanadumitrescu95@gmail.com>
+Date: Mon, 10 Mar 2025 20:36:05 +0200
+Subject: [PATCH] src/conv.c: Check src_length to avoid an unitinialized heap
+ read
+
+---
+ src/conv.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/src/conv.c b/src/conv.c
+index 9a2a418..3099202 100644
+--- a/src/conv.c
++++ b/src/conv.c
+@@ -578,8 +578,8 @@ strndup_iconv_from_ucs2		(unsigned long *	out_size,
+  * @returns
+  * A pointer to the allocated buffer. You must free() the buffer
+  * when it is no longer needed. The function returns @c NULL when
+- * the conversion fails, when it runs out of memory or when @a src
+- * is @c NULL.
++ * the conversion fails, when it runs out of memory, src_length is
++ * set to zero, or when @a src is @c NULL.
+  *
+  * @since 0.2.23
+  */
+@@ -593,6 +593,9 @@ vbi_strndup_iconv_ucs2		(const char *		dst_codeset,
+ 	char *result;
+ 	unsigned long size;
+ 
++	if (0 == src_length)
++		return NULL;
++
+ 	buffer = strndup_iconv_from_ucs2 (&size,
+ 					  dst_codeset,
+ 					  src, src_length,

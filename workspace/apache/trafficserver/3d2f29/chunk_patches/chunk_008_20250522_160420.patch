@@ -1,0 +1,39 @@
+From 3d2f29c88f9b073cb0fd3b9c7f85430e2170acbb Mon Sep 17 00:00:00 2001
+From: Masakazu Kitajo <maskit@apache.org>
+Date: Tue, 1 Apr 2025 12:15:16 -0600
+Subject: [PATCH] Require the use of CRLF in chunked message body (#12150)
+
+* Require the use of CRLF in chunked message body
+
+* Fix docs
+---
+ doc/admin-guide/files/records.config.en.rst   |  9 +++
+ .../functions/TSHttpOverridableConfig.en.rst  |  1 +
+ .../api/types/TSOverridableConfigKey.en.rst   |  1 +
+ include/ts/apidefs.h.in                       |  1 +
+ mgmt/RecordsConfig.cc                         |  2 +
+ plugins/lua/ts_lua_http_config.c              |  2 +
+ proxy/http/HttpConfig.cc                      |  2 +
+ proxy/http/HttpConfig.h                       |  1 +
+ proxy/http/HttpSM.cc                          | 28 +++++---
+ proxy/http/HttpTunnel.cc                      | 72 ++++++++++++-------
+ proxy/http/HttpTunnel.h                       | 15 +++-
+ src/shared/overridable_txn_vars.cc            |  1 +
+ src/traffic_server/FetchSM.cc                 |  3 +-
+ src/traffic_server/InkAPI.cc                  |  3 +
+ src/traffic_server/InkAPITest.cc              |  3 +-
+ .../malformed_chunked_header.replay.yaml      | 44 ++++++++++++
+ 16 files changed, 150 insertions(+), 38 deletions(-)
+
+diff --git a/proxy/http/HttpConfig.cc b/proxy/http/HttpConfig.cc
+index d5c1c00a283..ca2edee1ee7 100644
+--- a/proxy/http/HttpConfig.cc
++++ b/proxy/http/HttpConfig.cc
+@@ -1190,6 +1190,7 @@ HttpConfig::startup()
+   HttpEstablishStaticConfigByte(c.oride.chunking_enabled, "proxy.config.http.chunking_enabled");
+   HttpEstablishStaticConfigLongLong(c.oride.http_chunking_size, "proxy.config.http.chunking.size");
+   HttpEstablishStaticConfigByte(c.oride.http_drop_chunked_trailers, "proxy.config.http.drop_chunked_trailers");
++  HttpEstablishStaticConfigByte(c.oride.http_strict_chunk_parsing, "proxy.config.http.strict_chunk_parsing");
+   HttpEstablishStaticConfigByte(c.oride.flow_control_enabled, "proxy.config.http.flow_control.enabled");
+   HttpEstablishStaticConfigLongLong(c.oride.flow_high_water_mark, "proxy.config.http.flow_control.high_water");
+   HttpEstablishStaticConfigLongLong(c.oride.flow_low_water_mark, "proxy.config.http.flow_control.low_water");

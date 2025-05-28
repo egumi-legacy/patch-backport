@@ -1,0 +1,1686 @@
+modified file: doc/admin-guide/files/records.config.en.rst
+--- workspace/apache/trafficserver/3d2f29/newer/doc/admin-guide/files/records.config.en.rst
++++ workspace/apache/trafficserver/3d2f29/9.2.3/doc/admin-guide/files/records.config.en.rst
+@@ -430,18 +430,6 @@
+  Network
+  =======
+  
+ -.. ts:cv:: CONFIG proxy.config.net.additional_accepts INT -1
+ -   :reloadable:
+ -
+ -   This config addresses an issue that can sometimes happen if threads are caught in
+ -   a net accept while loop, become busy exclusviely accepting connections, and are prevented
+ -   from doing other work. This can cause an increase in latency and average event
+ -   loop time. When set to 0, a thread accepts only 1 connection per event loop.
+ -   When set to any other positive integer x, a thread will accept up to x+1 connections
+ -   per event loop. When set to -1 (default), a thread will accept connections as long
+ -   as there are connections waiting in its listening queue.is equivalent to "accept all",
+ -   and setting to 0 is equivalent to "accept one".
+ -
+  .. ts:cv:: CONFIG proxy.config.net.connections_throttle INT 30000
+  
+     The total number of client and origin server connections that the server
+@@ -460,7 +448,6 @@
+     and active requests that |TS| can handle at any given instant. The delta
+     between `proxy.config.net.max_connections_in` and `proxy.config.net.max_requests_in`
+     is the amount of maximum idle (keepalive) connections |TS| will maintain.
+ -   If this is set to 0, the throttling logic is disabled.
+  
+  .. ts:cv:: CONFIG proxy.config.net.max_requests_in INT 0
+  
+@@ -975,18 +962,6 @@
+     request, this option determines the size of the chunks, in bytes, to use
+     when sending content to an HTTP/1.1 client.
+  
+ -.. ts:cv:: CONFIG proxy.config.http.drop_chunked_trailers INT 0
+ -   :reloadable:
+ -   :overridable:
+ -
+ -   Specifies whether |TS| should drop chunked trailers. If enabled (``1``), |TS|
+ -   will drop any chunked trailers in a ``Transfer-Encoded: chunked`` request or
+ -   response body. If disabled (``0``), |TS| will pass the chunked trailers
+ -   unmodified to the receiving peer.  See `RFC 9112, section 7.1.2
+ -   <https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-trailer-section>`_
+ -   for details about chunked trailers. By default, this option is disabled
+ -   and therefore |TS| will not drop chunked trailers.
+ -
+  .. ts:cv:: CONFIG proxy.config.http.send_http11_requests INT 1
+     :reloadable:
+     :overridable:
+@@ -4232,13 +4207,6 @@
+     misconfigured or misbehaving clients are opening a large number of
+     connections without submitting requests.
+  
+ -.. ts:cv:: CONFIG proxy.config.http2.incomplete_header_timeout_in INT 10
+ -   :reloadable:
+ -   :units: seconds
+ -
+ -   Specifies how long |TS| keeps streams to clients open after they start sending HTTP headers. If a client doesn't send all
+ -   headers within this time, the stream and connection will be closed.
+ -
+  .. ts:cv:: CONFIG proxy.config.http2.zombie_debug_timeout_in INT 0
+     :reloadable:
+  
+@@ -4304,18 +4272,11 @@
+     This limit only will be enforced if :ts:cv:`proxy.config.http2.stream_priority_enabled`
+     is set to 1.
+  
+ -.. ts:cv:: CONFIG proxy.config.http2.max_rst_stream_frames_per_minute INT 200
+ -   :reloadable:
+ -
+ -   Specifies how many RST_STREAM frames |TS| receives per minute at maximum.
+ -   Clients exceeding this limit will be immediately disconnected with an error
+ -   code of ENHANCE_YOUR_CALM.
+ -
+ -.. ts:cv:: CONFIG proxy.config.http2.max_continuation_frames_per_minute INT 120
+ -   :reloadable:
+ -
+ -   Specifies how many CONTINUATION frames |TS| receives per minute at maximum.
+ -   Clients exceeding this limit will be immediately disconnected with an error
+ +.. ts:cv:: CONFIG proxy.config.http2.max_rst_stream_frames_per_minute INT 14
+ +   :reloadable:
+ +
+ +   Specifies how many RST_STREAM frames |TS| receives for a minute at maximum.
+ +   Clients exceeded this limit will be immediately disconnected with an error
+     code of ENHANCE_YOUR_CALM.
+  
+  .. ts:cv:: CONFIG proxy.config.http2.min_avg_window_update FLOAT 2560.0
+
+""""""
+modified file: doc/developer-guide/api/functions/TSHttpOverridableConfig.en.rst
+--- workspace/apache/trafficserver/3d2f29/newer/doc/developer-guide/api/functions/TSHttpOverridableConfig.en.rst
++++ workspace/apache/trafficserver/3d2f29/9.2.3/doc/developer-guide/api/functions/TSHttpOverridableConfig.en.rst
+@@ -112,7 +112,6 @@
+  :c:enumerator:`TS_CONFIG_HTTP_CHUNKING_ENABLED`                           :ts:cv:`proxy.config.http.chunking_enabled`
+  :c:enumerator:`TS_CONFIG_HTTP_CHUNKING_SIZE`                              :ts:cv:`proxy.config.http.chunking.size`
+  :c:enumerator:`TS_CONFIG_HTTP_CONNECT_ATTEMPTS_MAX_RETRIES_DEAD_SERVER`   :ts:cv:`proxy.config.http.connect_attempts_max_retries_dead_server`
+ -:c:enumerator:`TS_CONFIG_HTTP_DROP_CHUNKED_TRAILERS`                      :ts:cv:`proxy.config.http.drop_chunked_trailers`
+  :c:enumerator:`TS_CONFIG_HTTP_CONNECT_ATTEMPTS_MAX_RETRIES`               :ts:cv:`proxy.config.http.connect_attempts_max_retries`
+  :c:enumerator:`TS_CONFIG_HTTP_CONNECT_ATTEMPTS_RR_RETRIES`                :ts:cv:`proxy.config.http.connect_attempts_rr_retries`
+  :c:enumerator:`TS_CONFIG_HTTP_CONNECT_ATTEMPTS_TIMEOUT`                   :ts:cv:`proxy.config.http.connect_attempts_timeout`
+
+""""""
+modified file: doc/developer-guide/api/types/TSOverridableConfigKey.en.rst
+--- workspace/apache/trafficserver/3d2f29/newer/doc/developer-guide/api/types/TSOverridableConfigKey.en.rst
++++ workspace/apache/trafficserver/3d2f29/9.2.3/doc/developer-guide/api/types/TSOverridableConfigKey.en.rst
+@@ -91,7 +91,6 @@
+  .. c:enumerator:: TS_CONFIG_NET_SOCK_PACKET_TOS_OUT
+  .. c:enumerator:: TS_CONFIG_HTTP_INSERT_AGE_IN_RESPONSE
+  .. c:enumerator:: TS_CONFIG_HTTP_CHUNKING_SIZE
+ -.. c:enumerator:: TS_CONFIG_HTTP_DROP_CHUNKED_TRAILERS
+  .. c:enumerator:: TS_CONFIG_HTTP_FLOW_CONTROL_ENABLED
+  .. c:enumerator:: TS_CONFIG_HTTP_FLOW_CONTROL_LOW_WATER_MARK
+  .. c:enumerator:: TS_CONFIG_HTTP_FLOW_CONTROL_HIGH_WATER_MARK
+
+""""""
+modified file: include/ts/apidefs.h.in
+--- workspace/apache/trafficserver/3d2f29/newer/include/ts/apidefs.h.in
++++ workspace/apache/trafficserver/3d2f29/9.2.3/include/ts/apidefs.h.in
+@@ -874,7 +874,6 @@
+    TS_CONFIG_BODY_FACTORY_RESPONSE_SUPPRESSION_MODE,
+    TS_CONFIG_HTTP_ENABLE_PARENT_TIMEOUT_MARKDOWNS,
+    TS_CONFIG_HTTP_DISABLE_PARENT_MARKDOWNS,
+ -  TS_CONFIG_HTTP_DROP_CHUNKED_TRAILERS,
+    TS_CONFIG_LAST_ENTRY
+  } TSOverridableConfigKey;
+  
+
+""""""
+modified file: mgmt/RecordsConfig.cc
+--- workspace/apache/trafficserver/3d2f29/newer/mgmt/RecordsConfig.cc
++++ workspace/apache/trafficserver/3d2f29/9.2.3/mgmt/RecordsConfig.cc
+@@ -360,8 +360,6 @@
+    {RECT_CONFIG, "proxy.config.http.chunking_enabled", RECD_INT, "1", RECU_DYNAMIC, RR_NULL, RECC_NULL, nullptr, RECA_NULL}
+    ,
+    {RECT_CONFIG, "proxy.config.http.chunking.size", RECD_INT, "4096", RECU_DYNAMIC, RR_NULL, RECC_NULL, nullptr, RECA_NULL}
+ -  ,
+ -  {RECT_CONFIG, "proxy.config.http.drop_chunked_trailers", RECD_INT, "0", RECU_DYNAMIC, RR_NULL, RECC_NULL, "[0-1]", RECA_NULL}
+    ,
+    {RECT_CONFIG, "proxy.config.http.flow_control.enabled", RECD_INT, "0", RECU_DYNAMIC, RR_NULL, RECC_NULL, nullptr, RECA_NULL}
+    ,
+@@ -761,8 +759,6 @@
+    //# Net Subsystem
+    //#
+    //##############################################################################
+ -  {RECT_CONFIG, "proxy.config.net.additional_accepts", RECD_INT, "-1", RECU_DYNAMIC, RR_NULL, RECC_INT, "^-1|[0-9]+$", RECA_NULL}
+ -   ,
+    {RECT_CONFIG, "proxy.config.net.connections_throttle", RECD_INT, "30000", RECU_RESTART_TS, RR_REQUIRED, RECC_STR, "^[0-9]+$", RECA_NULL}
+    ,
+    {RECT_CONFIG, "proxy.config.net.listen_backlog", RECD_INT, "-1", RECU_NULL, RR_NULL, RECC_NULL, nullptr, RECA_NULL}
+@@ -1377,8 +1373,6 @@
+    ,
+    {RECT_CONFIG, "proxy.config.http2.active_timeout_in", RECD_INT, "0", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
+    ,
+ -  {RECT_CONFIG, "proxy.config.http2.incomplete_header_timeout_in", RECD_INT, "10", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
+ -  ,
+    {RECT_CONFIG, "proxy.config.http2.push_diary_size", RECD_INT, "256", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
+    ,
+    {RECT_CONFIG, "proxy.config.http2.zombie_debug_timeout_in", RECD_INT, "0", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
+@@ -1398,8 +1392,6 @@
+    {RECT_CONFIG, "proxy.config.http2.max_priority_frames_per_minute", RECD_INT, "120", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
+    ,
+    {RECT_CONFIG, "proxy.config.http2.max_rst_stream_frames_per_minute", RECD_INT, "200", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
+ -  ,
+ -  {RECT_CONFIG, "proxy.config.http2.max_continuation_frames_per_minute", RECD_INT, "120", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
+    ,
+    {RECT_CONFIG, "proxy.config.http2.min_avg_window_update", RECD_FLOAT, "2560.0", RECU_DYNAMIC, RR_NULL, RECC_NULL, nullptr, RECA_NULL}
+    ,
+
+""""""
+modified file: plugins/lua/ts_lua_http_config.c
+--- workspace/apache/trafficserver/3d2f29/newer/plugins/lua/ts_lua_http_config.c
++++ workspace/apache/trafficserver/3d2f29/9.2.3/plugins/lua/ts_lua_http_config.c
+@@ -84,7 +84,6 @@
+    TS_LUA_CONFIG_NET_SOCK_PACKET_TOS_OUT                       = TS_CONFIG_NET_SOCK_PACKET_TOS_OUT,
+    TS_LUA_CONFIG_HTTP_INSERT_AGE_IN_RESPONSE                   = TS_CONFIG_HTTP_INSERT_AGE_IN_RESPONSE,
+    TS_LUA_CONFIG_HTTP_CHUNKING_SIZE                            = TS_CONFIG_HTTP_CHUNKING_SIZE,
+ -  TS_LUA_CONFIG_HTTP_DROP_CHUNKED_TRAILERS                    = TS_CONFIG_HTTP_DROP_CHUNKED_TRAILERS,
+    TS_LUA_CONFIG_HTTP_FLOW_CONTROL_ENABLED                     = TS_CONFIG_HTTP_FLOW_CONTROL_ENABLED,
+    TS_LUA_CONFIG_HTTP_FLOW_CONTROL_LOW_WATER_MARK              = TS_CONFIG_HTTP_FLOW_CONTROL_LOW_WATER_MARK,
+    TS_LUA_CONFIG_HTTP_FLOW_CONTROL_HIGH_WATER_MARK             = TS_CONFIG_HTTP_FLOW_CONTROL_HIGH_WATER_MARK,
+@@ -222,7 +221,6 @@
+    TS_LUA_MAKE_VAR_ITEM(TS_LUA_CONFIG_NET_SOCK_PACKET_TOS_OUT),
+    TS_LUA_MAKE_VAR_ITEM(TS_LUA_CONFIG_HTTP_INSERT_AGE_IN_RESPONSE),
+    TS_LUA_MAKE_VAR_ITEM(TS_LUA_CONFIG_HTTP_CHUNKING_SIZE),
+ -  TS_LUA_MAKE_VAR_ITEM(TS_LUA_CONFIG_HTTP_DROP_CHUNKED_TRAILERS),
+    TS_LUA_MAKE_VAR_ITEM(TS_LUA_CONFIG_HTTP_FLOW_CONTROL_ENABLED),
+    TS_LUA_MAKE_VAR_ITEM(TS_LUA_CONFIG_HTTP_FLOW_CONTROL_LOW_WATER_MARK),
+    TS_LUA_MAKE_VAR_ITEM(TS_LUA_CONFIG_HTTP_FLOW_CONTROL_HIGH_WATER_MARK),
+
+""""""
+modified file: proxy/http/HttpConfig.cc
+--- workspace/apache/trafficserver/3d2f29/newer/proxy/http/HttpConfig.cc
++++ workspace/apache/trafficserver/3d2f29/9.2.3/proxy/http/HttpConfig.cc
+@@ -1189,7 +1189,6 @@
+    HttpEstablishStaticConfigByte(c.oride.keep_alive_enabled_out, "proxy.config.http.keep_alive_enabled_out");
+    HttpEstablishStaticConfigByte(c.oride.chunking_enabled, "proxy.config.http.chunking_enabled");
+    HttpEstablishStaticConfigLongLong(c.oride.http_chunking_size, "proxy.config.http.chunking.size");
+ -  HttpEstablishStaticConfigByte(c.oride.http_drop_chunked_trailers, "proxy.config.http.drop_chunked_trailers");
+    HttpEstablishStaticConfigByte(c.oride.flow_control_enabled, "proxy.config.http.flow_control.enabled");
+    HttpEstablishStaticConfigLongLong(c.oride.flow_high_water_mark, "proxy.config.http.flow_control.high_water");
+    HttpEstablishStaticConfigLongLong(c.oride.flow_low_water_mark, "proxy.config.http.flow_control.low_water");
+@@ -1495,7 +1494,6 @@
+    params->oride.keep_alive_enabled_in       = INT_TO_BOOL(m_master.oride.keep_alive_enabled_in);
+    params->oride.keep_alive_enabled_out      = INT_TO_BOOL(m_master.oride.keep_alive_enabled_out);
+    params->oride.chunking_enabled            = INT_TO_BOOL(m_master.oride.chunking_enabled);
+ -  params->oride.http_drop_chunked_trailers  = m_master.oride.http_drop_chunked_trailers;
+    params->oride.auth_server_session_private = INT_TO_BOOL(m_master.oride.auth_server_session_private);
+  
+    params->oride.http_chunking_size = m_master.oride.http_chunking_size;
+
+""""""
+modified file: proxy/http/HttpConfig.h
+--- workspace/apache/trafficserver/3d2f29/newer/proxy/http/HttpConfig.h
++++ workspace/apache/trafficserver/3d2f29/9.2.3/proxy/http/HttpConfig.h
+@@ -701,10 +701,9 @@
+  
+    MgmtInt background_fill_active_timeout = 60;
+  
+ -  MgmtInt http_chunking_size          = 4096; // Maximum chunk size for chunked output.
+ -  MgmtByte http_drop_chunked_trailers = 0;    ///< Whether to drop chunked trailers.
+ -  MgmtInt flow_high_water_mark        = 0;    ///< Flow control high water mark.
+ -  MgmtInt flow_low_water_mark         = 0;    ///< Flow control low water mark.
+ +  MgmtInt http_chunking_size   = 4096; // Maximum chunk size for chunked output.
+ +  MgmtInt flow_high_water_mark = 0;    ///< Flow control high water mark.
+ +  MgmtInt flow_low_water_mark  = 0;    ///< Flow control low water mark.
+  
+    MgmtInt default_buffer_size_index = 8;
+    MgmtInt default_buffer_water_mark = 32768;
+
+""""""
+modified file: proxy/http/HttpSM.cc
+--- workspace/apache/trafficserver/3d2f29/newer/proxy/http/HttpSM.cc
++++ workspace/apache/trafficserver/3d2f29/9.2.3/proxy/http/HttpSM.cc
+@@ -900,7 +900,6 @@
+            SMDebug("http_seq", "send 100 Continue response to client");
+            int64_t nbytes      = ua_entry->write_buffer->write(str_100_continue_response, len_100_continue_response);
+            ua_entry->write_vio = ua_txn->do_io_write(this, nbytes, buf_start);
+ -          t_state.hdr_info.client_request.m_100_continue_sent = true;
+          } else {
+            t_state.hdr_info.client_request.m_100_continue_required = true;
+          }
+@@ -973,12 +972,13 @@
+    // Next order of business if copy the remaining data from the
+    //  header buffer into new buffer
+    int64_t post_bytes = chunked ? INT64_MAX : t_state.hdr_info.request_content_length;
+ -  post_buffer->write(ua_txn->get_remote_reader(), chunked ? ua_txn->get_remote_reader()->read_avail() : post_bytes);
+ -
+ +  client_request_body_bytes =
+ +    post_buffer->write(ua_txn->get_remote_reader(), chunked ? ua_txn->get_remote_reader()->read_avail() : post_bytes);
+ +
+ +  ua_txn->get_remote_reader()->consume(client_request_body_bytes);
+    p = tunnel.add_producer(ua_entry->vc, post_bytes, buf_start, &HttpSM::tunnel_handler_post_ua, HT_BUFFER_READ, "ua post buffer");
+    if (chunked) {
+ -    bool const drop_chunked_trailers = t_state.http_config_param->oride.http_drop_chunked_trailers == 1;
+ -    tunnel.set_producer_chunking_action(p, 0, TCA_PASSTHRU_CHUNKED_CONTENT, drop_chunked_trailers);
+ +    tunnel.set_producer_chunking_action(p, 0, TCA_PASSTHRU_CHUNKED_CONTENT);
+    }
+    ua_entry->in_tunnel = true;
+    ua_txn->set_inactivity_timeout(HRTIME_SECONDS(t_state.txn_conf->transaction_no_activity_timeout_in));
+@@ -1252,7 +1252,6 @@
+      break;
+    }
+    case VC_EVENT_ERROR:
+ -  case VC_EVENT_EOS:
+    case NET_EVENT_OPEN_FAILED:
+      t_state.current.state = HttpTransact::OPEN_RAW_ERROR;
+      // use this value just to get around other values
+@@ -1389,7 +1388,6 @@
+      }
+    // FALLTHROUGH
+    case VC_EVENT_ERROR:
+ -  case VC_EVENT_EOS:
+      // Transform VC sends NULL on error conditions
+      if (!c) {
+        c = tunnel.get_consumer(t_info->vc);
+@@ -1948,7 +1946,6 @@
+      t_state.set_connect_fail(ETIMEDOUT);
+    case VC_EVENT_ERROR:
+ -  case VC_EVENT_EOS:
+    case NET_EVENT_OPEN_FAILED: {
+      if (server_txn) {
+        NetVConnection *vc = server_txn->get_netvc();
+@@ -3631,24 +3628,7 @@
+  HttpSM::tunnel_handler_post_ua(int event, HttpTunnelProducer *p)
+  {
+    STATE_ENTER(&HttpSM::tunnel_handler_post_ua, event);
+ -
+ -  // Now that the tunnel is done, it can tell us how many bytes were in the
+ -  // body.
+ -  if (client_request_body_bytes == 0) {
+ -    // This is invoked multiple times for a transaction when buffering request
+ -    // body data, so we only call this the first time when
+ -    // client_request_body_bytes is 0.
+ -    client_request_body_bytes     = p->bytes_consumed;
+ -    IOBufferReader *client_reader = ua_txn->get_remote_reader();
+ -    // p->bytes_consumed represents the number of body bytes the tunnel parsed
+ -    // and consumed from the client. However, not all those bytes may have been
+ -    // written to our _ua client transaction reader. We must not consume past
+ -    // the number of bytes available.
+ -    int64_t const bytes_to_consume = std::min(p->bytes_consumed, client_reader->read_avail());
+ -    SMDebug("http_tunnel", "Consuming %" PRId64 " bytes from client reader with p->bytes_consumed: %" PRId64 " available: %" PRId64,
+ -            bytes_to_consume, p->bytes_consumed, client_reader->read_avail());
+ -    client_reader->consume(bytes_to_consume);
+ -  }
+ +  client_request_body_bytes = p->init_bytes_done + p->bytes_read;
+  
+    switch (event) {
+    case VC_EVENT_INACTIVITY_TIMEOUT:
+@@ -4797,13 +4777,10 @@
+          }
+        } else {
+          // if revalidating and cache is stale we want to transform
+ -        if (t_state.cache_info.action == HttpTransact::CACHE_DO_REPLACE) {
+ -          if (t_state.hdr_info.server_response.status_get() == HTTP_STATUS_OK) {
+ -            Debug("http_range", "Serving transform after stale cache re-serve");
+ -            do_transform = true;
+ -          } else {
+ -            Debug("http_range", "Not transforming after revalidate");
+ -          }
+ +        if (t_state.cache_info.action == HttpTransact::CACHE_DO_REPLACE &&
+ +            t_state.hdr_info.server_response.status_get() == HTTP_STATUS_OK) {
+ +          Debug("http_range", "Serving transform after stale cache re-serve");
+ +          do_transform = true;
+          } else if (cache_sm.cache_read_vc && cache_sm.cache_read_vc->is_pread_capable()) {
+            // If only one range entry and pread is capable, no need transform range
+            t_state.range_setup = HttpTransact::RANGE_NOT_TRANSFORM_REQUESTED;
+@@ -4884,10 +4861,8 @@
+    HttpCacheKey key;
+    Cache::generate_key(&key, c_url, t_state.txn_conf->cache_generation_number);
+  
+ -  t_state.hdr_info.cache_request.copy(&t_state.hdr_info.client_request);
+ -  HttpTransactHeaders::normalize_accept_encoding(t_state.txn_conf, &t_state.hdr_info.cache_request);
+    Action *cache_action_handle = cache_sm.open_read(
+ -    &key, c_url, &t_state.hdr_info.cache_request, t_state.txn_conf,
+ +    &key, c_url, &t_state.hdr_info.client_request, t_state.txn_conf,
+      static_cast<time_t>((t_state.cache_control.pin_in_cache_for < 0) ? 0 : t_state.cache_control.pin_in_cache_for));
+    //
+    // pin_in_cache value is an open_write parameter.
+@@ -5001,7 +4976,7 @@
+    Cache::generate_key(&key, s_url, t_state.txn_conf->cache_generation_number);
+  
+    Action *cache_action_handle =
+ -    c_sm->open_write(&key, s_url, &t_state.hdr_info.cache_request, object_read_info,
+ +    c_sm->open_write(&key, s_url, &t_state.hdr_info.client_request, object_read_info,
+                       static_cast<time_t>((t_state.cache_control.pin_in_cache_for < 0) ? 0 : t_state.cache_control.pin_in_cache_for),
+                       retry, allow_multiple);
+    if (cache_action_handle != ACTION_RESULT_DONE) {
+@@ -6110,8 +6085,8 @@
+      IOBufferReader *postdata_producer_reader = postdata_producer_buffer->alloc_reader();
+  
+      postdata_producer_buffer->write(this->_postbuf.postdata_copy_buffer_start);
+ -    int64_t post_bytes = chunked ? INT64_MAX : t_state.hdr_info.request_content_length;
+ -    transferred_bytes  = post_bytes;
+ +    int64_t post_bytes = postdata_producer_reader->read_avail();
+ +    transfered_bytes   = post_bytes;
+      p = tunnel.add_producer(HTTP_TUNNEL_STATIC_PRODUCER, post_bytes, postdata_producer_reader, (HttpProducerHandler) nullptr,
+                              HT_STATIC, "redirect static agent post");
+    } else {
+@@ -6140,27 +6115,12 @@
+  
+      // Next order of business if copy the remaining data from the
+      //  header buffer into new buffer
+ -
+ -    int64_t num_body_bytes = 0;
+ -    // If is_using_post_buffer has been used, then client_request_body_bytes
+ -    // will have already been sent in wait_for_full_body and there will be
+ -    // zero bytes in this user agent buffer. We don't want to clobber
+ -    // client_request_body_bytes with a zero value here in those cases.
+ -    if (client_request_body_bytes > 0) {
+ -      num_body_bytes = client_request_body_bytes;
+ -    } else {
+ -      num_body_bytes =
+ -        post_buffer->write(ua_txn->get_remote_reader(), chunked ? ua_txn->get_remote_reader()->read_avail() : post_bytes);
+ -    }
+ -    // Don't consume post_bytes here from ua_txn->get_remote_reader() since
+ -    // we are not sure how many bytes the tunnel will use yet. Wait until
+ -    // HttpSM::tunnel_handler_post_ua to consume the bytes.
+ -    // The user agent has already sent all it has
+ -    if (ua_txn->is_read_closed()) {
+ -      post_bytes = num_body_bytes;
+ -    }
+ -    p = tunnel.add_producer(ua_entry->vc, post_bytes - transferred_bytes, buf_start, &HttpSM::tunnel_handler_post_ua,
+ -                            HT_HTTP_CLIENT, "user agent post");
+ +    client_request_body_bytes =
+ +      post_buffer->write(ua_txn->get_remote_reader(), chunked ? ua_txn->get_remote_reader()->read_avail() : post_bytes);
+ +
+ +    ua_txn->get_remote_reader()->consume(client_request_body_bytes);
+ +    p = tunnel.add_producer(ua_entry->vc, post_bytes - transfered_bytes, buf_start, &HttpSM::tunnel_handler_post_ua, HT_HTTP_CLIENT,
+ +                            "user agent post");
+    }
+    ua_entry->in_tunnel = true;
+  
+@@ -6196,11 +6156,10 @@
+    // The user agent may support chunked (HTTP/1.1) or not (HTTP/2)
+    // In either case, the server will support chunked (HTTP/1.1)
+    if (chunked) {
+ -    bool const drop_chunked_trailers = t_state.http_config_param->oride.http_drop_chunked_trailers == 1;
+      if (ua_txn->is_chunked_encoding_supported()) {
+ -      tunnel.set_producer_chunking_action(p, 0, TCA_PASSTHRU_CHUNKED_CONTENT, drop_chunked_trailers);
+ +      tunnel.set_producer_chunking_action(p, 0, TCA_PASSTHRU_CHUNKED_CONTENT);
+      } else {
+ -      tunnel.set_producer_chunking_action(p, 0, TCA_CHUNK_CONTENT, drop_chunked_trailers);
+ +      tunnel.set_producer_chunking_action(p, 0, TCA_CHUNK_CONTENT);
+        tunnel.set_producer_chunking_size(p, 0);
+      }
+    }
+@@ -6608,8 +6567,7 @@
+    // this only applies to read-while-write cases where origin server sends a dynamically generated chunked content
+    // w/o providing a Content-Length header
+    if (t_state.client_info.receive_chunked_response) {
+ -    bool const drop_chunked_trailers = t_state.http_config_param->oride.http_drop_chunked_trailers == 1;
+ -    tunnel.set_producer_chunking_action(p, client_response_hdr_bytes, TCA_CHUNK_CONTENT, drop_chunked_trailers);
+ +    tunnel.set_producer_chunking_action(p, client_response_hdr_bytes, TCA_CHUNK_CONTENT);
+      tunnel.set_producer_chunking_size(p, t_state.txn_conf->http_chunking_size);
+    }
+    ua_entry->in_tunnel    = true;
+@@ -6877,8 +6835,6 @@
+      //  we'll get is already in the buffer
+      nbytes = server_txn->get_remote_reader()->read_avail() + hdr_size;
+    } else if (t_state.hdr_info.response_content_length == HTTP_UNDEFINED_CL) {
+ -    // Chunked or otherwise, no length is defined. Pass -1 to tell the
+ -    // tunnel that the size is unknown.
+      nbytes = -1;
+    } else {
+      //  Set to copy to the number of bytes we want to write as
+@@ -6928,7 +6884,7 @@
+  
+    if (t_state.current.server->transfer_encoding == HttpTransact::CHUNKED_ENCODING) {
+      client_response_hdr_bytes = 0; // fixed by YTS Team, yamsat
+ -    tunnel.set_producer_chunking_action(p, client_response_hdr_bytes, TCA_DECHUNK_CONTENT, HttpTunnel::DROP_CHUNKED_TRAILERS);
+ +    tunnel.set_producer_chunking_action(p, client_response_hdr_bytes, TCA_DECHUNK_CONTENT);
+    }
+  
+    return p;
+@@ -6967,8 +6923,7 @@
+    this->setup_plugin_agents(p, client_response_hdr_bytes);
+  
+    if (t_state.client_info.receive_chunked_response) {
+ -    bool const drop_chunked_trailers = t_state.http_config_param->oride.http_drop_chunked_trailers == 1;
+ -    tunnel.set_producer_chunking_action(p, client_response_hdr_bytes, TCA_CHUNK_CONTENT, drop_chunked_trailers);
+ +    tunnel.set_producer_chunking_action(p, client_response_hdr_bytes, TCA_CHUNK_CONTENT);
+      tunnel.set_producer_chunking_size(p, t_state.txn_conf->http_chunking_size);
+    }
+  
+@@ -7024,8 +6979,7 @@
+    HttpTunnelProducer *p =
+      tunnel.add_producer(server_entry->vc, nbytes, buf_start, &HttpSM::tunnel_handler_server, HT_HTTP_SERVER, "http server");
+  
+ -  bool const drop_chunked_trailers = t_state.http_config_param->oride.http_drop_chunked_trailers == 1;
+ -  tunnel.set_producer_chunking_action(p, 0, action, drop_chunked_trailers);
+ +  tunnel.set_producer_chunking_action(p, 0, action);
+    tunnel.set_producer_chunking_size(p, t_state.txn_conf->http_chunking_size);
+  
+    setup_cache_write_transfer(&cache_sm, server_entry->vc, &t_state.cache_info.object_store, 0, "cache write");
+@@ -7113,8 +7067,7 @@
+       else action = TCA_PASSTHRU_CHUNKED_CONTENT;
+       }
+     */
+ -  bool const drop_chunked_trailers = t_state.http_config_param->oride.http_drop_chunked_trailers == 1;
+ -  tunnel.set_producer_chunking_action(p, client_response_hdr_bytes, action, drop_chunked_trailers);
+ +  tunnel.set_producer_chunking_action(p, client_response_hdr_bytes, action);
+    tunnel.set_producer_chunking_size(p, t_state.txn_conf->http_chunking_size);
+    return p;
+  }
+@@ -8596,18 +8549,16 @@
+  
+  // YTS Team, yamsat Plugin
+  // Function to copy the partial Post data while tunnelling
+ -int64_t
+ -PostDataBuffers::copy_partial_post_data(int64_t consumed_bytes)
+ +void
+ +PostDataBuffers::copy_partial_post_data()
+  {
+    if (post_data_buffer_done) {
+ -    return 0;
+ -  }
+ -  int64_t const bytes_to_copy = std::min(consumed_bytes, this->ua_buffer_reader->read_avail());
+ -  Debug("http_redirect", "given %" PRId64 " bytes consumed, copying %" PRId64 " bytes to buffers with %" PRId64 " available bytes",
+ -        consumed_bytes, bytes_to_copy, this->ua_buffer_reader->read_avail());
+ -  this->postdata_copy_buffer->write(this->ua_buffer_reader, bytes_to_copy);
+ -  this->ua_buffer_reader->consume(bytes_to_copy);
+ -  return bytes_to_copy;
+ +    return;
+ +  }
+ +  Debug("http_redirect", "[PostDataBuffers::copy_partial_post_data] wrote %" PRId64 " bytes to buffers %" PRId64 "",
+ +        this->ua_buffer_reader->read_avail(), this->postdata_copy_buffer_start->read_avail());
+ +  this->postdata_copy_buffer->write(this->ua_buffer_reader);
+ +  this->ua_buffer_reader->consume(this->ua_buffer_reader->read_avail());
+  }
+  
+  IOBufferReader *
+
+""""""
+modified file: proxy/http/HttpTunnel.cc
+--- workspace/apache/trafficserver/3d2f29/newer/proxy/http/HttpTunnel.cc
++++ workspace/apache/trafficserver/3d2f29/9.2.3/proxy/http/HttpTunnel.cc
+@@ -38,9 +38,6 @@
+  #include "tscore/ParseRules.h"
+  #include "tscore/ink_memory.h"
+  
+ -#include <algorithm>
+ -#include <cstdint>
+ -
+  static const int min_block_transfer_bytes = 256;
+  static const char *const CHUNK_HEADER_FMT = "%" PRIx64 "\r\n";
+  // This should be as small as possible because it will only hold the
+@@ -51,27 +48,27 @@
+  ChunkedHandler::ChunkedHandler() : max_chunk_size(DEFAULT_MAX_CHUNK_SIZE) {}
+  
+  void
+ -ChunkedHandler::init(IOBufferReader *buffer_in, HttpTunnelProducer *p, bool drop_chunked_trailers)
+ +ChunkedHandler::init(IOBufferReader *buffer_in, HttpTunnelProducer *p)
+  {
+    if (p->do_chunking) {
+ -    init_by_action(buffer_in, ACTION_DOCHUNK, drop_chunked_trailers);
+ +    init_by_action(buffer_in, ACTION_DOCHUNK);
+    } else if (p->do_dechunking) {
+ -    init_by_action(buffer_in, ACTION_DECHUNK, drop_chunked_trailers);
+ +    init_by_action(buffer_in, ACTION_DECHUNK);
+    } else {
+ -    init_by_action(buffer_in, ACTION_PASSTHRU, drop_chunked_trailers);
+ +    init_by_action(buffer_in, ACTION_PASSTHRU);
+    }
+    return;
+  }
+  
+  void
+ -ChunkedHandler::init_by_action(IOBufferReader *buffer_in, Action action, bool drop_chunked_trailers)
+ -{
+ -  running_sum          = 0;
+ -  num_digits           = 0;
+ -  cur_chunk_size       = 0;
+ -  cur_chunk_bytes_left = 0;
+ -  truncation           = false;
+ -  this->action         = action;
+ +ChunkedHandler::init_by_action(IOBufferReader *buffer_in, Action action)
+ +{
+ +  running_sum    = 0;
+ +  num_digits     = 0;
+ +  cur_chunk_size = 0;
+ +  bytes_left     = 0;
+ +  truncation     = false;
+ +  this->action   = action;
+  
+    switch (action) {
+    case ACTION_DOCHUNK:
+@@ -87,18 +84,6 @@
+      break;
+    case ACTION_PASSTHRU:
+      chunked_reader = buffer_in->mbuf->clone_reader(buffer_in);
+ -    if (drop_chunked_trailers) {
+ -      // Note that dropping chunked trailers only applies in the passthrough
+ -      // case in which we are filtering out chunked trailers as we proxy.
+ -      this->drop_chunked_trailers = drop_chunked_trailers;
+ -
+ -      // We only need an intermediate buffer when modifying the chunks by
+ -      // filtering out the trailers. Otherwise, a simple passthrough needs no
+ -      // intermediary buffer as consumers will simply read directly from
+ -      // chunked_reader.
+ -      chunked_buffer = new_MIOBuffer(CHUNK_IOBUFFER_SIZE_INDEX);
+ -      chunked_size   = 0;
+ -    }
+      break;
+    default:
+      ink_release_assert(!"Unknown action");
+@@ -112,14 +97,12 @@
+  {
+    switch (action) {
+    case ACTION_DOCHUNK:
+ -  case ACTION_PASSTHRU:
+ -    if (chunked_buffer) {
+ -      free_MIOBuffer(chunked_buffer);
+ -    }
+ +    free_MIOBuffer(chunked_buffer);
+      break;
+    case ACTION_DECHUNK:
+      free_MIOBuffer(dechunked_buffer);
+      break;
+ +  case ACTION_PASSTHRU:
+    default:
+      break;
+    }
+@@ -134,19 +117,18 @@
+    max_chunk_header_len = snprintf(max_chunk_header, sizeof(max_chunk_header), CHUNK_HEADER_FMT, max_chunk_size);
+  }
+  
+ -int64_t
+ +void
+  ChunkedHandler::read_size()
+  {
+ -  int64_t bytes_consumed = 0;
+ -  bool done              = false;
+ -  int cr                 = 0;
+ -
+ -  while (chunked_reader->is_read_avail_more_than(0) && !done) {
+ +  int64_t bytes_used;
+ +  bool done = false;
+ +
+ +  while (chunked_reader->read_avail() > 0 && !done) {
+      const char *tmp   = chunked_reader->start();
+      int64_t data_size = chunked_reader->block_read_avail();
+  
+      ink_assert(data_size > 0);
+ -    int64_t bytes_used = 0;
+ +    bytes_used = 0;
+  
+      while (data_size > 0) {
+        bytes_used++;
+@@ -171,66 +153,42 @@
+            }
+          } else {
+            // We are done parsing size
+ -          if ((num_digits == 0 || running_sum < 0) ||       /* Bogus chunk size */
+ -              (!ParseRules::is_wslfcr(*tmp) && *tmp != ';') /* Unexpected character */
+ -          ) {
+ +          if (num_digits == 0 || running_sum < 0) {
+ +            // Bogus chunk size
+              state = CHUNK_READ_ERROR;
+              done  = true;
+              break;
+            } else {
+ -            if (ParseRules::is_cr(*tmp)) {
+ -              ++cr;
+ -            }
+              state = CHUNK_READ_SIZE_CRLF; // now look for CRLF
+            }
+          }
+        } else if (state == CHUNK_READ_SIZE_CRLF) { // Scan for a linefeed
+          if (ParseRules::is_lf(*tmp)) {
+            Debug("http_chunk", "read chunk size of %d bytes", running_sum);
+ -          cur_chunk_bytes_left = (cur_chunk_size = running_sum);
+ -          state                = (running_sum == 0) ? CHUNK_READ_TRAILER_BLANK : CHUNK_READ_CHUNK;
+ -          done                 = true;
+ -          cr                   = 0;
+ +          bytes_left = (cur_chunk_size = running_sum);
+ +          state      = (running_sum == 0) ? CHUNK_READ_TRAILER_BLANK : CHUNK_READ_CHUNK;
+ +          done       = true;
+            break;
+ -        } else if (ParseRules::is_cr(*tmp)) {
+ -          if (cr != 0) {
+ -            state = CHUNK_READ_ERROR;
+ -            done  = true;
+ -            break;
+ -          }
+ -          ++cr;
+          }
+        } else if (state == CHUNK_READ_SIZE_START) {
+ -        if (ParseRules::is_cr(*tmp)) {
+ -          // Skip it
+ -        } else if (ParseRules::is_lf(*tmp) &&
+ -                   bytes_used <= 2) { // bytes_used should be 2 if it's CRLF, but permit a single LF as well
+ +        if (ParseRules::is_lf(*tmp)) {
+            running_sum = 0;
+            num_digits  = 0;
+            state       = CHUNK_READ_SIZE;
+ -        } else { // Unexpected character
+ -          state = CHUNK_READ_ERROR;
+ -          done  = true;
+          }
+        }
+        tmp++;
+        data_size--;
+      }
+ -    if (drop_chunked_trailers) {
+ -      chunked_buffer->write(chunked_reader, bytes_used);
+ -      chunked_size += bytes_used;
+ -    }
+      chunked_reader->consume(bytes_used);
+ -    bytes_consumed += bytes_used;
+ -  }
+ -  return bytes_consumed;
+ +  }
+  }
+  
+  // int ChunkedHandler::transfer_bytes()
+  //
+ -//   Transfer bytes from chunked_reader to dechunked buffer.
+ +//   Transfer bytes from chunked_reader to dechunked buffer
+  //   Use block reference method when there is a sufficient
+ -//   size to move.  Otherwise, uses memcpy method.
+ +//   size to move.  Otherwise, uses memcpy method
+  //
+  int64_t
+  ChunkedHandler::transfer_bytes()
+@@ -239,26 +197,22 @@
+  
+    // Handle the case where we are doing chunked passthrough.
+    if (!dechunked_buffer) {
+ -    moved = std::min(cur_chunk_bytes_left, chunked_reader->read_avail());
+ -    if (drop_chunked_trailers) {
+ -      chunked_buffer->write(chunked_reader, moved);
+ -      chunked_size += moved;
+ -    }
+ +    moved = std::min(bytes_left, chunked_reader->read_avail());
+      chunked_reader->consume(moved);
+ -    cur_chunk_bytes_left -= moved;
+ +    bytes_left = bytes_left - moved;
+      return moved;
+    }
+  
+ -  while (cur_chunk_bytes_left > 0) {
+ +  while (bytes_left > 0) {
+      block_read_avail = chunked_reader->block_read_avail();
+  
+ -    to_move = std::min(cur_chunk_bytes_left, block_read_avail);
+ +    to_move = std::min(bytes_left, block_read_avail);
+      if (to_move <= 0) {
+        break;
+      }
+  
+      if (to_move >= min_block_transfer_bytes) {
+ -      moved = dechunked_buffer->write(chunked_reader, cur_chunk_bytes_left);
+ +      moved = dechunked_buffer->write(chunked_reader, bytes_left);
+      } else {
+        // Small amount of data available.  We want to copy the
+        // data rather than block reference to prevent the buildup
+@@ -269,7 +223,7 @@
+  
+      if (moved > 0) {
+        chunked_reader->consume(moved);
+ -      cur_chunk_bytes_left = cur_chunk_bytes_left - moved;
+ +      bytes_left = bytes_left - moved;
+        dechunked_size += moved;
+        total_moved += moved;
+      } else {
+@@ -279,34 +233,32 @@
+    return total_moved;
+  }
+  
+ -int64_t
+ +void
+  ChunkedHandler::read_chunk()
+  {
+ -  int64_t transferred_bytes = transfer_bytes();
+ -
+ -  ink_assert(cur_chunk_bytes_left >= 0);
+ -  if (cur_chunk_bytes_left == 0) {
+ +  int64_t b = transfer_bytes();
+ +
+ +  ink_assert(bytes_left >= 0);
+ +  if (bytes_left == 0) {
+      Debug("http_chunk", "completed read of chunk of %" PRId64 " bytes", cur_chunk_size);
+  
+      state = CHUNK_READ_SIZE_START;
+ -  } else if (cur_chunk_bytes_left > 0) {
+ -    Debug("http_chunk", "read %" PRId64 " bytes of an %" PRId64 " chunk", transferred_bytes, cur_chunk_size);
+ -  }
+ -  return transferred_bytes;
+ -}
+ -
+ -int64_t
+ +  } else if (bytes_left > 0) {
+ +    Debug("http_chunk", "read %" PRId64 " bytes of an %" PRId64 " chunk", b, cur_chunk_size);
+ +  }
+ +}
+ +
+ +void
+  ChunkedHandler::read_trailer()
+  {
+ -  int64_t bytes_consumed = 0;
+ -  bool done              = false;
+ +  int64_t bytes_used;
+ +  bool done = false;
+  
+    while (chunked_reader->is_read_avail_more_than(0) && !done) {
+      const char *tmp   = chunked_reader->start();
+      int64_t data_size = chunked_reader->block_read_avail();
+  
+      ink_assert(data_size > 0);
+ -    int64_t bytes_used = 0;
+      for (bytes_used = 0; data_size > 0; data_size--) {
+        bytes_used++;
+  
+@@ -322,13 +274,6 @@
+          if (state == CHUNK_READ_TRAILER_CR || state == CHUNK_READ_TRAILER_BLANK) {
+            state = CHUNK_READ_DONE;
+            Debug("http_chunk", "completed read of trailers");
+ -
+ -          if (this->drop_chunked_trailers) {
+ -            // We skip passing through chunked trailers to the peer and only write
+ -            // the final CRLF that ends all chunked content.
+ -            chunked_buffer->write(FINAL_CRLF.data(), FINAL_CRLF.size());
+ -            chunked_size += FINAL_CRLF.size();
+ -          }
+            done = true;
+            break;
+          } else {
+@@ -344,48 +289,43 @@
+        tmp++;
+      }
+      chunked_reader->consume(bytes_used);
+ -    bytes_consumed += bytes_used;
+ -  }
+ -  return bytes_consumed;
+ -}
+ -
+ -std::pair<int64_t, bool>
+ +  }
+ +}
+ +
+ +bool
+  ChunkedHandler::process_chunked_content()
+  {
+ -  int64_t bytes_read = 0;
+    while (chunked_reader->is_read_avail_more_than(0) && state != CHUNK_READ_DONE && state != CHUNK_READ_ERROR) {
+      switch (state) {
+      case CHUNK_READ_SIZE:
+      case CHUNK_READ_SIZE_CRLF:
+      case CHUNK_READ_SIZE_START:
+ -      bytes_read += read_size();
+ +      read_size();
+        break;
+      case CHUNK_READ_CHUNK:
+ -      bytes_read += read_chunk();
+ +      read_chunk();
+        break;
+      case CHUNK_READ_TRAILER_BLANK:
+      case CHUNK_READ_TRAILER_CR:
+      case CHUNK_READ_TRAILER_LINE:
+ -      bytes_read += read_trailer();
+ +      read_trailer();
+        break;
+      case CHUNK_FLOW_CONTROL:
+ -      return std::make_pair(bytes_read, false);
+ +      return false;
+      default:
+        ink_release_assert(0);
+        break;
+      }
+    }
+ -  auto const done = (state == CHUNK_READ_DONE || state == CHUNK_READ_ERROR);
+ -  return std::make_pair(bytes_read, done);
+ -}
+ -
+ -std::pair<int64_t, bool>
+ +  return (state == CHUNK_READ_DONE || state == CHUNK_READ_ERROR);
+ +}
+ +
+ +bool
+  ChunkedHandler::generate_chunked_content()
+  {
+    char tmp[16];
+    bool server_done = false;
+    int64_t r_avail;
+ -  int64_t consumed_bytes = 0;
+  
+    ink_assert(max_chunk_header_len);
+  
+@@ -426,7 +366,6 @@
+      chunked_buffer->write(dechunked_reader, write_val);
+      chunked_size += write_val;
+      dechunked_reader->consume(write_val);
+ -    consumed_bytes += write_val;
+  
+      // Output the trailing CRLF.
+      chunked_buffer->write("\r\n", 2);
+@@ -439,9 +378,9 @@
+      // Add the chunked transfer coding trailer.
+      chunked_buffer->write("0\r\n\r\n", 5);
+      chunked_size += 5;
+ -    return std::make_pair(consumed_bytes, true);
+ -  }
+ -  return std::make_pair(consumed_bytes, false);
+ +    return true;
+ +  }
+ +  return false;
+  }
+  
+  HttpTunnelProducer::HttpTunnelProducer() : consumer_list() {}
+@@ -650,12 +589,10 @@
+  }
+  
+  void
+ -HttpTunnel::set_producer_chunking_action(HttpTunnelProducer *p, int64_t skip_bytes, TunnelChunkingAction_t action,
+ -                                         bool drop_chunked_trailers)
+ -{
+ -  this->http_drop_chunked_trailers = drop_chunked_trailers;
+ -  p->chunked_handler.skip_bytes    = skip_bytes;
+ -  p->chunking_action               = action;
+ +HttpTunnel::set_producer_chunking_action(HttpTunnelProducer *p, int64_t skip_bytes, TunnelChunkingAction_t action)
+ +{
+ +  p->chunked_handler.skip_bytes = skip_bytes;
+ +  p->chunking_action            = action;
+  
+    switch (action) {
+    case TCA_CHUNK_CONTENT:
+@@ -691,7 +628,7 @@
+    ink_assert(reader_start->mbuf);
+    if ((p = alloc_producer()) != nullptr) {
+      p->vc              = vc;
+ -    p->total_bytes     = nbytes_arg;
+ +    p->nbytes          = nbytes_arg;
+      p->buffer_start    = reader_start;
+      p->read_buffer     = reader_start->mbuf;
+      p->vc_handler      = sm_handler;
+@@ -703,23 +640,22 @@
+      p->do_dechunking       = false;
+      p->do_chunked_passthru = false;
+  
+ -    p->init_bytes_done = p->buffer_start->read_avail();
+ -    if (p->total_bytes < 0 || p->total_bytes == INT64_MAX) {
+ -      p->total_bytes = INT64_MAX; // A negative nbytes_arg is a synonym for INT64_MAX.
+ -      p->ntodo       = INT64_MAX;
+ +    p->init_bytes_done = reader_start->read_avail();
+ +    if (p->nbytes < 0) {
+ +      p->ntodo = p->nbytes;
+      } else { // The byte count given us includes bytes
+        //  that already may be in the buffer.
+        //  ntodo represents the number of bytes
+        //  the tunneling mechanism needs to read
+        //  for the producer
+ -      p->ntodo = std::max(p->total_bytes - p->init_bytes_done, INT64_C(0));
+ +      p->ntodo = p->nbytes - p->init_bytes_done;
+        ink_assert(p->ntodo >= 0);
+      }
+  
+      // We are static, the producer is never "alive"
+      //   It just has data in the buffer
+      if (vc == HTTP_TUNNEL_STATIC_PRODUCER) {
+ -      ink_assert(p->ntodo >= 0);
+ +      ink_assert(p->ntodo == 0);
+        p->alive        = false;
+        p->read_success = true;
+      } else {
+@@ -858,27 +794,16 @@
+        }
+      }
+    }
+ -  if (!p->is_handling_chunked_content()) {
+ -    // If we are not handling chunked content, then we will be consuming all the
+ -    // bytes available in the reader, up until the total bytes that the tunnel
+ -    // will be processing.
+ -    p->bytes_consumed += std::min(p->total_bytes, p->init_bytes_done);
+ -  }
+ -
+ -  int64_t consumer_n = 0;
+ -  int64_t producer_n = 0;
+ +
+ +  int64_t consumer_n;
+ +  int64_t producer_n;
+  
+    ink_assert(p->vc != nullptr);
+    active = true;
+  
+ -  IOBufferReader *chunked_buffer_start     = nullptr;
+ -  IOBufferReader *dechunked_buffer_start   = nullptr;
+ -  IOBufferReader *passthrough_buffer_start = nullptr;
+ -  if (p->is_handling_chunked_content()) {
+ -    // For all the chunking cases, we must only copy bytes as we process them.
+ -    body_bytes_to_copy = 0;
+ -
+ -    p->chunked_handler.init(p->buffer_start, p, this->http_drop_chunked_trailers);
+ +  IOBufferReader *chunked_buffer_start = nullptr, *dechunked_buffer_start = nullptr;
+ +  if (p->do_chunking || p->do_dechunking || p->do_chunked_passthru) {
+ +    p->chunked_handler.init(p->buffer_start, p);
+  
+      // Copy the header into the chunked/dechunked buffers.
+      if (p->do_chunking) {
+@@ -902,30 +827,19 @@
+          Debug("http_tunnel", "[producer_run] do_dechunking::Copied header of size %" PRId64 "", p->chunked_handler.skip_bytes);
+        }
+      }
+ -    if (p->chunked_handler.drop_chunked_trailers) {
+ -      // initialize a reader to passthrough buffer start before writing to keep ref count
+ -      passthrough_buffer_start = p->chunked_handler.chunked_buffer->alloc_reader();
+ -      p->chunked_handler.chunked_buffer->write(p->buffer_start, p->chunked_handler.skip_bytes);
+ -    }
+    }
+  
+    int64_t read_start_pos = 0;
+    if (p->vc_type == HT_CACHE_READ && sm->t_state.range_setup == HttpTransact::RANGE_NOT_TRANSFORM_REQUESTED) {
+ -    ink_assert(sm->t_state.num_range_fields == 1); // we currently just support only one range entry
+ +    ink_assert(sm->t_state.num_range_fields == 1); // we current just support only one range entry
+      read_start_pos = sm->t_state.ranges[0]._start;
+      producer_n     = (sm->t_state.ranges[0]._end - sm->t_state.ranges[0]._start) + 1;
+      consumer_n     = (producer_n + sm->client_response_hdr_bytes);
+ -  } else if (p->total_bytes >= 0) {
+ -    consumer_n = p->total_bytes;
+ +  } else if (p->nbytes >= 0) {
+ +    consumer_n = p->nbytes;
+      producer_n = p->ntodo;
+    } else {
+      consumer_n = (producer_n = INT64_MAX);
+ -  }
+ -
+ -  if (!p->is_handling_chunked_content()) {
+ -    // No chunking being handled, so the user specified a number of bytes
+ -    // described by Content-Length. Use that value.
+ -    body_bytes_to_copy = producer_n - body_bytes_copied;
+    }
+  
+    // At least set up the consumer readers first so the data
+@@ -952,19 +866,13 @@
+        c->buffer_reader = p->chunked_handler.chunked_buffer->clone_reader(chunked_buffer_start);
+      } else if (action == TCA_DECHUNK_CONTENT) {
+        c->buffer_reader = p->chunked_handler.dechunked_buffer->clone_reader(dechunked_buffer_start);
+ -    } else if (action == TCA_PASSTHRU_CHUNKED_CONTENT) {
+ -      if (p->chunked_handler.drop_chunked_trailers) {
+ -        c->buffer_reader = p->chunked_handler.chunked_buffer->clone_reader(passthrough_buffer_start);
+ -      } else {
+ -        c->buffer_reader = p->read_buffer->clone_reader(p->buffer_start);
+ -      }
+ -    } else { // TCA_PASSTHRU_DECHUNKED_CONTENT
+ +    } else {
+        c->buffer_reader = p->read_buffer->clone_reader(p->buffer_start);
+      }
+  
+ -    // Consume bytes from the reader if we are skipping bytes.
+ +    // Consume bytes of the reader if we skipping bytes
+      if (c->skip_bytes > 0) {
+ -      ink_release_assert(c->skip_bytes <= c->buffer_reader->read_avail());
+ +      ink_assert(c->skip_bytes <= c->buffer_reader->read_avail());
+        c->buffer_reader->consume(c->skip_bytes);
+      }
+    }
+@@ -987,8 +895,7 @@
+          return;
+        }
+      } else {
+ -      body_bytes_copied += sm->postbuf_copy_partial_data(body_bytes_to_copy);
+ -      body_bytes_to_copy = 0;
+ +      sm->postbuf_copy_partial_data();
+      }
+    } // end of added logic for partial POST
+  
+@@ -996,7 +903,6 @@
+      // remove the chunked reader marker so that it doesn't act like a buffer guard
+      p->chunked_handler.chunked_buffer->dealloc_reader(chunked_buffer_start);
+      p->chunked_handler.dechunked_reader->consume(p->chunked_handler.skip_bytes);
+ -    p->bytes_consumed += p->chunked_handler.skip_bytes;
+  
+      // If there is data to process in the buffer, do it now
+      producer_handler(VC_EVENT_READ_READY, p);
+@@ -1005,9 +911,6 @@
+      if (p->do_dechunking && dechunked_buffer_start) {
+        p->chunked_handler.dechunked_buffer->dealloc_reader(dechunked_buffer_start);
+      }
+ -    if (p->do_chunked_passthru && passthrough_buffer_start) {
+ -      p->chunked_handler.chunked_buffer->dealloc_reader(passthrough_buffer_start);
+ -    }
+  
+      // bz57413
+      // If there is no transformation plugin, then we didn't add the header, hence no need to consume it
+@@ -1015,10 +918,12 @@
+            p->chunked_handler.chunked_reader->read_avail());
+      if (!transform_consumer && (p->chunked_handler.chunked_reader->read_avail() >= p->chunked_handler.skip_bytes)) {
+        p->chunked_handler.chunked_reader->consume(p->chunked_handler.skip_bytes);
+ -      p->bytes_consumed += p->chunked_handler.skip_bytes;
+        Debug("http_tunnel", "[producer_run] do_dechunking p->chunked_handler.skip_bytes = %" PRId64 "",
+              p->chunked_handler.skip_bytes);
+      }
+ +    // if(p->chunked_handler.chunked_reader->read_avail() > 0)
+ +    // p->chunked_handler.chunked_reader->consume(
+ +    // p->chunked_handler.skip_bytes);
+  
+      producer_handler(VC_EVENT_READ_READY, p);
+      if (sm->get_postbuf_done() && p->vc_type == HT_HTTP_CLIENT) { // read_avail() == 0
+@@ -1133,10 +1038,7 @@
+    case VC_EVENT_READ_READY:
+      p->last_event = p->chunked_handler.last_server_event = event;
+ -    auto const [consumed_bytes, done]                    = p->chunked_handler.generate_chunked_content();
+ -    p->bytes_consumed += consumed_bytes;
+ -    body_bytes_to_copy = consumed_bytes;
+ -    if (done) { // We are done, make sure the consumer is activated
+ +    if (p->chunked_handler.generate_chunked_content()) { // We are done, make sure the consumer is activated
+        HttpTunnelConsumer *c;
+        for (c = p->consumer_list.head; c; c = c->link.next) {
+          if (c->alive) {
+@@ -1179,9 +1081,7 @@
+    }
+  
+    p->last_event = p->chunked_handler.last_server_event = event;
+ -  auto const [bytes_consumed, done]                    = p->chunked_handler.process_chunked_content();
+ -  p->bytes_consumed += bytes_consumed;
+ -  body_bytes_to_copy = bytes_consumed;
+ +  bool done                                            = p->chunked_handler.process_chunked_content();
+  
+    // If we couldn't understand the encoding, return
+    //   an error
+@@ -1235,10 +1135,16 @@
+  
+    // Handle chunking/dechunking/chunked-passthrough if necessary.
+    if (p->do_chunking) {
+ -    // This will update body_bytes_to_copy with the number of bytes copied.
+      event = producer_handler_dechunked(event, p);
+ +
+ +    // If we were in PRECOMPLETE when this function was called
+ +    // and we are doing chunking, then we just wrote the last
+ +    // chunk in the function call above.  We are done with the
+ +    // tunnel.
+ +    if (event == HTTP_TUNNEL_EVENT_PRECOMPLETE) {
+ +      event = VC_EVENT_EOS;
+ +    }
+    } else if (p->do_dechunking || p->do_chunked_passthru) {
+ -    // This will update body_bytes_to_copy with the number of bytes copied.
+      event = producer_handler_chunked(event, p);
+    } else {
+      p->last_event = event;
+@@ -1261,12 +1167,7 @@
+          event = VC_EVENT_ERROR;
+        }
+      } else {
+ -      if (!p->is_handling_chunked_content()) {
+ -        // The chunk handlers didn't consume bytes. Pull bytes as needed.
+ -        body_bytes_to_copy = p->total_bytes - body_bytes_copied;
+ -      }
+ -      body_bytes_copied += sm->postbuf_copy_partial_data(body_bytes_to_copy);
+ -      body_bytes_to_copy = 0;
+ +      sm->postbuf_copy_partial_data();
+        if (event == VC_EVENT_READ_COMPLETE || event == HTTP_TUNNEL_EVENT_PRECOMPLETE || event == VC_EVENT_EOS) {
+          sm->set_postbuf_done(true);
+        }
+@@ -1301,9 +1202,6 @@
+      p->alive = false;
+      if (p->read_vio) {
+        p->bytes_read = p->read_vio->ndone;
+ -      if (!p->is_handling_chunked_content()) {
+ -        p->bytes_consumed += p->bytes_read;
+ -      }
+      } else {
+        // If we are chunked, we can receive the whole document
+        //   along with the header without knowing it (due to
+@@ -1341,9 +1239,6 @@
+        p->alive = false;
+        if (p->read_vio) {
+          p->bytes_read = p->read_vio->ndone;
+ -        if (!p->is_handling_chunked_content()) {
+ -          p->bytes_consumed += p->bytes_read;
+ -        }
+        } else {
+          p->bytes_read = 0;
+        }
+@@ -1565,9 +1460,6 @@
+      p->alive = false;
+      if (p->read_vio) {
+        p->bytes_read = p->read_vio->ndone;
+ -      if (!p->is_handling_chunked_content()) {
+ -        p->bytes_consumed += p->bytes_read;
+ -      }
+      }
+      if (p->self_consumer) {
+        p->self_consumer->alive = false;
+@@ -1585,8 +1477,8 @@
+  int64_t
+  HttpTunnel::final_consumer_bytes_to_write(HttpTunnelProducer *p, HttpTunnelConsumer *c)
+  {
+ -  int64_t bytes_to_write = 0;
+ -  int64_t consumer_n     = 0;
+ +  int64_t total_bytes = 0;
+ +  int64_t consumer_n  = 0;
+    if (p->alive) {
+      consumer_n = INT64_MAX;
+    } else {
+@@ -1596,25 +1488,25 @@
+          switch (action) {
+          case TCA_CHUNK_CONTENT:
+          case TCA_PASSTHRU_DECHUNKED_CONTENT:
+ -          bytes_to_write = p->bytes_consumed;
+ +          total_bytes = p->bytes_read + p->init_bytes_done;
+            break;
+          case TCA_DECHUNK_CONTENT:
+          case TCA_PASSTHRU_CHUNKED_CONTENT:
+ -          bytes_to_write = p->chunked_handler.skip_bytes + p->chunked_handler.dechunked_size;
+ +          total_bytes = p->chunked_handler.skip_bytes + p->chunked_handler.dechunked_size;
+            break;
+          default:
+            break;
+          }
+        } else if (action == TCA_CHUNK_CONTENT) {
+ -        bytes_to_write = p->chunked_handler.skip_bytes + p->chunked_handler.chunked_size;
+ +        total_bytes = p->chunked_handler.skip_bytes + p->chunked_handler.chunked_size;
+        } else if (action == TCA_DECHUNK_CONTENT) {
+ -        bytes_to_write = p->chunked_handler.skip_bytes + p->chunked_handler.dechunked_size;
+ +        total_bytes = p->chunked_handler.skip_bytes + p->chunked_handler.dechunked_size;
+        } else if (action == TCA_PASSTHRU_CHUNKED_CONTENT) {
+ -        bytes_to_write = p->bytes_consumed;
+ +        total_bytes = p->bytes_read + p->init_bytes_done;
+        } else {
+ -        bytes_to_write = p->bytes_consumed;
+ -      }
+ -      consumer_n = bytes_to_write - c->skip_bytes;
+ +        total_bytes = p->bytes_read + p->init_bytes_done;
+ +      }
+ +      consumer_n = total_bytes - c->skip_bytes;
+      }
+    }
+    return consumer_n;
+@@ -1636,10 +1528,12 @@
+    TunnelChunkingAction_t action = p->chunking_action;
+  
+    if (action == TCA_PASSTHRU_CHUNKED_CONTENT) {
+ -    // Verify that we consumed the number of bytes we accounted for via p->bytes_consumed.
+ +    // if the only chunked data was in the initial read, make sure we don't consume too much
+      if (p->bytes_read == 0 && p->buffer_start != nullptr) {
+        int num_read = p->buffer_start->read_avail() - p->chunked_handler.chunked_reader->read_avail();
+ -      ink_release_assert(num_read == p->bytes_consumed);
+ +      if (num_read < p->init_bytes_done) {
+ +        p->init_bytes_done = num_read;
+ +      }
+      }
+    }
+  
+@@ -1734,9 +1628,6 @@
+      p->alive = false;
+      if (p->read_vio) {
+        p->bytes_read = p->read_vio->ndone;
+ -      if (!p->is_handling_chunked_content()) {
+ -        p->bytes_consumed += p->bytes_read;
+ -      }
+      }
+    }
+  
+
+""""""
+modified file: proxy/http/HttpTunnel.h
+--- workspace/apache/trafficserver/3d2f29/newer/proxy/http/HttpTunnel.h
++++ workspace/apache/trafficserver/3d2f29/9.2.3/proxy/http/HttpTunnel.h
+@@ -105,29 +105,15 @@
+    MIOBuffer *chunked_buffer        = nullptr;
+    int64_t chunked_size             = 0;
+  
+ -  /** When passing through chunked content, filter out chunked trailers.
+ -   *
+ -   * @note this is only true when: (1) we are passing through chunked content
+ -   * and (2) we are configured to filter out chunked trailers.
+ -   */
+ -  bool drop_chunked_trailers = false;
+ -
+ -  bool truncation = false;
+ -
+ -  /** The number of bytes to skip from the reader because they are not body bytes.
+ -   *
+ -   * These skipped bytes are generally header bytes. We copy these in for any
+ -   * internal buffers we'll send to consumers, but skip them when parsing body
+ -   * bytes.
+ -   */
+ +  bool truncation    = false;
+    int64_t skip_bytes = 0;
+  
+ -  ChunkedState state           = CHUNK_READ_CHUNK;
+ -  int64_t cur_chunk_size       = 0;
+ -  int64_t cur_chunk_bytes_left = 0;
+ -  int last_server_event        = VC_EVENT_NONE;
+ -
+ -  // Chunked header size parsing info.
+ +  ChunkedState state     = CHUNK_READ_CHUNK;
+ +  int64_t cur_chunk_size = 0;
+ +  int64_t bytes_left     = 0;
+ +  int last_server_event  = VC_EVENT_NONE;
+ +
+ +  // Parsing Info
+    int running_sum = 0;
+    int num_digits  = 0;
+  
+@@ -144,65 +130,23 @@
+    //@}
+    ChunkedHandler();
+  
+ -  void init(IOBufferReader *buffer_in, HttpTunnelProducer *p, bool drop_chunked_trailers);
+ -  void init_by_action(IOBufferReader *buffer_in, Action action, bool drop_chunked_trailers);
+ +  void init(IOBufferReader *buffer_in, HttpTunnelProducer *p);
+ +  void init_by_action(IOBufferReader *buffer_in, Action action);
+    void clear();
+  
+    /// Set the max chunk @a size.
+    /// If @a size is zero it is set to @c DEFAULT_MAX_CHUNK_SIZE.
+    void set_max_chunk_size(int64_t size);
+  
+ -  /** Consumes and processes chunked content.
+ -   *
+ -   * This consumes data from @a chunked_reader and, if dechunking, writes the
+ -   * dechunked body to @a dechunked_buffer.
+ -   *
+ -   * @return The number of bytes consumed from the chunked reader and true if
+ -   * the entire chunked content is processed, false otherwise.
+ -   */
+ -  std::pair<int64_t, bool> process_chunked_content();
+ -
+ -  /** Writes chunked content.
+ -   *
+ -   * This reads from @a dechunked_reader and writes chunked formatted content to
+ -   * @a chunked_buffer.
+ -   *
+ -   * @return The number of bytes consumed from the dechunked reader and true if
+ -   * the entire chunked content is written, false otherwise.
+ -   */
+ -  std::pair<int64_t, bool> generate_chunked_content();
+ +  // Returns true if complete, false otherwise
+ +  bool process_chunked_content();
+ +  bool generate_chunked_content();
+  
+  private:
+ -  /** Read a chunk header containing the size of the chunk.
+ -   *
+ -   * @return The number of bytes consumed from the chunked buffer reader.
+ -   */
+ -  int64_t read_size();
+ -
+ -  /** Read a chunk body.
+ -   *
+ -   * This is called after read_size so that the chunk size is known.
+ -   *
+ -   * @return The number of bytes consumed from the chunked buffer reader.
+ -   */
+ -  int64_t read_chunk();
+ -
+ -  /** Read a chunk trailer.
+ -   *
+ -   * @return The number of bytes consumed from the chunked buffer reader.
+ -   */
+ -  int64_t read_trailer();
+ -
+ -  /** Transfer body bytes from the chunked reader.
+ -   *
+ -   * This will either simply consume the chunked body bytes in the case of
+ -   * chunked passthrough, or transfer the chunked body to the dechunked buffer.
+ -   *
+ -   * @return The number of bytes consumed from the chunked buffer reader.
+ -   */
+ +  void read_size();
+ +  void read_chunk();
+ +  void read_trailer();
+    int64_t transfer_bytes();
+ -
+ -  constexpr static std::string_view FINAL_CRLF = "\r\n";
+  };
+  
+  struct HttpTunnelConsumer {
+@@ -256,51 +200,12 @@
+    bool do_dechunking       = false;
+    bool do_chunked_passthru = false;
+  
+ -  /** The number of bytes available in the reader at the start of the tunnel.
+ -   *
+ -   * @note In the case of pipelined requests, not all these bytes should be used.
+ -   */
+ -  int64_t init_bytes_done = 0;
+ -
+ -  /** The total number of bytes read from the reader, including any @a skip_bytes.
+ -   *
+ -   * In straightforward cases where @a total_bytes is specified (non-INT64_MAX),
+ -   * these should wind up being the same as @a total_bytes. For unspecified,
+ -   * generally chunked content, this will be the number of bytes actually
+ -   * consumed from the reader.
+ -   *
+ -   * @note that in the case of pipelined requests, this may be less than @a
+ -   * init_bytes_done because some of those bytes might be for a future request
+ -   * rather than for this body/tunnel.
+ -   */
+ -  int64_t bytes_consumed = 0;
+ -
+ -  /** The total number of bytes to be transferred through the tunnel.
+ -   *
+ -   * This will include any bytes skipped at the start of the tunnel.
+ -   *
+ -   * @note This is set by the creator of the tunnel and in the simple case the
+ -   * value is precisely known via a Content-Length header value. However, a user
+ -   * may set this to INT64_MAX or any negative value to indicate that the total
+ -   * is unknown at the start of the tunnel (such as is the case with chunked
+ -   * encoded content).
+ -   */
+ -  int64_t total_bytes = 0;
+ -
+ -  /** The number of bytes still to read after @a init_bytes_done to reach @a
+ -   * total_bytes.
+ -   *
+ -   * A value of zero indicates that all the required bytes have already been
+ -   * read off the socket. @a ntodo will be used to indicate how much more we
+ -   * have to read.
+ -   */
+ -  int64_t ntodo = 0;
+ -
+ -  /** The number of bytes read from the vc since the start of the tunnel. */
+ -  int64_t bytes_read = 0;
+ -
+ -  int handler_state = 0; // state used the handlers
+ -  int last_event    = 0; ///< Tracking for flow control restarts.
+ +  int64_t init_bytes_done = 0; // bytes passed in buffer
+ +  int64_t nbytes          = 0; // total bytes (client's perspective)
+ +  int64_t ntodo           = 0; // what this vc needs to do
+ +  int64_t bytes_read      = 0; // total bytes read from the vc
+ +  int handler_state       = 0; // state used the handlers
+ +  int last_event          = 0; ///< Tracking for flow control restarts.
+  
+    int num_consumers = 0;
+  
+@@ -318,12 +223,6 @@
+     */
+    uint64_t backlog(uint64_t limit = UINT64_MAX ///< More than this is irrelevant
+    );
+ -  /** Indicate whether this producer is handling some kind of chunked content.
+ -   *
+ -   * @return True if this producer is handling chunked content, false
+ -   * otherwise.
+ -   */
+ -  bool is_handling_chunked_content() const;
+    /// Check if producer is original (to ATS) source of data.
+    /// @return @c true if this producer is the source of bytes from outside ATS.
+    bool is_source() const;
+@@ -390,21 +289,7 @@
+    HttpTunnelProducer *add_producer(VConnection *vc, int64_t nbytes, IOBufferReader *reader_start, HttpProducerHandler sm_handler,
+                                     HttpTunnelType_t vc_type, const char *name);
+  
+ -  /// A named variable for the @a drop_chunked_trailers parameter to @a set_producer_chunking_action.
+ -  static constexpr bool DROP_CHUNKED_TRAILERS = true;
+ -
+ -  /** Designate chunking behavior to the producer.
+ -   *
+ -   * @param[in] producer The producer being configured.
+ -   * @param[in] skip_bytes The number of bytes to consume off the stream before
+ -   * any chunked data is encountered. These are generally header bytes, if any.
+ -   * @param[in] action The chunking behavior to enact on incoming bytes.
+ -   * @param[in] drop_chunked_trailers If @c true, chunked trailers are filtered
+ -   *   out. Logically speaking, this is only applicable when proxying chunked
+ -   *   content, thus only when @a action is @c TCA_PASSTHRU_CHUNKED_CONTENT.
+ -   */
+ -  void set_producer_chunking_action(HttpTunnelProducer *p, int64_t skip_bytes, TunnelChunkingAction_t action,
+ -                                    bool drop_chunked_trailers);
+ +  void set_producer_chunking_action(HttpTunnelProducer *p, int64_t skip_bytes, TunnelChunkingAction_t action);
+    /// Set the maximum (preferred) chunk @a size of chunked output for @a producer.
+    void set_producer_chunking_size(HttpTunnelProducer *producer, int64_t size);
+  
+@@ -479,24 +364,6 @@
+  private:
+    int reentrancy_count = 0;
+    bool call_sm         = false;
+ -
+ -  /// Corresponds to proxy.config.http.drop_chunked_trailers having a value of 1.
+ -  bool http_drop_chunked_trailers = false;
+ -
+ -  /** The number of body bytes processed in this last execution of the tunnel.
+ -   *
+ -   * This accounting is used to determine how many bytes to copy into the body
+ -   * buffer via HttpSM::postbuf_copy_partial_data.
+ -   */
+ -  int64_t body_bytes_to_copy = 0;
+ -
+ -  /** The cumulative number of bytes that all calls to
+ -   * HttpSM::post_copy_partial_data have copied.
+ -   *
+ -   * This is recorded so we don't copy more bytes than the creator of the tunnel
+ -   * told us to via nbytes.
+ -   */
+ -  int64_t body_bytes_copied = 0;
+  };
+  
+  ////
+@@ -651,7 +518,7 @@
+    }
+  
+    p->read_buffer->write(msg, msg_len);
+ -  p->total_bytes += msg_len;
+ +  p->nbytes += msg_len;
+    p->bytes_read += msg_len;
+  }
+  
+@@ -719,12 +586,6 @@
+  }
+  
+  inline bool
+ -HttpTunnelProducer::is_handling_chunked_content() const
+ -{
+ -  return do_chunking || do_dechunking || do_chunked_passthru;
+ -}
+ -
+ -inline bool
+  HttpTunnelProducer::is_source() const
+  {
+    // If a producer is marked as a client, then it's part of a bidirectional tunnel
+
+""""""
+modified file: src/shared/overridable_txn_vars.cc
+--- workspace/apache/trafficserver/3d2f29/newer/src/shared/overridable_txn_vars.cc
++++ workspace/apache/trafficserver/3d2f29/9.2.3/src/shared/overridable_txn_vars.cc
+@@ -30,7 +30,6 @@
+       {"proxy.config.ssl.hsts_max_age", {TS_CONFIG_SSL_HSTS_MAX_AGE, TS_RECORDDATATYPE_INT}},
+       {"proxy.config.http.normalize_ae", {TS_CONFIG_HTTP_NORMALIZE_AE, TS_RECORDDATATYPE_INT}},
+       {"proxy.config.http.chunking.size", {TS_CONFIG_HTTP_CHUNKING_SIZE, TS_RECORDDATATYPE_INT}},
+ -     {"proxy.config.http.drop_chunked_trailers", {TS_CONFIG_HTTP_DROP_CHUNKED_TRAILERS, TS_RECORDDATATYPE_INT}},
+       {"proxy.config.ssl.client.cert.path", {TS_CONFIG_SSL_CERT_FILEPATH, TS_RECORDDATATYPE_STRING}},
+       {"proxy.config.http.allow_half_open", {TS_CONFIG_HTTP_ALLOW_HALF_OPEN, TS_RECORDDATATYPE_INT}},
+       {"proxy.config.http.chunking_enabled", {TS_CONFIG_HTTP_CHUNKING_ENABLED, TS_RECORDDATATYPE_INT}},
+
+""""""
+modified file: src/traffic_server/FetchSM.cc
+--- workspace/apache/trafficserver/3d2f29/newer/src/traffic_server/FetchSM.cc
++++ workspace/apache/trafficserver/3d2f29/9.2.3/src/traffic_server/FetchSM.cc
+@@ -23,7 +23,6 @@
+  
+  #include "tscore/ink_config.h"
+  #include "FetchSM.h"
+ -#include <cstdint>
+  #include <cstdio>
+  #include "HTTP.h"
+  #include "PluginVC.h"
+@@ -198,7 +197,7 @@
+  
+      if (resp_is_chunked && (fetch_flags & TS_FETCH_FLAGS_DECHUNK)) {
+        ChunkedHandler *ch = &chunked_handler;
+ -      ch->init_by_action(resp_reader, ChunkedHandler::ACTION_DECHUNK, HttpTunnel::DROP_CHUNKED_TRAILERS);
+ +      ch->init_by_action(resp_reader, ChunkedHandler::ACTION_DECHUNK);
+        ch->dechunked_reader = ch->dechunked_buffer->alloc_reader();
+        ch->state            = ChunkedHandler::CHUNK_READ_SIZE;
+        resp_reader->dealloc();
+@@ -230,7 +229,7 @@
+    //  - TS_FETCH_EVENT_EXT_BODY_READY.
+    //  - TS_FETCH_EVENT_EXT_BODY_DONE.
+    //
+ -  if (auto const [_, done] = chunked_handler.process_chunked_content(); done) {
+ +  if (chunked_handler.process_chunked_content()) {
+      return TS_FETCH_EVENT_EXT_BODY_DONE;
+    }
+  
+
+""""""
+modified file: src/traffic_server/InkAPI.cc
+--- workspace/apache/trafficserver/3d2f29/newer/src/traffic_server/InkAPI.cc
++++ workspace/apache/trafficserver/3d2f29/9.2.3/src/traffic_server/InkAPI.cc
+@@ -8925,9 +8925,6 @@
+    case TS_CONFIG_HTTP_CHUNKING_SIZE:
+      ret = _memberp_to_generic(&overridableHttpConfig->http_chunking_size, conv);
+      break;
+ -  case TS_CONFIG_HTTP_DROP_CHUNKED_TRAILERS:
+ -    ret = _memberp_to_generic(&overridableHttpConfig->http_drop_chunked_trailers, conv);
+ -    break;
+    case TS_CONFIG_HTTP_FLOW_CONTROL_ENABLED:
+      ret = _memberp_to_generic(&overridableHttpConfig->flow_control_enabled, conv);
+      break;
+
+""""""
+modified file: src/traffic_server/InkAPITest.cc
+--- workspace/apache/trafficserver/3d2f29/newer/src/traffic_server/InkAPITest.cc
++++ workspace/apache/trafficserver/3d2f29/9.2.3/src/traffic_server/InkAPITest.cc
+@@ -8773,8 +8773,7 @@
+     "proxy.config.net.sock_notsent_lowat",
+     "proxy.config.body_factory.response_suppression_mode",
+     "proxy.config.http.parent_proxy.enable_parent_timeout_markdowns",
+ -   "proxy.config.http.parent_proxy.disable_parent_markdowns",
+ -   "proxy.config.http.drop_chunked_trailers"}};
+ +   "proxy.config.http.parent_proxy.disable_parent_markdowns"}};
+  
+  extern ClassAllocator<HttpSM> httpSMAllocator;
+  
+
+""""""
+modified file: tests/gold_tests/chunked_encoding/replays/malformed_chunked_header.replay.yaml
+--- workspace/apache/trafficserver/3d2f29/newer/tests/gold_tests/chunked_encoding/replays/malformed_chunked_header.replay.yaml
++++ workspace/apache/trafficserver/3d2f29/9.2.3/tests/gold_tests/chunked_encoding/replays/malformed_chunked_header.replay.yaml
+@@ -32,27 +32,7 @@
+          transfer: plain
+          encoding: uri
+          # Chunk header sizes are in hex, so a size of `z` is malformed.
+ -        data: z%0D%0Aabcwxyz%0D%0A0%0D%0A%0D%0A
+ -
+ -    # The connection will be dropped and this response will not go out.
+ -    server-response:
+ -      status: 200
+ -
+ -- transactions:
+ -  - client-request:
+ -      method: "POST"
+ -      version: "1.1"
+ -      url: /malformed/chunk/header2
+ -      headers:
+ -        fields:
+ -        - [ Host, example.com ]
+ -        - [ Transfer-Encoding, chunked ]
+ -        - [ uuid, 2 ]
+ -      content:
+ -        transfer: plain
+ -        encoding: uri
+ -        # Chunk header sizes are in hex, so a size of `3z` is malformed.
+ -        data: 3z%0D%0Aabcwxyz%0D%0A0%0D%0A%0D%0A
+ +        data: z%0D%0Aabc%0D%0A0%0D%0A%0D%0A
+  
+      # The connection will be dropped and this response will not go out.
+      server-response:
+@@ -67,32 +47,12 @@
+          fields:
+          - [ Host, example.com ]
+          - [ Transfer-Encoding, chunked ]
+ -        - [ uuid, 3 ]
+ +        - [ uuid, 2 ]
+        content:
+          transfer: plain
+          encoding: uri
+          # Super large chunk header, larger than will fit in an int.
+ -        data: 111111113%0D%0Aabcwxyz%0D%0A0%0D%0A%0D%0A
+ -
+ -    # The connection will be dropped and this response will not go out.
+ -    server-response:
+ -      status: 200
+ -
+ -- transactions:
+ -  - client-request:
+ -      method: "POST"
+ -      version: "1.1"
+ -      url: /malformed/chunk/header3
+ -      headers:
+ -        fields:
+ -        - [ Host, example.com ]
+ -        - [ Transfer-Encoding, chunked ]
+ -        - [ uuid, 4 ]
+ -      content:
+ -        transfer: plain
+ -        encoding: uri
+ -        # BWS cannot have CR
+ -        data: 3%0D%0D%0Aabc%0D%0A0%0D%0A%0D%0A
+ +        data: 111111113%0D%0Aabc%0D%0A0%0D%0A%0D%0A
+  
+      # The connection will be dropped and this response will not go out.
+      server-response:
+@@ -110,7 +70,7 @@
+        headers:
+          fields:
+          - [ Host, example.com ]
+ -        - [ uuid, 101 ]
+ +        - [ uuid, 3 ]
+  
+      # The connection will be dropped and this response will not go out.
+      server-response:
+@@ -129,34 +89,11 @@
+    - client-request:
+        method: "GET"
+        version: "1.1"
+ -      url: /response/malformed/chunk/size2
+ -      headers:
+ -        fields:
+ -        - [ Host, example.com ]
+ -        - [ uuid, 102 ]
+ -
+ -    # The connection will be dropped and this response will not go out.
+ -    server-response:
+ -      status: 200
+ -      reason: OK
+ -      headers:
+ -        fields:
+ -        - [ Transfer-Encoding, chunked ]
+ -      content:
+ -        transfer: plain
+ -        encoding: uri
+ -        # Chunk header sizes are in hex, so a size of `1z` is malformed.
+ -        data: 1z%0D%0Adef%0D%0A0%0D%0A%0D%0A
+ -
+ -- transactions:
+ -  - client-request:
+ -      method: "GET"
+ -      version: "1.1"
+        url: /response/large/chunk/size
+        headers:
+          fields:
+          - [ Host, example.com ]
+ -        - [ uuid, 103 ]
+ +        - [ uuid, 4 ]
+  
+      # The connection will be dropped and this response will not go out.
+      server-response:
+@@ -170,26 +107,3 @@
+          encoding: uri
+          # Super large chunk header, larger than will fit in an int.
+          data: 111111113%0D%0Adef%0D%0A0%0D%0A%0D%0A
+ -
+ -- transactions:
+ -  - client-request:
+ -      method: "GET"
+ -      version: "1.1"
+ -      url: /response/malformed/chunk/size2
+ -      headers:
+ -        fields:
+ -        - [ Host, example.com ]
+ -        - [ uuid, 104 ]
+ -
+ -    # The connection will be dropped and this response will not go out.
+ -    server-response:
+ -      status: 200
+ -      reason: OK
+ -      headers:
+ -        fields:
+ -        - [ Transfer-Encoding, chunked ]
+ -      content:
+ -        transfer: plain
+ -        encoding: uri
+ -        # BWS cannot have CR
+ -        data: 3%0D%0D%0Adef%0D%0A0%0D%0A%0D%0A
+
+""""""

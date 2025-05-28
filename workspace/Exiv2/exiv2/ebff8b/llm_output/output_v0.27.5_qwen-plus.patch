@@ -1,0 +1,49 @@
+diff --git a/src/tiffcomposite_int.cpp b/src/tiffcomposite_int.cpp
+index 07c9a6c843..f4bb5037bd 100644
+--- a/src/tiffcomposite_int.cpp
++++ b/src/tiffcomposite_int.cpp
+@@ -124,6 +124,25 @@ TiffEntryBase::TiffEntryBase(const TiffEntryBase& rhs) :
+     storage_(rhs.storage_) {
+ }
+ 
++TiffDirectory::TiffDirectory(const TiffDirectory& rhs) : TiffComponent(rhs), hasNext_(rhs.hasNext_) {
++}
++
++TiffSubIfd::TiffSubIfd(const TiffSubIfd& rhs) : TiffEntryBase(rhs), newGroup_(rhs.newGroup_) {
++}
++
++TiffBinaryArray::TiffBinaryArray(const TiffBinaryArray& rhs) :
++    TiffEntryBase(rhs),
++    cfgSelFct_(rhs.cfgSelFct_),
++    arraySet_(rhs.arraySet_),
++    arrayCfg_(rhs.arrayCfg_),
++    arrayDef_(rhs.arrayDef_),
++    defSize_(rhs.defSize_),
++    setSize_(rhs.setSize_),
++    origData_(rhs.origData_),
++    origSize_(rhs.origSize_),
++    pRoot_(rhs.pRoot_) {
++}
++
+ TiffComponent::UniquePtr TiffComponent::clone() const {
+   return UniquePtr(doClone());
+ }
+diff --git a/src/tiffcomposite_int.hpp b/src/tiffcomposite_int.hpp
+index 0e28aba912..01d5109a59 100644
+--- a/src/tiffcomposite_int.hpp
++++ b/src/tiffcomposite_int.hpp
+@@ -944,7 +944,7 @@ class TiffSubIfd : public TiffEntryBase {
+   //! @name Protected Creators
+   //@{
+   //! Copy constructor (used to implement clone()).
+-  TiffSubIfd(const TiffSubIfd&) = default;
++  TiffSubIfd(const TiffSubIfd& rhs);
+   TiffSubIfd& operator=(const TiffSubIfd&) = delete;
+   //@}
+ 
+
+// Additional notes based on change impact analysis:
+
+The backported patch reverts the changes made to the copy constructors of TiffDirectory, TiffSubIfd, and TiffBinaryArray classes. This is necessary because the newer code introduced potential use-after-free vulnerabilities due to improper handling of C pointers. The reverted code ensures proper deep copying of these objects while maintaining compatibility with the older version's memory management model.
+
+However, since this older version uses auto_ptr instead of unique_ptr and other modern constructs, there is a higher risk of introducing memory leaks or double-free scenarios if not handled carefully. Developers will need to review all usages of clone(), addPath(), addChild(), and addNext() methods across the codebase to ensure they correctly manage ownership and lifetimes of TiffComponent-derived objects. Additionally, any dependent components relying on the behavior of these classes may also require adjustments to accommodate the reverted logic, hence marking the compatibility risk as High.

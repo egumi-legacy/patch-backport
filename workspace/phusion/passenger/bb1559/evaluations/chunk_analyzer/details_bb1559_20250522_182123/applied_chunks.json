@@ -1,0 +1,10 @@
+[
+  {
+    "索引": 1,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/phusion/passenger/bb1559/chunk_patches/chunk_006_20250522_182123.patch",
+    "实际补丁": null,
+    "修改文件": "test/cxx/ServerKit/HttpServerTest.cpp",
+    "修改位置": "1477-1503",
+    "内容": "From bb15591646687064ab2d578d5f9660b2a4168017 Mon Sep 17 00:00:00 2001\nFrom: Camden Narzt <c.narzt@me.com>\nDate: Tue, 18 Feb 2025 07:57:54 -0700\nSubject: [PATCH] Fix header parser\n\n---\n CHANGELOG                                     |  2 +-\n .../ServerKit/HttpHeaderParser.h              | 40 +++++++++----------\n test/cxx/ServerKit/HttpServerTest.cpp         | 27 ++++++++++++-\n 3 files changed, 46 insertions(+), 23 deletions(-)\n\ndiff --git a/test/cxx/ServerKit/HttpServerTest.cpp b/test/cxx/ServerKit/HttpServerTest.cpp\nindex df87b5daaf..9fb0ad952f 100644\n--- a/test/cxx/ServerKit/HttpServerTest.cpp\n+++ b/test/cxx/ServerKit/HttpServerTest.cpp\n@@ -1477,7 +1503,6 @@ namespace tut {\n \t\tensure(\"(1)\", containsSubstring(response, \"HTTP/1.1 400 Bad Request\\r\\n\"));\n \t}\n \n-\n \t/***** Secure headers handling *****/\n \n \tTEST_METHOD(60) {\n"
+  }
+]

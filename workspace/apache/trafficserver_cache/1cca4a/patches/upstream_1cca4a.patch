@@ -1,0 +1,429 @@
+From 1cca4a29520f9258be6c3fad5092939dbe9d3562 Mon Sep 17 00:00:00 2001
+From: Bryan Call <bcall@apache.org>
+Date: Tue, 4 Mar 2025 11:39:32 -0800
+Subject: [PATCH] Fix send 100 Continue optimization for GET (#12075)
+
+This fixes a bug with the proxy.config.http.send_100_continue_response
+feature for GET requests in which the following would happen:
+
+1. We do not send the optimized 100 Continue out of proxy for GET
+   requests with Exect: 100-Continue. This is reasonable since the vast
+   majority of 100-Continue requests will be POST.
+2. Later, we inspect the proxy.config.http.send_100_continue_response
+   value and assume we did send a 100 Continue response and stripped the
+   Expect: 100-Continue header from the proxied request. This is
+   disasterous as it leaves the server waiting for a body which would
+   never come because the client is waiting for a 100 Continue response
+   which will never come.
+
+(cherry picked from commit 33b7c7c161c453d6b43c9aecbb7351ad8326c28d)
+
+Co-authored-by: Brian Neradt <brian.neradt@gmail.com>
+---
+ proxy/hdrs/HTTP.h                             |   1 +
+ proxy/http/HttpSM.cc                          |   1 +
+ proxy/http/HttpTransact.cc                    |   2 +-
+ tests/gold_tests/post/expect_client.py        | 110 ++++++++++++++++++
+ tests/gold_tests/post/expect_tests.test.py    |  88 ++++++++++++++
+ tests/gold_tests/post/http_utils.py           |  93 +++++++++++++++
+ .../post/replay/expect-continue.replay.yaml   |  42 +++++++
+ 7 files changed, 336 insertions(+), 1 deletion(-)
+ create mode 100644 tests/gold_tests/post/expect_client.py
+ create mode 100644 tests/gold_tests/post/expect_tests.test.py
+ create mode 100644 tests/gold_tests/post/http_utils.py
+ create mode 100644 tests/gold_tests/post/replay/expect-continue.replay.yaml
+
+diff --git a/proxy/hdrs/HTTP.h b/proxy/hdrs/HTTP.h
+index 710fbaf00f4..3daa172f1c7 100644
+--- a/proxy/hdrs/HTTP.h
++++ b/proxy/hdrs/HTTP.h
+@@ -480,6 +480,7 @@ class HTTPHdr : public MIMEHdr
+   mutable int m_port                   = 0;     ///< Target port.
+   mutable bool m_target_cached         = false; ///< Whether host name and port are cached.
+   mutable bool m_target_in_url         = false; ///< Whether host name and port are in the URL.
++  mutable bool m_100_continue_sent     = false; ///< Whether ATS sent a 100 Continue optimized response.
+   mutable bool m_100_continue_required = false; ///< Whether 100_continue is in the Expect header.
+   /// Set if the port was effectively specified in the header.
+   /// @c true if the target (in the URL or the HOST field) also specified
+diff --git a/proxy/http/HttpSM.cc b/proxy/http/HttpSM.cc
+index 4220e455af8..4e09795f036 100644
+--- a/proxy/http/HttpSM.cc
++++ b/proxy/http/HttpSM.cc
+@@ -900,6 +900,7 @@ HttpSM::state_read_client_request_header(int event, void *data)
+           SMDebug("http_seq", "send 100 Continue response to client");
+           int64_t nbytes      = ua_entry->write_buffer->write(str_100_continue_response, len_100_continue_response);
+           ua_entry->write_vio = ua_txn->do_io_write(this, nbytes, buf_start);
++          t_state.hdr_info.client_request.m_100_continue_sent = true;
+         } else {
+           t_state.hdr_info.client_request.m_100_continue_required = true;
+         }
+diff --git a/proxy/http/HttpTransact.cc b/proxy/http/HttpTransact.cc
+index 115e15f93e5..31810e45d14 100644
+--- a/proxy/http/HttpTransact.cc
++++ b/proxy/http/HttpTransact.cc
+@@ -7877,7 +7877,7 @@ HttpTransact::build_request(State *s, HTTPHdr *base_request, HTTPHdr *outgoing_r
+     }
+   }
+ 
+-  if (s->http_config_param->send_100_continue_response) {
++  if (s->hdr_info.client_request.m_100_continue_sent) {
+     HttpTransactHeaders::remove_100_continue_headers(s, outgoing_request);
+     TxnDebug("http_trans", "request expect 100-continue headers removed");
+   }
+diff --git a/tests/gold_tests/post/expect_client.py b/tests/gold_tests/post/expect_client.py
+new file mode 100644
+index 00000000000..d419f8c339b
+--- /dev/null
++++ b/tests/gold_tests/post/expect_client.py
+@@ -0,0 +1,110 @@
++#!/usr/bin/env python3
++"""Implements a client which tests Expect: 100-Continue."""
++
++#  Licensed to the Apache Software Foundation (ASF) under one
++#  or more contributor license agreements.  See the NOTICE file
++#  distributed with this work for additional information
++#  regarding copyright ownership.  The ASF licenses this file
++#  to you under the Apache License, Version 2.0 (the
++#  "License"); you may not use this file except in compliance
++#  with the License.  You may obtain a copy of the License at
++#
++#      http://www.apache.org/licenses/LICENSE-2.0
++#
++#  Unless required by applicable law or agreed to in writing, software
++#  distributed under the License is distributed on an "AS IS" BASIS,
++#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++#  See the License for the specific language governing permissions and
++#  limitations under the License.
++
++from http_utils import (wait_for_headers_complete, determine_outstanding_bytes_to_read, drain_socket)
++
++import argparse
++import socket
++import sys
++
++
++def parse_args() -> argparse.Namespace:
++    """Parse the command line arguments.
++
++    :return: The parsed arguments.
++    """
++    parser = argparse.ArgumentParser()
++    parser.add_argument("proxy_address", help="Address of the proxy to connect to.")
++    parser.add_argument("proxy_port", type=int, help="The port of the proxy to connect to.")
++    parser.add_argument(
++        '-s',
++        '--server-hostname',
++        dest="server_hostname",
++        default="some.server.com",
++        help="The hostname of the server to connect to.")
++    return parser.parse_args()
++
++
++def open_connection(address: str, port: int) -> socket.socket:
++    """Open a connection to the desired host.
++
++    :param address: The address of the host to connect to.
++    :param port: The port of the host to connect to.
++    :return: The socket connected to the host.
++    """
++    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
++    sock.connect((address, port))
++    print(f'Connected to {address}:{port}')
++    return sock
++
++
++def send_expect_request(sock: socket.socket, server_hostname: str) -> None:
++    """Send an Expect: 100-Continue request.
++
++    :param sock: The socket to send the request on.
++    :param server_hostname: The hostname of the server to connect to.
++    """
++    # Send the POST request.
++    host_header: bytes = f'Host: {server_hostname}\r\n'.encode()
++    request: bytes = (
++        b"GET /api/1 HTTP/1.1\r\n" + host_header + b"Connection: keep-alive\r\n"
++        b"Content-Length: 3\r\n"
++        b"uuid: expect\r\n"
++        b"Expect: 100-Continue\r\n"
++        b"\r\n")
++    sock.sendall(request)
++    print('Sent Expect: 100-Continue request:')
++    print(request.decode())
++    drain_response(sock)
++    print('Got 100-Continue response.')
++    sock.sendall(b'rst')
++    print('Sent "rst" body.')
++
++
++def drain_response(sock: socket.socket) -> None:
++    """Drain the response from the server.
++
++    :param sock: The socket to read the response from.
++    """
++    print('Waiting for the response to complete.')
++    read_bytes: bytes = wait_for_headers_complete(sock)
++    try:
++        num_bytes_to_drain: int = determine_outstanding_bytes_to_read(read_bytes)
++    except ValueError:
++        print('No CL found')
++        return
++    if num_bytes_to_drain > 0:
++        drain_socket(sock, read_bytes, num_bytes_to_drain)
++    print('Response complete.')
++
++
++def main() -> int:
++    """Run the client."""
++    args = parse_args()
++    print(args)
++
++    with open_connection(args.proxy_address, args.proxy_port) as sock:
++        send_expect_request(sock, args.server_hostname)
++        drain_response(sock)
++    print('Done.')
++    return 0
++
++
++if __name__ == '__main__':
++    sys.exit(main())
+diff --git a/tests/gold_tests/post/expect_tests.test.py b/tests/gold_tests/post/expect_tests.test.py
+new file mode 100644
+index 00000000000..e6f85cd660c
+--- /dev/null
++++ b/tests/gold_tests/post/expect_tests.test.py
+@@ -0,0 +1,88 @@
++'''
++'''
++#  Licensed to the Apache Software Foundation (ASF) under one
++#  or more contributor license agreements.  See the NOTICE file
++#  distributed with this work for additional information
++#  regarding copyright ownership.  The ASF licenses this file
++#  to you under the Apache License, Version 2.0 (the
++#  "License"); you may not use this file except in compliance
++#  with the License.  You may obtain a copy of the License at
++#
++#      http://www.apache.org/licenses/LICENSE-2.0
++#
++#  Unless required by applicable law or agreed to in writing, software
++#  distributed under the License is distributed on an "AS IS" BASIS,
++#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++#  See the License for the specific language governing permissions and
++#  limitations under the License.
++
++import sys
++
++
++class ExpectTest:
++
++    _expect_client: str = 'expect_client.py'
++    _http_utils: str = 'http_utils.py'
++    _replay_file: str = 'replay/expect-continue.replay.yaml'
++
++    def __init__(self):
++        tr = Test.AddTestRun('Verify Expect: 100-Continue handling.')
++        self._setup_dns(tr)
++        self._setup_origin(tr)
++        self._setup_trafficserver(tr)
++        self._setup_client(tr)
++
++    def _setup_dns(self, tr: 'TestRun') -> None:
++        '''Set up the DNS server.
++
++        :param tr: The TestRun to which to add the DNS server.
++        '''
++        dns = tr.MakeDNServer('dns', default='127.0.0.1')
++        self._dns = dns
++
++    def _setup_origin(self, tr: 'TestRun') -> None:
++        '''Set up the origin server.
++
++        :param tr: The TestRun to which to add the origin server.
++        '''
++        server = tr.AddVerifierServerProcess("server", replay_path=self._replay_file)
++        self._server = server
++
++    def _setup_trafficserver(self, tr: 'TestRun') -> None:
++        '''Set up the traffic server.
++
++        :param tr: The TestRun to which to add the traffic server.
++        '''
++        ts = tr.MakeATSProcess("ts", enable_cache=False)
++        self._ts = ts
++        ts.Disk.remap_config.AddLine(f'map / http://backend.example.com:{self._server.Variables.http_port}')
++        ts.Disk.records_config.update(
++            {
++                'proxy.config.diags.debug.enabled': 1,
++                'proxy.config.diags.debug.tags': 'http',
++                'proxy.config.dns.nameservers': f"127.0.0.1:{self._dns.Variables.Port}",
++                'proxy.config.dns.resolv_conf': 'NULL',
++                'proxy.config.http.send_100_continue_response': 1,
++            })
++
++    def _setup_client(self, tr: 'TestRun') -> None:
++        '''Set up the client.
++
++        :param tr: The TestRun to which to add the client.
++        '''
++        tr.Setup.CopyAs(self._expect_client)
++        tr.Setup.CopyAs(self._http_utils)
++        tr.Processes.Default.Command = \
++            f'{sys.executable} {self._expect_client} 127.0.0.1 {self._ts.Variables.port} -s example.com'
++        tr.Processes.Default.ReturnCode = 0
++        tr.Processes.Default.StartBefore(self._dns)
++        tr.Processes.Default.StartBefore(self._server)
++        tr.Processes.Default.StartBefore(self._ts)
++        tr.Processes.Default.Streams.stdout += Testers.ContainsExpression(
++            'HTTP/1.1 100', 'Verify the 100 Continue response was received.')
++        tr.Processes.Default.Streams.stdout += Testers.ContainsExpression(
++            'HTTP/1.1 200', 'Verify the 200 OK response was received.')
++
++
++Test.Summary = 'Verify Expect: 100-Continue handling.'
++ExpectTest()
+diff --git a/tests/gold_tests/post/http_utils.py b/tests/gold_tests/post/http_utils.py
+new file mode 100644
+index 00000000000..e1ad4e77fed
+--- /dev/null
++++ b/tests/gold_tests/post/http_utils.py
+@@ -0,0 +1,93 @@
++#!/usr/bin/env python3
++"""Common logic between the ad hoc client and server."""
++
++#  Licensed to the Apache Software Foundation (ASF) under one
++#  or more contributor license agreements.  See the NOTICE file
++#  distributed with this work for additional information
++#  regarding copyright ownership.  The ASF licenses this file
++#  to you under the Apache License, Version 2.0 (the
++#  "License"); you may not use this file except in compliance
++#  with the License.  You may obtain a copy of the License at
++#
++#      http://www.apache.org/licenses/LICENSE-2.0
++#
++#  Unless required by applicable law or agreed to in writing, software
++#  distributed under the License is distributed on an "AS IS" BASIS,
++#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++#  See the License for the specific language governing permissions and
++#  limitations under the License.
++
++import socket
++
++
++def wait_for_headers_complete(sock: socket.socket) -> bytes:
++    """Wait for the headers to be complete.
++
++    :param sock: The socket to read from.
++    :returns: The bytes read off the socket.
++    """
++    headers = b""
++    while True:
++        data = sock.recv(1024)
++        if not data:
++            print("Socket closed.")
++            break
++        print(f'Received:\n{data}')
++        headers += data
++        if b"\r\n\r\n" in headers:
++            break
++    return headers
++
++
++def determine_outstanding_bytes_to_read(read_bytes: bytes) -> int:
++    """Determine how many more bytes to read from the headers.
++
++    This parses the Content-Length header to determine how many more bytes to
++    read.
++
++    :param read_bytes: The bytes read so far.
++    :returns: The number of bytes to read, or -1 if it is chunked encoded.
++    """
++    headers = read_bytes.decode("utf-8").split("\r\n")
++    content_length_value = None
++    for header in headers:
++        if header.lower().startswith("content-length:"):
++            content_length_value = int(header.split(":")[1].strip())
++        elif header.lower().startswith("transfer-encoding: chunked"):
++            return -1
++    if content_length_value is None:
++        raise ValueError("No Content-Length header found.")
++
++    end_of_headers = read_bytes.find(b"\r\n\r\n")
++    if end_of_headers == -1:
++        raise ValueError("No end of headers found.")
++
++    end_of_headers += 4
++    return content_length_value - (len(read_bytes) - end_of_headers)
++
++
++def drain_socket(sock: socket.socket, previously_read_data: bytes, num_bytes_to_drain: int) -> None:
++    """Read the rest of the transaction.
++
++    :param sock: The socket to drain.
++    :param num_bytes_to_drain: The number of bytes to drain. If -1, then drain
++    bytes until the final zero-length chunk is read.
++    """
++
++    read_data = previously_read_data
++    num_bytes_drained = 0
++    while True:
++        if num_bytes_to_drain > 0:
++            if num_bytes_drained >= num_bytes_to_drain:
++                break
++        elif b'0\r\n\r\n' == read_data[-5:]:
++            print("Found end of chunked data.")
++            break
++
++        data = sock.recv(1024)
++        print(f'Received:\n{data}')
++        if not data:
++            print("Socket closed.")
++            break
++        num_bytes_drained += len(data)
++        read_data += data
+diff --git a/tests/gold_tests/post/replay/expect-continue.replay.yaml b/tests/gold_tests/post/replay/expect-continue.replay.yaml
+new file mode 100644
+index 00000000000..e136b5dfda5
+--- /dev/null
++++ b/tests/gold_tests/post/replay/expect-continue.replay.yaml
+@@ -0,0 +1,42 @@
++#  Licensed to the Apache Software Foundation (ASF) under one
++#  or more contributor license agreements.  See the NOTICE file
++#  distributed with this work for additional information
++#  regarding copyright ownership.  The ASF licenses this file
++#  to you under the Apache License, Version 2.0 (the
++#  "License"); you may not use this file except in compliance
++#  with the License.  You may obtain a copy of the License at
++#
++#      http://www.apache.org/licenses/LICENSE-2.0
++#
++#  Unless required by applicable law or agreed to in writing, software
++#  distributed under the License is distributed on an "AS IS" BASIS,
++#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++#  See the License for the specific language governing permissions and
++#  limitations under the License.
++
++#
++# This replay file assumes that caching is enabled and
++# proxy.config.http.cache.ignore_server_no_cache is set to 1(meaning the
++# cache-control directives in responses to bypass the cache is ignored)
++meta:
++  version: "1.0"
++
++sessions:
++  - transactions:
++      # The client is actually the python script, not Proxy Verifier.
++      - client-request:
++          method: "GET"
++          version: "1.1"
++          headers:
++            fields:
++              - [uuid, expect]
++              - [Expect, 100-continue]
++
++        server-response:
++          status: 200
++          reason: OK
++          headers:
++            fields:
++              - [Content-Length, 4]
++              - [Connection, keep-alive]
++              - [X-Response, expect]

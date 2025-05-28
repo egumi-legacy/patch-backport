@@ -1,0 +1,101 @@
+From 3d2f29c88f9b073cb0fd3b9c7f85430e2170acbb Mon Sep 17 00:00:00 2001
+From: Masakazu Kitajo <maskit@apache.org>
+Date: Tue, 1 Apr 2025 12:15:16 -0600
+Subject: [PATCH] Require the use of CRLF in chunked message body (#12150)
+
+* Require the use of CRLF in chunked message body
+
+* Fix docs
+---
+ doc/admin-guide/files/records.config.en.rst   |  9 +++
+ .../functions/TSHttpOverridableConfig.en.rst  |  1 +
+ .../api/types/TSOverridableConfigKey.en.rst   |  1 +
+ include/ts/apidefs.h.in                       |  1 +
+ mgmt/RecordsConfig.cc                         |  2 +
+ plugins/lua/ts_lua_http_config.c              |  2 +
+ proxy/http/HttpConfig.cc                      |  2 +
+ proxy/http/HttpConfig.h                       |  1 +
+ proxy/http/HttpSM.cc                          | 28 +++++---
+ proxy/http/HttpTunnel.cc                      | 72 ++++++++++++-------
+ proxy/http/HttpTunnel.h                       | 15 +++-
+ src/shared/overridable_txn_vars.cc            |  1 +
+ src/traffic_server/FetchSM.cc                 |  3 +-
+ src/traffic_server/InkAPI.cc                  |  3 +
+ src/traffic_server/InkAPITest.cc              |  3 +-
+ .../malformed_chunked_header.replay.yaml      | 44 ++++++++++++
+ 16 files changed, 150 insertions(+), 38 deletions(-)
+
+diff --git a/proxy/http/HttpTunnel.cc b/proxy/http/HttpTunnel.cc
+index 1508179e6b5..e9c0c6eafea 100644
+--- a/proxy/http/HttpTunnel.cc
++++ b/proxy/http/HttpTunnel.cc
+@@ -178,36 +178,59 @@ ChunkedHandler::read_size()
+             done  = true;
+             break;
+           } else {
+-            if (ParseRules::is_cr(*tmp)) {
+-              ++cr;
++            if ((prev_is_cr = ParseRules::is_cr(*tmp)) == true) {
++              ++num_cr;
+             }
+             state = CHUNK_READ_SIZE_CRLF; // now look for CRLF
+           }
+         }
+       } else if (state == CHUNK_READ_SIZE_CRLF) { // Scan for a linefeed
+         if (ParseRules::is_lf(*tmp)) {
++          if (!prev_is_cr) {
++            Debug("http_chunk", "Found an LF without a preceding CR (protocol violation)");
++            if (strict_chunk_parsing) {
++              state = CHUNK_READ_ERROR;
++              done  = true;
++              break;
++            }
++          }
+           Debug("http_chunk", "read chunk size of %d bytes", running_sum);
+           cur_chunk_bytes_left = (cur_chunk_size = running_sum);
+           state                = (running_sum == 0) ? CHUNK_READ_TRAILER_BLANK : CHUNK_READ_CHUNK;
+           done                 = true;
+-          cr                   = 0;
++          num_cr               = 0;
+           break;
+-        } else if (ParseRules::is_cr(*tmp)) {
+-          if (cr != 0) {
++        } else if ((prev_is_cr = ParseRules::is_cr(*tmp)) == true) {
++          if (num_cr != 0) {
+             state = CHUNK_READ_ERROR;
+             done  = true;
+             break;
+           }
+-          ++cr;
++          ++num_cr;
+         }
+       } else if (state == CHUNK_READ_SIZE_START) {
+-        if (ParseRules::is_cr(*tmp)) {
+-          // Skip it
+-        } else if (ParseRules::is_lf(*tmp) &&
+-                   bytes_used <= 2) { // bytes_used should be 2 if it's CRLF, but permit a single LF as well
++        Debug("http_chunk", "CHUNK_READ_SIZE_START 0x%02x", *tmp);
++        if (ParseRules::is_lf(*tmp)) {
++          if (!prev_is_cr) {
++            Debug("http_chunk", "Found an LF without a preceding CR (protocol violation) before chunk size");
++            if (strict_chunk_parsing) {
++              state = CHUNK_READ_ERROR;
++              done  = true;
++              break;
++            }
++          }
+           running_sum = 0;
+           num_digits  = 0;
++          num_cr      = 0;
+           state       = CHUNK_READ_SIZE;
++        } else if ((prev_is_cr = ParseRules::is_cr(*tmp)) == true) {
++          if (num_cr != 0) {
++            Debug("http_chunk", "Found multiple CRs before chunk size");
++            state = CHUNK_READ_ERROR;
++            done  = true;
++            break;
++          }
++          ++num_cr;
+         } else { // Unexpected character
+           state = CHUNK_READ_ERROR;
+           done  = true;

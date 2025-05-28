@@ -1,0 +1,27 @@
+From bb15591646687064ab2d578d5f9660b2a4168017 Mon Sep 17 00:00:00 2001
+From: Camden Narzt <c.narzt@me.com>
+Date: Tue, 18 Feb 2025 07:57:54 -0700
+Subject: [PATCH] Fix header parser
+
+---
+ CHANGELOG                                     |  2 +-
+ .../ServerKit/HttpHeaderParser.h              | 40 +++++++++----------
+ test/cxx/ServerKit/HttpServerTest.cpp         | 27 ++++++++++++-
+ 3 files changed, 46 insertions(+), 23 deletions(-)
+
+diff --git a/src/cxx_supportlib/ServerKit/HttpHeaderParser.h b/src/cxx_supportlib/ServerKit/HttpHeaderParser.h
+index d43d4fe31e..1b01860707 100644
+--- a/src/cxx_supportlib/ServerKit/HttpHeaderParser.h
++++ b/src/cxx_supportlib/ServerKit/HttpHeaderParser.h
+@@ -526,9 +523,10 @@ class HttpHeaderParser {
+ 				break;
+ 			default:
+ 				default_error:
+-				message->aux.parseError = HTTP_PARSER_ERRNO_BEGIN - llhttp_get_errno(&state->parser);
++				message->aux.parseError = HTTP_PARSER_ERRNO_BEGIN - llerrno;
+ 				break;
+ 			}
++			llhttp_finish(&state->parser);
+ 		} else if (messageHttpStateIndicatesCompletion(MessageType())) {
+ 			UPDATE_TRACE_POINT();
+ 			message->httpMajor = llhttp_get_http_major(&state->parser);

@@ -1,0 +1,148 @@
+From aeabebb0fb50afea3342cc75d18deb0f12a55ead Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 22 May 2025 16:04:11 +0800
+Subject: [PATCH] Applied adapted patch for 9.2.3
+
+---
+ proxy/http/HttpSM.cc     |  3 +--
+ proxy/http/HttpTunnel.cc | 16 ++++++++-----
+ proxy/http/HttpTunnel.h  | 52 +++++++++++++++++++++++++++++++++++-----
+ 3 files changed, 57 insertions(+), 14 deletions(-)
+
+diff --git a/proxy/http/HttpSM.cc b/proxy/http/HttpSM.cc
+index ab269fbbd..91cd32a71 100644
+--- a/proxy/http/HttpSM.cc
++++ b/proxy/http/HttpSM.cc
+@@ -972,8 +972,7 @@ HttpSM::wait_for_full_body()
+   // Next order of business if copy the remaining data from the
+   //  header buffer into new buffer
+   int64_t post_bytes = chunked ? INT64_MAX : t_state.hdr_info.request_content_length;
+-  client_request_body_bytes =
+-    post_buffer->write(ua_txn->get_remote_reader(), chunked ? ua_txn->get_remote_reader()->read_avail() : post_bytes);
++  post_buffer->write(ua_txn->get_remote_reader(), chunked ? ua_txn->get_remote_reader()->read_avail() : post_bytes);
+ 
+   ua_txn->get_remote_reader()->consume(client_request_body_bytes);
+   p = tunnel.add_producer(ua_entry->vc, post_bytes, buf_start, &HttpSM::tunnel_handler_post_ua, HT_BUFFER_READ, "ua post buffer");
+diff --git a/proxy/http/HttpTunnel.cc b/proxy/http/HttpTunnel.cc
+index dadd6c8ce..82f9e7541 100644
+--- a/proxy/http/HttpTunnel.cc
++++ b/proxy/http/HttpTunnel.cc
+@@ -181,7 +181,9 @@ ChunkedHandler::read_size()
+       data_size--;
+     }
+     chunked_reader->consume(bytes_used);
++    bytes_consumed += bytes_used;
+   }
++  return bytes_consumed;
+ }
+ 
+ // int ChunkedHandler::transfer_bytes()
+@@ -233,10 +235,10 @@ ChunkedHandler::transfer_bytes()
+   return total_moved;
+ }
+ 
+-void
++int64_t
+ ChunkedHandler::read_chunk()
+ {
+-  int64_t b = transfer_bytes();
++  int64_t transferred_bytes = transfer_bytes();
+ 
+   ink_assert(bytes_left >= 0);
+   if (bytes_left == 0) {
+@@ -244,21 +246,23 @@ ChunkedHandler::read_chunk()
+ 
+     state = CHUNK_READ_SIZE_START;
+   } else if (bytes_left > 0) {
+-    Debug("http_chunk", "read %" PRId64 " bytes of an %" PRId64 " chunk", b, cur_chunk_size);
++    Debug("http_chunk", "read %" PRId64 " bytes of an %" PRId64 " chunk", transferred_bytes, cur_chunk_size);
+   }
++  return transferred_bytes;
+ }
+ 
+-void
++int64_t
+ ChunkedHandler::read_trailer()
+ {
+-  int64_t bytes_used;
+-  bool done = false;
++  int64_t bytes_consumed = 0;
++  bool done              = false;
+ 
+   while (chunked_reader->is_read_avail_more_than(0) && !done) {
+     const char *tmp   = chunked_reader->start();
+     int64_t data_size = chunked_reader->block_read_avail();
+ 
+     ink_assert(data_size > 0);
++    int64_t bytes_used = 0;
+     for (bytes_used = 0; data_size > 0; data_size--) {
+       bytes_used++;
+ 
+diff --git a/proxy/http/HttpTunnel.h b/proxy/http/HttpTunnel.h
+index b4a876ef8..c8ff35a5a 100644
+--- a/proxy/http/HttpTunnel.h
++++ b/proxy/http/HttpTunnel.h
+@@ -138,14 +138,54 @@ struct ChunkedHandler {
+   /// If @a size is zero it is set to @c DEFAULT_MAX_CHUNK_SIZE.
+   void set_max_chunk_size(int64_t size);
+ 
+-  // Returns true if complete, false otherwise
+-  bool process_chunked_content();
+-  bool generate_chunked_content();
++  /** Consumes and processes chunked content.
++   *
++   * This consumes data from @a chunked_reader and, if dechunking, writes the
++   * dechunked body to @a dechunked_buffer.
++   *
++   * @return The number of bytes consumed from the chunked reader and true if
++   * the entire chunked content is processed, false otherwise.
++   */
++  std::pair<int64_t, bool> process_chunked_content();
++
++  /** Writes chunked content.
++   *
++   * This reads from @a dechunked_reader and writes chunked formatted content to
++   * @a chunked_buffer.
++   *
++   * @return The number of bytes consumed from the dechunked reader and true if
++   * the entire chunked content is written, false otherwise.
++   */
++  std::pair<int64_t, bool> generate_chunked_content();
+ 
+ private:
+-  void read_size();
+-  void read_chunk();
+-  void read_trailer();
++  /** Read a chunk header containing the size of the chunk.
++   *
++   * @return The number of bytes consumed from the chunked buffer reader.
++   */
++  int64_t read_size();
++
++  /** Read a chunk body.
++   *
++   * This is called after read_size so that the chunk size is known.
++   *
++   * @return The number of bytes consumed from the chunked buffer reader.
++   */
++  int64_t read_chunk();
++
++  /** Read a chunk trailer.
++   *
++   * @return The number of bytes consumed from the chunked buffer reader.
++   */
++  int64_t read_trailer();
++
++  /** Transfer body bytes from the chunked reader.
++   *
++   * This will either simply consume the chunked body bytes in the case of
++   * chunked passthrough, or transfer the chunked body to the dechunked buffer.
++   *
++   * @return The number of bytes consumed from the chunked buffer reader.
++   */
+   int64_t transfer_bytes();
+ };
+ 
+-- 
+2.25.1
+

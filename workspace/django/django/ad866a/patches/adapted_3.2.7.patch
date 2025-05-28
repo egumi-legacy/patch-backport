@@ -1,0 +1,25 @@
+From 1531a95c5e7621bd86e8db57a7b9012260969c8d Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 22 May 2025 18:16:36 +0800
+Subject: [PATCH] Applied adapted patch for 3.2.7
+
+---
+ django/utils/ipv6.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/django/utils/ipv6.py b/django/utils/ipv6.py
+index ddb8c8091d..7cc6dd4135 100644
+--- a/django/utils/ipv6.py
++++ b/django/utils/ipv6.py
+@@ -23,7 +23,7 @@ def clean_ipv6_address(ip_str, unpack_ipv4=False,
+     Return a compressed IPv6 address or the same value.
+     """
+     try:
+-        addr = ipaddress.IPv6Address(int(ipaddress.IPv6Address(ip_str)))
++        addr = _ipv6_address_from_str(ip_str, max_length)
+     except ValueError:
+         raise ValidationError(error_message, code='invalid')
+ 
+-- 
+2.25.1
+

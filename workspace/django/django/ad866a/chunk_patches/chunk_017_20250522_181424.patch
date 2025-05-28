@@ -1,0 +1,45 @@
+From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia <124304+nessita@users.noreply.github.com>
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia <124304+nessita@users.noreply.github.com>
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/tests/utils_tests/test_ipv6.py b/tests/utils_tests/test_ipv6.py
+index bf78ed91c08f..2d06507fa152 100644
+--- a/tests/utils_tests/test_ipv6.py
++++ b/tests/utils_tests/test_ipv6.py
+@@ -1,9 +1,17 @@
+-import unittest
++import traceback
++from io import StringIO
+ 
+-from django.utils.ipv6 import clean_ipv6_address, is_valid_ipv6_address
++from django.core.exceptions import ValidationError
++from django.test import SimpleTestCase
++from django.utils.ipv6 import (
++    MAX_IPV6_ADDRESS_LENGTH,
++    clean_ipv6_address,
++    is_valid_ipv6_address,
++)
++from django.utils.version import PY310
+ 
+ 
+-class TestUtilsIPv6(unittest.TestCase):
++class TestUtilsIPv6(SimpleTestCase):
+     def test_validates_correct_plain_address(self):
+         self.assertTrue(is_valid_ipv6_address("fe80::223:6cff:fe8a:2e8a"))
+         self.assertTrue(is_valid_ipv6_address("2a02::223:6cff:fe8a:2e8a"))

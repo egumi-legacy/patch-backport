@@ -1,0 +1,28 @@
+From 52e7328667e5bea7eca1fbfba4c761d201a7f873 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 22 May 2025 18:22:57 +0800
+Subject: [PATCH] Applied adapted patch for release-6.0.8
+
+---
+ src/cxx_supportlib/ServerKit/HttpHeaderParser.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/cxx_supportlib/ServerKit/HttpHeaderParser.h b/src/cxx_supportlib/ServerKit/HttpHeaderParser.h
+index f7e698a39..354540b6c 100644
+--- a/src/cxx_supportlib/ServerKit/HttpHeaderParser.h
++++ b/src/cxx_supportlib/ServerKit/HttpHeaderParser.h
+@@ -491,9 +491,10 @@ public:
+ 				break;
+ 			default:
+ 				default_error:
+-				message->aux.parseError = HTTP_PARSER_ERRNO_BEGIN - HTTP_PARSER_ERRNO(&state->parser);
++				message->aux.parseError = HTTP_PARSER_ERRNO_BEGIN - llerrno;
+ 				break;
+ 			}
++			llhttp_finish(&state->parser);
+ 		} else if (messageHttpStateIndicatesCompletion(MessageType())) {
+ 			UPDATE_TRACE_POINT();
+ 			ret++;
+-- 
+2.25.1
+

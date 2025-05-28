@@ -1,0 +1,96 @@
+2025-05-22 14:57:32.299 | INFO     | __main__:_setup_logger:290 - 日志文件: logs/backport_20250522_145732.log
+2025-05-22 14:57:32.300 | INFO     | __main__:process_multiple_commits:1670 - 处理第 1/4 个commit: 8def647eea27f7fd7ad33ff79c2d6d3e39948dce
+2025-05-22 14:57:32.326 | INFO     | __main__:_setup_logger:290 - 日志文件: logs/backport_20250522_145732.log
+2025-05-22 14:57:32.327 | INFO     | __main__:run:294 - 开始执行 模式1
+2025-05-22 14:57:32.327 | INFO     | __main__:_process_mode1:314 - 处理补丁: https://github.com/zapping-vbi/zvbi/commit/8def647eea27f7fd7ad33ff79c2d6d3e39948dce.patch
+2025-05-22 14:57:32.328 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-05-22 14:57:32.328 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-05-22 14:57:32.329 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-05-22 14:57:32.330 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-05-22 14:57:32.330 | INFO     | __main__:_process_mode1:321 - 目标版本: ['v0.2.36']
+2025-05-22 14:57:32.331 | INFO     | __main__:_process_mode1:328 - 开始处理版本: v0.2.36
+2025-05-22 14:57:32.331 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: 8def647eea27f7fd7ad33ff79c2d6d3e39948dce.patch
+2025-05-22 14:57:32.331 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-05-22 14:57:32.336 | INFO     | modules.direct_apply:_download_patch:236 - 上游补丁文件不存在，下载补丁
+2025-05-22 14:57:32.337 | INFO     | patch_utils:download_patch:95 - parts: ['https:', '', 'github.com', 'zapping-vbi', 'zvbi', 'commit', '8def647eea27f7fd7ad33ff79c2d6d3e39948dce.patch']
+2025-05-22 14:57:32.337 | INFO     | patch_utils:download_patch:103 - 使用Commit API下载patch: https://api.github.com/repos/zapping-vbi/zvbi/commits/8def647eea27f7fd7ad33ff79c2d6d3e39948dce
+2025-05-22 14:57:32.522 | ERROR    | patch_utils:download_patch:124 - 下载patch失败: HTTPSConnectionPool(host='api.github.com', port=443): Max retries exceeded with url: /repos/zapping-vbi/zvbi/commits/8def647eea27f7fd7ad33ff79c2d6d3e39948dce (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')))
+2025-05-22 14:57:32.523 | INFO     | patch_utils:download_patch:128 - 尝试直接下载patch文件...
+2025-05-22 14:57:36.514 | ERROR    | patch_utils:download_patch:150 - 直接下载patch也失败: Exceeded 30 redirects.
+2025-05-22 14:57:36.515 | ERROR    | modules.direct_apply:execute:103 - 直接应用过程发生错误: 无法下载补丁: https://github.com/zapping-vbi/zvbi/commit/8def647eea27f7fd7ad33ff79c2d6d3e39948dce.patch
+2025-05-22 14:57:36.520 | ERROR    | modules.direct_apply:execute:105 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 57, in execute
+    patch_path = self._download_patch(context)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 237, in _download_patch
+    success = download_patch(context.commit.patch_url, patch_path).exists()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/patch_utils.py", line 153, in download_patch
+    raise ValueError(f"无法下载补丁: {patch_url}")
+ValueError: 无法下载补丁: https://github.com/zapping-vbi/zvbi/commit/8def647eea27f7fd7ad33ff79c2d6d3e39948dce.patch
+
+2025-05-22 14:57:36.522 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-05-22 14:57:36.522 | ERROR    | modules.chunk_analyzer:execute:121 - 补丁分析过程发生错误: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-05-22 14:57:36.527 | ERROR    | modules.chunk_analyzer:execute:123 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 46, in execute
+    patch_path = Path(context.commit.patch_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 1162, in __init__
+    super().__init__(*args)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+2025-05-22 14:57:36.530 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/zapping-vbi/zvbi/8def64/evaluations/chunk_analyzer/metrics_8def64_20250522_145736.json
+2025-05-22 14:57:36.532 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/zapping-vbi/zvbi/8def64/evaluations/chunk_analyzer/details_8def64_20250522_145736
+2025-05-22 14:57:36.535 | ERROR    | modules.chunk_analyzer:_save_evaluation_info:802 - 保存chunk_analyzer特定评估信息失败: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-05-22 14:57:36.535 | ERROR    | modules.chunk_analyzer:_save_evaluation_info:804 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 585, in _save_evaluation_info
+    if hasattr(context.commit, "patch_path") and Path(context.commit.patch_path).exists():
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 1162, in __init__
+    super().__init__(*args)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+2025-05-22 14:57:36.536 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: llm_adapter
+2025-05-22 14:57:36.536 | INFO     | modules.llm_adapter:execute:55 - context.commit.patch_path: None
+2025-05-22 14:57:36.536 | ERROR    | modules.llm_adapter:execute:99 - LLM处理过程发生错误: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-05-22 14:57:36.539 | ERROR    | modules.llm_adapter:execute:100 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 56, in execute
+    patch_path = Path(context.commit.patch_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 1162, in __init__
+    super().__init__(*args)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+2025-05-22 14:57:36.540 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/zapping-vbi/zvbi/8def64/evaluations/llm_adapter/metrics_8def64_20250522_145736.json
+2025-05-22 14:57:36.541 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: patch_adapter
+2025-05-22 14:57:36.541 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 找不到LLM响应文件
+2025-05-22 14:57:36.543 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 46, in execute
+    llm_response_path = self._get_llm_response_path(context)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 129, in _get_llm_response_path
+    raise ValueError("找不到LLM响应文件")
+ValueError: 找不到LLM响应文件
+
+2025-05-22 14:57:36.544 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/zapping-vbi/zvbi/8def64/metrics/patch_adapter_metrics.json
+2025-05-22 14:57:36.544 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 4.21秒
+2025-05-22 14:57:36.545 | INFO     | __main__:_merge_patches:1029 - 开始合并补丁...
+2025-05-22 14:57:36.545 | WARNING  | __main__:_merge_patches:1153 - 没有找到可合并的补丁
+2025-05-22 14:57:36.548 | ERROR    | __main__:run:306 - 执行过程发生错误: '>' not supported between instances of 'NoneType' and 'int'
+2025-05-22 14:57:36.550 | ERROR    | __main__:run:307 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 299, in run
+    self._process_mode1()
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 359, in _process_mode1
+    result_path = self._save_results(processed_context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 767, in _save_results
+    "chunk_analyzer": bool(context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') > 0),
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: '>' not supported between instances of 'NoneType' and 'int'
+

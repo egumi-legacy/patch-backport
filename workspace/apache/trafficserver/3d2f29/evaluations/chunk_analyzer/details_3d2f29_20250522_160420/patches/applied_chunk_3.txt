@@ -1,0 +1,59 @@
+From 3d2f29c88f9b073cb0fd3b9c7f85430e2170acbb Mon Sep 17 00:00:00 2001
+From: Masakazu Kitajo <maskit@apache.org>
+Date: Tue, 1 Apr 2025 12:15:16 -0600
+Subject: [PATCH] Require the use of CRLF in chunked message body (#12150)
+
+* Require the use of CRLF in chunked message body
+
+* Fix docs
+---
+ doc/admin-guide/files/records.config.en.rst   |  9 +++
+ .../functions/TSHttpOverridableConfig.en.rst  |  1 +
+ .../api/types/TSOverridableConfigKey.en.rst   |  1 +
+ include/ts/apidefs.h.in                       |  1 +
+ mgmt/RecordsConfig.cc                         |  2 +
+ plugins/lua/ts_lua_http_config.c              |  2 +
+ proxy/http/HttpConfig.cc                      |  2 +
+ proxy/http/HttpConfig.h                       |  1 +
+ proxy/http/HttpSM.cc                          | 28 +++++---
+ proxy/http/HttpTunnel.cc                      | 72 ++++++++++++-------
+ proxy/http/HttpTunnel.h                       | 15 +++-
+ src/shared/overridable_txn_vars.cc            |  1 +
+ src/traffic_server/FetchSM.cc                 |  3 +-
+ src/traffic_server/InkAPI.cc                  |  3 +
+ src/traffic_server/InkAPITest.cc              |  3 +-
+ .../malformed_chunked_header.replay.yaml      | 44 ++++++++++++
+ 16 files changed, 150 insertions(+), 38 deletions(-)
+
+diff --git a/tests/gold_tests/chunked_encoding/replays/malformed_chunked_header.replay.yaml b/tests/gold_tests/chunked_encoding/replays/malformed_chunked_header.replay.yaml
+index 1118036b3c8..7c0ccb9a47f 100644
+--- a/tests/gold_tests/chunked_encoding/replays/malformed_chunked_header.replay.yaml
++++ b/tests/gold_tests/chunked_encoding/replays/malformed_chunked_header.replay.yaml
+@@ -98,6 +98,27 @@ sessions:
+     server-response:
+       status: 200
+ 
++- transactions:
++  - client-request:
++      method: "POST"
++      version: "1.1"
++      url: /malformed/chunk/header3
++      headers:
++        fields:
++        - [ Host, example.com ]
++        - [ Transfer-Encoding, chunked ]
++        - [ uuid, 5 ]
++      content:
++        transfer: plain
++        encoding: uri
++        # Chunk header must end with a sequence of CRLF.
++        data: 7;x%0Aabcwxyz%0D%0A0%0D%0A%0D%0A
++
++    # The connection will be dropped and this response will not go out.
++    server-response:
++      status: 200
++
++
+   #
+   # Now repeat the above two malformed chunk header tests, but on the server
+   # side.

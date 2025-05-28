@@ -1,0 +1,627 @@
+modified file: CHANGELOG
+--- workspace/phusion/passenger/bb1559/newer/CHANGELOG
++++ workspace/phusion/passenger/bb1559/release-6.0.8/CHANGELOG
+@@ -1,419 +1,3 @@
+ -Release 6.0.26 (Not yet released)
+--------------
+
+ - * 
+ -
+ -
+ -Release 6.0.25
+--------------
+
+ - * Fixes compilation with clang 19 (latest Fedora update) by dropping a buggy stddev function from the moving average header. Closes GH-2580.
+ - * [Standalone] Adds a config option to specify the stop timeout for Passenger: `--stop-timeout 120` or `PASSENGER_STOP_TIMEOUT=120`.
+ - * [Standalone] Changes Passenger's (not apps') start timeout to 25s (from 15s), stop timeouts default to 60s.
+ - * [Ruby] Fixes an issue where Bundler would try to re-exec the process name instead of the script. Closes GH-2567 and GH-2577.
+ - * [Enterprise] Adds a temporary flag to allow reverting to previous routing behaviour, in order to mitigate possible performance regressions, this flag will become a no-op and eventually removed once the routing issues have been fixed. Closes GH-2579.
+ -   - Apache: PassengerOldRouting on
+ -   - Nginx: passenger_old_routing on;
+ -   - Standalone: --old-routing
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -   - cmake: 3.31.2 -> 3.31.3
+ -   - curl: 8.11.0 -> 8.11.1
+ -   - libiconv: 1.17 -> 1.18
+ -   - rubygems: 3.5.23 -> 3.6.2
+ -   - rubies:
+ -     - added 3.4.1
+ -
+ -
+ -Release 6.0.24
+--------------
+
+ - * [Nginx] Upgrades preferred Nginx to 1.26.2 from 1.26.1.
+ - * [Enterprise] Smarter rolling restarts for better performance and reliability. We changed the way we route requests. Instead of picking the least-busy process, we now first prioritize new processes first. During a rolling restart, this new behavior leads to more efficient utilization of application caches, faster validation of new rollouts, and faster recovery from problematic deployments. Closes GH-2551.
+ - * Fix a regression from 6.0.10 where running `passenger-config system-properties` would throw an error. Closes GH-2565.
+ - * [Enterprise] Fix a memory corruption-related crash that could occur during rolling restarting.
+ - * [Ubuntu] Add packages for Ubuntu 24.10 "oracular".
+ - * [Ruby] Specify rackup version to avoid broken 1.0 gem. Closes GH-2559.
+ - * Fixes compatibility with Ruby apps whose Gemfile.lock depends on base64.
+ - * Upgrades Boost from 1.85 -> 1.86.
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -   - ccache 4.10.1 -> 4.10.2
+ -   - cmake 3.30.1 -> 3.31.2
+ -   - curl 8.8.0 -> 8.11.0
+ -   - git 2.45.2 -> 2.47.1
+ -   - gnupg 2.4.5 -> 2.4.7
+ -   - libgpg_error 1.50 -> 1.51
+ -   - npth 1.7 -> 1.8
+ -   - openssl 3.3.1 -> 3.4.0
+ -   - rubygems 3.5.16 -> 3.5.23
+ -   - rubies:
+ -     - 3.2.4 -> 3.2.6
+ -     - 3.3.4 -> 3.3.6
+ -
+ -
+ -Release 6.0.23
+--------------
+
+ - * [Enterprise] The rolling restart feature now replaces app processes in newest-to-oldest order, to make more efficient use of alive processes during the rolling-restart's duration. Closes GH-2551.
+ - * [Ruby] Improve Rack 3 compatibility.
+ - * [Nginx] Upgrades preferred Nginx to 1.26.1 from 1.26.0.
+ - * [Debian] Remove packages for Debian 10 Buster. (EOL 2024-07).
+ - * [Ubuntu] Add packages for Ubuntu 24.04 "noble".
+ - * [RPMs] Remove EL7 RPMs, CentOS7 is EOL.
+ - * Fixes compatibility with Ruby apps whose Gemfile.lock depends on strscan.
+ - * Adds option to render a custom error page when app fails to launch. Closes GH-2515.
+ -   - Apache: PassengerCustomErrorPage "public/error.html"
+ -   - Nginx: passenger_custom_error_page public/error.html;
+ -   - Standalone: --custom-error-page public/error.html
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -   - glibc 2.17 -> 2.28
+ -   - ccache 4.9.1 -> 4.10.1
+ -   - cmake 3.29.3 -> 3.30.1
+ -   - curl 8.7.1 -> 8.8.0
+ -   - git 2.45.0 -> 2.45.2
+ -   - openssl 3.3.0 -> 3.3.1
+ -   - pcre2 10.43 -> 10.44
+ -   - libassuan 2.5.7 -> 3.0.1
+ -   - libgcrypt 1.10.3 -> 1.11.0
+ -   - libgpg_error 1.49 -> 1.50
+ -   - libksba 1.6.6 -> 1.6.7
+ -   - pinentry 1.3.0 -> 1.3.1
+ -   - rubygems 3.5.10 -> 3.5.16
+ -   - rubies:
+ -     - dropped 3.0.7
+ -     - 3.1.5 -> 3.1.6
+ -     - 3.3.1 -> 3.3.4
+ -
+ -
+ -Release 6.0.22
+--------------
+
+ - * [RPM] Fix dependency on selinux-policy. Closes GH-2545.
+ - * Fix Amazon Linux detection. Closes GH-3296.
+ -
+ -
+ -Release 6.0.21
+--------------
+
+ - * [Python] Fix version of Python when imp module is replaced with importlib. Contributed by Grigory Ponomarenko.
+ - * [Ubuntu] Remove packages for Ubuntu 23.10 "mantic".
+ - * [Nginx] Upgrades preferred Nginx to 1.26.0 from 1.24.0.
+ - * [Nginx] Switch to using PCRE2 instead of PCRE.
+ - * [RPM] The Passenger Nginx module rpm package for EL9 (RHEL, Rocky, Alma) will now require Nginx 1.24.0 as per the policy of supporting the newest Nginx module stream available.
+ - * [Standalone] Fixes security update checker with builtin engine.
+ - * [Enterprise] Ability to enforce hard memory limits on application processes (`PassengerHardMemoryLimit`/`passenger_hard_memory_limit`/`--hard-memory-limit``). Unlike the soft memory limit, the hard memory limit doesn't wait for the request to finish. Useful for preventing high memory usage from taking down the entire machine or container.
+ - * [Enterprise] Ability to throttle memory metrics collection (`PassengerAnalyticsCollectionRate`/`passenger_analytics_collection_rate`). This allows you to control the frequency that Passenger Enterprise measures the app memory use at.
+ - * Swaps http-parser for llhttp.
+ - * Fixes crash-watch hanging when lldb is used as the backend.
+ - * Fixes Apache module unload crash due to not properly cleaning up all threads.
+ - * Workaround compilation error on clang on x86_64.
+ - * Upgrades Boost from 1.83 -> 1.85.
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -   - ccache: 4.6.3 -> 4.9.1
+ -   - cmake: 3.28.1 -> 3.29.3
+ -   - curl: 8.5.0 -> 8.7.1
+ -   - git: 2.43.0 -> 2.45.0
+ -   - gnupg: 2.4.3 -> 2.4.5
+ -   - libassuan: 2.5.6 -> 2.5.7
+ -   - libffi: 3.4.4 -> 3.4.6
+ -   - libgpg_error: 1.47 -> 1.49
+ -   - libksba: 1.6.5 -> 1.6.6
+ -   - libpsl: 0.21.5
+ -   - npth: 1.6 -> 1.7
+ -   - openssl: 3.2.0 -> 3.3.0
+ -   - pcre2: 10.42 -> 10.43
+ -   - pinentry: 1.2.1 -> 1.3.0
+ -   - rubygems: 3.5.4 -> 3.5.10
+ -   - zlib: 1.3 -> 1.3.1
+ -   - zstd: 1.5.5 -> 1.5.6
+ -   - rubies:
+ -     - 3.0.6 -> 3.0.7
+ -     - 3.1.4 -> 3.1.5
+ -     - 3.2.3 -> 3.2.4
+ -     - 3.3.0 -> 3.3.1
+ -
+ -
+ -Release 6.0.20
+--------------
+
+ - * Upgrades Boost from 1.81 -> 1.83.
+ - * Upgrades http-parser from 2.3.0 -> 2.9.4.
+ - * [Ubuntu] Adds packages for Ubuntu 23.10 "mantic".
+ - * [Python] Address use of binary strings and file reads in python3.
+ - * [Ruby] Address use of deprecated ActiveRecord method. Closes GH-2516.
+ - * [ARM] fix arch for apache module on Arm Macs.
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -   - cmake: 3.27.7 -> 3.28.1
+ -   - curl: 8.4.0 -> 8.5.0
+ -   - git: 2.42.0 -> 2.43.0
+ -   - libgcrypt: 1.10.2 -> 1.10.3
+ -   - libksba: 1.6.4 -> 1.6.5
+ -   - ntbtls: 0.3.1 -> 0.3.2
+ -   - openssl: 3.1.4 -> 3.2.0
+ -   - rubygems: 3.4.21 -> 3.5.4
+ -   - s3cmd: 2.3.0 -> 2.4.0
+ -   - rubies:
+ -     - 3.2.2 -> 3.2.3
+ -     - 3.3.0
+ -
+ -
+ -Release 6.0.19
+--------------
+
+ - * [Ruby] Fix compatibility with Rack 3 header array. Closes GH-2503.
+ - * [Ruby] Preserve `SIGPROF` signal handlers. Contributed by Ivo Anjo. Closes GH-2489.
+ - * [Python] Replaces use of imp module with importlib in Python 3. Contributed by Rongxin Liu. Closes GH-2399 and GH-2501.
+ - * [Ubuntu] Removes packages for Ubuntu 18.04 "Bionic" (EOL June 2023).
+ - * Fixed a memory allocation bug in the security update checker.
+ - * [Debian] Add Debian 12 Bookworm packages. Closes GH-2488.
+ - * [RPM] Published arm64/aarch64 rpms for EL8 & EL9 (RHEL, Rocky, Alma). Closes GH-2452.
+ - * [ARM] Publishes prebuilt arm64/aarch64 binaries for Passenger gem installs. Closes GH-2288.
+ - * [ARM] Fixes a regression in Passenger 6.0.7 where strict-aliasing archs (notably: aarch64 aka ARM64) builds of Passenger were always building for big-endian archs. Closes GH-2451 and GH-2419.
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -   - ccache: 4.6.3 -> 4.8.3
+ -   - cmake: 3.26.4 -> 3.27.7
+ -   - curl: 8.1.2 -> 8.4.0
+ -   - git: 2.41.0 -> 2.42.0
+ -   - gnupg: 2.4.2 -> 2.4.3
+ -   - libassuan: 2.5.5 -> 2.5.6
+ -   - libksba: 1.6.3 -> 1.6.4
+ -   - openssl: 3.1.1 -> 3.1.4
+ -   - rubygems: 3.4.13 -> 3.4.21
+ -   - zlib: 1.2.13 -> 1.3
+ -
+ -
+ -Release 6.0.18
+--------------
+
+ - * Adds Ubuntu 23.04 "Lunar" packages, removes Ubuntu 22.10 "Kinetic" packages.
+ - * Removes packages for Debian 9 "Stretch" (EOL June 2022).
+ - * [RPM] Changes to building Nginx module packages for the latest supported Nginx module stream instead of the default.
+ - * [Ruby] Makes Passenger more resilient to invalid byte sequences when loading the Ruby native extension. Contributed by Drew Wells.
+ - * [Ruby] Add an `unhandled_exception_before_exit` event callback. Contributed by James Tomson.
+ - * [Nginx] Upgrades preferred Nginx to 1.24.0 from 1.22.1.
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -   - cmake: 3.25.1 -> 3.26.4
+ -   - curl: 7.87.0 -> 8.1.2
+ -   - git: 2.39.0 -> 2.41.0
+ -   - gnupg: 2.4.0 -> 2.4.2
+ -   - libgcrypt: 1.10.1 -> 1.10.2
+ -   - libgpg_error: 1.46 -> 1.47
+ -   - openssl: 3.0.7 -> 3.1.1
+ -   - rubygems: 3.4.3 -> 3.4.13
+ -   - zstd: 1.5.2 -> 1.5.5
+ -   - rubies:
+ -     - 2.7.7 -> 2.7.8
+ -     - 3.0.5 -> 3.0.6
+ -     - 3.1.3 -> 3.1.4
+ -     - 3.2.0 -> 3.2.2
+ -
+ -
+ -Release 6.0.17
+--------------
+
+ - * [Enterprise] The `debug` gem is now supported for debugging on Ruby 3.1.
+ - * Removed use of deprecated 'File.exists?' method for Ruby 3.2.0.
+ - * Upgrades Boost to 1.81.
+ - * Upgrades preferred Nginx to 1.22.1 from 1.20.2.
+ - * Changes minimum supported macOS version to 10.14 Mojave.
+ - * Adds support for a `PASSENGER_MAX_LOG_LINE_LENGTH_BYTES` environment variable. The default length remains at 8KB. Closes GH-2413.
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -   - curl: 7.86.0 -> 7.87.0
+ -   - git: 2.38.1 -> 2.39.0
+ -   - gnupg: 2.3.8 -> 2.4.0
+ -   - libksba: 1.6.2 -> 1.6.3
+ -   - openssl: 1.1.1s -> 3.0.7
+ -   - rubygems: 3.3.26 -> 3.4.3
+ -   - rubies: added 3.2.0
+ -
+ -
+ -Release 6.0.16
+--------------
+
+ - * Adds ARM64 (aarch64) packages for Ubuntu and Debian.
+ - * Adds Ubuntu 22.10 "Kinetic" packages, removes Ubuntu 16.04 "Xenial" packages.
+ - * Adds systemd private tmpdir workaround on Ubuntu/Debian. Closes GH-2397.
+ - * Downgrade jsoncpp to 1.8.1 from 1.9.5 to fix invalid json generation bug. Closes GH-2445.
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -   - cmake: 3.24.2 -> 3.25.1
+ -   - curl: 7.85.0 -> 7.86.0
+ -   - git 2.37.3 -> 2.38.1
+ -   - gnupg: 2.3.7 -> 2.3.8
+ -   - libgpg_error 1.45 -> 1.46
+ -   - libksba 1.6.1 -> 1.6.2
+ -   - openssl: 1.1.1q -> 1.1.1s
+ -   - rubygems 3.3.22 -> 3.3.26
+ -   - s3cmd 2.2.0 -> 2.3.0
+ -   - zlib: 1.2.12 -> 1.2.13
+ -   - rubies:
+ -     - 2.7.6 -> 2.7.7
+ -     - 3.0.4 -> 3.0.5
+ -     - 3.1.2 -> 3.1.3
+ -
+ -
+ -Release 6.0.15
+--------------
+
+ - * Restore ability to build against upstream libev. Contributed by Antonio Terceiro. Closes GH-1544.
+ - * Improve rvm gemset detection. Closes GH-2420.
+ - * Fix watchdog error on disable-log-prefix flag. Contributed by Paul Hanyzewski. Closes GH-2363.
+ - * Upgrades Boost to 1.80.
+ - * Fixed compilation on some platforms by explicitly using the stl queue. Closes GH-2440.
+ - * Raise an error in case rack gets an ENOBUFS error. Contributed by Mathieu Jobin.
+ - * Fixes interaction between preload bundler option and setenv RUBYOPT option. Closes GH-2424.
+ - * Add rpm packages for el9 (RHEL, Rocky, Alma). Closes GH-2431.
+ - * Upgrade jsoncpp to 1.9.5.
+ - * Improve Solaris support for 11.3 & 11.4.
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -
+ - - ccache: 4.6 -> 4.6.3
+ - - cmake: 3.23.1 -> 3.24.2
+ - - curl: 7.82.0 -> 7.85.0
+ - - git: 2.36.0 -> 2.37.3
+ - - gnupg: 2.3.5 -> 2.3.7
+ - - libiconv: 1.16 -> 1.17
+ - - libksba: 1.6.0 -> 1.6.1
+ - - openssl: 1.1.1n -> 1.1.1q
+ - - pinentry: 1.2.0 -> 1.2.1
+ - - rubygems: 3.3.12 -> 3.3.22
+ -
+ -
+ -Release 6.0.14
+--------------
+
+ - * Removes use of rexml in passenger restart command, because it was removed from Ruby 3. Closes GH-2415.
+ - * Adds Ubuntu 22.04 "Jammy" packages, and removes Ubuntu 21.10 "Impish" packages.
+ - * Fixes a use after free regression introduced in 6.0.12.
+ - * Fixed a warning about ERB.new argument deprecation in Ruby 3.1. Closes GH-2417.
+ - * Removed google apis from error pages for easier GDPR compliance.
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -
+ -   - cmake 3.22.3 -> 3.23.1
+ -   - git 2.35.1 -> 2.36.0
+ -   - gnupg 2.3.4 -> 2.3.5
+ -   - libgcrypt 1.9.4 -> 1.10.1
+ -   - libgpg_error 1.44 -> 1.45
+ -   - ntbtls 0.3.0 -> 0.3.1
+ -   - rubygems 3.3.9 -> 3.3.12
+ -   - zlib 1.2.11 -> 1.2.12
+ -   - ruby
+ -     - 2.6.9 -> 2.6.10
+ -     - 2.7.5 -> 2.7.6
+ -     - 3.0.3 -> 3.0.4
+ -     - 3.1.1 -> 3.1.2
+ -
+ -
+ -Release 6.0.13
+--------------
+
+ - * Add WASM mime type, Closes GH-2398.
+ - * Fix compilation on FreeBSD 13. Closes GH-2402.
+ - * [Ruby] Fixes app process crash when ECONNRESET received.
+ - * Fix automated fetching of pcre source for installer scripts.
+ - * Bump preferred nginx 1.20.1 -> 1.20.2.
+ - * [Ruby] Add option to preload bundler. Closes GH-2409.
+ -
+ -   - Apache: PassengerPreloadBundler
+ -   - Nginx: passenger_preload_bundler
+ -   - Standalone: --preload_bundler
+ -
+ - * [Node] Suppresses the winston circular dependency warning.
+ - * [RPMs] EL8 RPMs are now built on Rocky linux, and should be compatible with Alma, Rocky, CentOS, and RHEL.
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -
+ -   - ccache 4.4.2 -> 4.6
+ -   - cmake 3.21.4 -> 3.22.3
+ -   - curl 7.79.1 -> 7.82.0
+ -   - git 2.33.1 -> 2.35.1
+ -   - gnupg 2.3.3 -> 2.3.4
+ -   - libgpg_error 1.42 -> 1.44
+ -   - ntbtls 0.2.0 -> 0.3.0
+ -   - openssl 1.1.1l -> 1.1.1n
+ -   - rubygems 3.2.30 -> 3.3.9
+ -   - zstd 1.5.0 -> 1.5.2
+ -   - ruby
+ -     - dropped 2.4.10
+ -     - dropped 2.5.9
+ -     - 2.6.8 -> 2.6.9
+ -     - 2.7.4 -> 2.7.5
+ -     - 3.0.2 -> 3.0.3
+ -     - added 3.1.1
+ -
+ -
+ -Release 6.0.12
+--------------
+
+ - * [Debian] Fix compilation on 32 bit arm. Contributed by Antonio Terceiro.
+ - * [Debian] Add Bullseye Debian packages.
+ - * Add formatted error messages to responses. Contributed by Mohammad Aboelnour.
+ - * Fixes for running under WSL 1. Contributed by Luke Pearce. Closes GH-2036.
+ - * Upgrades Boost to 1.77. To go along with 32 bit arm fix.
+ - * [MacOS] Fixes autodetection of openssl lib on apple silicon. Contributed by Taketo Takashima. Closes GH-2389.
+ - * Reconnect to mongoid databases after fork, like we do for ActiveRecord. Contributed by Mohammad Aboelnour.
+ - * [Ubuntu] add missing apache name in instance registry dir detection.
+ - * [Ubuntu] replace hirsute apt packages with impish.
+ - * [Nginx] add new config option to choose the status code returned when application spawning fails. (passenger_spawn_exception_status_code).
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -
+ - - ccache: 4.4.1 -> 4.4.2
+ - - cmake: 3.21.2 -> 3.21.4
+ - - curl: 7.78.0 -> 7.79.1
+ - - git: 2.33.0 -> 2.33.1
+ - - gnupg: 2.3.2 -> 2.3.3
+ - - rubygems: 3.2.27 -> 3.2.30
+ - - s3cmd: 2.1.0 -> 2.2.0
+ -
+ -
+ -Release 6.0.11
+--------------
+
+ - * Fix compilation on GCC 4.4, fixes a regression in 6.0.8 where Passenger would no longer compiler without a C++11 compiler.
+ - * [CentOS] Fix version detection on CentOS Stream. Contributed by Taketo Takashima. Closes GH-2377.
+ - * [MacOS] Additionally look for PCRE in the new location that Homebrew has split it's packages into.
+ - * Fix compilation on GCC < 4.5.
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -
+ -    - ccache: 4.3 -> 4.4.1
+ -    - cmake: 3.20.5 -> 3.21.2
+ -    - curl: 7.77.0 -> 7.78.0
+ -    - git: 2.32.0 -> 2.33.0
+ -    - gnupg: 2.3.1 -> 2.3.2
+ -    - libgcrypt: 1.9.3 -> 1.9.4
+ -    - openssl: 1.1.1k -> 1.1.1l
+ -    - pinentry: 1.1.1 -> 1.2.0
+ -    - rubygems: 3.2.21 -> 3.2.27
+ -    - rubies:
+ -      - 2.6.7 -> 2.6.8
+ -      - 2.7.3 -> 2.7.4
+ -      - 3.0.1 -> 3.0.2
+ -
+ -
+ -Release 6.0.10
+--------------
+
+ - * [Debian/Ubuntu] Fix a regression in `passenger_system_ruby` where Ruby 3 couldn't be found.
+ - * [CentOS/RHEL] Bump rpm nginx dependency to match EPEL nginx (was 1.16.1 now 1.20.1). Closes GH-2364.
+ - * [Nginx] The preferred PCRE version is now 8.45 (previously 8.44).
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -
+ -    - cmake 3.20.3 -> 3.20.5
+ -    - git 2.31.1 -> 2.32.0
+ -    - libksba 1.5.1 -> 1.6.0
+ -    - rubygems 3.2.19 -> 3.2.21
+ -    - pcre 8.44 -> 8.45
+ -
+ -
+ -Release 6.0.9
+--------------
+
+ - * Upgrades Boost to 1.76. Fixes a regression where some boost headers for comatibility with older distros were missing.
+ - * Make building on Apple Silcon using homebrew openssl work. Contributed by TheBerg.
+ - * Add Support for Ubuntu Hirsute.
+ - * Remove prebuilt packages for Ubuntu Groovy.
+ - * Properly support HTTP 418. Contributed by Thomas Pfister.
+ - * Fix several C++ warnings about implicit copy operators/constructors.
+ - * Bump preferred nginx 1.18.0 -> 1.20.1.
+ - * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+ -
+ -    - ccache 4.2 -> 4.3
+ -    - cmake 3.19.7 -> 3.20.3
+ -    - curl 7.75.0 -> 7.77.0
+ -    - git 2.31.0 -> 2.31.1
+ -    - gnupg 2.2.27 -> 2.3.1
+ -    - libgcrypt 1.9.2 -> 1.9.3
+ -    - libksba 1.5.0 -> 1.5.1
+ -    - ntbTLS added -> 0.2.0
+ -    - zlib 1.4.9 -> 1.5.0
+ -    - rubygems 3.2.15 -> 3.2.19
+ -    - ruby:
+ -      - 2.3.8 -> removed
+ -      - 2.5.8 -> 2.5.9
+ -      - 2.6.6 -> 2.6.7
+ -      - 2.7.2 -> 2.7.3
+ -      - 3.0.0 -> 3.0.1
+ -
+ -
+  Release 6.0.8
+  -------------
+   * [Apache] Fixes crash when restarting Apache on CentOS 8. Closes GH-2318.
+@@ -426,19 +10,19 @@
+   * No-longer build 32 bit prebuilt binaries, as HBB dropped support.
+   * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+  
+ -    - ccache_version: 4.0 -> 4.2
+ -    - cmake_version: 3.18.4 -> 3.19.7
+ -    - curl_version: 7.73.0 -> 7.75.0
+ -    - git_version: 2.29.1 -> 2.31.0
+ -    - gnupg_version: 2.2.23 -> 2.2.27
+ -    - libassuan_version: 2.5.4 -> 2.5.5
+ -    - libgcrypt_version: 1.8.7 -> 1.9.2
+ -    - libgpg_error_version: 1.39 -> 1.42
+ -    - libksba_version: 1.4.0 -> 1.5.0
+ -    - openssl_version: 1.1.1h -> 1.1.1k
+ -    - pinentry_version: 1.1.0 -> 1.1.1
+ -    - rubygems_version: 3.1.4 -> 3.2.15
+ -    - zstd_version: 1.4.5 -> 1.4.9
+ +    - ccache_version: 4.0 → 4.2
+ +    - cmake_version: 3.18.4 → 3.19.7
+ +    - curl_version: 7.73.0 → 7.75.0
+ +    - git_version: 2.29.1 → 2.31.0
+ +    - gnupg_version: 2.2.23 → 2.2.27
+ +    - libassuan_version: 2.5.4 → 2.5.5
+ +    - libgcrypt_version: 1.8.7 → 1.9.2
+ +    - libgpg_error_version: 1.39 → 1.42
+ +    - libksba_version: 1.4.0 → 1.5.0
+ +    - openssl_version: 1.1.1h → 1.1.1k
+ +    - pinentry_version: 1.1.0 → 1.1.1
+ +    - rubygems_version: 3.1.4 → 3.2.15
+ +    - zstd_version: 1.4.5 → 1.4.9
+      - ruby_versions + 3.0.0
+  
+  
+@@ -507,9 +91,9 @@
+   * [Nginx] The preferred PCRE version is now 8.44 (previously 8.43).
+   * Removed deprecated rubyforge gemspec property. Contributed by @olleolleolle.
+   * Adds an option for specifying the attributes on the sticky session cookie:
+ -    - Apache:     PassengerStickySessionsCookieAttributes     "SameSite=Lax; Secure;"
+ -    - Nginx:      passenger_sticky_sessions_cookie_attributes "SameSite=Lax; Secure;"
+ -    - Standalone: --sticky-sessions-cookie-attributes         "SameSite=Lax; Secure;"
+ +	- Apache:     PassengerStickySessionsCookieAttributes     "SameSite=Lax; Secure;"
+ +	- Nginx:      passenger_sticky_sessions_cookie_attributes "SameSite=Lax; Secure;"
+ +	- Standalone: --sticky-sessions-cookie-attributes         "SameSite=Lax; Secure;"
+   * Updated various library versions used in precompiled binaries (used for e.g. gem installs):
+  
+      - ccache 3.7.9 (was 3.7.3)
+@@ -619,7 +203,7 @@
+  Release 6.0.0
+  -------------
+  
+ - * Introduces support for *all* programming languages. Yes that's right... Java, Elixir, Go - Passenger now supports them all! This effort is called "generic language support".
+ + * Introduces support for *all* programming languages. Yes that's right... Java, Elixir, Go — Passenger now supports them all! This effort is called "generic language support".
+   * Bumps the preferred Nginx version to 1.15.7.
+   * Introduces anonymous usage telemetry, which helps us improve Passenger. Please read the docs on what data is collected and how to disable this.
+   * [Nginx] Introduces a new option "passenger_request_buffering on|off", to allow disabling request body buffering. This is only supported in Nginx >= 1.15.3. Closes GH-2121.
+@@ -971,7 +555,7 @@
+   * [Nginx] The preferred Nginx version is now 1.10.1 (previously 1.10.0).
+   * [Nginx] The preferred PCRE version is now 8.39 (previously 8.34).
+   * [Standalone] Passenger Standalone now supports /dev/stdout and /dev/stderr as log file path (via `--log-file` or Passengerfile.json). This is especially useful in Docker containers. In previous versions logging to those paths did not work, resulting in nothing getting logged at all.
+ - * Adds Ubuntu 16.04 "Xenial" packages, deprecates Ubuntu 15.10 "Wily" packages (in accordance with LTS support policy).
+ + * Adds Ubuntu 16.04 "Xenial" packages, deprecates Ubuntu 15.10 “Wily” packages (in accordance with LTS support policy).
+  
+  
+  Release 5.0.28
+
+""""""
+modified file: src/cxx_supportlib/ServerKit/HttpHeaderParser.h
+--- workspace/phusion/passenger/bb1559/newer/src/cxx_supportlib/ServerKit/HttpHeaderParser.h
++++ workspace/phusion/passenger/bb1559/release-6.0.8/src/cxx_supportlib/ServerKit/HttpHeaderParser.h
+@@ -1,9 +1,9 @@
+
+""""""
+modified file: test/cxx/ServerKit/HttpServerTest.cpp
+--- workspace/phusion/passenger/bb1559/newer/test/cxx/ServerKit/HttpServerTest.cpp
++++ workspace/phusion/passenger/bb1559/release-6.0.8/test/cxx/ServerKit/HttpServerTest.cpp
+@@ -687,7 +687,7 @@
+  			"Host: foo\r\n\r\n");
+  		string response = readAll(fd, 1024).first;
+  		ensure(containsSubstring(response,
+ -			"HTTP/1.0 505 HTTP Version Not Supported\r\n"
+ +			"HTTP/1.1 505 HTTP Version Not Supported\r\n"
+  			"Status: 505 HTTP Version Not Supported\r\n"
+  			"Content-Type: text/html; charset=UTF-8\r\n"));
+  		ensure(containsSubstring(response,
+@@ -709,7 +709,7 @@
+  			"Transfer-Encoding: chunked\r\n\r\n");
+  		string response = readAll(fd, 1024).first;
+  		ensure(containsSubstring(response,
+ -			"HTTP/1.0 400 Bad Request\r\n"
+ +			"HTTP/1.1 400 Bad Request\r\n"
+  			"Status: 400 Bad Request\r\n"
+  			"Content-Type: text/html; charset=UTF-8\r\n"));
+  		ensure(containsSubstring(response,
+@@ -720,91 +720,6 @@
+  			"Bad request (request may not contain both Content-Length and Transfer-Encoding)"));
+  	}
+  
+ -	TEST_METHOD(16) {
+ -		set_test_name("Request Smuggling type: 1");
+ -
+ -		connectToServer();
+ -		sendRequest(
+ -			"POST / HTTP/1.1\r\n"
+ -			"Host: whatever\r\n"
+ -			"Transfer-Encoding: ,chunked\r\n"
+ -			"Content-Length: 5\r\n"
+ -			"\r\n"
+ -			"0\r\n"
+ -			"\r\n");
+ -		string response = readAll(fd, 1024).first;
+ -		ensure("Response starts with error",
+ -			startsWith(response,
+ -			"HTTP/1.0 400 Bad Request\r\n"
+ -			"Status: 400 Bad Request\r\n"
+ -			"Content-Type: text/html; charset=UTF-8\r\n"));
+ -		// Not sure why the error is HPE_INVALID_CONTENT_LENGTH
+ -		// instead of HPE_UNEXPECTED_CONTENT_LENGTH. But we already have
+ -		// a different test that tests Transfer-Encoding and Content-Length
+ -		// simultaneously are not allowed, so this is not a big deal.
+ -		ensure("Response ends with error",
+ -			endsWith(response,
+ -				"Connection: close\r\n"
+ -				"Content-Length: 42\r\n"
+ -				"cache-control: no-cache, no-store, must-revalidate\r\n"
+ -				"\r\n"
+ -				"invalid character in content-length header"));
+ -		ensure_equals("Response size is correct", response.size(), 265u);
+ -	}
+ -
+ -	TEST_METHOD(17) {
+ -		set_test_name("Request Smuggling type: 2");
+ -
+ -		connectToServer();
+ -		sendRequest(
+ -			"POST / HTTP/1.1\r\n"
+ -			"Host: whatever\r\n"
+ -			"Transfer-\r\n"
+ -			"Encoding: chunked\r\n"
+ -			"Content-Length: 5\r\n"
+ -			"\r\n"
+ -			"0\r\n"
+ -			"\r\n");
+ -		string response = readAll(fd, 1024).first;
+ -		ensure("Response starts with error",
+ -			startsWith(response,
+ -			"HTTP/1.0 400 Bad Request\r\n"
+ -			"Status: 400 Bad Request\r\n"
+ -			"Content-Type: text/html; charset=UTF-8\r\n"));
+ -		ensure("Response ends with error",
+ -			endsWith(response,
+ -			"Connection: close\r\n"
+ -			"Content-Length: 27\r\n"
+ -			"cache-control: no-cache, no-store, must-revalidate\r\n"
+ -			"\r\n"
+ -			"invalid character in header"));
+ -		ensure_equals("Response size is correct", response.size(), 250u);
+ -	}
+ -
+ -	TEST_METHOD(18) {
+ -		set_test_name("Request Smuggling type: 3");
+ -
+ -		connectToServer();
+ -		sendRequest(
+ -			"POST / HTTP/1.1\r\n"
+ -			"Host: whatever\r\n"
+ -			"Transfer-Encoding: ,chunked\r\n"
+ -			"\r\n"
+ -			"0\r\n"
+ -			"\r\n"
+ -			);
+ -		string response = readAll(fd, 1024).first;
+ -		ensure_equals("Response is ok",
+ -			response,
+ -			"HTTP/1.1 200 OK\r\n"
+ -			"Status: 200 OK\r\n"
+ -			"Content-Type: text/plain\r\n"
+ -			"Date: Thu, 11 Sep 2014 12:54:09 GMT\r\n"
+ -			"Connection: close\r\n"
+ -			"Content-Length: 7\r\n"
+ -			"\r\n"
+ -			"hello /");
+ -	}
+  
+  
+
+""""""

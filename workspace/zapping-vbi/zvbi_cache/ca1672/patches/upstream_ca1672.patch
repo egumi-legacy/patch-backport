@@ -1,0 +1,116 @@
+From ca1672134b3e2962cd392212c73f44f8f4cb489f Mon Sep 17 00:00:00 2001
+From: Ileana Dumitrescu <ileanadumitrescu95@gmail.com>
+Date: Mon, 10 Mar 2025 20:36:32 +0200
+Subject: [PATCH] src/conv.c, src/io-sim.c, src/search.c: Avoid integer
+ overflow leading to heap overflow
+
+---
+ src/conv.c   | 18 ++++++++++++++----
+ src/io-sim.c |  5 ++++-
+ src/search.c | 13 ++++++++++---
+ 3 files changed, 28 insertions(+), 8 deletions(-)
+
+diff --git a/src/conv.c b/src/conv.c
+index 3099202..aa8fb8d 100644
+--- a/src/conv.c
++++ b/src/conv.c
+@@ -338,7 +338,8 @@ vbi_strlen_ucs2			(const uint16_t *	src)
+  * @returns
+  * A pointer to the allocated buffer. You must free() the buffer
+  * when it is no longer needed. The function returns @c NULL when
+- * it runs out of memory, or when @a src is @c NULL.
++ * it runs out of memory, src_size is too large, or when @a src
++ * is @c NULL.
+  *
+  * @since 0.2.23
+  */
+@@ -349,7 +350,11 @@ strndup_identity		(unsigned long *	out_size,
+ {
+ 	char *buffer;
+ 
+-	buffer = vbi_malloc (src_size + 4);
++	unsigned long check_buffer_size = (src_size + 4);
++	if (src_size > check_buffer_size)
++		return NULL;
++
++	buffer = vbi_malloc (check_buffer_size);
+ 	if (NULL == buffer) {
+ 		if (NULL != out_size)
+ 			*out_size = 0;
+@@ -381,7 +386,8 @@ strndup_identity		(unsigned long *	out_size,
+  * @returns
+  * A pointer to the allocated buffer. You must free() the buffer
+  * when it is no longer needed. The function returns @c NULL when
+- * it runs out of memory, or when @a src is @c NULL.
++ * it runs out of memory, src_length is too large, or when @a src
++ * is @c NULL.
+  *
+  * @since 0.2.23
+  */
+@@ -403,7 +409,11 @@ strndup_utf8_ucs2		(unsigned long *	out_size,
+ 	if (src_length < 0)
+ 		src_length = vbi_strlen_ucs2 (src);
+ 
+-	buffer = vbi_malloc (src_length * 3 + 1);
++	unsigned long check_buffer_size = (src_length * 3 + 1);
++	if (src_length > check_buffer_size)
++		return NULL;
++
++	buffer = vbi_malloc (check_buffer_size);
+ 	if (NULL == buffer)
+ 		return NULL;
+ 
+diff --git a/src/io-sim.c b/src/io-sim.c
+index 831c668..f5a48eb 100644
+--- a/src/io-sim.c
++++ b/src/io-sim.c
+@@ -1898,7 +1898,10 @@ vbi_capture_sim_load_caption	(vbi_capture *		cap,
+ 		}
+ 
+ 		if (b->size >= b->capacity) {
+-			if (!extend_buffer (b, b->capacity + 256))
++			unsigned int check_buffer_size = (b->capacity + 256);
++			if (b->capacity > check_buffer_size)
++				return FALSE;
++			if (!extend_buffer (b, check_buffer_size))
+ 				return FALSE;
+ 		}
+ 
+diff --git a/src/search.c b/src/search.c
+index b325eed..f0feada 100644
+--- a/src/search.c
++++ b/src/search.c
+@@ -2,7 +2,7 @@
+  *  libzvbi -- Teletext page cache search functions
+  *
+  *  Copyright (C) 2000, 2001, 2002 Michael H. Schimek
+- *  Copyright (C) 2000, 2001 Iñaki G. Etxebarria
++ *  Copyright (C) 2000, 2001 Iï¿½aki G. Etxebarria
+  *
+  *  Originally based on AleVT 1.5.1 by Edgar Toernig
+  *
+@@ -470,7 +470,8 @@ ucs2_strlen(const void *string)
+  * All this has yet to be addressed.
+  *
+  * @return
+- * A vbi_search context or @c NULL on error.
++ * A vbi_search context or @c NULL on error or pattern string length
++ * is too large.
+  */
+ vbi_search *
+ vbi_search_new(vbi_decoder *vbi,
+@@ -490,7 +491,13 @@ vbi_search_new(vbi_decoder *vbi,
+ 		return NULL;
+ 
+ 	if (!regexp) {
+-		if (!(esc_pat = malloc(sizeof(ucs2_t) * pat_len * 2))) {
++		unsigned int check_size = (sizeof(ucs2_t) * pat_len * 2);
++		if (pat_len > check_size) {
++			free(s);
++			return NULL;
++		}
++
++		if (!(esc_pat = malloc(check_size))) {
+ 			free(s);
+ 			return NULL;
+ 		}

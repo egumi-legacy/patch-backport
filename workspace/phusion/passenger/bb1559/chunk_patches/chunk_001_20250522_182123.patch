@@ -1,0 +1,23 @@
+From bb15591646687064ab2d578d5f9660b2a4168017 Mon Sep 17 00:00:00 2001
+From: Camden Narzt <c.narzt@me.com>
+Date: Tue, 18 Feb 2025 07:57:54 -0700
+Subject: [PATCH] Fix header parser
+
+---
+ CHANGELOG                                     |  2 +-
+ .../ServerKit/HttpHeaderParser.h              | 40 +++++++++----------
+ test/cxx/ServerKit/HttpServerTest.cpp         | 27 ++++++++++++-
+ 3 files changed, 46 insertions(+), 23 deletions(-)
+
+diff --git a/CHANGELOG b/CHANGELOG
+index 5b3340c6aa..f2c556828c 100644
+--- a/CHANGELOG
++++ b/CHANGELOG
+@@ -1,6 +1,6 @@
+ Release 6.0.26 (Not yet released)
+ -------------
+- * 
++ * [CVE-2025-26803] The http parser (from Passenger 6.0.21-6.0.25) was susceptible to a denial of service attack when parsing a request with an invalid HTTP method.
+ 
+ 
+ Release 6.0.25

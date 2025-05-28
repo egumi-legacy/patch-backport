@@ -1,0 +1,32 @@
+From 483f84ea4ae2511834abd90014770b27a5082a4c Mon Sep 17 00:00:00 2001
+From: Chris McFarlen <chris@mcfarlen.us>
+Date: Tue, 4 Mar 2025 13:33:06 -0600
+Subject: [PATCH] Fix intercept plugin ignoring ACL (#12077)
+
+(cherry picked from commit 8d678fa21e4676f8491e18094d1cd5fcb455d522)
+
+Co-authored-by: Chris McFarlen <cmcfarlen@apple.com>
+---
+ proxy/http/HttpTransact.cc | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/proxy/http/HttpTransact.cc b/proxy/http/HttpTransact.cc
+index 0109f62dd1b..115e15f93e5 100644
+--- a/proxy/http/HttpTransact.cc
++++ b/proxy/http/HttpTransact.cc
+@@ -1174,6 +1174,15 @@ HttpTransact::EndRemapRequest(State *s)
+     obj_describe(s->hdr_info.client_request.m_http, true);
+   }
+ 
++  // If the client failed ACLs, send error response
++  // This extra condition was added to separate it from the logic below that might allow
++  // requests that use some types of plugins as that code was allowing requests that didn't
++  // pass ACL checks. ACL mismatches are also not counted as invalid client requests
++  if (!s->client_connection_enabled) {
++    TxnDebug("http_trans", "END HttpTransact::EndRemapRequest: connection not allowed");
++    TRANSACT_RETURN(SM_ACTION_SEND_ERROR_CACHE_NOOP, nullptr);
++  }
++
+   /*
+     if s->reverse_proxy == false, we can assume remapping failed in some way
+       -however-

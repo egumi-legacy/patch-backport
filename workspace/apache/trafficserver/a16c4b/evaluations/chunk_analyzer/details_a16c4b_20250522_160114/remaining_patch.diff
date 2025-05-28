@@ -1,0 +1,326 @@
+From a16c4b6bb0b126047c68dafbdf6311ac1586fc0b Mon Sep 17 00:00:00 2001
+From: Bryan Call <bcall@apache.org>
+Date: Tue, 4 Mar 2025 11:39:44 -0800
+Subject: [PATCH] Fix chunked pipelined requests (#12071)
+
+* Fix pipelined request for chunked bodies
+
+This addresses a variety of bugs concerning pipelined requests. In
+particular, the HttpTunnel logic had fundamentally assumed that it could
+consume all bytes available in the producer's reader. If a request was
+pipelined after a previous request that had a chunked body, this would
+result in the second request being unparsed and either sent along to the
+origin or dropped on the floor, depening on configuration. This adds an
+explicit autest for pipelined requests and addresses these issues.
+
+This patch largely does the following:
+
+1. Updates the copy_partial_post_data data to take the number of bytes
+   it consumes rather than consuming all bytes in the reader. It also
+   now returns the number of bytes it consumes, which the tunnel needs
+   to keep track of the number of bytes it processes.
+2. Previous to this patch, the HttpTunnel assumed that it could consume
+   all bytes in the reader originally passed to it (all bytes in
+   init_bytes_done). This simply will not work for pipelined requests.
+   This addresses this issue by adding a new variable to the tunnel:
+   bytes_consumed. This way the tunnel can keep track of how many bytes
+   it consumed while processing the request body, which allows the
+   HttpSM to later process just the right number of bytes from its
+   reader rather than eating into any pipelined requests that follow it.
+3. The HttpSM must not consume bytes from its client reader that are
+   pipelined requests. It now uses the tunnel's processing
+   bytes_consumed to process bytes from its reader rather than simply
+   consuming all read_available() bytes from it.
+
+* Fix bytes consumed chunk computation
+
+Fix a possible miscalculation of bytes consumed while parsing chunked
+content.
+
+* is_read_closed fix
+
+* Verify expected responses are received.
+
+* Updated formatting
+
+---------
+
+Co-authored-by: Brian Neradt <brian.neradt@gmail.com>
+---
+ proxy/ProxyTransaction.cc                     |   6 +
+ proxy/ProxyTransaction.h                      |   1 +
+ proxy/http/HttpSM.cc                          |  70 ++++--
+ proxy/http/HttpSM.h                           |  14 +-
+ proxy/http/HttpTunnel.cc                      | 171 +++++++++------
+ proxy/http/HttpTunnel.h                       | 151 +++++++++++--
+ proxy/http2/Http2Stream.cc                    |   6 +
+ proxy/http2/Http2Stream.h                     |   1 +
+ src/traffic_server/FetchSM.cc                 |   3 +-
+ tests/gold_tests/pipeline/pipeline.test.py    | 137 ++++++++++++
+ tests/gold_tests/pipeline/pipeline_client.py  | 104 +++++++++
+ tests/gold_tests/pipeline/pipeline_server.py  | 201 ++++++++++++++++++
+ .../gold_tests/redirect/redirect_post.test.py |   1 +
+ .../timeout/inactive_client_timeout.test.py   |   9 +-
+ tests/gold_tests/timeout/slow_server.yaml     |  37 +++-
+ 15 files changed, 796 insertions(+), 116 deletions(-)
+ create mode 100644 tests/gold_tests/pipeline/pipeline.test.py
+ create mode 100644 tests/gold_tests/pipeline/pipeline_client.py
+ create mode 100644 tests/gold_tests/pipeline/pipeline_server.py
+
+diff --git a/proxy/http/HttpSM.cc b/proxy/http/HttpSM.cc
+index 4e09795f036..cdc05461320 100644
+--- a/proxy/http/HttpSM.cc
++++ b/proxy/http/HttpSM.cc
+@@ -973,10 +973,8 @@ HttpSM::wait_for_full_body()
+   // Next order of business if copy the remaining data from the
+   //  header buffer into new buffer
+   int64_t post_bytes = chunked ? INT64_MAX : t_state.hdr_info.request_content_length;
+-  client_request_body_bytes =
+-    post_buffer->write(ua_txn->get_remote_reader(), chunked ? ua_txn->get_remote_reader()->read_avail() : post_bytes);
++  post_buffer->write(ua_txn->get_remote_reader(), chunked ? ua_txn->get_remote_reader()->read_avail() : post_bytes);
+ 
+-  ua_txn->get_remote_reader()->consume(client_request_body_bytes);
+   p = tunnel.add_producer(ua_entry->vc, post_bytes, buf_start, &HttpSM::tunnel_handler_post_ua, HT_BUFFER_READ, "ua post buffer");
+   if (chunked) {
+     bool const drop_chunked_trailers = t_state.http_config_param->oride.http_drop_chunked_trailers == 1;
+diff --git a/proxy/http/HttpTunnel.cc b/proxy/http/HttpTunnel.cc
+index adb3cd9bc98..1508179e6b5 100644
+--- a/proxy/http/HttpTunnel.cc
++++ b/proxy/http/HttpTunnel.cc
+@@ -131,19 +134,19 @@ ChunkedHandler::set_max_chunk_size(int64_t size)
+   max_chunk_header_len = snprintf(max_chunk_header, sizeof(max_chunk_header), CHUNK_HEADER_FMT, max_chunk_size);
+ }
+ 
+-void
++int64_t
+ ChunkedHandler::read_size()
+ {
+-  int64_t bytes_used;
+-  bool done = false;
+-  int cr    = 0;
++  int64_t bytes_consumed = 0;
++  bool done              = false;
++  int cr                 = 0;
+ 
+-  while (chunked_reader->read_avail() > 0 && !done) {
++  while (chunked_reader->is_read_avail_more_than(0) && !done) {
+     const char *tmp   = chunked_reader->start();
+     int64_t data_size = chunked_reader->block_read_avail();
+ 
+     ink_assert(data_size > 0);
+-    bytes_used = 0;
++    int64_t bytes_used = 0;
+ 
+     while (data_size > 0) {
+       bytes_used++;
+@@ -218,7 +221,9 @@ ChunkedHandler::read_size()
+       chunked_size += bytes_used;
+     }
+     chunked_reader->consume(bytes_used);
++    bytes_consumed += bytes_used;
+   }
++  return bytes_consumed;
+ }
+ 
+ // int ChunkedHandler::transfer_bytes()
+@@ -240,7 +245,7 @@ ChunkedHandler::transfer_bytes()
+       chunked_size += moved;
+     }
+     chunked_reader->consume(moved);
+-    cur_chunk_bytes_left = cur_chunk_bytes_left - moved;
++    cur_chunk_bytes_left -= moved;
+     return moved;
+   }
+ 
+@@ -274,10 +279,10 @@ ChunkedHandler::transfer_bytes()
+   return total_moved;
+ }
+ 
+-void
++int64_t
+ ChunkedHandler::read_chunk()
+ {
+-  int64_t b = transfer_bytes();
++  int64_t transferred_bytes = transfer_bytes();
+ 
+   ink_assert(cur_chunk_bytes_left >= 0);
+   if (cur_chunk_bytes_left == 0) {
+@@ -285,21 +290,23 @@ ChunkedHandler::read_chunk()
+ 
+     state = CHUNK_READ_SIZE_START;
+   } else if (cur_chunk_bytes_left > 0) {
+-    Debug("http_chunk", "read %" PRId64 " bytes of an %" PRId64 " chunk", b, cur_chunk_size);
++    Debug("http_chunk", "read %" PRId64 " bytes of an %" PRId64 " chunk", transferred_bytes, cur_chunk_size);
+   }
++  return transferred_bytes;
+ }
+ 
+-void
++int64_t
+ ChunkedHandler::read_trailer()
+ {
+-  int64_t bytes_used;
+-  bool done = false;
++  int64_t bytes_consumed = 0;
++  bool done              = false;
+ 
+   while (chunked_reader->is_read_avail_more_than(0) && !done) {
+     const char *tmp   = chunked_reader->start();
+     int64_t data_size = chunked_reader->block_read_avail();
+ 
+     ink_assert(data_size > 0);
++    int64_t bytes_used = 0;
+     for (bytes_used = 0; data_size > 0; data_size--) {
+       bytes_used++;
+ 
+@@ -854,7 +874,10 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
+   IOBufferReader *chunked_buffer_start     = nullptr;
+   IOBufferReader *dechunked_buffer_start   = nullptr;
+   IOBufferReader *passthrough_buffer_start = nullptr;
+-  if (p->do_chunking || p->do_dechunking || p->do_chunked_passthru) {
++  if (p->is_handling_chunked_content()) {
++    // For all the chunking cases, we must only copy bytes as we process them.
++    body_bytes_to_copy = 0;
++
+     p->chunked_handler.init(p->buffer_start, p, this->http_drop_chunked_trailers);
+ 
+     // Copy the header into the chunked/dechunked buffers.
+diff --git a/proxy/http/HttpTunnel.h b/proxy/http/HttpTunnel.h
+index 3ce994b11ed..3aac38aca68 100644
+--- a/proxy/http/HttpTunnel.h
++++ b/proxy/http/HttpTunnel.h
+@@ -112,7 +112,14 @@ struct ChunkedHandler {
+    */
+   bool drop_chunked_trailers = false;
+ 
+-  bool truncation    = false;
++  bool truncation = false;
++
++  /** The number of bytes to skip from the reader because they are not body bytes.
++   *
++   * These skipped bytes are generally header bytes. We copy these in for any
++   * internal buffers we'll send to consumers, but skip them when parsing body
++   * bytes.
++   */
+   int64_t skip_bytes = 0;
+ 
+   ChunkedState state           = CHUNK_READ_CHUNK;
+@@ -145,14 +152,54 @@ struct ChunkedHandler {
+   /// If @a size is zero it is set to @c DEFAULT_MAX_CHUNK_SIZE.
+   void set_max_chunk_size(int64_t size);
+ 
+-  // Returns true if complete, false otherwise
+-  bool process_chunked_content();
+-  bool generate_chunked_content();
++  /** Consumes and processes chunked content.
++   *
++   * This consumes data from @a chunked_reader and, if dechunking, writes the
++   * dechunked body to @a dechunked_buffer.
++   *
++   * @return The number of bytes consumed from the chunked reader and true if
++   * the entire chunked content is processed, false otherwise.
++   */
++  std::pair<int64_t, bool> process_chunked_content();
++
++  /** Writes chunked content.
++   *
++   * This reads from @a dechunked_reader and writes chunked formatted content to
++   * @a chunked_buffer.
++   *
++   * @return The number of bytes consumed from the dechunked reader and true if
++   * the entire chunked content is written, false otherwise.
++   */
++  std::pair<int64_t, bool> generate_chunked_content();
+ 
+ private:
+-  void read_size();
+-  void read_chunk();
+-  void read_trailer();
++  /** Read a chunk header containing the size of the chunk.
++   *
++   * @return The number of bytes consumed from the chunked buffer reader.
++   */
++  int64_t read_size();
++
++  /** Read a chunk body.
++   *
++   * This is called after read_size so that the chunk size is known.
++   *
++   * @return The number of bytes consumed from the chunked buffer reader.
++   */
++  int64_t read_chunk();
++
++  /** Read a chunk trailer.
++   *
++   * @return The number of bytes consumed from the chunked buffer reader.
++   */
++  int64_t read_trailer();
++
++  /** Transfer body bytes from the chunked reader.
++   *
++   * This will either simply consume the chunked body bytes in the case of
++   * chunked passthrough, or transfer the chunked body to the dechunked buffer.
++   *
++   * @return The number of bytes consumed from the chunked buffer reader.
++   */
+   int64_t transfer_bytes();
+ 
+   constexpr static std::string_view FINAL_CRLF = "\r\n";
+@@ -301,10 +393,12 @@ class HttpTunnel : public Continuation
+   /// A named variable for the @a drop_chunked_trailers parameter to @a set_producer_chunking_action.
+   static constexpr bool DROP_CHUNKED_TRAILERS = true;
+ 
+-  /** Configure how the producer should behave with chunked content.
+-   * @param[in] p Producer to configure.
+-   * @param[in] skip_bytes Number of bytes to skip at the beginning of the stream (typically the headers).
+-   * @param[in] action Action to take with the chunked content.
++  /** Designate chunking behavior to the producer.
++   *
++   * @param[in] producer The producer being configured.
++   * @param[in] skip_bytes The number of bytes to consume off the stream before
++   * any chunked data is encountered. These are generally header bytes, if any.
++   * @param[in] action The chunking behavior to enact on incoming bytes.
+    * @param[in] drop_chunked_trailers If @c true, chunked trailers are filtered
+    *   out. Logically speaking, this is only applicable when proxying chunked
+    *   content, thus only when @a action is @c TCA_PASSTHRU_CHUNKED_CONTENT.
+@@ -388,6 +482,21 @@ class HttpTunnel : public Continuation
+ 
+   /// Corresponds to proxy.config.http.drop_chunked_trailers having a value of 1.
+   bool http_drop_chunked_trailers = false;
++
++  /** The number of body bytes processed in this last execution of the tunnel.
++   *
++   * This accounting is used to determine how many bytes to copy into the body
++   * buffer via HttpSM::postbuf_copy_partial_data.
++   */
++  int64_t body_bytes_to_copy = 0;
++
++  /** The cumulative number of bytes that all calls to
++   * HttpSM::post_copy_partial_data have copied.
++   *
++   * This is recorded so we don't copy more bytes than the creator of the tunnel
++   * told us to via nbytes.
++   */
++  int64_t body_bytes_copied = 0;
+ };
+ 
+ ////
+diff --git a/tests/gold_tests/timeout/inactive_client_timeout.test.py b/tests/gold_tests/timeout/inactive_client_timeout.test.py
+index ea99fd4deca..2dafd845600 100644
+--- a/tests/gold_tests/timeout/inactive_client_timeout.test.py
++++ b/tests/gold_tests/timeout/inactive_client_timeout.test.py
+@@ -57,6 +57,13 @@
+ # get applied after the request is sent.  In other words, a slow to respond server should not
+ # trigger the client inactivity timeout.
+ tr = Test.AddTestRun("Verify that server delay does not trigger client activity timeout.")
+-tr.AddVerifierClientProcess("client", replay_file, http_ports=[ts.Variables.port], https_ports=[ts.Variables.ssl_port])
++client = tr.AddVerifierClientProcess("client", replay_file, http_ports=[ts.Variables.port], https_ports=[ts.Variables.ssl_port])
+ tr.Processes.Default.StartBefore(ts)
+ tr.Processes.Default.StartBefore(server)
++
++client.Streams.All += Testers.ContainsExpression('x-response: 1', 'Verify that the first response is received')
++client.Streams.All += Testers.ContainsExpression('x-response: 2', 'Verify that the second response is received')
++client.Streams.All += Testers.ContainsExpression('x-response: 3', 'Verify that the third response is received')
++client.Streams.All += Testers.ContainsExpression('x-response: 4', 'Verify that the fourth response is received')
++client.Streams.All += Testers.ContainsExpression('x-response: 5', 'Verify that the fifth response is received')
++client.Streams.All += Testers.ContainsExpression('x-response: 6', 'Verify that the sixth response is received')

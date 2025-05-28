@@ -1,0 +1,71 @@
+From 3d2f29c88f9b073cb0fd3b9c7f85430e2170acbb Mon Sep 17 00:00:00 2001
+From: Masakazu Kitajo <maskit@apache.org>
+Date: Tue, 1 Apr 2025 12:15:16 -0600
+Subject: [PATCH] Require the use of CRLF in chunked message body (#12150)
+
+* Require the use of CRLF in chunked message body
+
+* Fix docs
+---
+ doc/admin-guide/files/records.config.en.rst   |  9 +++
+ .../functions/TSHttpOverridableConfig.en.rst  |  1 +
+ .../api/types/TSOverridableConfigKey.en.rst   |  1 +
+ include/ts/apidefs.h.in                       |  1 +
+ mgmt/RecordsConfig.cc                         |  2 +
+ plugins/lua/ts_lua_http_config.c              |  2 +
+ proxy/http/HttpConfig.cc                      |  2 +
+ proxy/http/HttpConfig.h                       |  1 +
+ proxy/http/HttpSM.cc                          | 28 +++++---
+ proxy/http/HttpTunnel.cc                      | 72 ++++++++++++-------
+ proxy/http/HttpTunnel.h                       | 15 +++-
+ src/shared/overridable_txn_vars.cc            |  1 +
+ src/traffic_server/FetchSM.cc                 |  3 +-
+ src/traffic_server/InkAPI.cc                  |  3 +
+ src/traffic_server/InkAPITest.cc              |  3 +-
+ .../malformed_chunked_header.replay.yaml      | 44 ++++++++++++
+ 16 files changed, 150 insertions(+), 38 deletions(-)
+
+diff --git a/proxy/http/HttpTunnel.cc b/proxy/http/HttpTunnel.cc
+index 1508179e6b5..e9c0c6eafea 100644
+--- a/proxy/http/HttpTunnel.cc
++++ b/proxy/http/HttpTunnel.cc
+@@ -51,27 +51,28 @@ static int const CHUNK_IOBUFFER_SIZE_INDEX = MIN_IOBUFFER_SIZE;
+ ChunkedHandler::ChunkedHandler() : max_chunk_size(DEFAULT_MAX_CHUNK_SIZE) {}
+ 
+ void
+-ChunkedHandler::init(IOBufferReader *buffer_in, HttpTunnelProducer *p, bool drop_chunked_trailers)
++ChunkedHandler::init(IOBufferReader *buffer_in, HttpTunnelProducer *p, bool drop_chunked_trailers, bool parse_chunk_strictly)
+ {
+   if (p->do_chunking) {
+-    init_by_action(buffer_in, ACTION_DOCHUNK, drop_chunked_trailers);
++    init_by_action(buffer_in, ACTION_DOCHUNK, drop_chunked_trailers, parse_chunk_strictly);
+   } else if (p->do_dechunking) {
+-    init_by_action(buffer_in, ACTION_DECHUNK, drop_chunked_trailers);
++    init_by_action(buffer_in, ACTION_DECHUNK, drop_chunked_trailers, parse_chunk_strictly);
+   } else {
+-    init_by_action(buffer_in, ACTION_PASSTHRU, drop_chunked_trailers);
++    init_by_action(buffer_in, ACTION_PASSTHRU, drop_chunked_trailers, parse_chunk_strictly);
+   }
+   return;
+ }
+ 
+ void
+-ChunkedHandler::init_by_action(IOBufferReader *buffer_in, Action action, bool drop_chunked_trailers)
++ChunkedHandler::init_by_action(IOBufferReader *buffer_in, Action action, bool drop_chunked_trailers, bool parse_chunk_strictly)
+ {
+-  running_sum          = 0;
+-  num_digits           = 0;
+-  cur_chunk_size       = 0;
+-  cur_chunk_bytes_left = 0;
+-  truncation           = false;
+-  this->action         = action;
++  running_sum                = 0;
++  num_digits                 = 0;
++  cur_chunk_size             = 0;
++  cur_chunk_bytes_left       = 0;
++  truncation                 = false;
++  this->action               = action;
++  this->strict_chunk_parsing = parse_chunk_strictly;
+ 
+   switch (action) {
+   case ACTION_DOCHUNK:

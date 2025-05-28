@@ -1,0 +1,50 @@
+2025-05-22 14:59:44.039 | INFO     | __main__:_setup_logger:290 - 日志文件: logs/backport_20250522_145944.log
+2025-05-22 14:59:44.039 | INFO     | __main__:process_multiple_commits:1670 - 处理第 1/4 个commit: 8def647eea27f7fd7ad33ff79c2d6d3e39948dce
+2025-05-22 14:59:44.068 | INFO     | __main__:_setup_logger:290 - 日志文件: logs/backport_20250522_145944.log
+2025-05-22 14:59:44.069 | INFO     | __main__:run:294 - 开始执行 模式1
+2025-05-22 14:59:44.069 | INFO     | __main__:_process_mode1:314 - 处理补丁: https://github.com/zapping-vbi/zvbi/commit/8def647eea27f7fd7ad33ff79c2d6d3e39948dce.patch
+2025-05-22 14:59:44.070 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-05-22 14:59:44.070 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-05-22 14:59:44.072 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-05-22 14:59:44.073 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-05-22 14:59:44.073 | INFO     | __main__:_process_mode1:321 - 目标版本: ['v0.2.36']
+2025-05-22 14:59:44.073 | INFO     | __main__:_process_mode1:328 - 开始处理版本: v0.2.36
+2025-05-22 14:59:44.074 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: 8def647eea27f7fd7ad33ff79c2d6d3e39948dce.patch
+2025-05-22 14:59:44.075 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-05-22 14:59:44.075 | INFO     | modules.direct_apply:_download_patch:236 - 上游补丁文件不存在，下载补丁
+2025-05-22 14:59:44.076 | INFO     | patch_utils:download_patch:95 - parts: ['https:', '', 'github.com', 'zapping-vbi', 'zvbi', 'commit', '8def647eea27f7fd7ad33ff79c2d6d3e39948dce.patch']
+2025-05-22 14:59:44.076 | INFO     | patch_utils:download_patch:103 - 使用Commit API下载patch: https://api.github.com/repos/zapping-vbi/zvbi/commits/8def647eea27f7fd7ad33ff79c2d6d3e39948dce
+2025-05-22 14:59:45.355 | INFO     | patch_utils:download_patch:120 - 下载补丁成功，补丁已保存到: workspace/zapping-vbi/zvbi/8def64/patches/upstream_8def64.patch
+2025-05-22 14:59:45.363 | INFO     | modules.direct_apply:_download_patch:240 - 上游补丁下载成功: workspace/zapping-vbi/zvbi/8def64/patches/upstream_8def64.patch
+2025-05-22 14:59:45.365 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-05-22 14:59:45.366 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/zapping-vbi/zvbi/8def64/patches/upstream_8def64.patch
+2025-05-22 14:59:45.490 | INFO     | modules.direct_apply:_prepare_test_branch:346 - 创建测试分支: test_patch_v0.2.36
+2025-05-22 14:59:45.560 | INFO     | modules.direct_apply:_apply_patch:281 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/zapping-vbi/zvbi/8def64/patches/upstream_8def64.patch
+2025-05-22 14:59:45.564 | INFO     | modules.direct_apply:_move_to_cache:131 - 源目录: workspace/zapping-vbi/zvbi/8def64
+2025-05-22 14:59:45.565 | INFO     | modules.direct_apply:_move_to_cache:139 - 目标目录: workspace/zapping-vbi/zvbi_cache
+2025-05-22 14:59:45.567 | INFO     | modules.direct_apply:_move_to_cache:150 - 已将成功的commit文件夹移动到缓存: workspace/zapping-vbi/zvbi_cache
+2025-05-22 14:59:45.574 | WARNING  | modules.direct_apply:_cleanup_test_branch:440 - 清理分支时发生错误: error: pathspec '4.0.14' did not match any file(s) known to git
+
+2025-05-22 14:59:45.576 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/zapping-vbi/zvbi/8def64/evaluations/direct_apply/metrics_8def64_20250522_145945.json
+2025-05-22 14:59:45.576 | INFO     | core.adaptation_pipeline:process_patch:91 - 直接应用成功，跳过模块: ChunkAnalyzerModule
+2025-05-22 14:59:45.577 | INFO     | core.adaptation_pipeline:process_patch:91 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-05-22 14:59:45.577 | INFO     | core.adaptation_pipeline:process_patch:91 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-05-22 14:59:45.577 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 1.50秒
+2025-05-22 14:59:45.577 | INFO     | __main__:_merge_patches:1029 - 开始合并补丁...
+2025-05-22 14:59:45.578 | WARNING  | __main__:_merge_patches:1037 - 没有找到任何可合并的补丁结果
+2025-05-22 14:59:45.579 | ERROR    | __main__:_save_results:710 - 复制补丁文件时出错: [Errno 2] No such file or directory: '/home/elpsy/workspace/sow/patch-backport/workspace/zapping-vbi/zvbi/8def64/patches/upstream_8def64.patch'
+2025-05-22 14:59:45.580 | INFO     | __main__:_save_results:841 - 结果已保存到: results/zvbi_v0.2.36_8def64_20250522_145945/result.json
+2025-05-22 14:59:45.580 | INFO     | __main__:_print_summary:883 - context.patch_adapter_result: []
+2025-05-22 14:59:45.581 | INFO     | __main__:_print_summary:906 - ==================================================
+2025-05-22 14:59:45.581 | INFO     | __main__:_print_summary:907 - 处理摘要 - 提交: 8def64
+2025-05-22 14:59:45.582 | INFO     | __main__:_print_summary:908 - 适配状态: 无需适配 (直接应用成功) (方法: direct_apply)
+2025-05-22 14:59:45.582 | INFO     | __main__:_print_summary:913 - 块分析统计:
+2025-05-22 14:59:45.582 | INFO     | __main__:_print_summary:914 - - 总块数: 0
+2025-05-22 14:59:45.583 | INFO     | __main__:_print_summary:915 - - 无冲突块数: 0
+2025-05-22 14:59:45.583 | INFO     | __main__:_print_summary:916 - - 成功适配块数: 0
+2025-05-22 14:59:45.583 | INFO     | __main__:_print_summary:917 - - 适配失败块数: 0
+2025-05-22 14:59:45.584 | INFO     | __main__:_print_summary:918 - - 编译失败块数: 0
+2025-05-22 14:59:45.584 | INFO     | __main__:_print_summary:922 - 总执行时间: 1.50秒
+2025-05-22 14:59:45.585 | INFO     | __main__:_print_summary:927 - ==================================================
+2025-05-22 14:59:45.585 | INFO     | __main__:run:303 - 处理完成
+2025-05-22 14:59:45.586 | INFO     | __main__:process_multiple_commits:1670 - 处理第 2/4 个commit: ca1672134b3e2962cd392212c73f44f8f4cb489f

@@ -1,0 +1,48 @@
+2025-05-22 14:27:50.747 | INFO     | __main__:_setup_logger:290 - 日志文件: logs/backport_20250522_142750.log
+2025-05-22 14:27:50.747 | INFO     | __main__:run:294 - 开始执行 模式1
+2025-05-22 14:27:50.748 | INFO     | __main__:_process_mode1:314 - 处理补丁: https://github.com/assimp/assimp/commit/d2c6e64a1122884570caf4aaa589d810f5351f28.patch
+2025-05-22 14:27:50.748 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-05-22 14:27:50.749 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-05-22 14:27:50.749 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-05-22 14:27:50.750 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-05-22 14:27:50.750 | INFO     | __main__:_process_mode1:321 - 目标版本: ['v5.2.4']
+2025-05-22 14:27:50.750 | INFO     | __main__:_process_mode1:328 - 开始处理版本: v5.2.4
+2025-05-22 14:27:50.751 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: d2c6e64a1122884570caf4aaa589d810f5351f28.patch
+2025-05-22 14:27:50.751 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-05-22 14:27:50.753 | INFO     | modules.direct_apply:_download_patch:236 - 上游补丁文件不存在，下载补丁
+2025-05-22 14:27:50.754 | INFO     | patch_utils:download_patch:95 - parts: ['https:', '', 'github.com', 'assimp', 'assimp', 'commit', 'd2c6e64a1122884570caf4aaa589d810f5351f28.patch']
+2025-05-22 14:27:50.754 | INFO     | patch_utils:download_patch:103 - 使用Commit API下载patch: https://api.github.com/repos/assimp/assimp/commits/d2c6e64a1122884570caf4aaa589d810f5351f28
+2025-05-22 14:27:55.801 | INFO     | patch_utils:download_patch:120 - 下载补丁成功，补丁已保存到: workspace/assimp/assimp/d2c6e6/patches/upstream_d2c6e6.patch
+2025-05-22 14:27:55.805 | INFO     | modules.direct_apply:_download_patch:240 - 上游补丁下载成功: workspace/assimp/assimp/d2c6e6/patches/upstream_d2c6e6.patch
+2025-05-22 14:27:55.807 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-05-22 14:27:55.807 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/assimp/assimp/d2c6e6/patches/upstream_d2c6e6.patch
+2025-05-22 14:27:55.829 | INFO     | modules.direct_apply:_prepare_test_branch:333 - 删除已存在的测试分支: test_patch_v5.2.4
+2025-05-22 14:27:55.834 | INFO     | modules.direct_apply:_prepare_test_branch:346 - 创建测试分支: test_patch_v5.2.4
+2025-05-22 14:27:55.890 | INFO     | modules.direct_apply:_apply_patch:281 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/assimp/assimp/d2c6e6/patches/upstream_d2c6e6.patch
+2025-05-22 14:27:55.898 | INFO     | modules.direct_apply:_move_to_cache:131 - 源目录: workspace/assimp/assimp/d2c6e6
+2025-05-22 14:27:55.899 | INFO     | modules.direct_apply:_move_to_cache:139 - 目标目录: workspace/assimp/assimp_cache
+2025-05-22 14:27:55.899 | INFO     | modules.direct_apply:_move_to_cache:150 - 已将成功的commit文件夹移动到缓存: workspace/assimp/assimp_cache
+2025-05-22 14:27:55.907 | WARNING  | modules.direct_apply:_cleanup_test_branch:440 - 清理分支时发生错误: error: pathspec '4.0.14' did not match any file(s) known to git
+
+2025-05-22 14:27:55.909 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/assimp/assimp/d2c6e6/evaluations/direct_apply/metrics_d2c6e6_20250522_142755.json
+2025-05-22 14:27:55.910 | INFO     | core.adaptation_pipeline:process_patch:91 - 直接应用成功，跳过模块: ChunkAnalyzerModule
+2025-05-22 14:27:55.910 | INFO     | core.adaptation_pipeline:process_patch:91 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-05-22 14:27:55.910 | INFO     | core.adaptation_pipeline:process_patch:91 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-05-22 14:27:55.911 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 5.16秒
+2025-05-22 14:27:55.911 | INFO     | __main__:_merge_patches:1029 - 开始合并补丁...
+2025-05-22 14:27:55.911 | WARNING  | __main__:_merge_patches:1037 - 没有找到任何可合并的补丁结果
+2025-05-22 14:27:55.912 | ERROR    | __main__:_save_results:710 - 复制补丁文件时出错: [Errno 2] No such file or directory: '/home/elpsy/workspace/sow/patch-backport/workspace/assimp/assimp/d2c6e6/patches/upstream_d2c6e6.patch'
+2025-05-22 14:27:55.913 | INFO     | __main__:_save_results:841 - 结果已保存到: results/assimp_v5.2.4_d2c6e6_20250522_142755/result.json
+2025-05-22 14:27:55.914 | INFO     | __main__:_print_summary:883 - context.patch_adapter_result: []
+2025-05-22 14:27:55.914 | INFO     | __main__:_print_summary:906 - ==================================================
+2025-05-22 14:27:55.914 | INFO     | __main__:_print_summary:907 - 处理摘要 - 提交: d2c6e6
+2025-05-22 14:27:55.915 | INFO     | __main__:_print_summary:908 - 适配状态: 无需适配 (直接应用成功) (方法: direct_apply)
+2025-05-22 14:27:55.915 | INFO     | __main__:_print_summary:913 - 块分析统计:
+2025-05-22 14:27:55.915 | INFO     | __main__:_print_summary:914 - - 总块数: 0
+2025-05-22 14:27:55.915 | INFO     | __main__:_print_summary:915 - - 无冲突块数: 0
+2025-05-22 14:27:55.916 | INFO     | __main__:_print_summary:916 - - 成功适配块数: 0
+2025-05-22 14:27:55.916 | INFO     | __main__:_print_summary:917 - - 适配失败块数: 0
+2025-05-22 14:27:55.916 | INFO     | __main__:_print_summary:918 - - 编译失败块数: 0
+2025-05-22 14:27:55.917 | INFO     | __main__:_print_summary:922 - 总执行时间: 5.16秒
+2025-05-22 14:27:55.918 | INFO     | __main__:_print_summary:927 - ==================================================
+2025-05-22 14:27:55.918 | INFO     | __main__:run:303 - 处理完成

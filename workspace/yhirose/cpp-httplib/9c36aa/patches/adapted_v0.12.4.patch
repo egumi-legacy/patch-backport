@@ -1,0 +1,77 @@
+From fd7103cd7aacb9d7bd57caa60cced8d5e0a12820 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 22 May 2025 15:46:58 +0800
+Subject: [PATCH] Applied adapted patch for v0.12.4
+
+---
+ httplib.h | 54 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+
+diff --git a/httplib.h b/httplib.h
+index e055dd4..26e8df7 100644
+--- a/httplib.h
++++ b/httplib.h
+@@ -1972,6 +1972,60 @@ private:
+   std::string glowable_buffer_;
+ };
+ 
++// NOTE: https://www.rfc-editor.org/rfc/rfc9110#section-5
++namespace fields {
++
++inline bool is_token_char(char c) {
++  return std::isalnum(c) || c == '!' || c == '#' || c == '$' || c == '%' ||
++         c == '&' || c == '\'' || c == '*' || c == '+' || c == '-' ||
++         c == '.' || c == '^' || c == '_' || c == '`' || c == '|' || c == '~';
++}
++
++inline bool is_token(const std::string &s) {
++  if (s.empty()) { return false; }
++  for (auto c : s) {
++    if (!is_token_char(c)) { return false; }
++  }
++  return true;
++}
++
++inline bool is_field_name(const std::string &s) { return is_token(s); }
++
++inline bool is_vchar(char c) { return c >= 33 && c <= 126; }
++
++inline bool is_obs_text(char c) { return 128 <= static_cast<unsigned char>(c); }
++
++inline bool is_field_vchar(char c) { return is_vchar(c) || is_obs_text(c); }
++
++inline bool is_field_content(const std::string &s) {
++  if (s.empty()) { return false; }
++
++  if (s.size() == 1) {
++    return is_field_vchar(s[0]);
++  } else if (s.size() == 2) {
++    return is_field_vchar(s[0]) && is_field_vchar(s[1]);
++  } else {
++    size_t i = 0;
++
++    if (!is_field_vchar(s[i])) { return false; }
++    i++;
++
++    while (i < s.size() - 1) {
++      auto c = s[i++];
++      if (c == ' ' || c == '\t' || is_field_vchar(c)) {
++      } else {
++        return false;
++      }
++    }
++
++    return is_field_vchar(s[i]);
++  }
++}
++
++inline bool is_field_value(const std::string &s) { return is_field_content(s); }
++
++}; // namespace fields
++
+ } // namespace detail
+ 
+ // ----------------------------------------------------------------------------
+-- 
+2.25.1
+

@@ -1,0 +1,83 @@
+From 7fff9b0a644a1a0291507bca260621a2fccb2624 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 22 May 2025 16:13:05 +0800
+Subject: [PATCH] Applied adapted patch for 9.2.3
+
+---
+ mgmt/RecordsConfig.cc         | 2 ++
+ proxy/http/HttpSM.cc          | 6 ++++--
+ proxy/http/HttpTunnel.h       | 6 ++++--
+ src/traffic_server/FetchSM.cc | 3 ++-
+ 4 files changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/mgmt/RecordsConfig.cc b/mgmt/RecordsConfig.cc
+index 433ff381b..62001dab7 100644
+--- a/mgmt/RecordsConfig.cc
++++ b/mgmt/RecordsConfig.cc
+@@ -361,6 +361,8 @@ static const RecordElement RecordsConfig[] =
+   ,
+   {RECT_CONFIG, "proxy.config.http.chunking.size", RECD_INT, "4096", RECU_DYNAMIC, RR_NULL, RECC_NULL, nullptr, RECA_NULL}
+   ,
++  {RECT_CONFIG, "proxy.config.http.strict_chunk_parsing", RECD_INT, "1", RECU_DYNAMIC, RR_NULL, RECC_NULL, "[0-1]", RECA_NULL}
++  ,
+   {RECT_CONFIG, "proxy.config.http.flow_control.enabled", RECD_INT, "0", RECU_DYNAMIC, RR_NULL, RECC_NULL, nullptr, RECA_NULL}
+   ,
+   {RECT_CONFIG, "proxy.config.http.flow_control.high_water", RECD_INT, "0", RECU_DYNAMIC, RR_NULL, RECC_NULL, nullptr, RECA_NULL}
+diff --git a/proxy/http/HttpSM.cc b/proxy/http/HttpSM.cc
+index ab269fbbd..85b297044 100644
+--- a/proxy/http/HttpSM.cc
++++ b/proxy/http/HttpSM.cc
+@@ -6883,8 +6883,10 @@ HttpSM::setup_server_transfer_to_transform()
+   transform_info.entry->in_tunnel = true;
+ 
+   if (t_state.current.server->transfer_encoding == HttpTransact::CHUNKED_ENCODING) {
+-    client_response_hdr_bytes = 0; // fixed by YTS Team, yamsat
+-    tunnel.set_producer_chunking_action(p, client_response_hdr_bytes, TCA_DECHUNK_CONTENT);
++    client_response_hdr_bytes       = 0; // fixed by YTS Team, yamsat
++    bool const parse_chunk_strictly = t_state.http_config_param->oride.http_strict_chunk_parsing == 1;
++    tunnel.set_producer_chunking_action(p, client_response_hdr_bytes, TCA_DECHUNK_CONTENT, HttpTunnel::DROP_CHUNKED_TRAILERS,
++                                        parse_chunk_strictly);
+   }
+ 
+   return p;
+diff --git a/proxy/http/HttpTunnel.h b/proxy/http/HttpTunnel.h
+index b4a876ef8..aed03d21b 100644
+--- a/proxy/http/HttpTunnel.h
++++ b/proxy/http/HttpTunnel.h
+@@ -116,6 +116,8 @@ struct ChunkedHandler {
+   // Parsing Info
+   int running_sum = 0;
+   int num_digits  = 0;
++  int num_cr      = 0;
++  bool prev_is_cr = false;
+ 
+   /// @name Output data.
+   //@{
+@@ -130,8 +132,8 @@ struct ChunkedHandler {
+   //@}
+   ChunkedHandler();
+ 
+-  void init(IOBufferReader *buffer_in, HttpTunnelProducer *p);
+-  void init_by_action(IOBufferReader *buffer_in, Action action);
++  void init(IOBufferReader *buffer_in, HttpTunnelProducer *p, bool drop_chunked_trailers, bool strict_parsing);
++  void init_by_action(IOBufferReader *buffer_in, Action action, bool drop_chunked_trailers, bool strict_parsing);
+   void clear();
+ 
+   /// Set the max chunk @a size.
+diff --git a/src/traffic_server/FetchSM.cc b/src/traffic_server/FetchSM.cc
+index aa7359784..f306d4935 100644
+--- a/src/traffic_server/FetchSM.cc
++++ b/src/traffic_server/FetchSM.cc
+@@ -197,7 +197,8 @@ FetchSM::check_chunked()
+ 
+     if (resp_is_chunked && (fetch_flags & TS_FETCH_FLAGS_DECHUNK)) {
+       ChunkedHandler *ch = &chunked_handler;
+-      ch->init_by_action(resp_reader, ChunkedHandler::ACTION_DECHUNK);
++      ch->init_by_action(resp_reader, ChunkedHandler::ACTION_DECHUNK, HttpTunnel::DROP_CHUNKED_TRAILERS,
++                         HttpTunnel::PARSE_CHUNK_STRICTLY);
+       ch->dechunked_reader = ch->dechunked_buffer->alloc_reader();
+       ch->state            = ChunkedHandler::CHUNK_READ_SIZE;
+       resp_reader->dealloc();
+-- 
+2.25.1
+
