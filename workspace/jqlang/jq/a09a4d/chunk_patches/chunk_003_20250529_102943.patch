@@ -1,0 +1,32 @@
+From a09a4dfd55e6c24d04b35062ccfe4509748b1dd3 Mon Sep 17 00:00:00 2001
+From: itchyny <itchyny@cybozu.co.jp>
+Date: Wed, 5 Mar 2025 07:43:54 +0900
+Subject: [PATCH] Reject NaN with payload while parsing JSON
+
+This commit drops support for parsing NaN with payload in JSON like
+`NaN123` and fixes CVE-2024-53427. Other JSON extensions like `NaN` and
+`Infinity` are still supported. Fixes #3023, fixes #3196, fixes #3246.
+---
+ src/jv.c      |  5 +++++
+ tests/jq.test | 14 ++++++++++----
+ tests/shtest  |  7 -------
+ 3 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/tests/shtest b/tests/shtest
+index 86e759ba69..72ffc086fd 100755
+--- a/tests/shtest
++++ b/tests/shtest
+@@ -669,13 +669,6 @@ if ! x=$($JQ -cn "$(printf '[\r\n1,# comment\r\n2,# comment\\\r\ncomment\r\n3\r\
+   exit 1
+ fi
+ 
+-# CVE-2023-50268: No stack overflow comparing a nan with a large payload
+-if $JQ -ne 'have_decnum'; then
+-  $VALGRIND $Q $JQ '1 != .' <<\EOF >/dev/null
+-  Nan4000
+-EOF
+-fi
+-
+ # Allow passing the inline jq script before -- #2919
+ if ! r=$($JQ --args -rn -- '$ARGS.positional[0]' bar) || [ "$r" != bar ]; then
+     echo "passing the inline script after -- didn't work"

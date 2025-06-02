@@ -1,0 +1,376 @@
+commit ebff8b48820b96c786cfddbf0bebb395cb1317d7
+Author: Rosen Penev <rosenp@gmail.com>
+Date:   Mon Feb 17 16:34:40 2025 -0800
+
+    Revert "fix copy constructors"
+    
+    This reverts commit afb2d998fe62f7e829e93e62506bf9968117c9c5.
+    
+    This commit is wrong and ends up resulting in use after frees because of
+    C pointers. The proper solution is shared_ptr instead of C pointers but
+    that's a lot more involved than reverting this.
+    
+    Signed-off-by: Rosen Penev <rosenp@gmail.com>
+
+diff --git a/src/tiffcomposite_int.cpp b/src/tiffcomposite_int.cpp
+index 07c9a6c84..f4bb5037b 100644
+--- a/src/tiffcomposite_int.cpp
++++ b/src/tiffcomposite_int.cpp
+@@ -124,6 +124,25 @@ TiffEntryBase::TiffEntryBase(const TiffEntryBase& rhs) :
+     storage_(rhs.storage_) {
+ }
+ 
++TiffDirectory::TiffDirectory(const TiffDirectory& rhs) : TiffComponent(rhs), hasNext_(rhs.hasNext_) {
++}
++
++TiffSubIfd::TiffSubIfd(const TiffSubIfd& rhs) : TiffEntryBase(rhs), newGroup_(rhs.newGroup_) {
++}
++
++TiffBinaryArray::TiffBinaryArray(const TiffBinaryArray& rhs) :
++    TiffEntryBase(rhs),
++    cfgSelFct_(rhs.cfgSelFct_),
++    arraySet_(rhs.arraySet_),
++    arrayCfg_(rhs.arrayCfg_),
++    arrayDef_(rhs.arrayDef_),
++    defSize_(rhs.defSize_),
++    setSize_(rhs.setSize_),
++    origData_(rhs.origData_),
++    origSize_(rhs.origSize_),
++    pRoot_(rhs.pRoot_) {
++}
++
+ TiffComponent::UniquePtr TiffComponent::clone() const {
+   return UniquePtr(doClone());
+ }
+diff --git a/src/tiffcomposite_int.hpp b/src/tiffcomposite_int.hpp
+index 0e28aba91..01d5109a5 100644
+--- a/src/tiffcomposite_int.hpp
++++ b/src/tiffcomposite_int.hpp
+@@ -819,187 +819,187 @@ class TiffSizeEntry : public TiffEntryBase {
+ /*!
+   @brief This class models a TIFF directory (%Ifd). It is a composite
+          component of the TIFF tree.
+  */
+ class TiffDirectory : public TiffComponent {
+   friend class TiffEncoder;
+   friend class TiffDecoder;
+ 
+  public:
+   //! @name Creators
+   //@{
+   //! Default constructor
+   TiffDirectory(uint16_t tag, IfdId group, bool hasNext = true);
+   //! Virtual destructor
+   ~TiffDirectory() override;
+   //@}
+ 
+   //! @name NOT implemented
+   //@{
+   //! Assignment operator.
+   TiffDirectory& operator=(const TiffDirectory&) = delete;
+   //@}
+ 
+   //! @name Accessors
+   //@{
+   //! Return true if the directory has a next pointer
+   [[nodiscard]] bool hasNext() const {
+     return hasNext_;
+   }
+   //@}
+ 
+  protected:
+   //! @name Protected Creators
+   //@{
+   //! Copy constructor (used to implement clone()).
+-  TiffDirectory(const TiffDirectory&) = default;
++  TiffDirectory(const TiffDirectory& rhs);
+   //@}
+ 
+   //! @name Protected Manipulators
+   //@{
+   TiffComponent* doAddPath(uint16_t tag, TiffPath& tiffPath, TiffComponent* pRoot,
+                            TiffComponent::UniquePtr object) override;
+   TiffComponent* doAddChild(TiffComponent::UniquePtr tiffComponent) override;
+   TiffComponent* doAddNext(TiffComponent::UniquePtr tiffComponent) override;
+   void doAccept(TiffVisitor& visitor) override;
+   /*!
+     @brief Implements write(). Write the TIFF directory, values and
+            additional data, including the next-IFD, if any, to the
+            \em ioWrapper, return the number of bytes written.
+    */
+   size_t doWrite(IoWrapper& ioWrapper, ByteOrder byteOrder, size_t offset, size_t valueIdx, size_t dataIdx,
+                  size_t& imageIdx) override;
+   //@}
+ 
+   //! @name Protected Accessors
+   //@{
+   [[nodiscard]] TiffDirectory* doClone() const override;
+   /*!
+     @brief This class does not really implement writeData(), it only has
+            write(). This method must not be called; it commits suicide.
+    */
+   size_t doWriteData(IoWrapper& ioWrapper, ByteOrder byteOrder, size_t offset, size_t dataIdx,
+                      size_t& imageIdx) const override;
+   /*!
+     @brief Implements writeImage(). Write the image data of the TIFF
+            directory to the \em ioWrapper by forwarding the call to each
+            component as well as the next-IFD, if there is any. Return the
+            number of bytes written.
+    */
+   size_t doWriteImage(IoWrapper& ioWrapper, ByteOrder byteOrder) const override;
+   /*!
+     @brief Implements size(). Return the size of the TIFF directory,
+            values and additional data, including the next-IFD, if any.
+    */
+   [[nodiscard]] size_t doSize() const override;
+   /*!
+     @brief Implements count(). Return the number of entries in the TIFF
+            directory. Does not count entries which are marked as deleted.
+    */
+   [[nodiscard]] size_t doCount() const override;
+   /*!
+     @brief This class does not really implement sizeData(), it only has
+            size(). This method must not be called; it commits suicide.
+    */
+   [[nodiscard]] size_t doSizeData() const override;
+   /*!
+     @brief Implements sizeImage(). Return the sum of the image sizes of
+            all components plus that of the next-IFD, if there is any.
+    */
+   [[nodiscard]] size_t doSizeImage() const override;
+   //@}
+ 
+  private:
+   //! @name Private Accessors
+   //@{
+   //! Write a binary directory entry for a TIFF component.
+   static size_t writeDirEntry(IoWrapper& ioWrapper, ByteOrder byteOrder, size_t offset, TiffComponent* pTiffComponent,
+                               size_t valueIdx, size_t dataIdx, size_t& imageIdx);
+   //@}
+ 
+   // DATA
+   Components components_;   //!< List of components in this directory
+   bool hasNext_;            //!< True if the directory has a next pointer
+   TiffComponent* pNext_{};  //!< Pointer to the next IFD
+ };
+ 
+ /*!
+   @brief This class models a TIFF sub-directory (sub-IFD). A sub-IFD
+          is an entry with one or more values that are pointers to IFD
+          structures containing an IFD. The TIFF standard defines
+          some important tags to be sub-IFDs, including the %Exif and
+          GPS tags.
+  */
+ class TiffSubIfd : public TiffEntryBase {
+   friend class TiffReader;
+ 
+  public:
+   //! @name Creators
+   //@{
+   //! Default constructor
+   TiffSubIfd(uint16_t tag, IfdId group, IfdId newGroup);
+   //! Virtual destructor
+   ~TiffSubIfd() override;
+   //@}
+ 
+   //! @name Protected Creators
+   //@{
+   //! Copy constructor (used to implement clone()).
+-  TiffSubIfd(const TiffSubIfd&) = default;
++  TiffSubIfd(const TiffSubIfd& rhs);
+   TiffSubIfd& operator=(const TiffSubIfd&) = delete;
+   //@}
+ 
+  protected:
+   //! @name Protected Manipulators
+   //@{
+   TiffComponent* doAddPath(uint16_t tag, TiffPath& tiffPath, TiffComponent* pRoot,
+                            TiffComponent::UniquePtr object) override;
+   TiffComponent* doAddChild(TiffComponent::UniquePtr tiffComponent) override;
+   void doAccept(TiffVisitor& visitor) override;
+   void doEncode(TiffEncoder& encoder, const Exifdatum* datum) override;
+   /*!
+     @brief Implements write(). Write the sub-IFD pointers to the \em ioWrapper,
+            return the number of bytes written. The \em valueIdx and
+            \em imageIdx arguments are not used.
+    */
+   size_t doWrite(IoWrapper& ioWrapper, ByteOrder byteOrder, size_t offset, size_t valueIdx, size_t dataIdx,
+                  size_t& imageIdx) override;
+   //@}
+ 
+   //! @name Protected Accessors
+   //@{
+   [[nodiscard]] TiffSubIfd* doClone() const override;
+   /*!
+     @brief Implements writeData(). Write the sub-IFDs to the \em ioWrapper.
+            Return the number of bytes written.
+    */
+   size_t doWriteData(IoWrapper& ioWrapper, ByteOrder byteOrder, size_t offset, size_t dataIdx,
+                      size_t& imageIdx) const override;
+   /*!
+     @brief Implements writeImage(). Write the image data of each sub-IFD to
+            the \em ioWrapper. Return the number of bytes written.
+    */
+   size_t doWriteImage(IoWrapper& ioWrapper, ByteOrder byteOrder) const override;
+   //! Implements size(). Return the size of the sub-Ifd pointers.
+   [[nodiscard]] size_t doSize() const override;
+   //! Implements sizeData(). Return the sum of the sizes of all sub-IFDs.
+   [[nodiscard]] size_t doSizeData() const override;
+   //! Implements sizeImage(). Return the sum of the image sizes of all sub-IFDs.
+   [[nodiscard]] size_t doSizeImage() const override;
+   //@}
+ 
+  private:
+   //! A collection of TIFF directories (IFDs)
+   using Ifds = std::vector<TiffDirectory*>;
+ 
+   // DATA
+   IfdId newGroup_;  //!< Start of the range of group numbers for the sub-IFDs
+   Ifds ifds_;       //!< The subdirectories
+ };
+ 
+ /*!
+   @brief This class is the basis for Makernote support in TIFF. It contains
+          a pointer to a concrete Makernote. The TiffReader visitor has the
+          responsibility to create the correct Make/Model specific Makernote
+          for a particular TIFF file. Calls to child management methods are
+          forwarded to the concrete Makernote, if there is one.
+  */
+@@ -1258,136 +1258,136 @@ struct ArraySet {
+ /*!
+   @brief Composite to model an array of different tags. The tag types as well
+          as other aspects of the array are configurable. The elements of this
+          component are of type TiffBinaryElement.
+  */
+ class TiffBinaryArray : public TiffEntryBase {
+  public:
+   //! @name Creators
+   //@{
+   //! Constructor
+   TiffBinaryArray(uint16_t tag, IfdId group, const ArrayCfg& arrayCfg, const ArrayDef* arrayDef, size_t defSize);
+   //! Constructor for a complex binary array
+   TiffBinaryArray(uint16_t tag, IfdId group, const ArraySet* arraySet, size_t setSize, CfgSelFct cfgSelFct);
+   //! Virtual destructor
+   ~TiffBinaryArray() override;
+   TiffBinaryArray& operator=(const TiffBinaryArray&) = delete;
+   //@}
+ 
+   //! @name Manipulators
+   //@{
+   //! Add an element to the binary array, return the size of the element
+   size_t addElement(size_t idx, const ArrayDef& def);
+   /*!
+     @brief Setup cfg and def for the component, in case of a complex binary array.
+            Else do nothing. Return true if the initialization succeeded, else false.
+ 
+     This version of initialize() is used during intrusive writing. It determines the
+     correct settings based on the \em group passed in (which is the group of the first
+     tag that is added to the array). It doesn't require cfgSelFct_.
+ 
+     @param group Group to setup the binary array for.
+     @return true if the initialization succeeded, else false.
+    */
+   bool initialize(IfdId group);
+   /*!
+     @brief Setup cfg and def for the component, in case of a complex binary array.
+            Else do nothing. Return true if the initialization succeeded, else false.
+ 
+     This version of initialize() is used for reading and non-intrusive writing. It
+     calls cfgSelFct_ to determine the correct settings.
+ 
+     @param pRoot Pointer to the root component of the TIFF tree.
+     @return true if the initialization succeeded, else false.
+    */
+   bool initialize(TiffComponent* pRoot);
+   //! Initialize the original data buffer and its size from the base entry.
+   void iniOrigDataBuf();
+   //! Update the original data buffer and its size, return true if successful.
+   bool updOrigDataBuf(const byte* pData, size_t size);
+   //! Set a flag to indicate if the array was decoded
+   void setDecoded(bool decoded) {
+     decoded_ = decoded;
+   }
+   //@}
+ 
+   //! @name Accessors
+   //@{
+   //! Return a pointer to the configuration
+   [[nodiscard]] const ArrayCfg* cfg() const {
+     return arrayCfg_;
+   }
+   //! Return a pointer to the definition
+   [[nodiscard]] const ArrayDef* def() const {
+     return arrayDef_;
+   }
+   //! Return the number of elements in the definition
+   [[nodiscard]] size_t defSize() const {
+     return defSize_;
+   }
+   //! Return the flag which indicates if the array was decoded
+   [[nodiscard]] bool decoded() const {
+     return decoded_;
+   }
+   //@}
+ 
+  protected:
+   //! @name Protected Creators
+   //@{
+   //! Copy constructor (used to implement clone()).
+-  TiffBinaryArray(const TiffBinaryArray&) = default;
++  TiffBinaryArray(const TiffBinaryArray& rhs);
+   //@}
+ 
+   //! @name Protected Manipulators
+   //@{
+   /*!
+     @brief Implements addPath(). Todo: Document it!
+    */
+   TiffComponent* doAddPath(uint16_t tag, TiffPath& tiffPath, TiffComponent* pRoot,
+                            TiffComponent::UniquePtr object) override;
+   /*!
+     @brief Implements addChild(). Todo: Document it!
+    */
+   TiffComponent* doAddChild(TiffComponent::UniquePtr tiffComponent) override;
+   void doAccept(TiffVisitor& visitor) override;
+   void doEncode(TiffEncoder& encoder, const Exifdatum* datum) override;
+   /*!
+     @brief Implements write(). Todo: Document it!
+    */
+   size_t doWrite(IoWrapper& ioWrapper, ByteOrder byteOrder, size_t offset, size_t valueIdx, size_t dataIdx,
+                  size_t& imageIdx) override;
+   //@}
+ 
+   //! @name Protected Accessors
+   //@{
+   [[nodiscard]] TiffBinaryArray* doClone() const override;
+   //! Implements count(). Todo: Document it!
+   [[nodiscard]] size_t doCount() const override;
+   // Using doWriteData from base class
+   // Using doWriteImage from base class
+   /*!
+     @brief Implements size(). Todo: Document it!
+    */
+   [[nodiscard]] size_t doSize() const override;
+   // Using doSizeData from base class
+   // Using doSizeImage from base class
+   //@}
+ 
+  private:
+   // DATA
+   CfgSelFct cfgSelFct_{};       //!< Pointer to a function to determine which cfg to use (may be 0)
+   const ArraySet* arraySet_{};  //!< Pointer to the array set, if any (may be 0)
+   const ArrayCfg* arrayCfg_{};  //!< Pointer to the array configuration (must not be 0, except for
+                                 //!< unrecognized complex binary arrays)
+   const ArrayDef* arrayDef_{};  //!< Pointer to the array definition (may be 0)
+   size_t defSize_{};            //!< Size of the array definition array (may be 0)
+   size_t setSize_{};            //!< Size of the array set (may be 0)
+   Components elements_;         //!< List of elements in this composite
+   byte* origData_{};            //!< Pointer to the original data buffer (unencrypted)
+   size_t origSize_{};           //!< Size of the original data buffer
+   TiffComponent* pRoot_{};      //!< Pointer to the root component of the TIFF tree. (Only used for intrusive writing.)
+   bool decoded_{};              //!< Flag to indicate if the array was decoded
+ };
+ 
+ /*!
+   @brief Element of a TiffBinaryArray.
+  */

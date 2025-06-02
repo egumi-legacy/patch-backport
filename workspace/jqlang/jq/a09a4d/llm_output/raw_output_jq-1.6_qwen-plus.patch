@@ -1,13 +1,3 @@
-A. Commit message:
-Reject NaN with payload while parsing JSON
-
-B. Change summary:
-This patch modifies the jq-1.6 codebase to reject NaN values with payloads during JSON parsing, aligning it with the functionality of a newer version. The change involves updating the `jvp_literal_number_new` function in `src/jv.c` to check for and reject NaNs with payloads. Additionally, tests in `tests/jq.test` are updated to reflect the new behavior by ensuring that NaN with payloads is not parsed and instead results in an error.
-
-C. Compatibility Risk:
-Low
-
-D. Fixed Code:
 diff --git a/src/jv.c b/src/jv.c
 index fd6cfcabc3..0fbdcfaa7e 100644
 --- a/src/jv.c

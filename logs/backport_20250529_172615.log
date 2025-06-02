@@ -1,0 +1,708 @@
+2025-05-29 17:26:15.938 | INFO     | __main__:_setup_logger:290 - 日志文件: logs/backport_20250529_172615.log
+2025-05-29 17:26:15.939 | INFO     | __main__:run:294 - 开始执行 模式1
+2025-05-29 17:26:15.940 | INFO     | __main__:_process_mode1:314 - 处理补丁: https://github.com/jqlang/jq/commit/a09a4dfd55e6c24d04b35062ccfe4509748b1dd3.patch
+2025-05-29 17:26:15.941 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-05-29 17:26:15.942 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-05-29 17:26:15.945 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-05-29 17:26:15.946 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-05-29 17:26:15.946 | INFO     | __main__:_process_mode1:321 - 目标版本: ['jq-1.6']
+2025-05-29 17:26:15.947 | INFO     | __main__:_process_mode1:328 - 开始处理版本: jq-1.6
+2025-05-29 17:26:15.947 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: a09a4dfd55e6c24d04b35062ccfe4509748b1dd3.patch
+2025-05-29 17:26:15.947 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-05-29 17:26:15.948 | INFO     | modules.direct_apply:_download_patch:231 - 上游补丁文件已存在: workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-29 17:26:15.948 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-05-29 17:26:15.949 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-29 17:26:15.965 | INFO     | modules.direct_apply:_prepare_test_branch:333 - 删除已存在的测试分支: test_patch_jq-1.6
+2025-05-29 17:26:15.971 | INFO     | modules.direct_apply:_prepare_test_branch:346 - 创建测试分支: test_patch_jq-1.6
+2025-05-29 17:26:16.028 | ERROR    | modules.direct_apply:_apply_patch:286 - 补丁应用失败: error: patch failed: src/jv.c:585
+error: src/jv.c: patch does not apply
+error: patch failed: tests/jq.test:2110
+error: tests/jq.test: patch does not apply
+error: patch failed: tests/shtest:669
+error: tests/shtest: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-05-29 17:26:16.040 | WARNING  | modules.direct_apply:_cleanup_test_branch:440 - 清理分支时发生错误: error: pathspec '4.0.14' did not match any file(s) known to git
+
+2025-05-29 17:26:16.040 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-05-29 17:26:16.041 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-29 17:26:16.041 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-29 17:26:16.041 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 74 行内容
+2025-05-29 17:26:16.042 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/jv.c
+2025-05-29 17:26:16.042 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/jv.c @@ -585,6 +585,11 @@ (modification)
+2025-05-29 17:26:16.042 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: tests/jq.test
+2025-05-29 17:26:16.043 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: tests/jq.test @@ -2110,11 +2110,17 @@ (modification)
+2025-05-29 17:26:16.043 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: tests/shtest
+2025-05-29 17:26:16.043 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: tests/shtest @@ -669,13 +669,6 @@ (modification)
+2025-05-29 17:26:16.044 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 3 个修改块
+2025-05-29 17:26:16.044 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 3 个块
+2025-05-29 17:26:16.044 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-29 17:26:16.045 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/chunk_001_20250529_172616.patch (修改文件: src/jv.c)
+2025-05-29 17:26:16.046 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/chunk_002_20250529_172616.patch (修改文件: tests/jq.test)
+2025-05-29 17:26:16.047 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/chunk_003_20250529_172616.patch (修改文件: tests/shtest)
+2025-05-29 17:26:16.047 | INFO     | modules.chunk_analyzer:execute:60 - 已为 3 个块创建单独的补丁文件
+2025-05-29 17:26:16.048 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-05-29 17:26:16.048 | INFO     | modules.chunk_analyzer:execute:66 - From a09a4dfd55e6c24d04b35062ccfe4509748b1dd3 Mon Sep 17 00:00:00 2001
+From: itchyny <itchyny@cybozu.co.jp>
+Date: Wed, 5 Mar 2025 07:43:54 +0900
+Subject: [PATCH] Reject NaN with payload while parsing JSON
+
+This commit drops support for parsing NaN with payload in JSON like
+`NaN123` and fixes CVE-2024-53427. Other JSON extensions like `NaN` and
+`Infinity` are still supported. Fixes #3023, fixes #3196, fixes #3246.
+---
+ src/jv.c      |  5 +++++
+ tests/jq.test | 14 ++++++++++----
+ tests/shtest  |  7 -------
+ 3 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/src/jv.c b/src/jv.c
+index fd6cfcabc3..0fbdcfaa7e 100644
+--- a/src/jv.c
++++ b/src/jv.c
+@@ -585,6 +585,11 @@ static jv jvp_literal_number_new(const char * literal) {
+     return JV_INVALID;
+   }
+   if (decNumberIsNaN(&n->num_decimal)) {
++    // Reject NaN with payload.
++    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {
++      jv_mem_free(n);
++      return JV_INVALID;
++    }
+     jv_mem_free(n);
+     return jv_number(NAN);
+   }
+
+2025-05-29 17:26:16.048 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-05-29 17:26:16.049 | INFO     | modules.chunk_analyzer:execute:66 - From a09a4dfd55e6c24d04b35062ccfe4509748b1dd3 Mon Sep 17 00:00:00 2001
+From: itchyny <itchyny@cybozu.co.jp>
+Date: Wed, 5 Mar 2025 07:43:54 +0900
+Subject: [PATCH] Reject NaN with payload while parsing JSON
+
+This commit drops support for parsing NaN with payload in JSON like
+`NaN123` and fixes CVE-2024-53427. Other JSON extensions like `NaN` and
+`Infinity` are still supported. Fixes #3023, fixes #3196, fixes #3246.
+---
+ src/jv.c      |  5 +++++
+ tests/jq.test | 14 ++++++++++----
+ tests/shtest  |  7 -------
+ 3 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/tests/jq.test b/tests/jq.test
+index 2e3c1e8bd7..f5a57b1823 100644
+--- a/tests/jq.test
++++ b/tests/jq.test
+@@ -2110,11 +2110,17 @@ tojson | fromjson
+ {"a":nan}
+ {"a":null}
+ 
+-# also "nan with payload" #2985
+-if have_decnum then fromjson else nan end | isnan
+-"nan1234"
++# NaN with payload is not parsed
++.[] | try (fromjson | isnan) catch .
++["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]
+ true
+-
++true
++"Invalid numeric literal at EOF at line 1, column 4 (while parsing 'NaN1')"
++"Invalid numeric literal at EOF at line 1, column 5 (while parsing 'NaN10')"
++"Invalid numeric literal at EOF at line 1, column 6 (while parsing 'NaN100')"
++"Invalid numeric literal at EOF at line 1, column 7 (while parsing 'NaN1000')"
++"Invalid numeric literal at EOF at line 1, column 8 (while parsing 'NaN10000')"
++"Invalid numeric literal at EOF at line 1, column 9 (while parsing 'NaN100000')"
+ 
+ # calling input/0, or debug/0 in a test doesn't crash jq
+ 
+
+2025-05-29 17:26:16.049 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-05-29 17:26:16.049 | INFO     | modules.chunk_analyzer:execute:66 - From a09a4dfd55e6c24d04b35062ccfe4509748b1dd3 Mon Sep 17 00:00:00 2001
+From: itchyny <itchyny@cybozu.co.jp>
+Date: Wed, 5 Mar 2025 07:43:54 +0900
+Subject: [PATCH] Reject NaN with payload while parsing JSON
+
+This commit drops support for parsing NaN with payload in JSON like
+`NaN123` and fixes CVE-2024-53427. Other JSON extensions like `NaN` and
+`Infinity` are still supported. Fixes #3023, fixes #3196, fixes #3246.
+---
+ src/jv.c      |  5 +++++
+ tests/jq.test | 14 ++++++++++----
+ tests/shtest  |  7 -------
+ 3 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/tests/shtest b/tests/shtest
+index 86e759ba69..72ffc086fd 100755
+--- a/tests/shtest
++++ b/tests/shtest
+@@ -669,13 +669,6 @@ if ! x=$($JQ -cn "$(printf '[\r\n1,# comment\r\n2,# comment\\\r\ncomment\r\n3\r\
+   exit 1
+ fi
+ 
+-# CVE-2023-50268: No stack overflow comparing a nan with a large payload
+-if $JQ -ne 'have_decnum'; then
+-  $VALGRIND $Q $JQ '1 != .' <<\EOF >/dev/null
+-  Nan4000
+-EOF
+-fi
+-
+ # Allow passing the inline jq script before -- #2919
+ if ! r=$($JQ --args -rn -- '$ARGS.positional[0]' bar) || [ "$r" != bar ]; then
+     echo "passing the inline script after -- didn't work"
+
+2025-05-29 17:26:16.050 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/3 个块补丁: chunk_001_20250529_172616.patch
+2025-05-29 17:26:16.058 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_001_20250529_172616.patch 应用失败: error: patch failed: src/jv.c:585
+error: src/jv.c: patch does not apply
+
+2025-05-29 17:26:16.059 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/3 个块补丁: chunk_002_20250529_172616.patch
+2025-05-29 17:26:16.067 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_002_20250529_172616.patch 应用失败: error: patch failed: tests/jq.test:2110
+error: tests/jq.test: patch does not apply
+
+2025-05-29 17:26:16.067 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/3 个块补丁: chunk_003_20250529_172616.patch
+2025-05-29 17:26:16.076 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_003_20250529_172616.patch 应用失败: error: patch failed: tests/shtest:669
+error: tests/shtest: patch does not apply
+
+2025-05-29 17:26:16.077 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-05-29 17:26:16.077 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 3
+2025-05-29 17:26:16.077 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 0
+2025-05-29 17:26:16.078 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 3
+2025-05-29 17:26:16.078 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 0 个块补丁，总共 3 个
+2025-05-29 17:26:16.079 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/remaining_chunks_20250529_172616.patch
+2025-05-29 17:26:16.080 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 3 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/remaining_chunks_20250529_172616.patch
+2025-05-29 17:26:16.081 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/remaining_chunks_20250529_172616.patch
+2025-05-29 17:26:16.081 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.04秒
+2025-05-29 17:26:16.081 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/metrics_a09a4d_20250529_172616.json
+2025-05-29 17:26:16.084 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250529_172616
+2025-05-29 17:26:16.084 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250529_172616
+2025-05-29 17:26:16.084 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250529_172616/patches
+2025-05-29 17:26:16.085 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250529_172616/patches
+2025-05-29 17:26:16.085 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250529_172616/patches/original_patch.txt
+2025-05-29 17:26:16.085 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250529_172616
+2025-05-29 17:26:16.086 | WARNING  | modules.chunk_analyzer:_get_patch_content:1289 - 未找到任何应用成功的补丁文件
+2025-05-29 17:26:16.086 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250529_172616
+2025-05-29 17:26:16.087 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250529_172616/patches/remaining_patch.txt
+2025-05-29 17:26:16.088 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/remaining_chunks_20250529_172616.patch
+2025-05-29 17:26:16.088 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250529_172616
+2025-05-29 17:26:16.091 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: llm_adapter
+2025-05-29 17:26:16.092 | INFO     | modules.llm_adapter:execute:88 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-29 17:26:16.092 | INFO     | modules.llm_adapter:execute:90 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-29 17:26:16.092 | INFO     | modules.llm_adapter:_prepare_prompt_data:212 - 使用函数级上下文和完整文件内容的增强模式
+2025-05-29 17:26:16.093 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:256 - 补丁修改的文件: ['src/jv.c', 'tests/jq.test', 'tests/shtest']
+2025-05-29 17:26:16.093 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:436 - DEBUG_UPSTREAM: === Entering _get_file_content_from_upstream for 'src/jv.c' ===
+2025-05-29 17:26:16.097 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:449 - DEBUG_UPSTREAM: Current HEAD ref before temp operations: 2e01ff1fb69609540b2bdc4e62a60499f2b2fb8e
+2025-05-29 17:26:16.098 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:455 - DEBUG_UPSTREAM: Raw context.commit.commit_sha: 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3.patch'
+2025-05-29 17:26:16.098 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:460 - DEBUG_UPSTREAM: Removed .patch suffix. Processed commit SHA is now: 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3'
+2025-05-29 17:26:16.098 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:471 - DEBUG_UPSTREAM: Target ref for PRE-PATCH file (parent of processed SHA): 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3^'
+2025-05-29 17:26:16.098 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:483 - DEBUG_UPSTREAM: Final target_ref for 'git show' (to get pre-patch content): 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3^'
+2025-05-29 17:26:16.099 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:486 - DEBUG_UPSTREAM: Attempting to get content with: 'git show a09a4dfd55e6c24d04b35062ccfe4509748b1dd3^:src/jv.c'
+2025-05-29 17:26:16.108 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:500 - DEBUG_UPSTREAM: Successfully fetched PRE-PATCH content for 'src/jv.c' from ref 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3^' using 'git show'.
+2025-05-29 17:26:16.108 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:537 - DEBUG_UPSTREAM: Cleaning up. Attempting to checkout original HEAD: 2e01ff1fb69609540b2bdc4e62a60499f2b2fb8e
+2025-05-29 17:26:16.116 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:549 - DEBUG_UPSTREAM: Attempting to delete temp branch: temp_upstream_check_20250529_172616098088
+2025-05-29 17:26:16.122 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:559 - DEBUG_UPSTREAM: Cleanup finished for temp branch operations.
+2025-05-29 17:26:16.122 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:566 - DEBUG_UPSTREAM: === Exiting _get_file_content_from_upstream for 'src/jv.c' ===
+2025-05-29 17:26:16.135 | INFO     | modules.backtrack_apply:_map_file_paths:203 - 文件直接存在: src/jv.c
+2025-05-29 17:26:16.148 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:299 - 对于文件 src/jv.c 中的块 585-595，上下文: 
+
+static jv jvp_literal_number_new(const char * literal) {
+  jvp_literal_number* n = jvp_literal_number_alloc(strlen(literal));
+
+  decContext *ctx = DEC_CONTEXT();
+  decContextClearStatus(ctx, DEC_Conversion_syntax);
+  decNumberFromString(&n->num_decimal, literal, ctx);
+
+  if (ctx->status & DEC_Conversion_syntax) {
+    jv_mem_free(n);
+    return JV_INVALID;
+  }
+  if (decNumberIsNaN(&n->num_decimal)) {
+    jv_mem_free(n);
+    return jv_number(NAN);
+  }
+
+  jv r = {JVP_FLAGS_NUMBER_LITERAL, 0, 0, 0, {&n->refcnt}};
+  return r;
+}
+2025-05-29 17:26:16.148 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:436 - DEBUG_UPSTREAM: === Entering _get_file_content_from_upstream for 'tests/jq.test' ===
+2025-05-29 17:26:16.153 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:449 - DEBUG_UPSTREAM: Current HEAD ref before temp operations: 2e01ff1fb69609540b2bdc4e62a60499f2b2fb8e
+2025-05-29 17:26:16.153 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:455 - DEBUG_UPSTREAM: Raw context.commit.commit_sha: 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3.patch'
+2025-05-29 17:26:16.154 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:460 - DEBUG_UPSTREAM: Removed .patch suffix. Processed commit SHA is now: 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3'
+2025-05-29 17:26:16.154 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:471 - DEBUG_UPSTREAM: Target ref for PRE-PATCH file (parent of processed SHA): 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3^'
+2025-05-29 17:26:16.154 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:483 - DEBUG_UPSTREAM: Final target_ref for 'git show' (to get pre-patch content): 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3^'
+2025-05-29 17:26:16.155 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:486 - DEBUG_UPSTREAM: Attempting to get content with: 'git show a09a4dfd55e6c24d04b35062ccfe4509748b1dd3^:tests/jq.test'
+2025-05-29 17:26:16.163 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:499 - DEBUG_UPSTREAM: Content for 'tests/jq.test' (PRE-PATCH) from 'git show' (first 200 chars): # Tests are groups of three lines: program, input, expected output\n# Blank lines and lines starting with # are ignored\n\n#\n# Simple value tests to check parser. Input is irrelevant\n#\n\ntrue\nnull\ntrue\n\nf
+2025-05-29 17:26:16.164 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:500 - DEBUG_UPSTREAM: Successfully fetched PRE-PATCH content for 'tests/jq.test' from ref 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3^' using 'git show'.
+2025-05-29 17:26:16.164 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:537 - DEBUG_UPSTREAM: Cleaning up. Attempting to checkout original HEAD: 2e01ff1fb69609540b2bdc4e62a60499f2b2fb8e
+2025-05-29 17:26:16.172 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:549 - DEBUG_UPSTREAM: Attempting to delete temp branch: temp_upstream_check_20250529_172616153684
+2025-05-29 17:26:16.177 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:559 - DEBUG_UPSTREAM: Cleanup finished for temp branch operations.
+2025-05-29 17:26:16.177 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:566 - DEBUG_UPSTREAM: === Exiting _get_file_content_from_upstream for 'tests/jq.test' ===
+2025-05-29 17:26:16.197 | ERROR    | modules.llm_adapter:_get_file_content_from_target:639 - 获取目标版本文件内容时出错: Command '['git', 'checkout', '-b', 'temp_target_check_20250529_172616', 'jq-1.6']' returned non-zero exit status 128.
+2025-05-29 17:26:16.201 | ERROR    | modules.llm_adapter:_get_file_content_from_target:640 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 594, in _get_file_content_from_target
+    subprocess.run(
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'checkout', '-b', 'temp_target_check_20250529_172616', 'jq-1.6']' returned non-zero exit status 128.
+
+2025-05-29 17:26:16.201 | ERROR    | modules.llm_adapter:_extract_function_context:778 - DEBUG_TEST_FILE: Processing as .test file: tests/jq.test
+2025-05-29 17:26:16.201 | ERROR    | modules.llm_adapter:_extract_function_context:779 - DEBUG_TEST_FILE: Chunk lines: 2110-2126
+2025-05-29 17:26:16.202 | ERROR    | modules.llm_adapter:_extract_function_context:781 - DEBUG_TEST_FILE: Total lines in file: 2316
+2025-05-29 17:26:16.202 | ERROR    | modules.llm_adapter:_extract_function_context:782 - DEBUG_TEST_FILE: Calling _extract_fallback_context with start=2110, end=2126, max_lines=30
+2025-05-29 17:26:16.202 | DEBUG    | modules.llm_adapter:_add_failure_reason:765 - 上下文提取失败: test_file_forced_fallback
+2025-05-29 17:26:16.203 | ERROR    | modules.llm_adapter:_extract_fallback_context:650 - DEBUG_FALLBACK: === Entering _extract_fallback_context ===
+2025-05-29 17:26:16.203 | ERROR    | modules.llm_adapter:_extract_fallback_context:651 - DEBUG_FALLBACK: Received chunk_start_line=2110, chunk_end_line=2126, max_lines=70
+2025-05-29 17:26:16.203 | ERROR    | modules.llm_adapter:_extract_fallback_context:654 - DEBUG_FALLBACK: num_total_lines=2316
+2025-05-29 17:26:16.203 | ERROR    | modules.llm_adapter:_extract_fallback_context:658 - DEBUG_FALLBACK: chunk_start_idx=2109, chunk_end_idx=2125
+2025-05-29 17:26:16.204 | ERROR    | modules.llm_adapter:_extract_fallback_context:670 - DEBUG_FALLBACK: chunk_actual_length=17
+2025-05-29 17:26:16.204 | ERROR    | modules.llm_adapter:_extract_fallback_context:673 - DEBUG_FALLBACK: lines_to_add=53
+2025-05-29 17:26:16.205 | ERROR    | modules.llm_adapter:_extract_fallback_context:683 - DEBUG_FALLBACK: lines_before=26, lines_after=27
+2025-05-29 17:26:16.205 | ERROR    | modules.llm_adapter:_extract_fallback_context:687 - DEBUG_FALLBACK: Initial window_start_idx=2083, window_end_idx=2152
+2025-05-29 17:26:16.205 | ERROR    | modules.llm_adapter:_extract_fallback_context:705 - DEBUG_FALLBACK: Final calculated window before blank line search: window_start_idx=2083, window_end_idx=2152
+2025-05-29 17:26:16.206 | ERROR    | modules.llm_adapter:_extract_fallback_context:711 - DEBUG_FALLBACK: Using window boundaries directly: final_start_idx=2083, final_end_idx=2152
+2025-05-29 17:26:16.206 | ERROR    | modules.llm_adapter:_extract_fallback_context:755 - DEBUG_FALLBACK: Preparing to return slice lines[2083:2153]
+2025-05-29 17:26:16.206 | ERROR    | modules.llm_adapter:_extract_fallback_context:757 - DEBUG_FALLBACK: Context length: 70 lines. Preview (first 80 chars): {"a":4,"b":5}\n{"foreach":1,"and":2,"or":3,"a":4}\n\n[ foreach .[] as $try (1 as $c
+2025-05-29 17:26:16.207 | ERROR    | modules.llm_adapter:_extract_fallback_context:758 - DEBUG_FALLBACK: === Exiting _extract_fallback_context ===
+2025-05-29 17:26:16.207 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:299 - 对于文件 tests/jq.test 中的块 2110-2126，上下文: 
+{"a":4,"b":5}
+{"foreach":1,"and":2,"or":3,"a":4}
+
+[ foreach .[] as $try (1 as $catch | $catch - 1; . + $try; .) ]
+[10,9,8,7]
+[10,19,27,34]
+
+
+# Object construction
+
+{ a, $__loc__, c }
+{"a":[1,2,3],"b":"foo","c":{"hi":"hey"}}
+{"a":[1,2,3],"__loc__":{"file":"<top-level>","line":1},"c":{"hi":"hey"}}
+
+1 as $x | "2" as $y | "3" as $z | { $x, as, $y: 4, ($z): 5, if: 6, foo: 7 }
+{"as":8}
+{"x":1,"as":8,"2":4,"3":5,"if":6,"foo":7}
+
+
+# nan is parsed as a valid NaN value from JSON
+
+fromjson | isnan
+"nan"
+true
+
+tojson | fromjson
+{"a":nan}
+{"a":null}
+
+# also "nan with payload" #2985
+if have_decnum then fromjson else nan end | isnan
+"nan1234"
+true
+
+
+# calling input/0, or debug/0 in a test doesn't crash jq
+
+try input catch .
+null
+"break"
+
+debug
+1
+1
+
+# try/catch catches more than it should #1859
+"foo" | try ((try . catch "caught too much") | error) catch "caught just right"
+null
+"caught just right"
+
+.[]|(try (if .=="hi" then . else error end) catch empty) | "\(.) there!"
+["hi","ho"]
+"hi there!"
+
+try (["hi","ho"]|.[]|(try . catch (if .=="ho" then "BROKEN"|error else empty end)) | if .=="ho" then error else "\(.) there!" end) catch "caught outside \(.)"
+null
+"hi there!"
+"caught outside ho"
+
+.[]|(try . catch (if .=="ho" then "BROKEN"|error else empty end)) | if .=="ho" then error else "\(.) there!" end
+["hi","ho"]
+"hi there!"
+
+try (try error catch "inner catch \(.)") catch "outer catch \(.)"
+"foo"
+"inner catch foo"
+
+try ((try error catch "inner catch \(.)")|error) catch "outer catch \(.)"
+"foo"
+"outer catch inner catch foo"
+2025-05-29 17:26:16.208 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:436 - DEBUG_UPSTREAM: === Entering _get_file_content_from_upstream for 'tests/shtest' ===
+2025-05-29 17:26:16.212 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:449 - DEBUG_UPSTREAM: Current HEAD ref before temp operations: 2e01ff1fb69609540b2bdc4e62a60499f2b2fb8e
+2025-05-29 17:26:16.212 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:455 - DEBUG_UPSTREAM: Raw context.commit.commit_sha: 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3.patch'
+2025-05-29 17:26:16.213 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:460 - DEBUG_UPSTREAM: Removed .patch suffix. Processed commit SHA is now: 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3'
+2025-05-29 17:26:16.214 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:471 - DEBUG_UPSTREAM: Target ref for PRE-PATCH file (parent of processed SHA): 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3^'
+2025-05-29 17:26:16.214 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:483 - DEBUG_UPSTREAM: Final target_ref for 'git show' (to get pre-patch content): 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3^'
+2025-05-29 17:26:16.214 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:486 - DEBUG_UPSTREAM: Attempting to get content with: 'git show a09a4dfd55e6c24d04b35062ccfe4509748b1dd3^:tests/shtest'
+2025-05-29 17:26:16.220 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:500 - DEBUG_UPSTREAM: Successfully fetched PRE-PATCH content for 'tests/shtest' from ref 'a09a4dfd55e6c24d04b35062ccfe4509748b1dd3^' using 'git show'.
+2025-05-29 17:26:16.220 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:537 - DEBUG_UPSTREAM: Cleaning up. Attempting to checkout original HEAD: 2e01ff1fb69609540b2bdc4e62a60499f2b2fb8e
+2025-05-29 17:26:16.226 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:549 - DEBUG_UPSTREAM: Attempting to delete temp branch: temp_upstream_check_20250529_172616212830
+2025-05-29 17:26:16.231 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:559 - DEBUG_UPSTREAM: Cleanup finished for temp branch operations.
+2025-05-29 17:26:16.232 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:566 - DEBUG_UPSTREAM: === Exiting _get_file_content_from_upstream for 'tests/shtest' ===
+2025-05-29 17:26:16.242 | INFO     | modules.backtrack_apply:_map_file_paths:203 - 文件直接存在: tests/shtest
+2025-05-29 17:26:16.254 | ERROR    | modules.llm_adapter:_extract_function_context:829 - DEBUG_REGEX_FAIL: No function definition found by regex for tests/shtest above line 669.
+2025-05-29 17:26:16.255 | ERROR    | modules.llm_adapter:_extract_function_context:830 - DEBUG_REGEX_FAIL: Calling _extract_fallback_context with start=669, end=674, max_lines=100
+2025-05-29 17:26:16.255 | DEBUG    | modules.llm_adapter:_add_failure_reason:765 - 上下文提取失败: no_func_def_found_upwards_all_patterns
+2025-05-29 17:26:16.255 | ERROR    | modules.llm_adapter:_extract_fallback_context:650 - DEBUG_FALLBACK: === Entering _extract_fallback_context ===
+2025-05-29 17:26:16.256 | ERROR    | modules.llm_adapter:_extract_fallback_context:651 - DEBUG_FALLBACK: Received chunk_start_line=669, chunk_end_line=674, max_lines=100
+2025-05-29 17:26:16.256 | ERROR    | modules.llm_adapter:_extract_fallback_context:654 - DEBUG_FALLBACK: num_total_lines=754
+2025-05-29 17:26:16.256 | ERROR    | modules.llm_adapter:_extract_fallback_context:658 - DEBUG_FALLBACK: chunk_start_idx=668, chunk_end_idx=673
+2025-05-29 17:26:16.257 | ERROR    | modules.llm_adapter:_extract_fallback_context:670 - DEBUG_FALLBACK: chunk_actual_length=6
+2025-05-29 17:26:16.257 | ERROR    | modules.llm_adapter:_extract_fallback_context:673 - DEBUG_FALLBACK: lines_to_add=94
+2025-05-29 17:26:16.257 | ERROR    | modules.llm_adapter:_extract_fallback_context:683 - DEBUG_FALLBACK: lines_before=47, lines_after=47
+2025-05-29 17:26:16.257 | ERROR    | modules.llm_adapter:_extract_fallback_context:687 - DEBUG_FALLBACK: Initial window_start_idx=621, window_end_idx=720
+2025-05-29 17:26:16.258 | ERROR    | modules.llm_adapter:_extract_fallback_context:705 - DEBUG_FALLBACK: Final calculated window before blank line search: window_start_idx=621, window_end_idx=720
+2025-05-29 17:26:16.258 | ERROR    | modules.llm_adapter:_extract_fallback_context:711 - DEBUG_FALLBACK: Using window boundaries directly: final_start_idx=621, final_end_idx=720
+2025-05-29 17:26:16.258 | ERROR    | modules.llm_adapter:_extract_fallback_context:755 - DEBUG_FALLBACK: Preparing to return slice lines[621:721]
+2025-05-29 17:26:16.259 | ERROR    | modules.llm_adapter:_extract_fallback_context:757 - DEBUG_FALLBACK: Context length: 100 lines. Preview (first 80 chars): <<EOF\n$locales\nEOF\n  if [ -z "$l" ]; then\n    echo "WARNING: Not testing localiz
+2025-05-29 17:26:16.259 | ERROR    | modules.llm_adapter:_extract_fallback_context:758 - DEBUG_FALLBACK: === Exiting _extract_fallback_context ===
+2025-05-29 17:26:16.259 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:299 - 对于文件 tests/shtest 中的块 669-674，上下文: 
+<<EOF
+$locales
+EOF
+  if [ -z "$l" ]; then
+    echo "WARNING: Not testing localization"
+  else
+    date=$(LC_ALL=$l date +'%a %d %b %Y at %H:%M:%S')
+    if ! LC_ALL=$l $JQ -nR --arg date "$date" '$date|strptime("%a %d %b %Y at %H:%M:%S")'; then
+      echo "jq does not honor LC_ALL environment variable"
+      exit 1
+    fi
+  fi
+fi
+
+# Comments!
+if ! x=$($JQ -n '123 # comment') || [ "$x" != 123 ]; then
+  echo 'comment did not work'
+  exit 1
+fi
+
+cr=$(printf \\r)
+if ! x=$($JQ -n "1 # foo$cr + 2") || [ "$x" != 1 ]; then
+  echo 'regression: carriage return terminates comment'
+  exit 1
+fi
+
+if ! x=$($JQ -cn '[
+  1,
+  # foo \
+  2,
+  # bar \\
+  3,
+  4, # baz \\\
+  5, \
+  6,
+  7
+  # comment \
+    comment \
+    comment
+]') || [ "$x" != '[1,3,4,7]' ]; then
+  echo 'multiline comment was not handled correctly'
+  exit 1
+fi
+
+if ! x=$($JQ -cn "$(printf '[\r\n1,# comment\r\n2,# comment\\\r\ncomment\r\n3\r\n]')") \
+  || [ "$x" != '[1,2,3]' ]; then
+  echo 'multiline comment with CRLF line breaks was not handled correctly'
+  exit 1
+fi
+
+# CVE-2023-50268: No stack overflow comparing a nan with a large payload
+if $JQ -ne 'have_decnum'; then
+  $VALGRIND $Q $JQ '1 != .' <<\EOF >/dev/null
+  Nan4000
+EOF
+fi
+
+# Allow passing the inline jq script before -- #2919
+if ! r=$($JQ --args -rn -- '$ARGS.positional[0]' bar) || [ "$r" != bar ]; then
+    echo "passing the inline script after -- didn't work"
+    exit 1
+fi
+if ! r=$($JQ --args -rn 1 -- '$ARGS.positional[0]' bar) || [ "$r" != 1 ]; then
+    echo "passing the inline script before -- didn't work"
+    exit 1
+fi
+
+# CVE-2023-50246: No heap overflow for '-10E-1000000001'
+$VALGRIND $Q $JQ . <<\NUM
+-10E-1000000001
+NUM
+
+# test for --indent and --compact-output -- #1465
+printf '[1,2]\n' > $d/expected
+$JQ --compact-output -n "[1,2]" > $d/out
+cmp $d/out $d/expected
+
+printf '[\n1,\n2\n]\n' > $d/expected
+$JQ --indent 0 -n "[1,2]" > $d/out
+cmp $d/out $d/expected
+
+printf '[\n 1,\n 2\n]\n' > $d/expected
+$JQ --indent 1 -n "[1,2]" > $d/out
+cmp $d/out $d/expected
+
+printf '[\n     1,\n     2\n]\n' > $d/expected
+$JQ --indent 5 -n "[1,2]" > $d/out
+cmp $d/out $d/expected
+
+printf '[\n{\n"a": 1\n}\n]\n' > $d/expected
+$JQ --indent 0 -n "[{a:1}]" > $d/out
+cmp $d/out $d/expected
+
+printf '[\n {\n  "a": 1\n }\n]\n' > $d/expected
+$JQ --indent 1 -n "[{a:1}]" > $d/out
+cmp $d/out $d/expected
+
+printf '[\n      {\n            "a": 1\n      }\n]\n' > $d/expected
+$JQ --indent 6 -n "[{a:1}]" > $d/out
+cmp $d/out $d/expected
+2025-05-29 17:26:16.260 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:325 - patch_content:From a09a4dfd55e6c24d04b35062ccfe4509748b1dd3 Mon Sep 17 00:00:00 2001
+From: itchyny <itchyny@cybozu.co.jp>
+Date: Wed, 5 Mar 2025 07:43:54 +0900
+Subject: [PATCH] Reject NaN with payload while parsing JSON
+
+This commit drops support for parsing NaN with payload in JSON like
+`NaN123` and fixes CVE-2024-53427. Other JSON extensions like `NaN` and
+`Infinity` are still supported. Fixes #3023, fixes #3196, fixes #3246.
+---
+ src/jv.c      |  5 +++++
+ tests/jq.test | 14 ++++++++++----
+ tests/shtest  |  7 -------
+ 3 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/src/jv.c b/src/jv.c
+index fd6cfcabc3..0fbdcfaa7e 100644
+--- a/src/jv.c
++++ b/src/jv.c
+@@ -585,6 +585,11 @@ static jv jvp_literal_number_new(const char * literal) {
+     return JV_INVALID;
+   }
+   if (decNumberIsNaN(&n->num_decimal)) {
++    // Reject NaN with payload.
++    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {
++      jv_mem_free(n);
++      return JV_INVALID;
++    }
+     jv_mem_free(n);
+     return jv_number(NAN);
+   }
+diff --git a/tests/jq.test b/tests/jq.test
+index 2e3c1e8bd7..f5a57b1823 100644
+--- a/tests/jq.test
++++ b/tests/jq.test
+@@ -2110,11 +2110,17 @@ tojson | fromjson
+ {"a":nan}
+ {"a":null}
+ 
+-# also "nan with payload" #2985
+-if have_decnum then fromjson else nan end | isnan
+-"nan1234"
++# NaN with payload is not parsed
++.[] | try (fromjson | isnan) catch .
++["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]
+ true
+-
++true
++"Invalid numeric literal at EOF at line 1, column 4 (while parsing 'NaN1')"
++"Invalid numeric literal at EOF at line 1, column 5 (while parsing 'NaN10')"
++"Invalid numeric literal at EOF at line 1, column 6 (while parsing 'NaN100')"
++"Invalid numeric literal at EOF at line 1, column 7 (while parsing 'NaN1000')"
++"Invalid numeric literal at EOF at line 1, column 8 (while parsing 'NaN10000')"
++"Invalid numeric literal at EOF at line 1, column 9 (while parsing 'NaN100000')"
+ 
+ # calling input/0, or debug/0 in a test doesn't crash jq
+ 
+diff --git a/tests/shtest b/tests/shtest
+index 86e759ba69..72ffc086fd 100755
+--- a/tests/shtest
++++ b/tests/shtest
+@@ -669,13 +669,6 @@ if ! x=$($JQ -cn "$(printf '[\r\n1,# comment\r\n2,# comment\\\r\ncomment\r\n3\r\
+   exit 1
+ fi
+ 
+-# CVE-2023-50268: No stack overflow comparing a nan with a large payload
+-if $JQ -ne 'have_decnum'; then
+-  $VALGRIND $Q $JQ '1 != .' <<\EOF >/dev/null
+-  Nan4000
+-EOF
+-fi
+-
+ # Allow passing the inline jq script before -- #2919
+ if ! r=$($JQ --args -rn -- '$ARGS.positional[0]' bar) || [ "$r" != bar ]; then
+     echo "passing the inline script after -- didn't work"
+
+2025-05-29 17:26:16.261 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:327 - file_contexts:[{'file_path': 'src/jv.c', 'chunks': [{'start_line': 585, 'end_line': 595, 'old_start': 585, 'old_end': 590, 'content': ' static jv jvp_literal_number_new(const char * literal) {\n     return JV_INVALID;\n   }\n   if (decNumberIsNaN(&n->num_decimal)) {\n+    // Reject NaN with payload.\n+    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {\n+      jv_mem_free(n);\n+      return JV_INVALID;\n+    }\n     jv_mem_free(n);\n     return jv_number(NAN);\n   }', 'new_count': 11}], 'function_contexts': [{'lines': '585-595', 'context': '\nstatic jv jvp_literal_number_new(const char * literal) {\n  jvp_literal_number* n = jvp_literal_number_alloc(strlen(literal));\n\n  decContext *ctx = DEC_CONTEXT();\n  decContextClearStatus(ctx, DEC_Conversion_syntax);\n  decNumberFromString(&n->num_decimal, literal, ctx);\n\n  if (ctx->status & DEC_Conversion_syntax) {\n    jv_mem_free(n);\n    return JV_INVALID;\n  }\n  if (decNumberIsNaN(&n->num_decimal)) {\n    jv_mem_free(n);\n    return jv_number(NAN);\n  }\n\n  jv r = {JVP_FLAGS_NUMBER_LITERAL, 0, 0, 0, {&n->refcnt}};\n  return r;\n}'}], 'old_file_content': '#include <stdint.h>\n#include <stddef.h>\n#include <assert.h>\n#include <stdlib.h>\n#include <stdio.h>\n#include <string.h>\n#include <stdarg.h>\n#include <limits.h>\n#include <math.h>\n\n#include "jv_alloc.h"\n#include "jv.h"\n#include "jv_unicode.h"\n#include "util.h"\n\n/*\n * Internal refcounting helpers\n */\n\ntypedef struct jv_refcnt {\n  int count;\n} jv_refcnt;\n\nstatic const jv_refcnt JV_REFCNT_INIT = {1};\n\nstatic void jvp_refcnt_inc(jv_refcnt* c) {\n  c->count++;\n}\n\nstatic int jvp_refcnt_dec(jv_refcnt* c) {\n  c->count--;\n  return c->count == 0;\n}\n\nstatic int jvp_refcnt_unshared(jv_refcnt* c) {\n  assert(c->count > 0);\n  return c->count == 1;\n}\n\n/*\n * Simple values (true, false, null)\n */\n\n#define KIND_MASK 0xf\n\njv_kind jv_get_kind(jv x) {\n  return x.kind_flags & KIND_MASK;\n}\n\nconst char* jv_kind_name(jv_kind k) {\n  switch (k) {\n  case JV_KIND_INVALID: return "<invalid>";\n  case JV_KIND_NULL:    return "null";\n  case JV_KIND_FALSE:   return "boolean";\n  case JV_KIND_TRUE:    return "boolean";\n  case JV_KIND_NUMBER:  return "number";\n  case JV_KIND_STRING:  return "string";\n  case JV_KIND_ARRAY:   return "array";\n  case JV_KIND_OBJECT:  return "object";\n  }\n  assert(0 && "invalid kind");\n  return "<unknown>";\n}\n\nstatic const jv JV_NULL = {JV_KIND_NULL, 0, 0, 0, {0}};\nstatic const jv JV_INVALID = {JV_KIND_INVALID, 0, 0, 0, {0}};\nstatic const jv JV_FALSE = {JV_KIND_FALSE, 0, 0, 0, {0}};\nstatic const jv JV_TRUE = {JV_KIND_TRUE, 0, 0, 0, {0}};\n\njv jv_true() {\n  return JV_TRUE;\n}\n\njv jv_false() {\n  return JV_FALSE;\n}\n\njv jv_null() {\n  return JV_NULL;\n}\n\njv jv_bool(int x) {\n  return x ? JV_TRUE : JV_FALSE;\n}\n\n/*\n * Invalid objects, with optional error messages\n */\n\ntypedef struct {\n  jv_refcnt refcnt;\n  jv errmsg;\n} jvp_invalid;\n\njv jv_invalid_with_msg(jv err) {\n  if (jv_get_kind(err) == JV_KIND_NULL)\n    return JV_INVALID;\n  jvp_invalid* i = jv_mem_alloc(sizeof(jvp_invalid));\n  i->refcnt = JV_REFCNT_INIT;\n  i->errmsg = err;\n\n  jv x = {JV_KIND_INVALID, 0, 0, 0, {&i->refcnt}};\n  return x;\n}\n\njv jv_invalid() {\n  return JV_INVALID;\n}\n\njv jv_invalid_get_msg(jv inv) {\n  assert(jv_get_kind(inv) == JV_KIND_INVALID);\n  jv x;\n  if (inv.u.ptr == 0)\n    x = jv_null();\n  else\n    x = jv_copy(((jvp_invalid*)inv.u.ptr)->errmsg);\n  jv_free(inv);\n  return x;\n}\n\nint jv_invalid_has_msg(jv inv) {\n  jv msg = jv_invalid_get_msg(inv);\n  int r = jv_get_kind(msg) != JV_KIND_NULL;\n  jv_free(msg);\n  return r;\n}\n\nstatic void jvp_invalid_free(jv x) {\n  assert(jv_get_kind(x) == JV_KIND_INVALID);\n  if (x.u.ptr != 0 && jvp_refcnt_dec(x.u.ptr)) {\n    jv_free(((jvp_invalid*)x.u.ptr)->errmsg);\n    jv_mem_free(x.u.ptr);\n  }\n}\n\n/*\n * Numbers\n */\n\njv jv_number(double x) {\n  jv j = {JV_KIND_NUMBER, 0, 0, 0, {.number = x}};\n  return j;\n}\n\ndouble jv_number_value(jv j) {\n  assert(jv_get_kind(j) == JV_KIND_NUMBER);\n  return j.u.number;\n}\n\nint jv_is_integer(jv j){\n  if(jv_get_kind(j) != JV_KIND_NUMBER){\n    return 0;\n  }\n  double x = jv_number_value(j);\n  if(x != x || x > INT_MAX || x < INT_MIN){\n    return 0;\n  }\n\n  return x == (int)x;\n}\n\n/*\n * Arrays (internal helpers)\n */\n\n#define ARRAY_SIZE_ROUND_UP(n) (((n)*3)/2)\n\nstatic int imax(int a, int b) {\n  if (a>b) return a;\n  else return b;\n}\n\n//FIXME signed vs unsigned\ntypedef struct {\n  jv_refcnt refcnt;\n  int length, alloc_length;\n  jv elements[];\n} jvp_array;\n\nstatic jvp_array* jvp_array_ptr(jv a) {\n  assert(jv_get_kind(a) == JV_KIND_ARRAY);\n  return (jvp_array*)a.u.ptr;\n}\n\nstatic jvp_array* jvp_array_alloc(unsigned size) {\n  jvp_array* a = jv_mem_alloc(sizeof(jvp_array) + sizeof(jv) * size);\n  a->refcnt.count = 1;\n  a->length = 0;\n  a->alloc_length = size;\n  return a;\n}\n\nstatic jv jvp_array_new(unsigned size) {\n  jv r = {JV_KIND_ARRAY, 0, 0, 0, {&jvp_array_alloc(size)->refcnt}};\n  return r;\n}\n\nstatic void jvp_array_free(jv a) {\n  assert(jv_get_kind(a) == JV_KIND_ARRAY);\n  if (jvp_refcnt_dec(a.u.ptr)) {\n    jvp_array* array = jvp_array_ptr(a);\n    for (int i=0; i<array->length; i++) {\n      jv_free(array->elements[i]);\n    }\n    jv_mem_free(array);\n  }\n}\n\nstatic int jvp_array_length(jv a) {\n  assert(jv_get_kind(a) == JV_KIND_ARRAY);\n  return a.size;\n}\n\nstatic int jvp_array_offset(jv a) {\n  assert(jv_get_kind(a) == JV_KIND_ARRAY);\n  return a.offset;\n}\n\nstatic jv* jvp_array_read(jv a, int i) {\n  assert(jv_get_kind(a) == JV_KIND_ARRAY);\n  if (i >= 0 && i < jvp_array_length(a)) {\n    jvp_array* array = jvp_array_ptr(a);\n    assert(i + jvp_array_offset(a) < array->length);\n    return &array->elements[i + jvp_array_offset(a)];\n  } else {\n    return 0;\n  }\n}\n\nstatic jv* jvp_array_write(jv* a, int i) {\n  assert(i >= 0);\n  jvp_array* array = jvp_array_ptr(*a);\n\n  int pos = i + jvp_array_offset(*a);\n  if (pos < array->alloc_length && jvp_refcnt_unshared(a->u.ptr)) {\n    // use existing array space\n    for (int j = array->length; j <= pos; j++) {\n      array->elements[j] = JV_NULL;\n    }\n    array->length = imax(pos + 1, array->length);\n    a->size = imax(i + 1, a->size);\n    return &array->elements[pos];\n  } else {\n    // allocate a new array\n    int new_length = imax(i + 1, jvp_array_length(*a));\n    jvp_array* new_array = jvp_array_alloc(ARRAY_SIZE_ROUND_UP(new_length));\n    int j;\n    for (j = 0; j < jvp_array_length(*a); j++) {\n      new_array->elements[j] =\n        jv_copy(array->elements[j + jvp_array_offset(*a)]);\n    }\n    for (; j < new_length; j++) {\n      new_array->elements[j] = JV_NULL;\n    }\n    new_array->length = new_length;\n    jvp_array_free(*a);\n    jv new_jv = {JV_KIND_ARRAY, 0, 0, new_length, {&new_array->refcnt}};\n    *a = new_jv;\n    return &new_array->elements[i];\n  }\n}\n\nstatic int jvp_array_equal(jv a, jv b) {\n  if (jvp_array_length(a) != jvp_array_length(b))\n    return 0;\n  if (jvp_array_ptr(a) == jvp_array_ptr(b) &&\n      jvp_array_offset(a) == jvp_array_offset(b))\n    return 1;\n  for (int i=0; i<jvp_array_length(a); i++) {\n    if (!jv_equal(jv_copy(*jvp_array_read(a, i)),\n                  jv_copy(*jvp_array_read(b, i))))\n      return 0;\n  }\n  return 1;\n}\n\nstatic void jvp_clamp_slice_params(int len, int *pstart, int *pend)\n{\n  if (*pstart < 0) *pstart = len + *pstart;\n  if (*pend < 0) *pend = len + *pend;\n\n  if (*pstart < 0) *pstart = 0;\n  if (*pstart > len) *pstart = len;\n  if (*pend > len) *pend = len;\n  if (*pend < *pstart) *pend = *pstart;\n}\n\nstatic jv jvp_array_slice(jv a, int start, int end) {\n  assert(jv_get_kind(a) == JV_KIND_ARRAY);\n  int len = jvp_array_length(a);\n  jvp_clamp_slice_params(len, &start, &end);\n  assert(0 <= start && start <= end && end <= len);\n\n  // FIXME: maybe slice should reallocate if the slice is small enough\n  if (start == end) {\n    jv_free(a);\n    return jv_array();\n  }\n\n  if (a.offset + start >= 1 << (sizeof(a.offset) * CHAR_BIT)) {\n    jv r = jv_array_sized(end - start);\n    for (int i = start; i < end; i++)\n      r = jv_array_append(r, jv_array_get(jv_copy(a), i));\n    jv_free(a);\n    return r;\n  } else {\n    a.offset += start;\n    a.size = end - start;\n    return a;\n  }\n}\n\n/*\n * Arrays (public interface)\n */\n\njv jv_array_sized(int n) {\n  return jvp_array_new(n);\n}\n\njv jv_array() {\n  return jv_array_sized(16);\n}\n\nint jv_array_length(jv j) {\n  assert(jv_get_kind(j) == JV_KIND_ARRAY);\n  int len = jvp_array_length(j);\n  jv_free(j);\n  return len;\n}\n\njv jv_array_get(jv j, int idx) {\n  assert(jv_get_kind(j) == JV_KIND_ARRAY);\n  jv* slot = jvp_array_read(j, idx);\n  jv val;\n  if (slot) {\n    val = jv_copy(*slot);\n  } else {\n    val = jv_invalid();\n  }\n  jv_free(j);\n  return val;\n}\n\njv jv_array_set(jv j, int idx, jv val) {\n  assert(jv_get_kind(j) == JV_KIND_ARRAY);\n\n  if (idx < 0)\n    idx = jvp_array_length(j) + idx;\n  if (idx < 0) {\n    jv_free(j);\n    jv_free(val);\n    return jv_invalid_with_msg(jv_string("Out of bounds negative array index"));\n  }\n  // copy/free of val,j coalesced\n  jv* slot = jvp_array_write(&j, idx);\n  jv_free(*slot);\n  *slot = val;\n  return j;\n}\n\njv jv_array_append(jv j, jv val) {\n  // copy/free of val,j coalesced\n  return jv_array_set(j, jv_array_length(jv_copy(j)), val);\n}\n\njv jv_array_concat(jv a, jv b) {\n  assert(jv_get_kind(a) == JV_KIND_ARRAY);\n  assert(jv_get_kind(b) == JV_KIND_ARRAY);\n\n  // FIXME: could be faster\n  jv_array_foreach(b, i, elem) {\n    a = jv_array_append(a, elem);\n  }\n  jv_free(b);\n  return a;\n}\n\njv jv_array_slice(jv a, int start, int end) {\n  assert(jv_get_kind(a) == JV_KIND_ARRAY);\n  // copy/free of a coalesced\n  return jvp_array_slice(a, start, end);\n}\n\nint jv_array_contains(jv a, jv b) {\n  int r = 1;\n  jv_array_foreach(b, bi, belem) {\n    int ri = 0;\n    jv_array_foreach(a, ai, aelem) {\n      if (jv_contains(aelem, jv_copy(belem))) {\n        ri = 1;\n        break;\n      }\n    }\n    jv_free(belem);\n    if (!ri) {\n      r = 0;\n      break;\n    }\n  }\n  jv_free(a);\n  jv_free(b);\n  return r;\n}\n\njv jv_array_indexes(jv a, jv b) {\n  jv res = jv_array();\n  int idx = -1;\n  jv_array_foreach(a, ai, aelem) {\n    jv_array_foreach(b, bi, belem) {\n      // quieten compiler warnings about aelem not being used... by\n      // using it\n      if ((bi == 0 && !jv_equal(jv_copy(aelem), jv_copy(belem))) ||\n          (bi > 0 && !jv_equal(jv_array_get(jv_copy(a), ai + bi), jv_copy(belem))))\n        idx = -1;\n      else if (bi == 0 && idx == -1)\n        idx = ai;\n    }\n    if (idx > -1)\n      res = jv_array_append(res, jv_number(idx));\n    idx = -1;\n  }\n  jv_free(a);\n  jv_free(b);\n  return res;\n}\n\n\n/*\n * Strings (internal helpers)\n */\n\ntypedef struct {\n  jv_refcnt refcnt;\n  uint32_t hash;\n  // high 31 bits are length, low bit is a flag\n  // indicating whether hash has been computed.\n  uint32_t length_hashed;\n  uint32_t alloc_length;\n  char data[];\n} jvp_string;\n\nstatic jvp_string* jvp_string_ptr(jv a) {\n  assert(jv_get_kind(a) == JV_KIND_STRING);\n  return (jvp_string*)a.u.ptr;\n}\n\nstatic jvp_string* jvp_string_alloc(uint32_t size) {\n  jvp_string* s = jv_mem_alloc(sizeof(jvp_string) + size + 1);\n  s->refcnt.count = 1;\n  s->alloc_length = size;\n  return s;\n}\n\n/* Copy a UTF8 string, replacing all badly encoded points with U+FFFD */\nstatic jv jvp_string_copy_replace_bad(const char* data, uint32_t length) {\n  const char* end = data + length;\n  const char* i = data;\n  const char* cstart;\n\n  uint32_t maxlength = length * 3 + 1; // worst case: all bad bytes, each becomes a 3-byte U+FFFD\n  jvp_string* s = jvp_string_alloc(maxlength);\n  char* out = s->data;\n  int c = 0;\n\n  while ((i = jvp_utf8_next((cstart = i), end, &c))) {\n    if (c == -1) {\n      c = 0xFFFD; // U+FFFD REPLACEMENT CHARACTER\n    }\n    out += jvp_utf8_encode(c, out);\n    assert(out < s->data + maxlength);\n  }\n  length = out - s->data;\n  s->data[length] = 0;\n  s->length_hashed = length << 1;\n  jv r = {JV_KIND_STRING, 0, 0, 0, {&s->refcnt}};\n  return r;\n}\n\n/* Assumes valid UTF8 */\nstatic jv jvp_string_new(const char* data, uint32_t length) {\n  jvp_string* s = jvp_string_alloc(length);\n  s->length_hashed = length << 1;\n  if (data != NULL)\n    memcpy(s->data, data, length);\n  s->data[length] = 0;\n  jv r = {JV_KIND_STRING, 0, 0, 0, {&s->refcnt}};\n  return r;\n}\n\nstatic jv jvp_string_empty_new(uint32_t length) {\n  jvp_string* s = jvp_string_alloc(length);\n  s->length_hashed = 0;\n  memset(s->data, 0, length);\n  jv r = {JV_KIND_STRING, 0, 0, 0, {&s->refcnt}};\n  return r;\n}\n\n\nstatic void jvp_string_free(jv js) {\n  jvp_string* s = jvp_string_ptr(js);\n  if (jvp_refcnt_dec(&s->refcnt)) {\n    jv_mem_free(s);\n  }\n}\n\nstatic uint32_t jvp_string_length(jvp_string* s) {\n  return s->length_hashed >> 1;\n}\n\nstatic uint32_t jvp_string_remaining_space(jvp_string* s) {\n  assert(s->alloc_length >= jvp_string_length(s));\n  uint32_t r = s->alloc_length - jvp_string_length(s);\n  return r;\n}\n\nstatic jv jvp_string_append(jv string, const char* data, uint32_t len) {\n  jvp_string* s = jvp_string_ptr(string);\n  uint32_t currlen = jvp_string_length(s);\n\n  if (jvp_refcnt_unshared(string.u.ptr) &&\n      jvp_string_remaining_space(s) >= len) {\n    // the next string fits at the end of a\n    memcpy(s->data + currlen, data, len);\n    s->data[currlen + len] = 0;\n    s->length_hashed = (currlen + len) << 1;\n    return string;\n  } else {\n    // allocate a bigger buffer and copy\n    uint32_t allocsz = (currlen + len) * 2;\n    if (allocsz < 32) allocsz = 32;\n    jvp_string* news = jvp_string_alloc(allocsz);\n    news->length_hashed = (currlen + len) << 1;\n    memcpy(news->data, s->data, currlen);\n    memcpy(news->data + currlen, data, len);\n    news->data[currlen + len] = 0;\n    jvp_string_free(string);\n    jv r = {JV_KIND_STRING, 0, 0, 0, {&news->refcnt}};\n    return r;\n  }\n}\n\nstatic const uint32_t HASH_SEED = 0x432A9843;\n\nstatic uint32_t rotl32 (uint32_t x, int8_t r){\n  return (x << r) | (x >> (32 - r));\n}\n\nstatic uint32_t jvp_string_hash(jv jstr) {\n  jvp_string* str = jvp_string_ptr(jstr);\n  if (str->length_hashed & 1)\n    return str->hash;\n\n  /* The following is based on MurmurHash3.\n     MurmurHash3 was written by Austin Appleby, and is placed\n     in the public domain. */\n\n  const uint8_t* data = (const uint8_t*)str->data;\n  int len = (int)jvp_string_length(str);\n  const int nblocks = len / 4;\n\n  uint32_t h1 = HASH_SEED;\n\n  const uint32_t c1 = 0xcc9e2d51;\n  const uint32_t c2 = 0x1b873593;\n  const uint32_t* blocks = (const uint32_t *)(data + nblocks*4);\n\n  for(int i = -nblocks; i; i++) {\n    uint32_t k1 = blocks[i]; //FIXME: endianness/alignment\n\n    k1 *= c1;\n    k1 = rotl32(k1,15);\n    k1 *= c2;\n\n    h1 ^= k1;\n    h1 = rotl32(h1,13);\n    h1 = h1*5+0xe6546b64;\n  }\n\n  const uint8_t* tail = (const uint8_t*)(data + nblocks*4);\n\n  uint32_t k1 = 0;\n\n  switch(len & 3) {\n  case 3: k1 ^= tail[2] << 16;\n  case 2: k1 ^= tail[1] << 8;\n  case 1: k1 ^= tail[0];\n          k1 *= c1; k1 = rotl32(k1,15); k1 *= c2; h1 ^= k1;\n  }\n\n  h1 ^= len;\n\n  h1 ^= h1 >> 16;\n  h1 *= 0x85ebca6b;\n  h1 ^= h1 >> 13;\n  h1 *= 0xc2b2ae35;\n  h1 ^= h1 >> 16;\n\n  str->length_hashed |= 1;\n  str->hash = h1;\n\n  return h1;\n}\n\nstatic int jvp_string_equal(jv a, jv b) {\n  assert(jv_get_kind(a) == JV_KIND_STRING);\n  assert(jv_get_kind(b) == JV_KIND_STRING);\n  jvp_string* stra = jvp_string_ptr(a);\n  jvp_string* strb = jvp_string_ptr(b);\n  if (jvp_string_length(stra) != jvp_string_length(strb)) return 0;\n  return memcmp(stra->data, strb->data, jvp_string_length(stra)) == 0;\n}\n\n/*\n * Strings (public API)\n */\n\njv jv_string_sized(const char* str, int len) {\n  return\n    jvp_utf8_is_valid(str, str+len) ?\n    jvp_string_new(str, len) :\n    jvp_string_copy_replace_bad(str, len);\n}\n\njv jv_string_empty(int len) {\n  return jvp_string_empty_new(len);\n}\n\njv jv_string(const char* str) {\n  return jv_string_sized(str, strlen(str));\n}\n\nint jv_string_length_bytes(jv j) {\n  assert(jv_get_kind(j) == JV_KIND_STRING);\n  int r = jvp_string_length(jvp_string_ptr(j));\n  jv_free(j);\n  return r;\n}\n\nint jv_string_length_codepoints(jv j) {\n  assert(jv_get_kind(j) == JV_KIND_STRING);\n  const char* i = jv_string_value(j);\n  const char* end = i + jv_string_length_bytes(jv_copy(j));\n  int c = 0, len = 0;\n  while ((i = jvp_utf8_next(i, end, &c))) len++;\n  jv_free(j);\n  return len;\n}\n\n\njv jv_string_indexes(jv j, jv k) {\n  assert(jv_get_kind(j) == JV_KIND_STRING);\n  assert(jv_get_kind(k) == JV_KIND_STRING);\n  const char *jstr = jv_string_value(j);\n  const char *idxstr = jv_string_value(k);\n  const char *p;\n  int jlen = jv_string_length_bytes(jv_copy(j));\n  int idxlen = jv_string_length_bytes(jv_copy(k));\n  jv a = jv_array();\n\n  p = jstr;\n  while ((p = _jq_memmem(p, (jstr + jlen) - p, idxstr, idxlen)) != NULL) {\n    a = jv_array_append(a, jv_number(p - jstr));\n    p += idxlen;\n  }\n  jv_free(j);\n  jv_free(k);\n  return a;\n}\n\njv jv_string_split(jv j, jv sep) {\n  assert(jv_get_kind(j) == JV_KIND_STRING);\n  assert(jv_get_kind(sep) == JV_KIND_STRING);\n  const char *jstr = jv_string_value(j);\n  const char *jend = jstr + jv_string_length_bytes(jv_copy(j));\n  const char *sepstr = jv_string_value(sep);\n  const char *p, *s;\n  int seplen = jv_string_length_bytes(jv_copy(sep));\n  jv a = jv_array();\n\n  assert(jv_get_refcnt(a) == 1);\n\n  if (seplen == 0) {\n    int c;\n    while ((jstr = jvp_utf8_next(jstr, jend, &c)))\n      a = jv_array_append(a, jv_string_append_codepoint(jv_string(""), c));\n  } else {\n    for (p = jstr; p < jend; p = s + seplen) {\n      s = _jq_memmem(p, jend - p, sepstr, seplen);\n      if (s == NULL)\n        s = jend;\n      a = jv_array_append(a, jv_string_sized(p, s - p));\n      // Add an empty string to denote that j ends on a sep\n      if (s + seplen == jend && seplen != 0)\n        a = jv_array_append(a, jv_string(""));\n    }\n  }\n  jv_free(j);\n  jv_free(sep);\n  return a;\n}\n\njv jv_string_explode(jv j) {\n  assert(jv_get_kind(j) == JV_KIND_STRING);\n  const char* i = jv_string_value(j);\n  int len = jv_string_length_bytes(jv_copy(j));\n  const char* end = i + len;\n  jv a = jv_array_sized(len);\n  int c;\n  while ((i = jvp_utf8_next(i, end, &c)))\n    a = jv_array_append(a, jv_number(c));\n  jv_free(j);\n  return a;\n}\n\njv jv_string_implode(jv j) {\n  assert(jv_get_kind(j) == JV_KIND_ARRAY);\n  int len = jv_array_length(jv_copy(j));\n  jv s = jv_string_empty(len);\n  int i;\n\n  assert(len >= 0);\n\n  for (i = 0; i < len; i++) {\n    jv n = jv_array_get(jv_copy(j), i);\n    assert(jv_get_kind(n) == JV_KIND_NUMBER);\n    int nv = jv_number_value(n);\n    if (nv > 0x10FFFF)\n      nv = 0xFFFD; // U+FFFD REPLACEMENT CHARACTER\n    s = jv_string_append_codepoint(s, nv);\n  }\n\n  jv_free(j);\n  return s;\n}\n\nunsigned long jv_string_hash(jv j) {\n  assert(jv_get_kind(j) == JV_KIND_STRING);\n  uint32_t hash = jvp_string_hash(j);\n  jv_free(j);\n  return hash;\n}\n\nconst char* jv_string_value(jv j) {\n  assert(jv_get_kind(j) == JV_KIND_STRING);\n  return jvp_string_ptr(j)->data;\n}\n\njv jv_string_slice(jv j, int start, int end) {\n  assert(jv_get_kind(j) == JV_KIND_STRING);\n  const char *s = jv_string_value(j);\n  int len = jv_string_length_bytes(jv_copy(j));\n  int i;\n  const char *p, *e;\n  int c;\n  jv res;\n\n  jvp_clamp_slice_params(len, &start, &end);\n  assert(0 <= start && start <= end && end <= len);\n\n  /* Look for byte offset corresponding to start codepoints */\n  for (p = s, i = 0; i < start; i++) {\n    p = jvp_utf8_next(p, s + len, &c);\n    if (p == NULL) {\n      jv_free(j);\n      return jv_string_empty(16);\n    }\n    if (c == -1) {\n      jv_free(j);\n      return jv_invalid_with_msg(jv_string("Invalid UTF-8 string"));\n    }\n  }\n  /* Look for byte offset corresponding to end codepoints */\n  for (e = p; e != NULL && i < end; i++) {\n    e = jvp_utf8_next(e, s + len, &c);\n    if (e == NULL) {\n      e = s + len;\n      break;\n    }\n    if (c == -1) {\n      jv_free(j);\n      return jv_invalid_with_msg(jv_string("Invalid UTF-8 string"));\n    }\n  }\n\n  /*\n   * NOTE: Ideally we should do here what jvp_array_slice() does instead\n   * of allocating a new string as we do!  However, we assume NUL-\n   * terminated strings all over, and in the jv API, so for now we waste\n   * memory like a drunken navy programmer.  There\'s probably nothing we\n   * can do about it.\n   */\n  res = jv_string_sized(p, e - p);\n  jv_free(j);\n  return res;\n}\n\njv jv_string_concat(jv a, jv b) {\n  a = jvp_string_append(a, jv_string_value(b),\n                        jvp_string_length(jvp_string_ptr(b)));\n  jv_free(b);\n  return a;\n}\n\njv jv_string_append_buf(jv a, const char* buf, int len) {\n  if (jvp_utf8_is_valid(buf, buf+len)) {\n    a = jvp_string_append(a, buf, len);\n  } else {\n    jv b = jvp_string_copy_replace_bad(buf, len);\n    a = jv_string_concat(a, b);\n  }\n  return a;\n}\n\njv jv_string_append_codepoint(jv a, uint32_t c) {\n  char buf[5];\n  int len = jvp_utf8_encode(c, buf);\n  a = jvp_string_append(a, buf, len);\n  return a;\n}\n\njv jv_string_append_str(jv a, const char* str) {\n  return jv_string_append_buf(a, str, strlen(str));\n}\n\njv jv_string_vfmt(const char* fmt, va_list ap) {\n  int size = 1024;\n  while (1) {\n    char* buf = jv_mem_alloc(size);\n    va_list ap2;\n    va_copy(ap2, ap);\n    int n = vsnprintf(buf, size, fmt, ap2);\n    va_end(ap2);\n    /*\n     * NOTE: here we support old vsnprintf()s that return -1 because the\n     * buffer is too small.\n     */\n    if (n >= 0 && n < size) {\n      jv ret = jv_string_sized(buf, n);\n      jv_mem_free(buf);\n      return ret;\n    } else {\n      jv_mem_free(buf);\n      size = (n > 0) ? /* standard */ (n * 2) : /* not standard */ (size * 2);\n    }\n  }\n}\n\njv jv_string_fmt(const char* fmt, ...) {\n  va_list args;\n  va_start(args, fmt);\n  jv res = jv_string_vfmt(fmt, args);\n  va_end(args);\n  return res;\n}\n\n/*\n * Objects (internal helpers)\n */\n\nstruct object_slot {\n  int next; /* next slot with same hash, for collisions */\n  uint32_t hash;\n  jv string;\n  jv value;\n};\n\ntypedef struct {\n  jv_refcnt refcnt;\n  int next_free;\n  struct object_slot elements[];\n} jvp_object;\n\n\n/* warning: nontrivial justification of alignment */\nstatic jv jvp_object_new(int size) {\n  // Allocates an object of (size) slots and (size*2) hash buckets.\n\n  // size must be a power of two\n  assert(size > 0 && (size & (size - 1)) == 0);\n\n  jvp_object* obj = jv_mem_alloc(sizeof(jvp_object) +\n                                 sizeof(struct object_slot) * size +\n                                 sizeof(int) * (size * 2));\n  obj->refcnt.count = 1;\n  for (int i=0; i<size; i++) {\n    obj->elements[i].next = i - 1;\n    obj->elements[i].string = JV_NULL;\n    obj->elements[i].hash = 0;\n    obj->elements[i].value = JV_NULL;\n  }\n  obj->next_free = 0;\n  int* hashbuckets = (int*)(&obj->elements[size]);\n  for (int i=0; i<size*2; i++) {\n    hashbuckets[i] = -1;\n  }\n  jv r = {JV_KIND_OBJECT, 0, 0, size, {&obj->refcnt}};\n  return r;\n}\n\nstatic jvp_object* jvp_object_ptr(jv o) {\n  assert(jv_get_kind(o) == JV_KIND_OBJECT);\n  return (jvp_object*)o.u.ptr;\n}\n\nstatic uint32_t jvp_object_mask(jv o) {\n  assert(jv_get_kind(o) == JV_KIND_OBJECT);\n  return (o.size * 2) - 1;\n}\n\nstatic int jvp_object_size(jv o) {\n  assert(jv_get_kind(o) == JV_KIND_OBJECT);\n  return o.size;\n}\n\nstatic int* jvp_object_buckets(jv o) {\n  return (int*)(&jvp_object_ptr(o)->elements[o.size]);\n}\n\nstatic int* jvp_object_find_bucket(jv object, jv key) {\n  return jvp_object_buckets(object) + (jvp_object_mask(object) & jvp_string_hash(key));\n}\n\nstatic struct object_slot* jvp_object_get_slot(jv object, int slot) {\n  assert(slot == -1 || (slot >= 0 && slot < jvp_object_size(object)));\n  if (slot == -1) return 0;\n  else return &jvp_object_ptr(object)->elements[slot];\n}\n\nstatic struct object_slot* jvp_object_next_slot(jv object, struct object_slot* slot) {\n  return jvp_object_get_slot(object, slot->next);\n}\n\nstatic struct object_slot* jvp_object_find_slot(jv object, jv keystr, int* bucket) {\n  uint32_t hash = jvp_string_hash(keystr);\n  for (struct object_slot* curr = jvp_object_get_slot(object, *bucket);\n       curr;\n       curr = jvp_object_next_slot(object, curr)) {\n    if (curr->hash == hash && jvp_string_equal(keystr, curr->string)) {\n      return curr;\n    }\n  }\n  return 0;\n}\n\nstatic struct object_slot* jvp_object_add_slot(jv object, jv key, int* bucket) {\n  jvp_object* o = jvp_object_ptr(object);\n  int newslot_idx = o->next_free;\n  if (newslot_idx == jvp_object_size(object)) return 0;\n  struct object_slot* newslot = jvp_object_get_slot(object, newslot_idx);\n  o->next_free++;\n  newslot->next = *bucket;\n  *bucket = newslot_idx;\n  newslot->hash = jvp_string_hash(key);\n  newslot->string = key;\n  return newslot;\n}\n\nstatic jv* jvp_object_read(jv object, jv key) {\n  assert(jv_get_kind(key) == JV_KIND_STRING);\n  int* bucket = jvp_object_find_bucket(object, key);\n  struct object_slot* slot = jvp_object_find_slot(object, key, bucket);\n  if (slot == 0) return 0;\n  else return &slot->value;\n}\n\nstatic void jvp_object_free(jv o) {\n  assert(jv_get_kind(o) == JV_KIND_OBJECT);\n  if (jvp_refcnt_dec(o.u.ptr)) {\n    for (int i=0; i<jvp_object_size(o); i++) {\n      struct object_slot* slot = jvp_object_get_slot(o, i);\n      if (jv_get_kind(slot->string) != JV_KIND_NULL) {\n        jvp_string_free(slot->string);\n        jv_free(slot->value);\n      }\n    }\n    jv_mem_free(jvp_object_ptr(o));\n  }\n}\n\nstatic jv jvp_object_rehash(jv object) {\n  assert(jv_get_kind(object) == JV_KIND_OBJECT);\n  assert(jvp_refcnt_unshared(object.u.ptr));\n  int size = jvp_object_size(object);\n  jv new_object = jvp_object_new(size * 2);\n  for (int i=0; i<size; i++) {\n    struct object_slot* slot = jvp_object_get_slot(object, i);\n    if (jv_get_kind(slot->string) == JV_KIND_NULL) continue;\n    int* new_bucket = jvp_object_find_bucket(new_object, slot->string);\n    assert(!jvp_object_find_slot(new_object, slot->string, new_bucket));\n    struct object_slot* new_slot = jvp_object_add_slot(new_object, slot->string, new_bucket);\n    assert(new_slot);\n    new_slot->value = slot->value;\n  }\n  // references are transported, just drop the old table\n  jv_mem_free(jvp_object_ptr(object));\n  return new_object;\n}\n\nstatic jv jvp_object_unshare(jv object) {\n  assert(jv_get_kind(object) == JV_KIND_OBJECT);\n  if (jvp_refcnt_unshared(object.u.ptr))\n    return object;\n\n  jv new_object = jvp_object_new(jvp_object_size(object));\n  jvp_object_ptr(new_object)->next_free = jvp_object_ptr(object)->next_free;\n  for (int i=0; i<jvp_object_size(new_object); i++) {\n    struct object_slot* old_slot = jvp_object_get_slot(object, i);\n    struct object_slot* new_slot = jvp_object_get_slot(new_object, i);\n    *new_slot = *old_slot;\n    if (jv_get_kind(old_slot->string) != JV_KIND_NULL) {\n      new_slot->string = jv_copy(old_slot->string);\n      new_slot->value = jv_copy(old_slot->value);\n    }\n  }\n\n  int* old_buckets = jvp_object_buckets(object);\n  int* new_buckets = jvp_object_buckets(new_object);\n  memcpy(new_buckets, old_buckets, sizeof(int) * jvp_object_size(new_object)*2);\n\n  jvp_object_free(object);\n  assert(jvp_refcnt_unshared(new_object.u.ptr));\n  return new_object;\n}\n\nstatic jv* jvp_object_write(jv* object, jv key) {\n  *object = jvp_object_unshare(*object);\n  int* bucket = jvp_object_find_bucket(*object, key);\n  struct object_slot* slot = jvp_object_find_slot(*object, key, bucket);\n  if (slot) {\n    // already has the key\n    jvp_string_free(key);\n    return &slot->value;\n  }\n  slot = jvp_object_add_slot(*object, key, bucket);\n  if (slot) {\n    slot->value = jv_invalid();\n  } else {\n    *object = jvp_object_rehash(*object);\n    bucket = jvp_object_find_bucket(*object, key);\n    assert(!jvp_object_find_slot(*object, key, bucket));\n    slot = jvp_object_add_slot(*object, key, bucket);\n    assert(slot);\n    slot->value = jv_invalid();\n  }\n  return &slot->value;\n}\n\nstatic int jvp_object_delete(jv* object, jv key) {\n  assert(jv_get_kind(key) == JV_KIND_STRING);\n  *object = jvp_object_unshare(*object);\n  int* bucket = jvp_object_find_bucket(*object, key);\n  int* prev_ptr = bucket;\n  uint32_t hash = jvp_string_hash(key);\n  for (struct object_slot* curr = jvp_object_get_slot(*object, *bucket);\n       curr;\n       curr = jvp_object_next_slot(*object, curr)) {\n    if (hash == curr->hash && jvp_string_equal(key, curr->string)) {\n      *prev_ptr = curr->next;\n      jvp_string_free(curr->string);\n      curr->string = JV_NULL;\n      jv_free(curr->value);\n      return 1;\n    }\n    prev_ptr = &curr->next;\n  }\n  return 0;\n}\n\nstatic int jvp_object_length(jv object) {\n  int n = 0;\n  for (int i=0; i<jvp_object_size(object); i++) {\n    struct object_slot* slot = jvp_object_get_slot(object, i);\n    if (jv_get_kind(slot->string) != JV_KIND_NULL) n++;\n  }\n  return n;\n}\n\nstatic int jvp_object_equal(jv o1, jv o2) {\n  int len2 = jvp_object_length(o2);\n  int len1 = 0;\n  for (int i=0; i<jvp_object_size(o1); i++) {\n    struct object_slot* slot = jvp_object_get_slot(o1, i);\n    if (jv_get_kind(slot->string) == JV_KIND_NULL) continue;\n    jv* slot2 = jvp_object_read(o2, slot->string);\n    if (!slot2) return 0;\n    // FIXME: do less refcounting here\n    if (!jv_equal(jv_copy(slot->value), jv_copy(*slot2))) return 0;\n    len1++;\n  }\n  return len1 == len2;\n}\n\n/*\n * Objects (public interface)\n */\n#define DEFAULT_OBJECT_SIZE 8\njv jv_object() {\n  return jvp_object_new(8);\n}\n\njv jv_object_get(jv object, jv key) {\n  assert(jv_get_kind(object) == JV_KIND_OBJECT);\n  assert(jv_get_kind(key) == JV_KIND_STRING);\n  jv* slot = jvp_object_read(object, key);\n  jv val;\n  if (slot) {\n    val = jv_copy(*slot);\n  } else {\n    val = jv_invalid();\n  }\n  jv_free(object);\n  jv_free(key);\n  return val;\n}\n\nint jv_object_has(jv object, jv key) {\n  assert(jv_get_kind(object) == JV_KIND_OBJECT);\n  assert(jv_get_kind(key) == JV_KIND_STRING);\n  jv* slot = jvp_object_read(object, key);\n  int res = slot ? 1 : 0;\n  jv_free(object);\n  jv_free(key);\n  return res;\n}\n\njv jv_object_set(jv object, jv key, jv value) {\n  assert(jv_get_kind(object) == JV_KIND_OBJECT);\n  assert(jv_get_kind(key) == JV_KIND_STRING);\n  // copy/free of object, key, value coalesced\n  jv* slot = jvp_object_write(&object, key);\n  jv_free(*slot);\n  *slot = value;\n  return object;\n}\n\njv jv_object_delete(jv object, jv key) {\n  assert(jv_get_kind(object) == JV_KIND_OBJECT);\n  assert(jv_get_kind(key) == JV_KIND_STRING);\n  jvp_object_delete(&object, key);\n  jv_free(key);\n  return object;\n}\n\nint jv_object_length(jv object) {\n  assert(jv_get_kind(object) == JV_KIND_OBJECT);\n  int n = jvp_object_length(object);\n  jv_free(object);\n  return n;\n}\n\njv jv_object_merge(jv a, jv b) {\n  assert(jv_get_kind(a) == JV_KIND_OBJECT);\n  jv_object_foreach(b, k, v) {\n    a = jv_object_set(a, k, v);\n  }\n  jv_free(b);\n  return a;\n}\n\njv jv_object_merge_recursive(jv a, jv b) {\n  assert(jv_get_kind(a) == JV_KIND_OBJECT);\n  assert(jv_get_kind(b) == JV_KIND_OBJECT);\n\n  jv_object_foreach(b, k, v) {\n    jv elem = jv_object_get(jv_copy(a), jv_copy(k));\n    if (jv_is_valid(elem) &&\n        jv_get_kind(elem) == JV_KIND_OBJECT &&\n        jv_get_kind(v) == JV_KIND_OBJECT) {\n      a = jv_object_set(a, k, jv_object_merge_recursive(elem, v));\n    } else {\n      jv_free(elem);\n      a = jv_object_set(a, k, v);\n    }\n  }\n  jv_free(b);\n  return a;\n}\n\nint jv_object_contains(jv a, jv b) {\n  assert(jv_get_kind(a) == JV_KIND_OBJECT);\n  assert(jv_get_kind(b) == JV_KIND_OBJECT);\n  int r = 1;\n\n  jv_object_foreach(b, key, b_val) {\n    jv a_val = jv_object_get(jv_copy(a), jv_copy(key));\n\n    r = jv_contains(a_val, b_val);\n    jv_free(key);\n\n    if (!r) break;\n  }\n\n  jv_free(a);\n  jv_free(b);\n  return r;\n}\n\n/*\n * Object iteration (internal helpers)\n */\n\nenum { ITER_FINISHED = -2 };\n\nint jv_object_iter_valid(jv object, int i) {\n  return i != ITER_FINISHED;\n}\n\nint jv_object_iter(jv object) {\n  assert(jv_get_kind(object) == JV_KIND_OBJECT);\n  return jv_object_iter_next(object, -1);\n}\n\nint jv_object_iter_next(jv object, int iter) {\n  assert(jv_get_kind(object) == JV_KIND_OBJECT);\n  assert(iter != ITER_FINISHED);\n  struct object_slot* slot;\n  do {\n    iter++;\n    if (iter >= jvp_object_size(object))\n      return ITER_FINISHED;\n    slot = jvp_object_get_slot(object, iter);\n  } while (jv_get_kind(slot->string) == JV_KIND_NULL);\n  assert(jv_get_kind(jvp_object_get_slot(object,iter)->string)\n         == JV_KIND_STRING);\n  return iter;\n}\n\njv jv_object_iter_key(jv object, int iter) {\n  jv s = jvp_object_get_slot(object, iter)->string;\n  assert(jv_get_kind(s) == JV_KIND_STRING);\n  return jv_copy(s);\n}\n\njv jv_object_iter_value(jv object, int iter) {\n  return jv_copy(jvp_object_get_slot(object, iter)->value);\n}\n\n/*\n * Memory management\n */\njv jv_copy(jv j) {\n  if (jv_get_kind(j) == JV_KIND_ARRAY ||\n      jv_get_kind(j) == JV_KIND_STRING ||\n      jv_get_kind(j) == JV_KIND_OBJECT ||\n      (jv_get_kind(j) == JV_KIND_INVALID && j.u.ptr != 0)) {\n    jvp_refcnt_inc(j.u.ptr);\n  }\n  return j;\n}\n\nvoid jv_free(jv j) {\n  if (jv_get_kind(j) == JV_KIND_ARRAY) {\n    jvp_array_free(j);\n  } else if (jv_get_kind(j) == JV_KIND_STRING) {\n    jvp_string_free(j);\n  } else if (jv_get_kind(j) == JV_KIND_OBJECT) {\n    jvp_object_free(j);\n  } else if (jv_get_kind(j) == JV_KIND_INVALID) {\n    jvp_invalid_free(j);\n  }\n}\n\nint jv_get_refcnt(jv j) {\n  switch (jv_get_kind(j)) {\n  case JV_KIND_ARRAY:\n  case JV_KIND_STRING:\n  case JV_KIND_OBJECT:\n    return j.u.ptr->count;\n  default:\n    return 1;\n  }\n}\n\n/*\n * Higher-level operations\n */\n\nint jv_equal(jv a, jv b) {\n  int r;\n  if (jv_get_kind(a) != jv_get_kind(b)) {\n    r = 0;\n  } else if (jv_get_kind(a) == JV_KIND_NUMBER) {\n    r = jv_number_value(a) == jv_number_value(b);\n  } else if (a.kind_flags == b.kind_flags &&\n             a.size == b.size &&\n             a.u.ptr == b.u.ptr) {\n    r = 1;\n  } else {\n    switch (jv_get_kind(a)) {\n    case JV_KIND_ARRAY:\n      r = jvp_array_equal(a, b);\n      break;\n    case JV_KIND_STRING:\n      r = jvp_string_equal(a, b);\n      break;\n    case JV_KIND_OBJECT:\n      r = jvp_object_equal(a, b);\n      break;\n    default:\n      r = 1;\n      break;\n    }\n  }\n  jv_free(a);\n  jv_free(b);\n  return r;\n}\n\nint jv_identical(jv a, jv b) {\n  int r;\n  if (a.kind_flags != b.kind_flags\n      || a.offset != b.offset\n      || a.size != b.size) {\n    r = 0;\n  } else {\n    switch (jv_get_kind(a)) {\n    case JV_KIND_ARRAY:\n    case JV_KIND_STRING:\n    case JV_KIND_OBJECT:\n      r = a.u.ptr == b.u.ptr;\n      break;\n    case JV_KIND_NUMBER:\n      r = memcmp(&a.u.number, &b.u.number, sizeof(a.u.number)) == 0;\n      break;\n    default:\n      r = 1;\n      break;\n    }\n  }\n  jv_free(a);\n  jv_free(b);\n  return r;\n}\n\nint jv_contains(jv a, jv b) {\n  int r = 1;\n  if (jv_get_kind(a) != jv_get_kind(b)) {\n    r = 0;\n  } else if (jv_get_kind(a) == JV_KIND_OBJECT) {\n    r = jv_object_contains(jv_copy(a), jv_copy(b));\n  } else if (jv_get_kind(a) == JV_KIND_ARRAY) {\n    r = jv_array_contains(jv_copy(a), jv_copy(b));\n  } else if (jv_get_kind(a) == JV_KIND_STRING) {\n    r = strstr(jv_string_value(a), jv_string_value(b)) != 0;\n  } else {\n    r = jv_equal(jv_copy(a), jv_copy(b));\n  }\n  jv_free(a);\n  jv_free(b);\n  return r;\n}\n', 'exists_in_old_version': True}, {'file_path': 'tests/jq.test', 'chunks': [{'start_line': 2110, 'end_line': 2126, 'old_start': 2110, 'old_end': 2120, 'content': ' tojson | fromjson\n {"a":nan}\n {"a":null}\n \n-# also "nan with payload" #2985\n-if have_decnum then fromjson else nan end | isnan\n-"nan1234"\n+# NaN with payload is not parsed\n+.[] | try (fromjson | isnan) catch .\n+["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]\n true\n-\n+true\n+"Invalid numeric literal at EOF at line 1, column 4 (while parsing \'NaN1\')"\n+"Invalid numeric literal at EOF at line 1, column 5 (while parsing \'NaN10\')"\n+"Invalid numeric literal at EOF at line 1, column 6 (while parsing \'NaN100\')"\n+"Invalid numeric literal at EOF at line 1, column 7 (while parsing \'NaN1000\')"\n+"Invalid numeric literal at EOF at line 1, column 8 (while parsing \'NaN10000\')"\n+"Invalid numeric literal at EOF at line 1, column 9 (while parsing \'NaN100000\')"\n \n # calling input/0, or debug/0 in a test doesn\'t crash jq\n ', 'new_count': 17}], 'function_contexts': [{'lines': '2110-2126', 'context': '{"a":4,"b":5}\n{"foreach":1,"and":2,"or":3,"a":4}\n\n[ foreach .[] as $try (1 as $catch | $catch - 1; . + $try; .) ]\n[10,9,8,7]\n[10,19,27,34]\n\n\n# Object construction\n\n{ a, $__loc__, c }\n{"a":[1,2,3],"b":"foo","c":{"hi":"hey"}}\n{"a":[1,2,3],"__loc__":{"file":"<top-level>","line":1},"c":{"hi":"hey"}}\n\n1 as $x | "2" as $y | "3" as $z | { $x, as, $y: 4, ($z): 5, if: 6, foo: 7 }\n{"as":8}\n{"x":1,"as":8,"2":4,"3":5,"if":6,"foo":7}\n\n\n# nan is parsed as a valid NaN value from JSON\n\nfromjson | isnan\n"nan"\ntrue\n\ntojson | fromjson\n{"a":nan}\n{"a":null}\n\n# also "nan with payload" #2985\nif have_decnum then fromjson else nan end | isnan\n"nan1234"\ntrue\n\n\n# calling input/0, or debug/0 in a test doesn\'t crash jq\n\ntry input catch .\nnull\n"break"\n\ndebug\n1\n1\n\n# try/catch catches more than it should #1859\n"foo" | try ((try . catch "caught too much") | error) catch "caught just right"\nnull\n"caught just right"\n\n.[]|(try (if .=="hi" then . else error end) catch empty) | "\\(.) there!"\n["hi","ho"]\n"hi there!"\n\ntry (["hi","ho"]|.[]|(try . catch (if .=="ho" then "BROKEN"|error else empty end)) | if .=="ho" then error else "\\(.) there!" end) catch "caught outside \\(.)"\nnull\n"hi there!"\n"caught outside ho"\n\n.[]|(try . catch (if .=="ho" then "BROKEN"|error else empty end)) | if .=="ho" then error else "\\(.) there!" end\n["hi","ho"]\n"hi there!"\n\ntry (try error catch "inner catch \\(.)") catch "outer catch \\(.)"\n"foo"\n"inner catch foo"\n\ntry ((try error catch "inner catch \\(.)")|error) catch "outer catch \\(.)"\n"foo"\n"outer catch inner catch foo"'}], 'old_file_content': None, 'exists_in_old_version': False}, {'file_path': 'tests/shtest', 'chunks': [{'start_line': 669, 'end_line': 674, 'old_start': 669, 'old_end': 681, 'content': ' if ! x=$($JQ -cn "$(printf \'[\\r\\n1,# comment\\r\\n2,# comment\\\\\\r\\ncomment\\r\\n3\\r\\\n   exit 1\n fi\n \n-# CVE-2023-50268: No stack overflow comparing a nan with a large payload\n-if $JQ -ne \'have_decnum\'; then\n-  $VALGRIND $Q $JQ \'1 != .\' <<\\EOF >/dev/null\n-  Nan4000\n-EOF\n-fi\n-\n # Allow passing the inline jq script before -- #2919\n if ! r=$($JQ --args -rn -- \'$ARGS.positional[0]\' bar) || [ "$r" != bar ]; then\n     echo "passing the inline script after -- didn\'t work"', 'new_count': 6}], 'function_contexts': [{'lines': '669-674', 'context': '<<EOF\n$locales\nEOF\n  if [ -z "$l" ]; then\n    echo "WARNING: Not testing localization"\n  else\n    date=$(LC_ALL=$l date +\'%a %d %b %Y at %H:%M:%S\')\n    if ! LC_ALL=$l $JQ -nR --arg date "$date" \'$date|strptime("%a %d %b %Y at %H:%M:%S")\'; then\n      echo "jq does not honor LC_ALL environment variable"\n      exit 1\n    fi\n  fi\nfi\n\n# Comments!\nif ! x=$($JQ -n \'123 # comment\') || [ "$x" != 123 ]; then\n  echo \'comment did not work\'\n  exit 1\nfi\n\ncr=$(printf \\\\r)\nif ! x=$($JQ -n "1 # foo$cr + 2") || [ "$x" != 1 ]; then\n  echo \'regression: carriage return terminates comment\'\n  exit 1\nfi\n\nif ! x=$($JQ -cn \'[\n  1,\n  # foo \\\n  2,\n  # bar \\\\\n  3,\n  4, # baz \\\\\\\n  5, \\\n  6,\n  7\n  # comment \\\n    comment \\\n    comment\n]\') || [ "$x" != \'[1,3,4,7]\' ]; then\n  echo \'multiline comment was not handled correctly\'\n  exit 1\nfi\n\nif ! x=$($JQ -cn "$(printf \'[\\r\\n1,# comment\\r\\n2,# comment\\\\\\r\\ncomment\\r\\n3\\r\\n]\')") \\\n  || [ "$x" != \'[1,2,3]\' ]; then\n  echo \'multiline comment with CRLF line breaks was not handled correctly\'\n  exit 1\nfi\n\n# CVE-2023-50268: No stack overflow comparing a nan with a large payload\nif $JQ -ne \'have_decnum\'; then\n  $VALGRIND $Q $JQ \'1 != .\' <<\\EOF >/dev/null\n  Nan4000\nEOF\nfi\n\n# Allow passing the inline jq script before -- #2919\nif ! r=$($JQ --args -rn -- \'$ARGS.positional[0]\' bar) || [ "$r" != bar ]; then\n    echo "passing the inline script after -- didn\'t work"\n    exit 1\nfi\nif ! r=$($JQ --args -rn 1 -- \'$ARGS.positional[0]\' bar) || [ "$r" != 1 ]; then\n    echo "passing the inline script before -- didn\'t work"\n    exit 1\nfi\n\n# CVE-2023-50246: No heap overflow for \'-10E-1000000001\'\n$VALGRIND $Q $JQ . <<\\NUM\n-10E-1000000001\nNUM\n\n# test for --indent and --compact-output -- #1465\nprintf \'[1,2]\\n\' > $d/expected\n$JQ --compact-output -n "[1,2]" > $d/out\ncmp $d/out $d/expected\n\nprintf \'[\\n1,\\n2\\n]\\n\' > $d/expected\n$JQ --indent 0 -n "[1,2]" > $d/out\ncmp $d/out $d/expected\n\nprintf \'[\\n 1,\\n 2\\n]\\n\' > $d/expected\n$JQ --indent 1 -n "[1,2]" > $d/out\ncmp $d/out $d/expected\n\nprintf \'[\\n     1,\\n     2\\n]\\n\' > $d/expected\n$JQ --indent 5 -n "[1,2]" > $d/out\ncmp $d/out $d/expected\n\nprintf \'[\\n{\\n"a": 1\\n}\\n]\\n\' > $d/expected\n$JQ --indent 0 -n "[{a:1}]" > $d/out\ncmp $d/out $d/expected\n\nprintf \'[\\n {\\n  "a": 1\\n }\\n]\\n\' > $d/expected\n$JQ --indent 1 -n "[{a:1}]" > $d/out\ncmp $d/out $d/expected\n\nprintf \'[\\n      {\\n            "a": 1\\n      }\\n]\\n\' > $d/expected\n$JQ --indent 6 -n "[{a:1}]" > $d/out\ncmp $d/out $d/expected'}], 'old_file_content': '#!/bin/sh\n\n. "${0%/*}/setup" "$@"\n\nPATH=$JQBASEDIR:$PATH $JQBASEDIR/tests/jq-f-test.sh > /dev/null\n\nif [ -f "$JQBASEDIR/.libs/libinject_errors.so" ]; then\n  # Do some simple error injection tests to check that we\'re handling\n  # I/O errors correctly.\n  (\n  libinject=$JQBASEDIR/.libs/libinject_errors.so\n  cd $d\n  LD_PRELOAD=$libinject $JQ . /dev/null\n  touch fail_read\n  LD_PRELOAD=$libinject $JQ . fail_read && exit 2\n  touch fail_close\n  LD_PRELOAD=$libinject $JQ . fail_close && exit 2\n  true\n  )\nfi\n\nprintf \'a\\0b\\nc\\0d\\ne\' > $d/input\n$VALGRIND $Q $JQ -Rse \'. == "a\\u0000b\\nc\\u0000d\\ne"\' $d/input\n$VALGRIND $Q $JQ -Rne \'[inputs] == ["a\\u0000b", "c\\u0000d", "e"]\' $d/input\n\n## Test constant folding\n\n## XXX If we add a builtin to list the program\'s disassembly then we can\n## move all of these into tests/all.test\n\n# String constant folding (addition only)\nnref=$($VALGRIND $Q $JQ -n --debug-dump-disasm \'"foo"\' | wc -l)\n\n# Numeric constant folding (not all ops yet)\nn=$($VALGRIND $Q $JQ -n --debug-dump-disasm \'1+1\' | wc -l)\nif [ $n -ne $nref ]; then\n    echo "Constant expression folding for strings didn\'t work"\n    exit 1\nfi\nn=$($VALGRIND $Q $JQ -n --debug-dump-disasm \'1-1\' | wc -l)\nif [ $n -ne $nref ]; then\n    echo "Constant expression folding for strings didn\'t work"\n    exit 1\nfi\nn=$($VALGRIND $Q $JQ -n --debug-dump-disasm \'2*3\' | wc -l)\nif [ $n -ne $nref ]; then\n    echo "Constant expression folding for strings didn\'t work"\n    exit 1\nfi\nn=$($VALGRIND $Q $JQ -n --debug-dump-disasm \'9/3\' | wc -l)\nif [ $n -ne $nref ]; then\n    echo "Constant expression folding for strings didn\'t work"\n    exit 1\nfi\nn=$($VALGRIND $Q $JQ -n --debug-dump-disasm \'9==3\' | wc -l)\nif [ $n -ne $nref ]; then\n    echo "Constant expression folding for strings didn\'t work"\n    exit 1\nfi\nn=$($VALGRIND $Q $JQ -n --debug-dump-disasm \'9!=3\' | wc -l)\nif [ $n -ne $nref ]; then\n    echo "Constant expression folding for strings didn\'t work"\n    exit 1\nfi\nn=$($VALGRIND $Q $JQ -n --debug-dump-disasm \'9<=3\' | wc -l)\nif [ $n -ne $nref ]; then\n    echo "Constant expression folding for strings didn\'t work"\n    exit 1\nfi\nn=$($VALGRIND $Q $JQ -n --debug-dump-disasm \'9>=3\' | wc -l)\nif [ $n -ne $nref ]; then\n    echo "Constant expression folding for strings didn\'t work"\n    exit 1\nfi\n\n## Test JSON sequence support\n\ncat > $d/expected <<EOF\nignoring parse error: Truncated value at line 2, column 5\nignoring parse error: Truncated value at line 2, column 25\nignoring parse error: Truncated value at line 2, column 41\nEOF\nprintf \'1\\0362 3\\n[0,1\\036[4,5]true"ab"{"c":4\\036{}{"d":5,"e":6"\\036false\\n\'|$VALGRIND $Q $JQ -ces --seq \'. == [2,3,[4,5],true,"ab",{},false]\' > /dev/null 2> $d/out\ncmp $d/out $d/expected\n\ncat > $d/expected <<EOF\nignoring parse error: Truncated value at line 2, column 5\nignoring parse error: Truncated value at line 2, column 25\nignoring parse error: Truncated value at line 3, column 1\nEOF\nprintf \'1\\0362 3\\n[0,1\\036[4,5]true"ab"{"c":4\\036{}{"d":5,"e":6"false\\n\\036null\'|$VALGRIND $Q $JQ -ces --seq \'. == [2,3,[4,5],true,"ab",{},null]\' > /dev/null 2> $d/out\ncmp $d/out $d/expected\n\n# Note that here jq sees no inputs at all but it still succeeds because\n# --seq ignores parse errors\ncat > $d/expected <<EOF\nignoring parse error: Unfinished abandoned text at EOF at line 1, column 4\nEOF\nprintf \'"foo\' | $JQ -ce --seq . > $d/out 2>&1\ncmp $d/out $d/expected\n\n# Numeric values truncated by EOF are ignored\ncat > $d/expected <<EOF\nignoring parse error: Unfinished abandoned text at EOF at line 1, column 1\nEOF\nprintf \'1\' | $JQ -ce --seq . > $d/out 2>&1\ncmp $d/out $d/expected\n\ncat > $d/expected <<EOF\njq: error (at <stdin>:1): Unfinished abandoned text at EOF at line 2, column 0\nEOF\nif printf \'1\\n\' | $JQ -cen --seq \'[inputs] == []\' >/dev/null 2> $d/out; then\n  printf \'Error expected but jq exited successfully\\n\' 1>&2\n  exit 2\nfi\ncmp $d/out $d/expected\n\n# Regression test for #951\nprintf \'"a\\n\' > $d/input\nif $VALGRIND $Q $JQ -e . $d/input; then\n  printf \'Issue #951 is back?\\n\' 1>&2\n  exit 2\nfi\n\n# Regression test for #1534\necho "[1,2,3,4]" > $d/expected\nprintf "[1,2][3,4]" | $JQ -cs add > $d/out 2>&1\ncmp $d/out $d/expected\nprintf "[1,2][3,4]\\n" | $JQ -cs add > $d/out 2>&1\ncmp $d/out $d/expected\n\n\n## Test streaming parser\n\n## If we add an option to stream to the `import ... as $symbol;` directive\n## then we can move these tests into tests/all.test.\n$VALGRIND $Q $JQ -c \'. as $d|path(..) as $p|$d|getpath($p)|scalars_or_empty|[$p,.]\' < "$JQTESTDIR/torture/input0.json" > $d/out0\n$VALGRIND $Q $JQ --stream -c \'.|select(length==2)\' < "$JQTESTDIR/torture/input0.json" > $d/out1\ndiff $d/out0 $d/out1\n\n## XXX This test can be moved to tests/all.test _now_\nclean=false\nif which seq > /dev/null 2>&1; then\n    # XXX We should try every prefix of input0.json, but that makes this\n    # test very, very slow when run with valgrind, and the whole point\n    # is to run it with valgrind.\n    #\n    #len=$(wc -c < "$JQTESTDIR/torture/input0.json")\n    if [ -z "$VALGRIND" ]; then\n        start=1\n        end=$(wc -c < "$JQTESTDIR/torture/input0.json")\n    else\n        start=120\n        end=151\n    fi\n    for i in $(seq $start $end); do\n        dd "if=tests/torture/input0.json" bs=$i count=1 2>/dev/null |\n            $VALGRIND $JQ -c . > $d/out0 2>$d/err || true\n        if [ -n "$VALGRIND" ]; then\n            grep \'^==[0-9][0-9]*== ERROR SUMMARY: 0 errors\' $d/err > /dev/null\n        else\n            tail -1 $d/err | egrep -i \'assert|abort|core\' && false\n        fi\n\n        dd "if=tests/torture/input0.json" bs=$i count=1 2>/dev/null |\n            $VALGRIND $JQ -cn --stream \'fromstream(inputs)\' > $d/out1 2>$d/err || true\n        if [ -n "$VALGRIND" ]; then\n            grep \'^==[0-9][0-9]*== ERROR SUMMARY: 0 errors\' $d/err > /dev/null\n        else\n            tail -1 $d/err | egrep -i \'assert|abort|core\' && false\n        fi\n\n        diff $d/out0 $d/out1\n    done\nelse\n    echo "Not doing torture tests"\nfi\n\n## Fuzz parser\n\n## XXX With a $(urandom) builtin we could move this test into tests/all.test\nclean=false\nif dd if=/dev/urandom bs=16 count=1024 > $d/rand 2>/dev/null; then\n    # Have a /dev/urandom, good\n    $VALGRIND $Q $JQ --seq . $d/rand >/dev/null 2>&1\n    $VALGRIND $Q $JQ --seq --stream . $d/rand >/dev/null 2>&1\n    dd if=/dev/urandom bs=16 count=1024 > $d/rand 2>/dev/null\n    $VALGRIND $Q $JQ --seq . $d/rand >/dev/null 2>&1\n    $VALGRIND $Q $JQ --seq --stream . $d/rand >/dev/null 2>&1\n    dd if=/dev/urandom bs=16 count=1024 > $d/rand 2>/dev/null\n    $VALGRIND $Q $JQ --seq . $d/rand >/dev/null 2>&1\n    $VALGRIND $Q $JQ --seq --stream . $d/rand >/dev/null 2>&1\nfi\nclean=true\n\n## Test library/module system\n\n# Check handling of ~/.jq; these can\'t move into jq_test.c yet because\n# they depend on $HOME\nif [ "$(HOME="$mods" $VALGRIND $Q $JQ -nr fg)" != foobar ]; then\n    echo "Bug #479 appears to be back" 1>&2\n    exit 1\nfi\n\nif [ $(HOME="$mods" $VALGRIND $Q $JQ --debug-dump-disasm -n fg | grep \'^[a-z]\' | wc -l) -gt 3 ]; then\n    echo "Binding too many defs into program" 1>&2\n    exit 1\nfi\n\ncd "$JQBASEDIR" # so that relative library paths are guaranteed correct\nif ! $VALGRIND $Q $JQ -L ./tests/modules -ne \'import "test_bind_order" as check; check::check==true\'; then\n    echo "Issue #817 regression?" 1>&2\n    exit 1\nfi\n\ncd "$JQBASEDIR"\nif ! $VALGRIND $Q $JQ -L tests/modules -ne \'import "test_bind_order" as check; check::check==true\'; then\n    echo "Issue #817 regression?" 1>&2\n    exit 1\nfi\n\n## Halt\n\nif ! $VALGRIND $Q $JQ -n halt; then\n    echo "jq halt didn\'t work as expected" 1>&2\n    exit 1\nfi\nif $VALGRIND $Q $VG_EXIT0 $JQ -n \'halt_error(1)\'; then\n    echo "jq halt_error(1) didn\'t work as expected" 1>&2\n    exit 1\nelif [ $? -ne 1 ]; then\n    echo "jq halt_error(1) had wrong error code" 1>&2\n    exit 1\nfi\nif $VALGRIND $Q $VG_EXIT0 $JQ -n \'halt_error(11)\'; then\n    echo "jq halt_error(11) didn\'t work as expected" 1>&2\n    exit 1\nelif [ $? -ne 11 ]; then\n    echo "jq halt_error(11) had wrong error code" 1>&2\n    exit 1\nfi\nif [ -n "$($VALGRIND $Q $JQ -n \'halt_error(1)\' 2>&1)" ]; then\n    echo "jq halt_error(1) had unexpected output" 1>&2\n    exit 1\nfi\nif [ -n "$($VALGRIND $Q $JQ -n \'"xyz\\n"|halt_error(1)\' 2>/dev/null)" ]; then\n    echo "jq halt_error(1) had unexpected output on stdout" 1>&2\n    exit 1\nfi\nif [ "$($VALGRIND $Q $JQ -n \'"xyz\\n"|halt_error(1)\' 2>&1)" != xyz ]; then\n    echo "jq halt_error(1) had unexpected output" 1>&2\n    exit 1\nfi\n\n# Check $JQ_COLORS\n$JQ -Ccn . > $d/color\nprintf \'\\033[1;30mnull\\033[0m\\n\' > $d/expect\ncmp $d/color $d/expect\nJQ_COLORS=\'4;31\' $JQ -Ccn . > $d/color\nprintf \'\\033[4;31mnull\\033[0m\\n\' > $d/expect\ncmp $d/color $d/expect\nJQ_COLORS=\'1;30:0;31:0;32:0;33:0;34:1;35:1;36\' \\\n  $JQ -Ccn \'[{"a":true,"b":false},123,null]\' > $d/color\n(\nprintf \'\\033[1;35m[\\033[1;36m{\'\nprintf \'\\033[0m\\033[34;1m"a"\\033[\'\nprintf \'0m\\033[1;36m:\\033[0m\\033[\'\nprintf \'0;32mtrue\\033[0m\\033[1\'\nprintf \';36m,\\033[0m\\033[34;1m\'\nprintf \'"b"\\033[0m\\033[1;36m:\\033\'\nprintf \'[0m\\033[0;31mfalse\\033\'\nprintf \'[0m\\033[1;36m\\033[1;36\'\nprintf \'m}\\033[0m\\033[1;35m,\\033[\'\nprintf \'0;33m123\\033[0m\\033[1;\'\nprintf \'35m,\\033[1;30mnull\\033\'\nprintf \'[0m\\033[1;35m\\033[1;35\'\nprintf \'m]\\033[0m\\n\'\n) > $d/expect\ncmp $d/color $d/expect\n\n# Check garbage in JQ_COLORS.  We write each color sequence into a 16\n# char buffer that needs to hold ESC [ <color> m NUL, so each color\n# sequence can be no more than 12 chars (bytes).  These emit a warning\n# on stderr.\nset -vx\necho \'Failed to set $JQ_COLORS\' > $d/expect_warning\n$JQ -Ccn \'[{"a":true,"b":false},123,null]\' > $d/expect\nJQ_COLORS=\'garbage;30:*;31:,;3^:0;$%:0;34:1;35:1;36\' \\\n  $JQ -Ccn \'[{"a":true,"b":false},123,null]\' > $d/color 2>$d/warning\ncmp $d/color $d/expect\ncmp $d/warning $d/expect_warning\nJQ_COLORS=\'1234567890123456789;30:0;31:0;32:0;33:0;34:1;35:1;36\' \\\n  $JQ -Ccn \'[{"a":true,"b":false},123,null]\' > $d/color 2>$d/warning\ncmp $d/color $d/expect\ncmp $d/warning $d/expect_warning\nJQ_COLORS=\'1;31234567890123456789:0;31:0;32:0;33:0;34:1;35:1;36\' \\\n  $JQ -Ccn \'[{"a":true,"b":false},123,null]\' > $d/color 2>$d/warning\ncmp $d/color $d/expect\ncmp $d/warning $d/expect_warning\nJQ_COLORS=\'1234567890123456;1234567890123456:1234567890123456;1234567890123456:1234567890123456;1234567890123456:1234567890123456;1234567890123456:1234567890123456;1234567890123456:1234567890123456;1234567890123456:1234567890123456;1234567890123456\' \\\n  $JQ -Ccn \'[{"a":true,"b":false},123,null]\' > $d/color 2>$d/warning\ncmp $d/color $d/expect\ncmp $d/warning $d/expect_warning\nJQ_COLORS="0123456789123:0123456789123:0123456789123:0123456789123:0123456789123:0123456789123:0123456789123:0123456789123:" \\\n  $JQ -Ccn \'[{"a":true,"b":false},123,null]\' > $d/color 2>$d/warning\ncmp $d/color $d/expect\ncmp $d/warning $d/expect_warning\n\nexit 0\n', 'exists_in_old_version': True}]
+2025-05-29 17:26:16.289 | ERROR    | modules.llm_adapter:execute:132 - LLM处理过程发生错误: 'context_diff'
+2025-05-29 17:26:16.290 | ERROR    | modules.llm_adapter:execute:133 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 101, in execute
+    context.llm_output = self._call_llm(prompt_data, context)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 1056, in _call_llm
+    'diffCode': prompt_data['context_diff']
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^
+KeyError: 'context_diff'
+
+2025-05-29 17:26:16.291 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/jqlang/jq/a09a4d/evaluations/llm_adapter/metrics_a09a4d_20250529_172616.json
+2025-05-29 17:26:16.291 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: patch_adapter
+2025-05-29 17:26:16.292 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/jqlang/jq/a09a4d/llm_output/output_jq-1.6_qwen-plus.patch
+2025-05-29 17:26:16.294 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_jq-1.6_20250529_172616
+2025-05-29 17:26:16.319 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/src/jv.c b/src/jv.c
+index fd6cfcabc3..0fbdcfaa7e 100644
+--- a/src/jv.c
++++ b/src/jv.c
+@@ -585,6 +585,11 @@ static jv jvp_literal_number_new(const char * literal) {
+     return JV_INVALID;
+   }
+   if (decNumberIsNaN(&n->num_decimal)) {
++    // Reject NaN with payload.
++    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {
++      jv_mem_free(n);
++      return JV_INVALID;
++    }
+     jv_mem_free(n);
+     return jv_number(NAN);
+   }
+
+diff --git a/tests/jq.test b/tests/jq.test
+index 2e3c1e8bd7..f5a57b1823 100644
+--- a/tests/jq.test
++++ b/tests/jq.test
+@@ -2110,11 +2110,17 @@ tojson | fromjson
+ {"a":nan}
+ {"a":null}
+ 
+-# also "nan with payload" #2985
+-if have_decnum then fromjson else nan end | isnan
+-"nan1234"
++# NaN with payload is not parsed
++.[] | try (fromjson | isnan) catch .
++["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]
+ true
+-
++true
++"Invalid numeric literal at EOF at line 1, column 4 (while parsing 'NaN1')"
++"Invalid numeric literal at EOF at line 1, column 5 (while parsing 'NaN10')"
++"Invalid numeric literal at EOF at line 1, column 6 (while parsing 'NaN100')"
++"Invalid numeric literal at EOF at line 1, column 7 (while parsing 'NaN1000')"
++"Invalid numeric literal at EOF at line 1, column 8 (while parsing 'NaN10000')"
++"Invalid numeric literal at EOF at line 1, column 9 (while parsing 'NaN100000')"
+ 
+ # calling input/0, or debug/0 in a test doesn't crash jq
+2025-05-29 17:26:16.319 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -585,6 +585,11 @@ static jv jvp_literal_number_new(const char * literal) {
+     return JV_INVALID;
+   }
+   if (decNumberIsNaN(&n->num_decimal)) {
++    // Reject NaN with payload.
++    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {
++      jv_mem_free(n);
++      return JV_INVALID;
++    }
+     jv_mem_free(n);
+     return jv_number(NAN);
+   }
+
+2025-05-29 17:26:16.321 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -585,6 +585,11 @@ static jv jvp_literal_number_new(const char * literal) {
+     return JV_INVALID;
+   }
+   if (decNumberIsNaN(&n->num_decimal)) {
++    // Reject NaN with payload.
++    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {
++      jv_mem_free(n);
++      return JV_INVALID;
++    }
+     jv_mem_free(n);
+     return jv_number(NAN);
+   }
+
+2025-05-29 17:26:16.322 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 585, 'old_count': 6, 'new_start': 585, 'new_count': 11}, 'lines': [('context', '    return JV_INVALID;'), ('context', '  }'), ('context', '  if (decNumberIsNaN(&n->num_decimal)) {'), ('add', '    // Reject NaN with payload.'), ('add', '    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {'), ('add', '      jv_mem_free(n);'), ('add', '      return JV_INVALID;'), ('add', '    }'), ('context', '    jv_mem_free(n);'), ('context', '    return jv_number(NAN);'), ('context', '  }')]}
+2025-05-29 17:26:16.325 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-05-29 17:26:16.326 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 585, 'old_count': 6, 'new_start': 585, 'new_count': 11}, 'lines': [('context', '    return JV_INVALID;'), ('context', '  }'), ('context', '  if (decNumberIsNaN(&n->num_decimal)) {'), ('add', '    // Reject NaN with payload.'), ('add', '    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {'), ('add', '      jv_mem_free(n);'), ('add', '      return JV_INVALID;'), ('add', '    }'), ('context', '    jv_mem_free(n);'), ('context', '    return jv_number(NAN);'), ('context', '  }')]}
+2025-05-29 17:26:16.327 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: src/jv.c
+2025-05-29 17:26:16.327 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -2110,11 +2110,17 @@ tojson | fromjson
+ {"a":nan}
+ {"a":null}
+ 
+-# also "nan with payload" #2985
+-if have_decnum then fromjson else nan end | isnan
+-"nan1234"
++# NaN with payload is not parsed
++.[] | try (fromjson | isnan) catch .
++["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]
+ true
+-
++true
++"Invalid numeric literal at EOF at line 1, column 4 (while parsing 'NaN1')"
++"Invalid numeric literal at EOF at line 1, column 5 (while parsing 'NaN10')"
++"Invalid numeric literal at EOF at line 1, column 6 (while parsing 'NaN100')"
++"Invalid numeric literal at EOF at line 1, column 7 (while parsing 'NaN1000')"
++"Invalid numeric literal at EOF at line 1, column 8 (while parsing 'NaN10000')"
++"Invalid numeric literal at EOF at line 1, column 9 (while parsing 'NaN100000')"
+ 
+ # calling input/0, or debug/0 in a test doesn't crash jq
+2025-05-29 17:26:16.329 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -2110,11 +2110,17 @@ tojson | fromjson
+ {"a":nan}
+ {"a":null}
+ 
+-# also "nan with payload" #2985
+-if have_decnum then fromjson else nan end | isnan
+-"nan1234"
++# NaN with payload is not parsed
++.[] | try (fromjson | isnan) catch .
++["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]
+ true
+-
++true
++"Invalid numeric literal at EOF at line 1, column 4 (while parsing 'NaN1')"
++"Invalid numeric literal at EOF at line 1, column 5 (while parsing 'NaN10')"
++"Invalid numeric literal at EOF at line 1, column 6 (while parsing 'NaN100')"
++"Invalid numeric literal at EOF at line 1, column 7 (while parsing 'NaN1000')"
++"Invalid numeric literal at EOF at line 1, column 8 (while parsing 'NaN10000')"
++"Invalid numeric literal at EOF at line 1, column 9 (while parsing 'NaN100000')"
+ 
+ # calling input/0, or debug/0 in a test doesn't crash jq
+2025-05-29 17:26:16.329 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 2110, 'old_count': 11, 'new_start': 2110, 'new_count': 17}, 'lines': [('context', '{"a":nan}'), ('context', '{"a":null}'), ('context', ''), ('remove', '# also "nan with payload" #2985'), ('remove', 'if have_decnum then fromjson else nan end | isnan'), ('remove', '"nan1234"'), ('add', '# NaN with payload is not parsed'), ('add', '.[] | try (fromjson | isnan) catch .'), ('add', '["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]'), ('context', 'true'), ('remove', ''), ('add', 'true'), ('add', '"Invalid numeric literal at EOF at line 1, column 4 (while parsing \'NaN1\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 5 (while parsing \'NaN10\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 6 (while parsing \'NaN100\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 7 (while parsing \'NaN1000\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 8 (while parsing \'NaN10000\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 9 (while parsing \'NaN100000\')"'), ('context', ''), ('context', "# calling input/0, or debug/0 in a test doesn't crash jq")]}
+2025-05-29 17:26:16.335 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-05-29 17:26:16.335 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 2110, 'old_count': 11, 'new_start': 2110, 'new_count': 17}, 'lines': [('context', '{"a":nan}'), ('context', '{"a":null}'), ('context', ''), ('remove', '# also "nan with payload" #2985'), ('remove', 'if have_decnum then fromjson else nan end | isnan'), ('remove', '"nan1234"'), ('add', '# NaN with payload is not parsed'), ('add', '.[] | try (fromjson | isnan) catch .'), ('add', '["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]'), ('context', 'true'), ('remove', ''), ('add', 'true'), ('add', '"Invalid numeric literal at EOF at line 1, column 4 (while parsing \'NaN1\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 5 (while parsing \'NaN10\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 6 (while parsing \'NaN100\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 7 (while parsing \'NaN1000\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 8 (while parsing \'NaN10000\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 9 (while parsing \'NaN100000\')"'), ('context', ''), ('context', "# calling input/0, or debug/0 in a test doesn't crash jq")]}
+2025-05-29 17:26:16.336 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: tests/jq.test
+2025-05-29 17:26:16.337 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/jq/src/jv.c
+2025-05-29 17:26:16.338 | INFO     | modules.patch_adapter:_generate_adapted_patch:271 - 文件未修改: src/jv.c
+2025-05-29 17:26:16.338 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/jq/tests/jq.test
+2025-05-29 17:26:16.339 | INFO     | modules.patch_adapter:_generate_adapted_patch:271 - 文件未修改: tests/jq.test
+2025-05-29 17:26:16.340 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-05-29 17:26:16.340 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_jq-1.6_20250529_172616
+2025-05-29 17:26:16.351 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-05-29 17:26:16.352 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-05-29 17:26:16.353 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/jqlang/jq/a09a4d/metrics/patch_adapter_metrics.json
+2025-05-29 17:26:16.354 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 0.41秒
+2025-05-29 17:26:16.354 | INFO     | __main__:_merge_patches:1029 - 开始合并补丁...
+2025-05-29 17:26:16.355 | WARNING  | __main__:_merge_patches:1153 - 没有找到可合并的补丁
+2025-05-29 17:26:16.357 | INFO     | __main__:_save_results:703 - 已复制最终补丁到结果目录: results/jq_jq-1.6_a09a4d_20250529_172616/upstream_a09a4d.patch
+2025-05-29 17:26:16.358 | INFO     | __main__:_save_results:841 - 结果已保存到: results/jq_jq-1.6_a09a4d_20250529_172616/result.json
+2025-05-29 17:26:16.359 | INFO     | __main__:_print_summary:883 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-05-29 17:26:16.359 | INFO     | __main__:_print_summary:906 - ==================================================
+2025-05-29 17:26:16.360 | INFO     | __main__:_print_summary:907 - 处理摘要 - 提交: a09a4d
+2025-05-29 17:26:16.360 | INFO     | __main__:_print_summary:908 - 适配状态: 适配失败 (方法: failed)
+2025-05-29 17:26:16.360 | INFO     | __main__:_print_summary:913 - 块分析统计:
+2025-05-29 17:26:16.361 | INFO     | __main__:_print_summary:914 - - 总块数: 3
+2025-05-29 17:26:16.361 | INFO     | __main__:_print_summary:915 - - 无冲突块数: 0
+2025-05-29 17:26:16.361 | INFO     | __main__:_print_summary:916 - - 成功适配块数: 0
+2025-05-29 17:26:16.362 | INFO     | __main__:_print_summary:917 - - 适配失败块数: 3
+2025-05-29 17:26:16.362 | INFO     | __main__:_print_summary:918 - - 编译失败块数: 0
+2025-05-29 17:26:16.362 | INFO     | __main__:_print_summary:922 - 总执行时间: 0.41秒
+2025-05-29 17:26:16.362 | INFO     | __main__:_print_summary:925 - 最后错误: 'context_diff'
+2025-05-29 17:26:16.363 | INFO     | __main__:_print_summary:927 - ==================================================
+2025-05-29 17:26:16.363 | INFO     | __main__:run:303 - 处理完成

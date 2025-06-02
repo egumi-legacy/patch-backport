@@ -1,0 +1,264 @@
+2025-05-30 19:49:48.094 | INFO     | __main__:_setup_logger:290 - 日志文件: logs/backport_20250530_194948.log
+2025-05-30 19:49:48.095 | INFO     | __main__:run:294 - 开始执行 模式1
+2025-05-30 19:49:48.095 | INFO     | __main__:_process_mode1:314 - 处理补丁: https://github.com/Exiv2/exiv2/commit/ebff8b48820b96c786cfddbf0bebb395cb1317d7.patch
+2025-05-30 19:49:48.096 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-05-30 19:49:48.096 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-05-30 19:49:48.099 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-05-30 19:49:48.099 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-05-30 19:49:48.100 | INFO     | __main__:_process_mode1:321 - 目标版本: ['v0.27.5']
+2025-05-30 19:49:48.100 | INFO     | __main__:_process_mode1:328 - 开始处理版本: v0.27.5
+2025-05-30 19:49:48.100 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: ebff8b48820b96c786cfddbf0bebb395cb1317d7.patch
+2025-05-30 19:49:48.101 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-05-30 19:49:48.101 | INFO     | modules.direct_apply:_download_patch:231 - 上游补丁文件已存在: workspace/Exiv2/exiv2/ebff8b/patches/upstream_ebff8b.patch
+2025-05-30 19:49:48.101 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-05-30 19:49:48.102 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/patches/upstream_ebff8b.patch
+2025-05-30 19:49:48.175 | INFO     | modules.direct_apply:_prepare_test_branch:333 - 删除已存在的测试分支: test_patch_v0.27.5
+2025-05-30 19:49:48.181 | INFO     | modules.direct_apply:_prepare_test_branch:346 - 创建测试分支: test_patch_v0.27.5
+2025-05-30 19:49:48.225 | ERROR    | modules.direct_apply:_apply_patch:286 - 补丁应用失败: error: patch failed: src/tiffcomposite_int.cpp:124
+error: src/tiffcomposite_int.cpp: patch does not apply
+error: patch failed: src/tiffcomposite_int.hpp:851
+error: src/tiffcomposite_int.hpp: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-05-30 19:49:48.243 | WARNING  | modules.direct_apply:_cleanup_test_branch:440 - 清理分支时发生错误: error: pathspec '4.0.14' did not match any file(s) known to git
+
+2025-05-30 19:49:48.244 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-05-30 19:49:48.244 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/patches/upstream_ebff8b.patch
+2025-05-30 19:49:48.244 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/patches/upstream_ebff8b.patch
+2025-05-30 19:49:48.245 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 78 行内容
+2025-05-30 19:49:48.245 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/tiffcomposite_int.cpp
+2025-05-30 19:49:48.246 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/tiffcomposite_int.cpp @@ -124,6 +124,25 @@ (modification)
+2025-05-30 19:49:48.246 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/tiffcomposite_int.hpp
+2025-05-30 19:49:48.246 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/tiffcomposite_int.hpp @@ -851,7 +851,7 @@ (modification)
+2025-05-30 19:49:48.247 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/tiffcomposite_int.hpp @@ -944,7 +944,7 @@ (modification)
+2025-05-30 19:49:48.247 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/tiffcomposite_int.hpp @@ -1334,7 +1334,7 @@ (modification)
+2025-05-30 19:49:48.247 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 4 个修改块
+2025-05-30 19:49:48.248 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 4 个块
+2025-05-30 19:49:48.248 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/patches/upstream_ebff8b.patch
+2025-05-30 19:49:48.248 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/chunk_patches/chunk_001_20250530_194948.patch (修改文件: src/tiffcomposite_int.cpp)
+2025-05-30 19:49:48.249 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/chunk_patches/chunk_002_20250530_194948.patch (修改文件: src/tiffcomposite_int.hpp)
+2025-05-30 19:49:48.249 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/chunk_patches/chunk_003_20250530_194948.patch (修改文件: src/tiffcomposite_int.hpp)
+2025-05-30 19:49:48.249 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/chunk_patches/chunk_004_20250530_194948.patch (修改文件: src/tiffcomposite_int.hpp)
+2025-05-30 19:49:48.250 | INFO     | modules.chunk_analyzer:execute:60 - 已为 4 个块创建单独的补丁文件
+2025-05-30 19:49:48.250 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-05-30 19:49:48.250 | INFO     | modules.chunk_analyzer:execute:66 - From ebff8b48820b96c786cfddbf0bebb395cb1317d7 Mon Sep 17 00:00:00 2001
+From: Rosen Penev <rosenp@gmail.com>
+Date: Mon, 17 Feb 2025 16:34:40 -0800
+Subject: [PATCH] Revert "fix copy constructors"
+
+This reverts commit afb2d998fe62f7e829e93e62506bf9968117c9c5.
+
+This commit is wrong and ends up resulting in use after frees because of
+C pointers. The proper solution is shared_ptr instead of C pointers but
+that's a lot more involved than reverting this.
+
+Signed-off-by: Rosen Penev <rosenp@gmail.com>
+---
+ src/tiffcomposite_int.cpp | 19 +++++++++++++++++++
+ src/tiffcomposite_int.hpp |  6 +++---
+ 2 files changed, 22 insertions(+), 3 deletions(-)
+
+diff --git a/src/tiffcomposite_int.cpp b/src/tiffcomposite_int.cpp
+index 07c9a6c843..f4bb5037bd 100644
+--- a/src/tiffcomposite_int.cpp
++++ b/src/tiffcomposite_int.cpp
+@@ -124,6 +124,25 @@ TiffEntryBase::TiffEntryBase(const TiffEntryBase& rhs) :
+     storage_(rhs.storage_) {
+ }
+ 
++TiffDirectory::TiffDirectory(const TiffDirectory& rhs) : TiffComponent(rhs), hasNext_(rhs.hasNext_) {
++}
++
++TiffSubIfd::TiffSubIfd(const TiffSubIfd& rhs) : TiffEntryBase(rhs), newGroup_(rhs.newGroup_) {
++}
++
++TiffBinaryArray::TiffBinaryArray(const TiffBinaryArray& rhs) :
++    TiffEntryBase(rhs),
++    cfgSelFct_(rhs.cfgSelFct_),
++    arraySet_(rhs.arraySet_),
++    arrayCfg_(rhs.arrayCfg_),
++    arrayDef_(rhs.arrayDef_),
++    defSize_(rhs.defSize_),
++    setSize_(rhs.setSize_),
++    origData_(rhs.origData_),
++    origSize_(rhs.origSize_),
++    pRoot_(rhs.pRoot_) {
++}
++
+ TiffComponent::UniquePtr TiffComponent::clone() const {
+   return UniquePtr(doClone());
+ }
+
+2025-05-30 19:49:48.251 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-05-30 19:49:48.251 | INFO     | modules.chunk_analyzer:execute:66 - From ebff8b48820b96c786cfddbf0bebb395cb1317d7 Mon Sep 17 00:00:00 2001
+From: Rosen Penev <rosenp@gmail.com>
+Date: Mon, 17 Feb 2025 16:34:40 -0800
+Subject: [PATCH] Revert "fix copy constructors"
+
+This reverts commit afb2d998fe62f7e829e93e62506bf9968117c9c5.
+
+This commit is wrong and ends up resulting in use after frees because of
+C pointers. The proper solution is shared_ptr instead of C pointers but
+that's a lot more involved than reverting this.
+
+Signed-off-by: Rosen Penev <rosenp@gmail.com>
+---
+ src/tiffcomposite_int.cpp | 19 +++++++++++++++++++
+ src/tiffcomposite_int.hpp |  6 +++---
+ 2 files changed, 22 insertions(+), 3 deletions(-)
+
+diff --git a/src/tiffcomposite_int.hpp b/src/tiffcomposite_int.hpp
+index 0e28aba912..01d5109a59 100644
+--- a/src/tiffcomposite_int.hpp
++++ b/src/tiffcomposite_int.hpp
+@@ -851,7 +851,7 @@ class TiffDirectory : public TiffComponent {
+   //! @name Protected Creators
+   //@{
+   //! Copy constructor (used to implement clone()).
+-  TiffDirectory(const TiffDirectory&) = default;
++  TiffDirectory(const TiffDirectory& rhs);
+   //@}
+ 
+   //! @name Protected Manipulators
+
+2025-05-30 19:49:48.253 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-05-30 19:49:48.253 | INFO     | modules.chunk_analyzer:execute:66 - From ebff8b48820b96c786cfddbf0bebb395cb1317d7 Mon Sep 17 00:00:00 2001
+From: Rosen Penev <rosenp@gmail.com>
+Date: Mon, 17 Feb 2025 16:34:40 -0800
+Subject: [PATCH] Revert "fix copy constructors"
+
+This reverts commit afb2d998fe62f7e829e93e62506bf9968117c9c5.
+
+This commit is wrong and ends up resulting in use after frees because of
+C pointers. The proper solution is shared_ptr instead of C pointers but
+that's a lot more involved than reverting this.
+
+Signed-off-by: Rosen Penev <rosenp@gmail.com>
+---
+ src/tiffcomposite_int.cpp | 19 +++++++++++++++++++
+ src/tiffcomposite_int.hpp |  6 +++---
+ 2 files changed, 22 insertions(+), 3 deletions(-)
+
+diff --git a/src/tiffcomposite_int.hpp b/src/tiffcomposite_int.hpp
+index 0e28aba912..01d5109a59 100644
+--- a/src/tiffcomposite_int.hpp
++++ b/src/tiffcomposite_int.hpp
+@@ -944,7 +944,7 @@ class TiffSubIfd : public TiffEntryBase {
+   //! @name Protected Creators
+   //@{
+   //! Copy constructor (used to implement clone()).
+-  TiffSubIfd(const TiffSubIfd&) = default;
++  TiffSubIfd(const TiffSubIfd& rhs);
+   TiffSubIfd& operator=(const TiffSubIfd&) = delete;
+   //@}
+ 
+
+2025-05-30 19:49:48.254 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-05-30 19:49:48.254 | INFO     | modules.chunk_analyzer:execute:66 - From ebff8b48820b96c786cfddbf0bebb395cb1317d7 Mon Sep 17 00:00:00 2001
+From: Rosen Penev <rosenp@gmail.com>
+Date: Mon, 17 Feb 2025 16:34:40 -0800
+Subject: [PATCH] Revert "fix copy constructors"
+
+This reverts commit afb2d998fe62f7e829e93e62506bf9968117c9c5.
+
+This commit is wrong and ends up resulting in use after frees because of
+C pointers. The proper solution is shared_ptr instead of C pointers but
+that's a lot more involved than reverting this.
+
+Signed-off-by: Rosen Penev <rosenp@gmail.com>
+---
+ src/tiffcomposite_int.cpp | 19 +++++++++++++++++++
+ src/tiffcomposite_int.hpp |  6 +++---
+ 2 files changed, 22 insertions(+), 3 deletions(-)
+
+diff --git a/src/tiffcomposite_int.hpp b/src/tiffcomposite_int.hpp
+index 0e28aba912..01d5109a59 100644
+--- a/src/tiffcomposite_int.hpp
++++ b/src/tiffcomposite_int.hpp
+@@ -1334,7 +1334,7 @@ class TiffBinaryArray : public TiffEntryBase {
+   //! @name Protected Creators
+   //@{
+   //! Copy constructor (used to implement clone()).
+-  TiffBinaryArray(const TiffBinaryArray&) = default;
++  TiffBinaryArray(const TiffBinaryArray& rhs);
+   //@}
+ 
+   //! @name Protected Manipulators
+
+2025-05-30 19:49:48.254 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/4 个块补丁: chunk_001_20250530_194948.patch
+2025-05-30 19:49:48.263 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_001_20250530_194948.patch 应用失败: error: patch failed: src/tiffcomposite_int.cpp:124
+error: src/tiffcomposite_int.cpp: patch does not apply
+
+2025-05-30 19:49:48.263 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/4 个块补丁: chunk_002_20250530_194948.patch
+2025-05-30 19:49:48.273 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:375 - 块补丁 chunk_002_20250530_194948.patch 可以反向应用，可能已经被应用过
+2025-05-30 19:49:48.274 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/4 个块补丁: chunk_003_20250530_194948.patch
+2025-05-30 19:49:48.282 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_003_20250530_194948.patch 应用失败: error: patch failed: src/tiffcomposite_int.hpp:944
+error: src/tiffcomposite_int.hpp: patch does not apply
+
+2025-05-30 19:49:48.282 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 4/4 个块补丁: chunk_004_20250530_194948.patch
+2025-05-30 19:49:48.293 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:375 - 块补丁 chunk_004_20250530_194948.patch 可以反向应用，可能已经被应用过
+2025-05-30 19:49:48.294 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-05-30 19:49:48.294 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 4
+2025-05-30 19:49:48.294 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 2
+2025-05-30 19:49:48.295 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 2
+2025-05-30 19:49:48.295 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 2 个块补丁，总共 4 个
+2025-05-30 19:49:48.296 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/chunk_patches/remaining_chunks_20250530_194948.patch
+2025-05-30 19:49:48.296 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 2 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/chunk_patches/remaining_chunks_20250530_194948.patch
+2025-05-30 19:49:48.297 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/chunk_patches/remaining_chunks_20250530_194948.patch
+2025-05-30 19:49:48.297 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.05秒
+2025-05-30 19:49:48.298 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/metrics_ebff8b_20250530_194948.json
+2025-05-30 19:49:48.300 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/details_ebff8b_20250530_194948
+2025-05-30 19:49:48.300 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/details_ebff8b_20250530_194948
+2025-05-30 19:49:48.300 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/details_ebff8b_20250530_194948/patches
+2025-05-30 19:49:48.301 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/details_ebff8b_20250530_194948/patches
+2025-05-30 19:49:48.302 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/details_ebff8b_20250530_194948/patches/original_patch.txt
+2025-05-30 19:49:48.303 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/details_ebff8b_20250530_194948
+2025-05-30 19:49:48.305 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/details_ebff8b_20250530_194948/patches/applied_chunk_1.txt
+2025-05-30 19:49:48.306 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/details_ebff8b_20250530_194948/patches/applied_chunk_2.txt
+2025-05-30 19:49:48.306 | INFO     | modules.chunk_analyzer:_get_patch_content:1282 - 已将合并的补丁块内容保存到: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/details_ebff8b_20250530_194948/patches/all_applied_chunks.txt
+2025-05-30 19:49:48.307 | INFO     | modules.chunk_analyzer:_get_patch_content:1286 - 从context获取应用成功的补丁内容
+2025-05-30 19:49:48.307 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/details_ebff8b_20250530_194948
+2025-05-30 19:49:48.307 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/details_ebff8b_20250530_194948/patches/remaining_patch.txt
+2025-05-30 19:49:48.308 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/chunk_patches/remaining_chunks_20250530_194948.patch
+2025-05-30 19:49:48.309 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/Exiv2/exiv2/ebff8b/evaluations/chunk_analyzer/details_ebff8b_20250530_194948
+2025-05-30 19:49:48.311 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: llm_adapter
+2025-05-30 19:49:48.312 | INFO     | modules.llm_adapter:execute:88 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/patches/upstream_ebff8b.patch
+2025-05-30 19:49:48.312 | INFO     | modules.llm_adapter:execute:90 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/patches/upstream_ebff8b.patch
+2025-05-30 19:49:48.312 | INFO     | modules.llm_adapter:_prepare_prompt_data:212 - 使用函数级上下文和完整文件内容的增强模式
+2025-05-30 19:49:48.312 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:256 - 补丁修改的文件: ['src/tiffcomposite_int.cpp', 'src/tiffcomposite_int.hpp']
+2025-05-30 19:49:48.313 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:436 - DEBUG_UPSTREAM: === Entering _get_file_content_from_upstream for 'src/tiffcomposite_int.cpp' ===
+2025-05-30 19:49:48.318 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:449 - DEBUG_UPSTREAM: Current HEAD ref before temp operations: ad5484cb1eaba3ad0e49b290d244f6b1ee9ff076
+2025-05-30 19:49:48.318 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:455 - DEBUG_UPSTREAM: Raw context.commit.commit_sha: 'ebff8b48820b96c786cfddbf0bebb395cb1317d7.patch'
+2025-05-30 19:49:48.318 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:460 - DEBUG_UPSTREAM: Removed .patch suffix. Processed commit SHA is now: 'ebff8b48820b96c786cfddbf0bebb395cb1317d7'
+2025-05-30 19:49:48.319 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:471 - DEBUG_UPSTREAM: Target ref for PRE-PATCH file (parent of processed SHA): 'ebff8b48820b96c786cfddbf0bebb395cb1317d7^'
+2025-05-30 19:49:48.319 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:483 - DEBUG_UPSTREAM: Final target_ref for 'git show' (to get pre-patch content): 'ebff8b48820b96c786cfddbf0bebb395cb1317d7^'
+2025-05-30 19:49:48.320 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:486 - DEBUG_UPSTREAM: Attempting to get content with: 'git show ebff8b48820b96c786cfddbf0bebb395cb1317d7^:src/tiffcomposite_int.cpp'
+2025-05-30 19:49:48.327 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:500 - DEBUG_UPSTREAM: Successfully fetched PRE-PATCH content for 'src/tiffcomposite_int.cpp' from ref 'ebff8b48820b96c786cfddbf0bebb395cb1317d7^' using 'git show'.
+2025-05-30 19:49:48.327 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:537 - DEBUG_UPSTREAM: Cleaning up. Attempting to checkout original HEAD: ad5484cb1eaba3ad0e49b290d244f6b1ee9ff076
+2025-05-30 19:49:48.338 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:549 - DEBUG_UPSTREAM: Attempting to delete temp branch: temp_upstream_check_20250530_194948318667
+2025-05-30 19:49:48.344 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:559 - DEBUG_UPSTREAM: Cleanup finished for temp branch operations.
+2025-05-30 19:49:48.345 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:566 - DEBUG_UPSTREAM: === Exiting _get_file_content_from_upstream for 'src/tiffcomposite_int.cpp' ===
+2025-05-30 19:49:48.362 | INFO     | modules.backtrack_apply:_map_file_paths:203 - 文件直接存在: src/tiffcomposite_int.cpp
+2025-05-30 19:49:48.374 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:299 - 对于文件 src/tiffcomposite_int.cpp 中的块 124-148，上下文: 
+    storage_(rhs.storage_) {
+}
+2025-05-30 19:49:48.375 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:436 - DEBUG_UPSTREAM: === Entering _get_file_content_from_upstream for 'src/tiffcomposite_int.hpp' ===
+2025-05-30 19:49:48.379 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:449 - DEBUG_UPSTREAM: Current HEAD ref before temp operations: ad5484cb1eaba3ad0e49b290d244f6b1ee9ff076
+2025-05-30 19:49:48.379 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:455 - DEBUG_UPSTREAM: Raw context.commit.commit_sha: 'ebff8b48820b96c786cfddbf0bebb395cb1317d7.patch'
+2025-05-30 19:49:48.380 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:460 - DEBUG_UPSTREAM: Removed .patch suffix. Processed commit SHA is now: 'ebff8b48820b96c786cfddbf0bebb395cb1317d7'
+2025-05-30 19:49:48.380 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:471 - DEBUG_UPSTREAM: Target ref for PRE-PATCH file (parent of processed SHA): 'ebff8b48820b96c786cfddbf0bebb395cb1317d7^'
+2025-05-30 19:49:48.380 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:483 - DEBUG_UPSTREAM: Final target_ref for 'git show' (to get pre-patch content): 'ebff8b48820b96c786cfddbf0bebb395cb1317d7^'
+2025-05-30 19:49:48.380 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:486 - DEBUG_UPSTREAM: Attempting to get content with: 'git show ebff8b48820b96c786cfddbf0bebb395cb1317d7^:src/tiffcomposite_int.hpp'
+2025-05-30 19:49:48.387 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:500 - DEBUG_UPSTREAM: Successfully fetched PRE-PATCH content for 'src/tiffcomposite_int.hpp' from ref 'ebff8b48820b96c786cfddbf0bebb395cb1317d7^' using 'git show'.
+2025-05-30 19:49:48.387 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:537 - DEBUG_UPSTREAM: Cleaning up. Attempting to checkout original HEAD: ad5484cb1eaba3ad0e49b290d244f6b1ee9ff076
+2025-05-30 19:49:48.397 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:549 - DEBUG_UPSTREAM: Attempting to delete temp branch: temp_upstream_check_20250530_194948379725
+2025-05-30 19:49:48.402 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:559 - DEBUG_UPSTREAM: Cleanup finished for temp branch operations.
+2025-05-30 19:49:48.402 | ERROR    | modules.llm_adapter:_get_file_content_from_upstream:566 - DEBUG_UPSTREAM: === Exiting _get_file_content_from_upstream for 'src/tiffcomposite_int.hpp' ===
+2025-05-30 19:49:48.424 | ERROR    | modules.llm_adapter:_get_file_content_from_target:639 - 获取目标版本文件内容时出错: Command '['git', 'checkout', '-b', 'temp_target_check_20250530_194948', 'v0.27.5']' returned non-zero exit status 128.
+2025-05-30 19:49:48.428 | ERROR    | modules.llm_adapter:_get_file_content_from_target:640 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 594, in _get_file_content_from_target
+    subprocess.run(
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'checkout', '-b', 'temp_target_check_20250530_194948', 'v0.27.5']' returned non-zero exit status 128.
+

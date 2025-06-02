@@ -1,0 +1,18 @@
+[
+  {
+    "索引": 1,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/chunk_patches/chunk_002_20250602_144052.patch",
+    "实际补丁": null,
+    "修改文件": "src/tiffcomposite_int.hpp",
+    "修改位置": "851-851",
+    "内容": "From ebff8b48820b96c786cfddbf0bebb395cb1317d7 Mon Sep 17 00:00:00 2001\nFrom: Rosen Penev <rosenp@gmail.com>\nDate: Mon, 17 Feb 2025 16:34:40 -0800\nSubject: [PATCH] Revert \"fix copy constructors\"\n\nThis reverts commit afb2d998fe62f7e829e93e62506bf9968117c9c5.\n\nThis commit is wrong and ends up resulting in use after frees because of\nC pointers. The proper solution is shared_ptr instead of C pointers but\nthat's a lot more involved than reverting this.\n\nSigned-off-by: Rosen Penev <rosenp@gmail.com>\n---\n src/tiffcomposite_int.cpp | 19 +++++++++++++++++++\n src/tiffcomposite_int.hpp |  6 +++---\n 2 files changed, 22 insertions(+), 3 deletions(-)\n\ndiff --git a/src/tiffcomposite_int.hpp b/src/tiffcomposite_int.hpp\nindex 0e28aba912..01d5109a59 100644\n--- a/src/tiffcomposite_int.hpp\n+++ b/src/tiffcomposite_int.hpp\n@@ -851,7 +851,7 @@ class TiffDirectory : public TiffComponent {\n   //! @name Protected Creators\n   //@{\n   //! Copy constructor (used to implement clone()).\n-  TiffDirectory(const TiffDirectory&) = default;\n+  TiffDirectory(const TiffDirectory& rhs);\n   //@}\n \n   //! @name Protected Manipulators\n"
+  },
+  {
+    "索引": 2,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/Exiv2/exiv2/ebff8b/chunk_patches/chunk_004_20250602_144052.patch",
+    "实际补丁": null,
+    "修改文件": "src/tiffcomposite_int.hpp",
+    "修改位置": "1334-1334",
+    "内容": "From ebff8b48820b96c786cfddbf0bebb395cb1317d7 Mon Sep 17 00:00:00 2001\nFrom: Rosen Penev <rosenp@gmail.com>\nDate: Mon, 17 Feb 2025 16:34:40 -0800\nSubject: [PATCH] Revert \"fix copy constructors\"\n\nThis reverts commit afb2d998fe62f7e829e93e62506bf9968117c9c5.\n\nThis commit is wrong and ends up resulting in use after frees because of\nC pointers. The proper solution is shared_ptr instead of C pointers but\nthat's a lot more involved than reverting this.\n\nSigned-off-by: Rosen Penev <rosenp@gmail.com>\n---\n src/tiffcomposite_int.cpp | 19 +++++++++++++++++++\n src/tiffcomposite_int.hpp |  6 +++---\n 2 files changed, 22 insertions(+), 3 deletions(-)\n\ndiff --git a/src/tiffcomposite_int.hpp b/src/tiffcomposite_int.hpp\nindex 0e28aba912..01d5109a59 100644\n--- a/src/tiffcomposite_int.hpp\n+++ b/src/tiffcomposite_int.hpp\n@@ -1334,7 +1334,7 @@ class TiffBinaryArray : public TiffEntryBase {\n   //! @name Protected Creators\n   //@{\n   //! Copy constructor (used to implement clone()).\n-  TiffBinaryArray(const TiffBinaryArray&) = default;\n+  TiffBinaryArray(const TiffBinaryArray& rhs);\n   //@}\n \n   //! @name Protected Manipulators\n"
+  }
+]

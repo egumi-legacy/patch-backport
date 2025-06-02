@@ -1,0 +1,40 @@
+From a09a4dfd55e6c24d04b35062ccfe4509748b1dd3 Mon Sep 17 00:00:00 2001
+From: itchyny <itchyny@cybozu.co.jp>
+Date: Wed, 5 Mar 2025 07:43:54 +0900
+Subject: [PATCH] Reject NaN with payload while parsing JSON
+
+This commit drops support for parsing NaN with payload in JSON like
+`NaN123` and fixes CVE-2024-53427. Other JSON extensions like `NaN` and
+`Infinity` are still supported. Fixes #3023, fixes #3196, fixes #3246.
+---
+ src/jv.c      |  5 +++++
+ tests/jq.test | 14 ++++++++++----
+ tests/shtest  |  7 -------
+ 3 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/tests/jq.test b/tests/jq.test
+index 2e3c1e8bd7..f5a57b1823 100644
+--- a/tests/jq.test
++++ b/tests/jq.test
+@@ -2110,11 +2110,17 @@ tojson | fromjson
+ {"a":nan}
+ {"a":null}
+ 
+-# also "nan with payload" #2985
+-if have_decnum then fromjson else nan end | isnan
+-"nan1234"
++# NaN with payload is not parsed
++.[] | try (fromjson | isnan) catch .
++["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]
+ true
+-
++true
++"Invalid numeric literal at EOF at line 1, column 4 (while parsing 'NaN1')"
++"Invalid numeric literal at EOF at line 1, column 5 (while parsing 'NaN10')"
++"Invalid numeric literal at EOF at line 1, column 6 (while parsing 'NaN100')"
++"Invalid numeric literal at EOF at line 1, column 7 (while parsing 'NaN1000')"
++"Invalid numeric literal at EOF at line 1, column 8 (while parsing 'NaN10000')"
++"Invalid numeric literal at EOF at line 1, column 9 (while parsing 'NaN100000')"
+ 
+ # calling input/0, or debug/0 in a test doesn't crash jq
+ 

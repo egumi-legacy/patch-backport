@@ -1,0 +1,30 @@
+From a09a4dfd55e6c24d04b35062ccfe4509748b1dd3 Mon Sep 17 00:00:00 2001
+From: itchyny <itchyny@cybozu.co.jp>
+Date: Wed, 5 Mar 2025 07:43:54 +0900
+Subject: [PATCH] Reject NaN with payload while parsing JSON
+
+This commit drops support for parsing NaN with payload in JSON like
+`NaN123` and fixes CVE-2024-53427. Other JSON extensions like `NaN` and
+`Infinity` are still supported. Fixes #3023, fixes #3196, fixes #3246.
+---
+ src/jv.c      |  5 +++++
+ tests/jq.test | 14 ++++++++++----
+ tests/shtest  |  7 -------
+ 3 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/src/jv.c b/src/jv.c
+index fd6cfcabc3..0fbdcfaa7e 100644
+--- a/src/jv.c
++++ b/src/jv.c
+@@ -585,6 +585,11 @@ static jv jvp_literal_number_new(const char * literal) {
+     return JV_INVALID;
+   }
+   if (decNumberIsNaN(&n->num_decimal)) {
++    // Reject NaN with payload.
++    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {
++      jv_mem_free(n);
++      return JV_INVALID;
++    }
+     jv_mem_free(n);
+     return jv_number(NAN);
+   }

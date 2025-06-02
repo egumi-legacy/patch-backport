@@ -1,0 +1,88 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "chunks_info": {
+      "total_chunks": 3,
+      "no_conflict_chunks": 0,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 3,
+      "compilation_failed_chunks": 0
+    },
+    "method": "failed",
+    "timestamp": "2025-05-29T10:14:35.237737"
+  },
+  "to_adapt_commit": {
+    "sha": "a09a4dfd55e6c24d04b35062ccfe4509748b1dd3.patch",
+    "patch_url": "https://github.com/jqlang/jq/commit/a09a4dfd55e6c24d04b35062ccfe4509748b1dd3.patch",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "jq-1.6",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: src/jv.c:585\nerror: src/jv.c: patch does not apply\nerror: patch failed: tests/jq.test:2110\nerror: tests/jq.test: patch does not apply\nerror: patch failed: tests/shtest:669\nerror: tests/shtest: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch",
+      "timestamp": "2025-05-29T10:14:34.678154"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch",
+      "total_chunks": 3,
+      "applied_chunks": 0,
+      "applied_chunk_patches": [],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/remaining_chunks_20250529_101434.patch",
+      "timestamp": "2025-05-29T10:14:34.720278",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "error",
+      "error": "'context_diff'",
+      "timestamp": "2025-05-29T10:14:35.166677"
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch",
+    "last_error": "'context_diff'"
+  },
+  "timing": {
+    "start_time": "2025-05-29T10:14:34.633285",
+    "end_time": "2025-05-29T10:14:35.236108",
+    "total_seconds": 0.602823,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "patch_content": "From a09a4dfd55e6c24d04b35062ccfe4509748b1dd3 Mon Sep 17 00:00:00 2001\nFrom: itchyny <itchyny@cybozu.co.jp>\nDate: Wed, 5 Mar 2025 07:43:54 +0900\nSubject: [PATCH] Reject NaN with payload while parsing JSON\n\nThis commit drops support for parsing NaN with payload in JSON like\n`NaN123` and fixes CVE-2024-53427. Other JSON extensions like `NaN` and\n`Infinity` are still supported. Fixes #3023, fixes #3196, fixes #3246.\n---\n src/jv.c      |  5 +++++\n tests/jq.test | 14 ++++++++++----\n tests/shtest  |  7 -------\n 3 files changed, 15 insertions(+), 11 deletions(-)\n\ndiff --git a/src/jv.c b/src/jv.c\nindex fd6cfcabc3..0fbdcfaa7e 100644\n--- a/src/jv.c\n+++ b/src/jv.c\n@@ -585,6 +585,11 @@ static jv jvp_literal_number_new(const char * literal) {\n     return JV_INVALID;\n   }\n   if (decNumberIsNaN(&n->num_decimal)) {\n+    // Reject NaN with payload.\n+    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {\n+      jv_mem_free(n);\n+      return JV_INVALID;\n+    }\n     jv_mem_free(n);\n     return jv_number(NAN);\n   }\ndiff --git a/tests/jq.test b/tests/jq.test\nindex 2e3c1e8bd7..f5a57b1823 100644\n--- a/tests/jq.test\n+++ b/tests/jq.test\n@@ -2110,11 +2110,17 @@ tojson | fromjson\n {\"a\":nan}\n {\"a\":null}\n \n-# also \"nan with payload\" #2985\n-if have_decnum then fromjson else nan end | isnan\n-\"nan1234\"\n+# NaN with payload is not parsed\n+.[] | try (fromjson | isnan) catch .\n+[\"NaN\",\"-NaN\",\"NaN1\",\"NaN10\",\"NaN100\",\"NaN1000\",\"NaN10000\",\"NaN100000\"]\n true\n-\n+true\n+\"Invalid numeric literal at EOF at line 1, column 4 (while parsing 'NaN1')\"\n+\"Invalid numeric literal at EOF at line 1, column 5 (while parsing 'NaN10')\"\n+\"Invalid numeric literal at EOF at line 1, column 6 (while parsing 'NaN100')\"\n+\"Invalid numeric literal at EOF at line 1, column 7 (while parsing 'NaN1000')\"\n+\"Invalid numeric literal at EOF at line 1, column 8 (while parsing 'NaN10000')\"\n+\"Invalid numeric literal at EOF at line 1, column 9 (while parsing 'NaN100000')\"\n \n # calling input/0, or debug/0 in a test doesn't crash jq\n \ndiff --git a/tests/shtest b/tests/shtest\nindex 86e759ba69..72ffc086fd 100755\n--- a/tests/shtest\n+++ b/tests/shtest\n@@ -669,13 +669,6 @@ if ! x=$($JQ -cn \"$(printf '[\\r\\n1,# comment\\r\\n2,# comment\\\\\\r\\ncomment\\r\\n3\\r\\\n   exit 1\n fi\n \n-# CVE-2023-50268: No stack overflow comparing a nan with a large payload\n-if $JQ -ne 'have_decnum'; then\n-  $VALGRIND $Q $JQ '1 != .' <<\\EOF >/dev/null\n-  Nan4000\n-EOF\n-fi\n-\n # Allow passing the inline jq script before -- #2919\n if ! r=$($JQ --args -rn -- '$ARGS.positional[0]' bar) || [ \"$r\" != bar ]; then\n     echo \"passing the inline script after -- didn't work\"\n",
+    "llm_output": null,
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": false,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "jq-1.6",
+      "commit_sha": "a09a4dfd55e6c24d04b35062ccfe4509748b1dd3.patch",
+      "timestamp": "2025-05-29T10:14:35.237763",
+      "execution_path": "failed (no successful modules)",
+      "adaptation_method": "unknown"
+    }
+  }
+}

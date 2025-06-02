@@ -1,0 +1,3795 @@
+2025-05-28 22:14:30.736 | INFO     | __main__:_setup_logger:290 - 日志文件: logs/backport_20250528_221430.log
+2025-05-28 22:14:30.736 | INFO     | __main__:run:294 - 开始执行 模式1
+2025-05-28 22:14:30.737 | INFO     | __main__:_process_mode1:314 - 处理补丁: https://github.com/jqlang/jq/commit/a09a4dfd55e6c24d04b35062ccfe4509748b1dd3.patch
+2025-05-28 22:14:30.737 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-05-28 22:14:30.738 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-05-28 22:14:30.738 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-05-28 22:14:30.739 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-05-28 22:14:30.739 | INFO     | __main__:_process_mode1:321 - 目标版本: ['jq-1.6']
+2025-05-28 22:14:30.739 | INFO     | __main__:_process_mode1:328 - 开始处理版本: jq-1.6
+2025-05-28 22:14:30.740 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: a09a4dfd55e6c24d04b35062ccfe4509748b1dd3.patch
+2025-05-28 22:14:30.740 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-05-28 22:14:30.741 | INFO     | modules.direct_apply:_download_patch:231 - 上游补丁文件已存在: workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-28 22:14:30.741 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-05-28 22:14:30.741 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-28 22:14:30.770 | INFO     | modules.direct_apply:_prepare_test_branch:333 - 删除已存在的测试分支: test_patch_jq-1.6
+2025-05-28 22:14:30.775 | INFO     | modules.direct_apply:_prepare_test_branch:346 - 创建测试分支: test_patch_jq-1.6
+2025-05-28 22:14:30.801 | ERROR    | modules.direct_apply:_apply_patch:286 - 补丁应用失败: error: patch failed: src/jv.c:585
+error: src/jv.c: patch does not apply
+error: patch failed: tests/jq.test:2110
+error: tests/jq.test: patch does not apply
+error: patch failed: tests/shtest:669
+error: tests/shtest: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-05-28 22:14:30.813 | WARNING  | modules.direct_apply:_cleanup_test_branch:440 - 清理分支时发生错误: error: pathspec '4.0.14' did not match any file(s) known to git
+
+2025-05-28 22:14:30.814 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-05-28 22:14:30.814 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-28 22:14:30.814 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-28 22:14:30.814 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 74 行内容
+2025-05-28 22:14:30.815 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/jv.c
+2025-05-28 22:14:30.815 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/jv.c @@ -585,6 +585,11 @@ (modification)
+2025-05-28 22:14:30.816 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: tests/jq.test
+2025-05-28 22:14:30.816 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: tests/jq.test @@ -2110,11 +2110,17 @@ (modification)
+2025-05-28 22:14:30.816 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: tests/shtest
+2025-05-28 22:14:30.816 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: tests/shtest @@ -669,13 +669,6 @@ (modification)
+2025-05-28 22:14:30.817 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 3 个修改块
+2025-05-28 22:14:30.817 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 3 个块
+2025-05-28 22:14:30.817 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-28 22:14:30.818 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/chunk_001_20250528_221430.patch (修改文件: src/jv.c)
+2025-05-28 22:14:30.818 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/chunk_002_20250528_221430.patch (修改文件: tests/jq.test)
+2025-05-28 22:14:30.819 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/chunk_003_20250528_221430.patch (修改文件: tests/shtest)
+2025-05-28 22:14:30.819 | INFO     | modules.chunk_analyzer:execute:60 - 已为 3 个块创建单独的补丁文件
+2025-05-28 22:14:30.819 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-05-28 22:14:30.819 | INFO     | modules.chunk_analyzer:execute:66 - From a09a4dfd55e6c24d04b35062ccfe4509748b1dd3 Mon Sep 17 00:00:00 2001
+From: itchyny <itchyny@cybozu.co.jp>
+Date: Wed, 5 Mar 2025 07:43:54 +0900
+Subject: [PATCH] Reject NaN with payload while parsing JSON
+
+This commit drops support for parsing NaN with payload in JSON like
+`NaN123` and fixes CVE-2024-53427. Other JSON extensions like `NaN` and
+`Infinity` are still supported. Fixes #3023, fixes #3196, fixes #3246.
+---
+ src/jv.c      |  5 +++++
+ tests/jq.test | 14 ++++++++++----
+ tests/shtest  |  7 -------
+ 3 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/src/jv.c b/src/jv.c
+index fd6cfcabc3..0fbdcfaa7e 100644
+--- a/src/jv.c
++++ b/src/jv.c
+@@ -585,6 +585,11 @@ static jv jvp_literal_number_new(const char * literal) {
+     return JV_INVALID;
+   }
+   if (decNumberIsNaN(&n->num_decimal)) {
++    // Reject NaN with payload.
++    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {
++      jv_mem_free(n);
++      return JV_INVALID;
++    }
+     jv_mem_free(n);
+     return jv_number(NAN);
+   }
+
+2025-05-28 22:14:30.820 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-05-28 22:14:30.820 | INFO     | modules.chunk_analyzer:execute:66 - From a09a4dfd55e6c24d04b35062ccfe4509748b1dd3 Mon Sep 17 00:00:00 2001
+From: itchyny <itchyny@cybozu.co.jp>
+Date: Wed, 5 Mar 2025 07:43:54 +0900
+Subject: [PATCH] Reject NaN with payload while parsing JSON
+
+This commit drops support for parsing NaN with payload in JSON like
+`NaN123` and fixes CVE-2024-53427. Other JSON extensions like `NaN` and
+`Infinity` are still supported. Fixes #3023, fixes #3196, fixes #3246.
+---
+ src/jv.c      |  5 +++++
+ tests/jq.test | 14 ++++++++++----
+ tests/shtest  |  7 -------
+ 3 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/tests/jq.test b/tests/jq.test
+index 2e3c1e8bd7..f5a57b1823 100644
+--- a/tests/jq.test
++++ b/tests/jq.test
+@@ -2110,11 +2110,17 @@ tojson | fromjson
+ {"a":nan}
+ {"a":null}
+ 
+-# also "nan with payload" #2985
+-if have_decnum then fromjson else nan end | isnan
+-"nan1234"
++# NaN with payload is not parsed
++.[] | try (fromjson | isnan) catch .
++["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]
+ true
+-
++true
++"Invalid numeric literal at EOF at line 1, column 4 (while parsing 'NaN1')"
++"Invalid numeric literal at EOF at line 1, column 5 (while parsing 'NaN10')"
++"Invalid numeric literal at EOF at line 1, column 6 (while parsing 'NaN100')"
++"Invalid numeric literal at EOF at line 1, column 7 (while parsing 'NaN1000')"
++"Invalid numeric literal at EOF at line 1, column 8 (while parsing 'NaN10000')"
++"Invalid numeric literal at EOF at line 1, column 9 (while parsing 'NaN100000')"
+ 
+ # calling input/0, or debug/0 in a test doesn't crash jq
+ 
+
+2025-05-28 22:14:30.820 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-05-28 22:14:30.820 | INFO     | modules.chunk_analyzer:execute:66 - From a09a4dfd55e6c24d04b35062ccfe4509748b1dd3 Mon Sep 17 00:00:00 2001
+From: itchyny <itchyny@cybozu.co.jp>
+Date: Wed, 5 Mar 2025 07:43:54 +0900
+Subject: [PATCH] Reject NaN with payload while parsing JSON
+
+This commit drops support for parsing NaN with payload in JSON like
+`NaN123` and fixes CVE-2024-53427. Other JSON extensions like `NaN` and
+`Infinity` are still supported. Fixes #3023, fixes #3196, fixes #3246.
+---
+ src/jv.c      |  5 +++++
+ tests/jq.test | 14 ++++++++++----
+ tests/shtest  |  7 -------
+ 3 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/tests/shtest b/tests/shtest
+index 86e759ba69..72ffc086fd 100755
+--- a/tests/shtest
++++ b/tests/shtest
+@@ -669,13 +669,6 @@ if ! x=$($JQ -cn "$(printf '[\r\n1,# comment\r\n2,# comment\\\r\ncomment\r\n3\r\
+   exit 1
+ fi
+ 
+-# CVE-2023-50268: No stack overflow comparing a nan with a large payload
+-if $JQ -ne 'have_decnum'; then
+-  $VALGRIND $Q $JQ '1 != .' <<\EOF >/dev/null
+-  Nan4000
+-EOF
+-fi
+-
+ # Allow passing the inline jq script before -- #2919
+ if ! r=$($JQ --args -rn -- '$ARGS.positional[0]' bar) || [ "$r" != bar ]; then
+     echo "passing the inline script after -- didn't work"
+
+2025-05-28 22:14:30.821 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/3 个块补丁: chunk_001_20250528_221430.patch
+2025-05-28 22:14:30.828 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_001_20250528_221430.patch 应用失败: error: patch failed: src/jv.c:585
+error: src/jv.c: patch does not apply
+
+2025-05-28 22:14:30.829 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/3 个块补丁: chunk_002_20250528_221430.patch
+2025-05-28 22:14:30.836 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_002_20250528_221430.patch 应用失败: error: patch failed: tests/jq.test:2110
+error: tests/jq.test: patch does not apply
+
+2025-05-28 22:14:30.836 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/3 个块补丁: chunk_003_20250528_221430.patch
+2025-05-28 22:14:30.845 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_003_20250528_221430.patch 应用失败: error: patch failed: tests/shtest:669
+error: tests/shtest: patch does not apply
+
+2025-05-28 22:14:30.846 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-05-28 22:14:30.846 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 3
+2025-05-28 22:14:30.846 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 0
+2025-05-28 22:14:30.847 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 3
+2025-05-28 22:14:30.847 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 0 个块补丁，总共 3 个
+2025-05-28 22:14:30.848 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/remaining_chunks_20250528_221430.patch
+2025-05-28 22:14:30.849 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 3 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/remaining_chunks_20250528_221430.patch
+2025-05-28 22:14:30.849 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/remaining_chunks_20250528_221430.patch
+2025-05-28 22:14:30.850 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.04秒
+2025-05-28 22:14:30.850 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/metrics_a09a4d_20250528_221430.json
+2025-05-28 22:14:30.852 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250528_221430
+2025-05-28 22:14:30.852 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250528_221430
+2025-05-28 22:14:30.853 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250528_221430/patches
+2025-05-28 22:14:30.853 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250528_221430/patches
+2025-05-28 22:14:30.854 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250528_221430/patches/original_patch.txt
+2025-05-28 22:14:30.854 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250528_221430
+2025-05-28 22:14:30.855 | WARNING  | modules.chunk_analyzer:_get_patch_content:1289 - 未找到任何应用成功的补丁文件
+2025-05-28 22:14:30.855 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250528_221430
+2025-05-28 22:14:30.856 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250528_221430/patches/remaining_patch.txt
+2025-05-28 22:14:30.856 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/chunk_patches/remaining_chunks_20250528_221430.patch
+2025-05-28 22:14:30.857 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/jqlang/jq/a09a4d/evaluations/chunk_analyzer/details_a09a4d_20250528_221430
+2025-05-28 22:14:30.859 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: llm_adapter
+2025-05-28 22:14:30.859 | INFO     | modules.llm_adapter:execute:55 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-28 22:14:30.859 | INFO     | modules.llm_adapter:execute:57 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/patches/upstream_a09a4d.patch
+2025-05-28 22:14:30.860 | INFO     | modules.llm_adapter:_prepare_prompt_data:179 - 使用函数级上下文和完整文件内容的增强模式
+2025-05-28 22:14:30.860 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:222 - 补丁修改的文件: ['src/jv.c', 'tests/jq.test', 'tests/shtest']
+2025-05-28 22:14:30.994 | INFO     | modules.backtrack_apply:_map_file_paths:203 - 文件直接存在: src/jv.c
+2025-05-28 22:14:31.127 | INFO     | modules.backtrack_apply:_map_file_paths:203 - 文件直接存在: tests/jq.test
+2025-05-28 22:14:31.268 | INFO     | modules.backtrack_apply:_map_file_paths:203 - 文件直接存在: tests/shtest
+2025-05-28 22:14:31.285 | INFO     | modules.llm_adapter:_get_context_diff:619 - diff_file: /home/elpsy/workspace/sow/patch-backport/workspace/jqlang/jq/a09a4d/diff
+2025-05-28 22:14:31.286 | INFO     | modules.llm_adapter:_get_context_diff:623 - diff_content: modified file: src/jv.c
+--- workspace/jqlang/jq/a09a4d/newer/src/jv.c
++++ workspace/jqlang/jq/a09a4d/jq-1.6/src/jv.c
+@@ -1,35 +1,3 @@
+ -/*
+ - * Portions Copyright (c) 2016 Kungliga Tekniska Högskolan
+ - * (Royal Institute of Technology, Stockholm, Sweden).
+ - * All rights reserved.
+ - *
+ - * Redistribution and use in source and binary forms, with or without
+ - * modification, are permitted provided that the following conditions
+ - * are met:
+ - *
+ - * 1. Redistributions of source code must retain the above copyright
+ - *    notice, this list of conditions and the following disclaimer.
+ - *
+ - * 2. Redistributions in binary form must reproduce the above copyright
+ - *    notice, this list of conditions and the following disclaimer in the
+ - *    documentation and/or other materials provided with the distribution.
+ - *
+ - * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ - * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ - * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ - * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ - * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ - * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ - * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ - * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ - * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ - * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ - * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ - * OF THE POSSIBILITY OF SUCH DAMAGE.
+ - *
+ - */
+ -
+ -
+  #include <stdint.h>
+  #include <stddef.h>
+  #include <assert.h>
+@@ -39,7 +7,6 @@
+  #include <stdarg.h>
+  #include <limits.h>
+  #include <math.h>
+ -#include <float.h>
+  
+  #include "jv_alloc.h"
+  #include "jv.h"
+@@ -70,33 +37,14 @@
+    return c->count == 1;
+  }
+  
+ -#define KIND_MASK   0xF
+ -#define PFLAGS_MASK 0xF0
+ -#define PTYPE_MASK  0x70
+ -
+ -typedef enum {
+ -  JVP_PAYLOAD_NONE = 0,
+ -  JVP_PAYLOAD_ALLOCATED = 0x80,
+ -} payload_flags;
+ -
+ -#define JVP_MAKE_PFLAGS(ptype, allocated) ((((ptype) << 4) & PTYPE_MASK) | ((allocated) ? JVP_PAYLOAD_ALLOCATED : 0))
+ -#define JVP_MAKE_FLAGS(kind, pflags) ((kind & KIND_MASK) | (pflags & PFLAGS_MASK))
+ -
+ -#define JVP_FLAGS(j)  ((j).kind_flags)
+ -#define JVP_KIND(j)   (JVP_FLAGS(j) & KIND_MASK)
+ -
+ -#define JVP_HAS_FLAGS(j, flags) (JVP_FLAGS(j) == flags)
+ -#define JVP_HAS_KIND(j, kind)   (JVP_KIND(j) == kind)
+ -
+ -#define JVP_IS_ALLOCATED(j) (j.kind_flags & JVP_PAYLOAD_ALLOCATED)
+ -
+ -#define JVP_FLAGS_NULL      JVP_MAKE_FLAGS(JV_KIND_NULL, JVP_PAYLOAD_NONE)
+ -#define JVP_FLAGS_INVALID   JVP_MAKE_FLAGS(JV_KIND_INVALID, JVP_PAYLOAD_NONE)
+ -#define JVP_FLAGS_FALSE     JVP_MAKE_FLAGS(JV_KIND_FALSE, JVP_PAYLOAD_NONE)
+ -#define JVP_FLAGS_TRUE      JVP_MAKE_FLAGS(JV_KIND_TRUE, JVP_PAYLOAD_NONE)
+ +/*
+ + * Simple values (true, false, null)
+ + */
+ +
+ +#define KIND_MASK 0xf
+  
+  jv_kind jv_get_kind(jv x) {
+ -  return JVP_KIND(x);
+ +  return x.kind_flags & KIND_MASK;
+  }
+  
+  const char* jv_kind_name(jv_kind k) {
+@@ -114,10 +62,10 @@
+    return "<unknown>";
+  }
+  
+ -const jv JV_NULL = {JVP_FLAGS_NULL, 0, 0, 0, {0}};
+ -const jv JV_INVALID = {JVP_FLAGS_INVALID, 0, 0, 0, {0}};
+ -const jv JV_FALSE = {JVP_FLAGS_FALSE, 0, 0, 0, {0}};
+ -const jv JV_TRUE = {JVP_FLAGS_TRUE, 0, 0, 0, {0}};
+ +static const jv JV_NULL = {JV_KIND_NULL, 0, 0, 0, {0}};
+ +static const jv JV_INVALID = {JV_KIND_INVALID, 0, 0, 0, {0}};
+ +static const jv JV_FALSE = {JV_KIND_FALSE, 0, 0, 0, {0}};
+ +static const jv JV_TRUE = {JV_KIND_TRUE, 0, 0, 0, {0}};
+  
+  jv jv_true() {
+    return JV_TRUE;
+@@ -138,8 +86,6 @@
+ -
+ -#define JVP_FLAGS_INVALID_MSG   JVP_MAKE_FLAGS(JV_KIND_INVALID, JVP_PAYLOAD_ALLOCATED)
+  
+  typedef struct {
+    jv_refcnt refcnt;
+@@ -147,11 +93,13 @@
+  } jvp_invalid;
+  
+  jv jv_invalid_with_msg(jv err) {
+ +  if (jv_get_kind(err) == JV_KIND_NULL)
+ +    return JV_INVALID;
+    jvp_invalid* i = jv_mem_alloc(sizeof(jvp_invalid));
+    i->refcnt = JV_REFCNT_INIT;
+    i->errmsg = err;
+  
+ -  jv x = {JVP_FLAGS_INVALID_MSG, 0, 0, 0, {&i->refcnt}};
+ +  jv x = {JV_KIND_INVALID, 0, 0, 0, {&i->refcnt}};
+    return x;
+  }
+  
+@@ -160,30 +108,26 @@
+  }
+  
+  jv jv_invalid_get_msg(jv inv) {
+ -  assert(JVP_HAS_KIND(inv, JV_KIND_INVALID));
+ -
+ +  assert(jv_get_kind(inv) == JV_KIND_INVALID);
+    jv x;
+ -  if (JVP_HAS_FLAGS(inv, JVP_FLAGS_INVALID_MSG)) {
+ +  if (inv.u.ptr == 0)
+ +    x = jv_null();
+ +  else
+      x = jv_copy(((jvp_invalid*)inv.u.ptr)->errmsg);
+ -  }
+ -  else {
+ -    x = jv_null();
+ -  }
+ -
+    jv_free(inv);
+    return x;
+  }
+  
+  int jv_invalid_has_msg(jv inv) {
+ -  assert(JVP_HAS_KIND(inv, JV_KIND_INVALID));
+ -  int r = JVP_HAS_FLAGS(inv, JVP_FLAGS_INVALID_MSG);
+ -  jv_free(inv);
+ +  jv msg = jv_invalid_get_msg(inv);
+ +  int r = jv_get_kind(msg) != JV_KIND_NULL;
+ +  jv_free(msg);
+    return r;
+  }
+  
+  static void jvp_invalid_free(jv x) {
+ -  assert(JVP_HAS_KIND(x, JV_KIND_INVALID));
+ -  if (JVP_HAS_FLAGS(x, JVP_FLAGS_INVALID_MSG) && jvp_refcnt_dec(x.u.ptr)) {
+ +  assert(jv_get_kind(x) == JV_KIND_INVALID);
+ +  if (x.u.ptr != 0 && jvp_refcnt_dec(x.u.ptr)) {
+      jv_free(((jvp_invalid*)x.u.ptr)->errmsg);
+      jv_mem_free(x.u.ptr);
+    }
+@@ -193,612 +137,26 @@
+   * Numbers
+   */
+  
+ -#ifdef USE_DECNUM
+ -#include "jv_dtoa.h"
+ -#include "jv_dtoa_tsd.h"
+ -
+ -// we will manage the space for the struct
+ -#define DECNUMDIGITS 1
+ -#include "decNumber/decNumber.h"
+ -
+ -enum {
+ -  JVP_NUMBER_NATIVE = 0,
+ -  JVP_NUMBER_DECIMAL = 1
+ -};
+ -
+ -#define JVP_FLAGS_NUMBER_NATIVE       JVP_MAKE_FLAGS(JV_KIND_NUMBER, JVP_MAKE_PFLAGS(JVP_NUMBER_NATIVE, 0))
+ -#define JVP_FLAGS_NUMBER_LITERAL      JVP_MAKE_FLAGS(JV_KIND_NUMBER, JVP_MAKE_PFLAGS(JVP_NUMBER_DECIMAL, 1))
+ -
+ -// the decimal precision of binary double
+ -#define DEC_NUMBER_DOUBLE_PRECISION   (17)
+ -#define DEC_NUMBER_STRING_GUARD       (14)
+ -#define DEC_NUMBER_DOUBLE_EXTRA_UNITS ((DEC_NUMBER_DOUBLE_PRECISION - DECNUMDIGITS + DECDPUN - 1)/DECDPUN)
+ -
+ -#include "jv_thread.h"
+ -#ifdef WIN32
+ -#ifndef __MINGW32__
+ -/* Copied from Heimdal: thread-specific keys; see lib/base/dll.c in Heimdal */
+ -
+ -/*
+ - * This is an implementation of thread-specific storage with
+ - * destructors.  WIN32 doesn't quite have this.  Instead it has
+ - * DllMain(), an entry point in every DLL that gets called to notify the
+ - * DLL of thread/process "attach"/"detach" events.
+ - *
+ - * We use __thread (or __declspec(thread)) for the thread-local itself
+ - * and DllMain() DLL_THREAD_DETACH events to drive destruction of
+ - * thread-local values.
+ - *
+ - * When building in maintainer mode on non-Windows pthread systems this
+ - * uses a single pthread key instead to implement multiple keys.  This
+ - * keeps the code from rotting when modified by non-Windows developers.
+ - */
+ -
+ -/* Logical array of keys that grows lock-lessly */
+ -typedef struct tls_keys tls_keys;
+ -struct tls_keys {
+ -    void (**keys_dtors)(void *);    /* array of destructors         */
+ -    size_t keys_start_idx;          /* index of first destructor    */
+ -    size_t keys_num;
+ -    tls_keys *keys_next;
+ -};
+ -
+ -/*
+ - * Well, not quite locklessly.  We need synchronization primitives to do
+ - * this locklessly.  An atomic CAS will do.
+ - */
+ -static pthread_mutex_t tls_key_defs_lock = PTHREAD_MUTEX_INITIALIZER;
+ -static tls_keys *tls_key_defs;
+ -
+ -/* Logical array of values (per-thread; no locking needed here) */
+ -struct tls_values {
+ -    void **values; /* realloc()ed */
+ -    size_t values_num;
+ -};
+ -
+ -#ifdef _MSC_VER
+ -static __declspec(thread) struct nomem_handler nomem_handler;
+ -#else
+ -static __thread struct tls_values values;
+ -#endif
+ -
+ -#define DEAD_KEY ((void *)8)
+ -
+ -static void
+ -w32_service_thread_detach(void *unused)
+ -{
+ -    tls_keys *key_defs;
+ -    void (*dtor)(void*);
+ -    size_t i;
+ -
+ -    pthread_mutex_lock(&tls_key_defs_lock);
+ -    key_defs = tls_key_defs;
+ -    pthread_mutex_unlock(&tls_key_defs_lock);
+ -
+ -    if (key_defs == NULL)
+ -        return;
+ -
+ -    for (i = 0; i < values.values_num; i++) {
+ -        assert(i >= key_defs->keys_start_idx);
+ -        if (i >= key_defs->keys_start_idx + key_defs->keys_num) {
+ -            pthread_mutex_lock(&tls_key_defs_lock);
+ -            key_defs = key_defs->keys_next;
+ -            pthread_mutex_unlock(&tls_key_defs_lock);
+ -
+ -            assert(key_defs != NULL);
+ -            assert(i >= key_defs->keys_start_idx);
+ -            assert(i < key_defs->keys_start_idx + key_defs->keys_num);
+ -        }
+ -        dtor = key_defs->keys_dtors[i - key_defs->keys_start_idx];
+ -        if (values.values[i] != NULL && dtor != NULL && dtor != DEAD_KEY)
+ -            dtor(values.values[i]);
+ -        values.values[i] = NULL;
+ -    }
+ -}
+ -
+ -extern void jv_tsd_dtoa_ctx_init();
+ -extern void jv_tsd_dtoa_ctx_fini();
+ -void jv_tsd_dec_ctx_fini();
+ -void jv_tsd_dec_ctx_init();
+ -
+ -BOOL WINAPI DllMain(HINSTANCE hinstDLL,
+ -                    DWORD fdwReason,
+ -                    LPVOID lpvReserved)
+ -{
+ -    switch (fdwReason) {
+ -    case DLL_PROCESS_ATTACH:
+ -	/*create_pt_key();*/
+ -	jv_tsd_dtoa_ctx_init();
+ -	jv_tsd_dec_ctx_init();
+ -	return TRUE;
+ -    case DLL_PROCESS_DETACH:
+ -	jv_tsd_dtoa_ctx_fini();
+ -	jv_tsd_dec_ctx_fini();
+ -	return TRUE;
+ -    case DLL_THREAD_ATTACH: return 0;
+ -    case DLL_THREAD_DETACH:
+ -        w32_service_thread_detach(NULL);
+ -        return TRUE;
+ -    default: return TRUE;
+ -    }
+ -}
+ -
+ -int
+ -pthread_key_create(pthread_key_t *key, void (*dtor)(void *))
+ -{
+ -    tls_keys *key_defs, *new_key_defs;
+ -    size_t i, k;
+ -    int ret = ENOMEM;
+ -
+ -    pthread_mutex_lock(&tls_key_defs_lock);
+ -    if (tls_key_defs == NULL) {
+ -        /* First key */
+ -        new_key_defs = calloc(1, sizeof(*new_key_defs));
+ -        if (new_key_defs == NULL) {
+ -            pthread_mutex_unlock(&tls_key_defs_lock);
+ -            return ENOMEM;
+ -        }
+ -        new_key_defs->keys_num = 8;
+ -        new_key_defs->keys_dtors = calloc(new_key_defs->keys_num,
+ -                                          sizeof(*new_key_defs->keys_dtors));
+ -        if (new_key_defs->keys_dtors == NULL) {
+ -            pthread_mutex_unlock(&tls_key_defs_lock);
+ -            free(new_key_defs);
+ -            return ENOMEM;
+ -        }
+ -        tls_key_defs = new_key_defs;
+ -        new_key_defs->keys_dtors[0] = dtor;
+ -        for (i = 1; i < new_key_defs->keys_num; i++)
+ -            new_key_defs->keys_dtors[i] = NULL;
+ -        pthread_mutex_unlock(&tls_key_defs_lock);
+ -        return 0;
+ -    }
+ -
+ -    for (key_defs = tls_key_defs;
+ -         key_defs != NULL;
+ -         key_defs = key_defs->keys_next) {
+ -        k = key_defs->keys_start_idx;
+ -        for (i = 0; i < key_defs->keys_num; i++, k++) {
+ -            if (key_defs->keys_dtors[i] == NULL) {
+ -                /* Found free slot; use it */
+ -                key_defs->keys_dtors[i] = dtor;
+ -                *key = k;
+ -                pthread_mutex_unlock(&tls_key_defs_lock);
+ -                return 0;
+ -            }
+ -        }
+ -        if (key_defs->keys_next != NULL)
+ -            continue;
+ -
+ -        /* Grow the registration array */
+ -        /* XXX DRY */
+ -        new_key_defs = calloc(1, sizeof(*new_key_defs));
+ -        if (new_key_defs == NULL)
+ -            break;
+ -
+ -        new_key_defs->keys_dtors =
+ -            calloc(key_defs->keys_num + key_defs->keys_num / 2,
+ -                   sizeof(*new_key_defs->keys_dtors));
+ -        if (new_key_defs->keys_dtors == NULL) {
+ -            free(new_key_defs);
+ -            break;
+ -        }
+ -        new_key_defs->keys_start_idx = key_defs->keys_start_idx +
+ -            key_defs->keys_num;
+ -        new_key_defs->keys_num = key_defs->keys_num + key_defs->keys_num / 2;
+ -        new_key_defs->keys_dtors[i] = dtor;
+ -        for (i = 1; i < new_key_defs->keys_num; i++)
+ -            new_key_defs->keys_dtors[i] = NULL;
+ -        key_defs->keys_next = new_key_defs;
+ -        ret = 0;
+ -        break;
+ -    }
+ -    pthread_mutex_unlock(&tls_key_defs_lock);
+ -    return ret;
+ -}
+ -
+ -static void
+ -key_lookup(pthread_key_t key, tls_keys **kd,
+ -           size_t *dtor_idx, void (**dtor)(void *))
+ -{
+ -    tls_keys *key_defs;
+ -
+ -    if (kd != NULL)
+ -        *kd = NULL;
+ -    if (dtor_idx != NULL)
+ -        *dtor_idx = 0;
+ -    if (dtor != NULL)
+ -        *dtor = NULL;
+ -
+ -    pthread_mutex_lock(&tls_key_defs_lock);
+ -    key_defs = tls_key_defs;
+ -    pthread_mutex_unlock(&tls_key_defs_lock);
+ -
+ -    while (key_defs != NULL) {
+ -        if (key >= key_defs->keys_start_idx &&
+ -            key < key_defs->keys_start_idx + key_defs->keys_num) {
+ -            if (kd != NULL)
+ -                *kd = key_defs;
+ -            if (dtor_idx != NULL)
+ -                *dtor_idx = key - key_defs->keys_start_idx;
+ -            if (dtor != NULL)
+ -                *dtor = key_defs->keys_dtors[key - key_defs->keys_start_idx];
+ -            return;
+ -        }
+ -
+ -        pthread_mutex_lock(&tls_key_defs_lock);
+ -        key_defs = key_defs->keys_next;
+ -        pthread_mutex_unlock(&tls_key_defs_lock);
+ -        assert(key_defs != NULL);
+ -        assert(key >= key_defs->keys_start_idx);
+ -    }
+ -}
+ -
+ -int
+ -pthread_setspecific(pthread_key_t key, void *value)
+ -{
+ -    void **new_values;
+ -    size_t new_num;
+ -    void (*dtor)(void *);
+ -    size_t i;
+ -
+ -    key_lookup(key, NULL, NULL, &dtor);
+ -    if (dtor == NULL)
+ -        return EINVAL;
+ -
+ -    if (key >= values.values_num) {
+ -        if (values.values_num == 0) {
+ -            values.values = NULL;
+ -            new_num = 8;
+ -        } else {
+ -            new_num = (values.values_num + values.values_num / 2);
+ -        }
+ -        new_values = realloc(values.values, sizeof(void *) * new_num);
+ -        if (new_values == NULL)
+ -            return ENOMEM;
+ -        for (i = values.values_num; i < new_num; i++)
+ -            new_values[i] = NULL;
+ -        values.values = new_values;
+ -        values.values_num = new_num;
+ -    }
+ -
+ -    assert(key < values.values_num);
+ -
+ -    if (values.values[key] != NULL && dtor != NULL && dtor != DEAD_KEY)
+ -        dtor(values.values[key]);
+ -
+ -    values.values[key] = value;
+ +jv jv_number(double x) {
+ +  jv j = {JV_KIND_NUMBER, 0, 0, 0, {.number = x}};
+ +  return j;
+ +}
+ +
+ +double jv_number_value(jv j) {
+ +  assert(jv_get_kind(j) == JV_KIND_NUMBER);
+ +  return j.u.number;
+ +}
+ +
+ +int jv_is_integer(jv j){
+ +  if(jv_get_kind(j) != JV_KIND_NUMBER){
+      return 0;
+ -}
+ -
+ -void *
+ -pthread_getspecific(pthread_key_t key)
+ -{
+ -    if (key >= values.values_num)
+ -        return NULL;
+ -    return values.values[key];
+ -}
+ -#else
+ -#include <pthread.h>
+ -#endif
+ -#else
+ -#include <pthread.h>
+ -#endif
+ -
+ -static pthread_key_t dec_ctx_key;
+ -static pthread_once_t dec_ctx_once = PTHREAD_ONCE_INIT;
+ -
+ -#define DEC_CONTEXT() tsd_dec_ctx_get(&dec_ctx_key)
+ -
+ -// atexit finalizer to clean up the tsd dec contexts if main() exits
+ -// without having called pthread_exit()
+ -void jv_tsd_dec_ctx_fini() {
+ -  jv_mem_free(pthread_getspecific(dec_ctx_key));
+ -  pthread_setspecific(dec_ctx_key, NULL);
+ -}
+ -
+ -void jv_tsd_dec_ctx_init() {
+ -  if (pthread_key_create(&dec_ctx_key, jv_mem_free) != 0) {
+ -    fprintf(stderr, "error: cannot create thread specific key");
+ -    abort();
+ -  }
+ -  atexit(jv_tsd_dec_ctx_fini);
+ -}
+ -
+ -static decContext* tsd_dec_ctx_get(pthread_key_t *key) {
+ -  pthread_once(&dec_ctx_once, jv_tsd_dec_ctx_init); // cannot fail
+ -  decContext *ctx = (decContext*)pthread_getspecific(*key);
+ -  if (ctx) {
+ -    return ctx;
+ -  }
+ -
+ -  ctx = malloc(sizeof(decContext));
+ -  if (ctx) {
+ -    if (key == &dec_ctx_key)
+ -    {
+ -      decContextDefault(ctx, DEC_INIT_BASE);
+ -      // make sure (Int)D2U(rhs->exponent-lhs->exponent) does not overflow
+ -      ctx->digits = MIN(DEC_MAX_DIGITS,
+ -          INT32_MAX - (DECDPUN - 1) - (ctx->emax - ctx->emin - 1));
+ -      ctx->traps = 0; /*no errors*/
+ -    }
+ -    if (pthread_setspecific(*key, ctx) != 0) {
+ -      fprintf(stderr, "error: cannot store thread specific data");
+ -      abort();
+ -    }
+ -  }
+ -  return ctx;
+ -}
+ -
+ -typedef struct {
+ -  jv_refcnt refcnt;
+ -  double num_double;
+ -  char * literal_data;
+ -  decNumber num_decimal; // must be the last field in the structure for memory management
+ -} jvp_literal_number;
+ -
+ -typedef struct {
+ -  decNumber number;
+ -  decNumberUnit units[DEC_NUMBER_DOUBLE_EXTRA_UNITS];
+ -} decNumberDoublePrecision;
+ -
+ -
+ -static inline int jvp_number_is_literal(jv n) {
+ -  assert(JVP_HAS_KIND(n, JV_KIND_NUMBER));
+ -  return JVP_HAS_FLAGS(n, JVP_FLAGS_NUMBER_LITERAL);
+ -}
+ -
+ -static jvp_literal_number* jvp_literal_number_ptr(jv j) {
+ -  assert(JVP_HAS_FLAGS(j, JVP_FLAGS_NUMBER_LITERAL));
+ -  return (jvp_literal_number*)j.u.ptr;
+ -}
+ -
+ -static decNumber* jvp_dec_number_ptr(jv j) {
+ -  assert(JVP_HAS_FLAGS(j, JVP_FLAGS_NUMBER_LITERAL));
+ -  return &(((jvp_literal_number*)j.u.ptr)->num_decimal);
+ -}
+ -
+ -static jvp_literal_number* jvp_literal_number_alloc(unsigned literal_length) {
+ -  /* The number of units needed is ceil(DECNUMDIGITS/DECDPUN)         */
+ -  int units = ((literal_length+DECDPUN-1)/DECDPUN);
+ -
+ -  jvp_literal_number* n = jv_mem_alloc(
+ -    sizeof(jvp_literal_number)
+ -    + sizeof(decNumberUnit) * units
+ -  );
+ -
+ -  n->refcnt = JV_REFCNT_INIT;
+ -  n->num_double = NAN;
+ -  n->literal_data = NULL;
+ -  return n;
+ -}
+ -
+ -static jv jvp_literal_number_new(const char * literal) {
+ -  jvp_literal_number* n = jvp_literal_number_alloc(strlen(literal));
+ -
+ -  decContext *ctx = DEC_CONTEXT();
+ -  decContextClearStatus(ctx, DEC_Conversion_syntax);
+ -  decNumberFromString(&n->num_decimal, literal, ctx);
+ -
+ -  if (ctx->status & DEC_Conversion_syntax) {
+ -    jv_mem_free(n);
+ -    return JV_INVALID;
+ -  }
+ -  if (decNumberIsNaN(&n->num_decimal)) {
+ -    jv_mem_free(n);
+ -    return jv_number(NAN);
+ -  }
+ -
+ -  jv r = {JVP_FLAGS_NUMBER_LITERAL, 0, 0, 0, {&n->refcnt}};
+ -  return r;
+ -}
+ -
+ -static double jvp_literal_number_to_double(jv j) {
+ -  assert(JVP_HAS_FLAGS(j, JVP_FLAGS_NUMBER_LITERAL));
+ -  decContext dblCtx;
+ -
+ -  // init as decimal64 but change digits to allow conversion to binary64 (double)
+ -  decContextDefault(&dblCtx, DEC_INIT_DECIMAL64);
+ -  dblCtx.digits = DEC_NUMBER_DOUBLE_PRECISION;
+ -
+ -  decNumber *p_dec_number = jvp_dec_number_ptr(j);
+ -  decNumberDoublePrecision dec_double;
+ -  char literal[DEC_NUMBER_DOUBLE_PRECISION + DEC_NUMBER_STRING_GUARD + 1];
+ -
+ -  // reduce the number to the shortest possible form
+ -  // that fits into the 64 bit floating point representation
+ -  decNumberReduce(&dec_double.number, p_dec_number, &dblCtx);
+ -
+ -  decNumberToString(&dec_double.number, literal);
+ -
+ -  char *end;
+ -  return jvp_strtod(tsd_dtoa_context_get(), literal, &end);
+ -}
+ -
+ -static const char* jvp_literal_number_literal(jv n) {
+ -  assert(JVP_HAS_FLAGS(n, JVP_FLAGS_NUMBER_LITERAL));
+ -  decNumber *pdec = jvp_dec_number_ptr(n);
+ -  jvp_literal_number* plit = jvp_literal_number_ptr(n);
+ -
+ -  if (decNumberIsNaN(pdec)) {
+ -    return "null";
+ -  }
+ -
+ -  if (decNumberIsInfinite(pdec)) {
+ -    // We cannot preserve the literal data of numbers outside the limited
+ -    // range of exponent. Since `decNumberToString` returns "Infinity"
+ -    // (or "-Infinity"), and to reduce stack allocations as possible, we
+ -    // normalize infinities in the callers instead of printing the maximum
+ -    // (or minimum) double here.
+ -    return NULL;
+ -  }
+ -
+ -  if (plit->literal_data == NULL) {
+ -    int len = jvp_dec_number_ptr(n)->digits + 15 /* 14 + NUL */;
+ -    plit->literal_data = jv_mem_alloc(len);
+ -
+ -    // Preserve the actual precision as we have parsed it
+ -    // don't do decNumberTrim(pdec);
+ -
+ -    decNumberToString(pdec, plit->literal_data);
+ -  }
+ -
+ -  return plit->literal_data;
+ -}
+ -
+ -int jv_number_has_literal(jv n) {
+ -  assert(JVP_HAS_KIND(n, JV_KIND_NUMBER));
+ -  return JVP_HAS_FLAGS(n, JVP_FLAGS_NUMBER_LITERAL);
+ -}
+ -
+ -const char* jv_number_get_literal(jv n) {
+ -  assert(JVP_HAS_KIND(n, JV_KIND_NUMBER));
+ -
+ -  if (JVP_HAS_FLAGS(n, JVP_FLAGS_NUMBER_LITERAL)) {
+ -    return jvp_literal_number_literal(n);
+ -  } else {
+ -    return NULL;
+ -  }
+ -}
+ -
+ -jv jv_number_with_literal(const char * literal) {
+ -  return jvp_literal_number_new(literal);
+ -}
+ -#endif /* USE_DECNUM */
+ -
+ -jv jv_number(double x) {
+ -  jv j = {
+ -#ifdef USE_DECNUM
+ -    JVP_FLAGS_NUMBER_NATIVE,
+ -#else
+ -    JV_KIND_NUMBER,
+ -#endif
+ -    0, 0, 0, {.number = x}
+ -  };
+ -  return j;
+ -}
+ -
+ -static void jvp_number_free(jv j) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_NUMBER));
+ -#ifdef USE_DECNUM
+ -  if (JVP_HAS_FLAGS(j, JVP_FLAGS_NUMBER_LITERAL) && jvp_refcnt_dec(j.u.ptr)) {
+ -    jvp_literal_number* n = jvp_literal_number_ptr(j);
+ -    if (n->literal_data) {
+ -      jv_mem_free(n->literal_data);
+ -    }
+ -    jv_mem_free(n);
+ -  }
+ -#endif
+ -}
+ -
+ -double jv_number_value(jv j) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_NUMBER));
+ -#ifdef USE_DECNUM
+ -  if (JVP_HAS_FLAGS(j, JVP_FLAGS_NUMBER_LITERAL)) {
+ -    jvp_literal_number* n = jvp_literal_number_ptr(j);
+ -
+ -    if (isnan(n->num_double)) {
+ -      n->num_double = jvp_literal_number_to_double(j);
+ -    }
+ -
+ -    return n->num_double;
+ -  }
+ -#endif
+ -  return j.u.number;
+ -}
+ -
+ -int jv_is_integer(jv j){
+ -  if (!JVP_HAS_KIND(j, JV_KIND_NUMBER)){
+ +  }
+ +  double x = jv_number_value(j);
+ +  if(x != x || x > INT_MAX || x < INT_MIN){
+      return 0;
+    }
+  
+ -  double x = jv_number_value(j);
+ -
+ -  double ipart;
+ -  double fpart = modf(x, &ipart);
+ -
+ -  return fabs(fpart) < DBL_EPSILON;
+ -}
+ -
+ -int jvp_number_is_nan(jv n) {
+ -  assert(JVP_HAS_KIND(n, JV_KIND_NUMBER));
+ -
+ -#ifdef USE_DECNUM
+ -  if (JVP_HAS_FLAGS(n, JVP_FLAGS_NUMBER_LITERAL)) {
+ -    decNumber *pdec = jvp_dec_number_ptr(n);
+ -    return decNumberIsNaN(pdec);
+ -  }
+ -#endif
+ -  return isnan(n.u.number);
+ -}
+ -
+ -jv jv_number_abs(jv n) {
+ -  assert(JVP_HAS_KIND(n, JV_KIND_NUMBER));
+ -
+ -#ifdef USE_DECNUM
+ -  if (JVP_HAS_FLAGS(n, JVP_FLAGS_NUMBER_LITERAL)) {
+ -    jvp_literal_number* m = jvp_literal_number_alloc(jvp_dec_number_ptr(n)->digits);
+ -
+ -    decNumberAbs(&m->num_decimal, jvp_dec_number_ptr(n), DEC_CONTEXT());
+ -    jv r = {JVP_FLAGS_NUMBER_LITERAL, 0, 0, 0, {&m->refcnt}};
+ -    return r;
+ -  }
+ -#endif
+ -  return jv_number(fabs(jv_number_value(n)));
+ -}
+ -
+ -jv jv_number_negate(jv n) {
+ -  assert(JVP_HAS_KIND(n, JV_KIND_NUMBER));
+ -
+ -#ifdef USE_DECNUM
+ -  if (JVP_HAS_FLAGS(n, JVP_FLAGS_NUMBER_LITERAL)) {
+ -    jvp_literal_number* m = jvp_literal_number_alloc(jvp_dec_number_ptr(n)->digits);
+ -
+ -    decNumberMinus(&m->num_decimal, jvp_dec_number_ptr(n), DEC_CONTEXT());
+ -    jv r = {JVP_FLAGS_NUMBER_LITERAL, 0, 0, 0, {&m->refcnt}};
+ -    return r;
+ -  }
+ -#endif
+ -  return jv_number(-jv_number_value(n));
+ -}
+ -
+ -int jvp_number_cmp(jv a, jv b) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_NUMBER));
+ -  assert(JVP_HAS_KIND(b, JV_KIND_NUMBER));
+ -
+ -#ifdef USE_DECNUM
+ -  if (JVP_HAS_FLAGS(a, JVP_FLAGS_NUMBER_LITERAL) && JVP_HAS_FLAGS(b, JVP_FLAGS_NUMBER_LITERAL)) {
+ -    struct {
+ -      decNumber number;
+ -      decNumberUnit units[1];
+ -    } res;
+ -
+ -    decNumberCompare(&res.number,
+ -                     jvp_dec_number_ptr(a),
+ -                     jvp_dec_number_ptr(b),
+ -                     DEC_CONTEXT()
+ -                     );
+ -    if (decNumberIsZero(&res.number)) {
+ -      return 0;
+ -    } else if (decNumberIsNegative(&res.number)) {
+ -      return -1;
+ -    } else {
+ -      return 1;
+ -    }
+ -  }
+ -#endif
+ -  double da = jv_number_value(a), db = jv_number_value(b);
+ -  if (da < db) {
+ -    return -1;
+ -  } else if (da == db) {
+ -    return 0;
+ -  } else {
+ -    return 1;
+ -  }
+ -}
+ -
+ -static int jvp_number_equal(jv a, jv b) {
+ -  return jvp_number_cmp(a, b) == 0;
+ +  return x == (int)x;
+  }
+  
+  
+  #define ARRAY_SIZE_ROUND_UP(n) (((n)*3)/2)
+ -#define JVP_FLAGS_ARRAY   JVP_MAKE_FLAGS(JV_KIND_ARRAY, JVP_PAYLOAD_ALLOCATED)
+  
+  static int imax(int a, int b) {
+    if (a>b) return a;
+@@ -821,7 +178,7 @@
+  } jvp_array;
+  
+  static jvp_array* jvp_array_ptr(jv a) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_ARRAY));
+ +  assert(jv_get_kind(a) == JV_KIND_ARRAY);
+    return (jvp_array*)a.u.ptr;
+  }
+  
+@@ -834,12 +191,12 @@
+  }
+  
+  static jv jvp_array_new(unsigned size) {
+ -  jv r = {JVP_FLAGS_ARRAY, 0, 0, 0, {&jvp_array_alloc(size)->refcnt}};
+ +  jv r = {JV_KIND_ARRAY, 0, 0, 0, {&jvp_array_alloc(size)->refcnt}};
+    return r;
+  }
+  
+  static void jvp_array_free(jv a) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_ARRAY));
+ +  assert(jv_get_kind(a) == JV_KIND_ARRAY);
+    if (jvp_refcnt_dec(a.u.ptr)) {
+      jvp_array* array = jvp_array_ptr(a);
+      for (int i=0; i<array->length; i++) {
+@@ -850,17 +207,17 @@
+  }
+  
+  static int jvp_array_length(jv a) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_ARRAY));
+ +  assert(jv_get_kind(a) == JV_KIND_ARRAY);
+    return a.size;
+  }
+  
+  static int jvp_array_offset(jv a) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_ARRAY));
+ +  assert(jv_get_kind(a) == JV_KIND_ARRAY);
+    return a.offset;
+  }
+  
+  static jv* jvp_array_read(jv a, int i) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_ARRAY));
+ +  assert(jv_get_kind(a) == JV_KIND_ARRAY);
+    if (i >= 0 && i < jvp_array_length(a)) {
+      jvp_array* array = jvp_array_ptr(a);
+      assert(i + jvp_array_offset(a) < array->length);
+@@ -897,7 +254,7 @@
+      }
+      new_array->length = new_length;
+      jvp_array_free(*a);
+ -    jv new_jv = {JVP_FLAGS_ARRAY, 0, 0, new_length, {&new_array->refcnt}};
+ +    jv new_jv = {JV_KIND_ARRAY, 0, 0, new_length, {&new_array->refcnt}};
+      *a = new_jv;
+      return &new_array->elements[i];
+    }
+@@ -928,33 +285,8 @@
+    if (*pend < *pstart) *pend = *pstart;
+  }
+  
+ -
+ -static int jvp_array_contains(jv a, jv b) {
+ -  int r = 1;
+ -  jv_array_foreach(b, bi, belem) {
+ -    int ri = 0;
+ -    jv_array_foreach(a, ai, aelem) {
+ -      if (jv_contains(aelem, jv_copy(belem))) {
+ -        ri = 1;
+ -        break;
+ -      }
+ -    }
+ -    jv_free(belem);
+ -    if (!ri) {
+ -      r = 0;
+ -      break;
+ -    }
+ -  }
+ -  return r;
+ -}
+ -
+ -
+ -/*
+ - * Public
+ - */
+ -
+  static jv jvp_array_slice(jv a, int start, int end) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_ARRAY));
+ +  assert(jv_get_kind(a) == JV_KIND_ARRAY);
+    int len = jvp_array_length(a);
+    jvp_clamp_slice_params(len, &start, &end);
+    assert(0 <= start && start <= end && end <= len);
+@@ -991,14 +323,14 @@
+  }
+  
+  int jv_array_length(jv j) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_ARRAY));
+ +  assert(jv_get_kind(j) == JV_KIND_ARRAY);
+    int len = jvp_array_length(j);
+    jv_free(j);
+    return len;
+  }
+  
+  jv jv_array_get(jv j, int idx) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_ARRAY));
+ +  assert(jv_get_kind(j) == JV_KIND_ARRAY);
+    jv* slot = jvp_array_read(j, idx);
+    jv val;
+    if (slot) {
+@@ -1011,7 +343,7 @@
+  }
+  
+  jv jv_array_set(jv j, int idx, jv val) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_ARRAY));
+ +  assert(jv_get_kind(j) == JV_KIND_ARRAY);
+  
+    if (idx < 0)
+      idx = jvp_array_length(j) + idx;
+@@ -1033,8 +365,8 @@
+  }
+  
+  jv jv_array_concat(jv a, jv b) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_ARRAY));
+ -  assert(JVP_HAS_KIND(b, JV_KIND_ARRAY));
+ +  assert(jv_get_kind(a) == JV_KIND_ARRAY);
+ +  assert(jv_get_kind(b) == JV_KIND_ARRAY);
+  
+    // FIXME: could be faster
+    jv_array_foreach(b, i, elem) {
+@@ -1045,18 +377,41 @@
+  }
+  
+  jv jv_array_slice(jv a, int start, int end) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_ARRAY));
+ +  assert(jv_get_kind(a) == JV_KIND_ARRAY);
+    // copy/free of a coalesced
+    return jvp_array_slice(a, start, end);
+ +}
+ +
+ +int jv_array_contains(jv a, jv b) {
+ +  int r = 1;
+ +  jv_array_foreach(b, bi, belem) {
+ +    int ri = 0;
+ +    jv_array_foreach(a, ai, aelem) {
+ +      if (jv_contains(aelem, jv_copy(belem))) {
+ +        ri = 1;
+ +        break;
+ +      }
+ +    }
+ +    jv_free(belem);
+ +    if (!ri) {
+ +      r = 0;
+ +      break;
+ +    }
+ +  }
+ +  jv_free(a);
+ +  jv_free(b);
+ +  return r;
+  }
+  
+  jv jv_array_indexes(jv a, jv b) {
+    jv res = jv_array();
+    int idx = -1;
+ -  int alen = jv_array_length(jv_copy(a));
+ -  for (int ai = 0; ai < alen; ++ai) {
+ +  jv_array_foreach(a, ai, aelem) {
+      jv_array_foreach(b, bi, belem) {
+ -      if (!jv_equal(jv_array_get(jv_copy(a), ai + bi), belem))
+ +      // quieten compiler warnings about aelem not being used... by
+ +      // using it
+ +      if ((bi == 0 && !jv_equal(jv_copy(aelem), jv_copy(belem))) ||
+ +          (bi > 0 && !jv_equal(jv_array_get(jv_copy(a), ai + bi), jv_copy(belem))))
+          idx = -1;
+        else if (bi == 0 && idx == -1)
+          idx = ai;
+@@ -1070,11 +425,10 @@
+    return res;
+  }
+  
+ +
+ -
+ -#define JVP_FLAGS_STRING  JVP_MAKE_FLAGS(JV_KIND_STRING, JVP_PAYLOAD_ALLOCATED)
+  
+  typedef struct {
+    jv_refcnt refcnt;
+@@ -1087,7 +441,7 @@
+  } jvp_string;
+  
+  static jvp_string* jvp_string_ptr(jv a) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_STRING));
+ +  assert(jv_get_kind(a) == JV_KIND_STRING);
+    return (jvp_string*)a.u.ptr;
+  }
+  
+@@ -1102,13 +456,14 @@
+  static jv jvp_string_copy_replace_bad(const char* data, uint32_t length) {
+    const char* end = data + length;
+    const char* i = data;
+ +  const char* cstart;
+  
+    uint32_t maxlength = length * 3 + 1; // worst case: all bad bytes, each becomes a 3-byte U+FFFD
+    jvp_string* s = jvp_string_alloc(maxlength);
+    char* out = s->data;
+    int c = 0;
+  
+ -  while ((i = jvp_utf8_next(i, end, &c))) {
+ +  while ((i = jvp_utf8_next((cstart = i), end, &c))) {
+      if (c == -1) {
+        c = 0xFFFD; // U+FFFD REPLACEMENT CHARACTER
+      }
+@@ -1118,7 +473,7 @@
+    length = out - s->data;
+    s->data[length] = 0;
+    s->length_hashed = length << 1;
+ -  jv r = {JVP_FLAGS_STRING, 0, 0, 0, {&s->refcnt}};
+ +  jv r = {JV_KIND_STRING, 0, 0, 0, {&s->refcnt}};
+    return r;
+  }
+  
+@@ -1129,7 +484,7 @@
+    if (data != NULL)
+      memcpy(s->data, data, length);
+    s->data[length] = 0;
+ -  jv r = {JVP_FLAGS_STRING, 0, 0, 0, {&s->refcnt}};
+ +  jv r = {JV_KIND_STRING, 0, 0, 0, {&s->refcnt}};
+    return r;
+  }
+  
+@@ -1137,7 +492,7 @@
+    jvp_string* s = jvp_string_alloc(length);
+    s->length_hashed = 0;
+    memset(s->data, 0, length);
+ -  jv r = {JVP_FLAGS_STRING, 0, 0, 0, {&s->refcnt}};
+ +  jv r = {JV_KIND_STRING, 0, 0, 0, {&s->refcnt}};
+    return r;
+  }
+  
+@@ -1180,7 +535,7 @@
+      memcpy(news->data + currlen, data, len);
+      news->data[currlen + len] = 0;
+      jvp_string_free(string);
+ -    jv r = {JVP_FLAGS_STRING, 0, 0, 0, {&news->refcnt}};
+ +    jv r = {JV_KIND_STRING, 0, 0, 0, {&news->refcnt}};
+      return r;
+    }
+  }
+@@ -1228,9 +583,7 @@
+  
+    switch(len & 3) {
+    case 3: k1 ^= tail[2] << 16;
+ -          JQ_FALLTHROUGH;
+    case 2: k1 ^= tail[1] << 8;
+ -          JQ_FALLTHROUGH;
+    case 1: k1 ^= tail[0];
+            k1 *= c1; k1 = rotl32(k1,15); k1 *= c2; h1 ^= k1;
+    }
+@@ -1249,10 +602,9 @@
+    return h1;
+  }
+  
+ -
+  static int jvp_string_equal(jv a, jv b) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_STRING));
+ -  assert(JVP_HAS_KIND(b, JV_KIND_STRING));
+ +  assert(jv_get_kind(a) == JV_KIND_STRING);
+ +  assert(jv_get_kind(b) == JV_KIND_STRING);
+    jvp_string* stra = jvp_string_ptr(a);
+    jvp_string* strb = jvp_string_ptr(b);
+    if (jvp_string_length(stra) != jvp_string_length(strb)) return 0;
+@@ -1279,14 +631,14 @@
+  }
+  
+  int jv_string_length_bytes(jv j) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_STRING));
+ +  assert(jv_get_kind(j) == JV_KIND_STRING);
+    int r = jvp_string_length(jvp_string_ptr(j));
+    jv_free(j);
+    return r;
+  }
+  
+  int jv_string_length_codepoints(jv j) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_STRING));
+ +  assert(jv_get_kind(j) == JV_KIND_STRING);
+    const char* i = jv_string_value(j);
+    const char* end = i + jv_string_length_bytes(jv_copy(j));
+    int c = 0, len = 0;
+@@ -1297,62 +649,28 @@
+  
+  
+  jv jv_string_indexes(jv j, jv k) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_STRING));
+ -  assert(JVP_HAS_KIND(k, JV_KIND_STRING));
+ +  assert(jv_get_kind(j) == JV_KIND_STRING);
+ +  assert(jv_get_kind(k) == JV_KIND_STRING);
+    const char *jstr = jv_string_value(j);
+    const char *idxstr = jv_string_value(k);
+ -  const char *p, *lp;
+ +  const char *p;
+    int jlen = jv_string_length_bytes(jv_copy(j));
+    int idxlen = jv_string_length_bytes(jv_copy(k));
+    jv a = jv_array();
+  
+ -  if (idxlen != 0) {
+ -    int n = 0;
+ -    p = lp = jstr;
+ -    while ((p = _jq_memmem(p, (jstr + jlen) - p, idxstr, idxlen)) != NULL) {
+ -      while (lp < p) {
+ -        lp += jvp_utf8_decode_length(*lp);
+ -        n++;
+ -      }
+ -
+ -      a = jv_array_append(a, jv_number(n));
+ -      p++;
+ -    }
+ +  p = jstr;
+ +  while ((p = _jq_memmem(p, (jstr + jlen) - p, idxstr, idxlen)) != NULL) {
+ +    a = jv_array_append(a, jv_number(p - jstr));
+ +    p += idxlen;
+    }
+    jv_free(j);
+    jv_free(k);
+    return a;
+  }
+  
+ -jv jv_string_repeat(jv j, int n) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_STRING));
+ -  if (n < 0) {
+ -    jv_free(j);
+ -    return jv_null();
+ -  }
+ -  int len = jv_string_length_bytes(jv_copy(j));
+ -  int64_t res_len = (int64_t)len * n;
+ -  if (res_len >= INT_MAX) {
+ -    jv_free(j);
+ -    return jv_invalid_with_msg(jv_string("Repeat string result too long"));
+ -  }
+ -  if (res_len == 0) {
+ -    jv_free(j);
+ -    return jv_string("");
+ -  }
+ -  jv res = jv_string_empty(res_len);
+ -  res = jvp_string_append(res, jv_string_value(j), len);
+ -  for (int curr = len, grow; curr < res_len; curr += grow) {
+ -    grow = MIN(res_len - curr, curr);
+ -    res = jvp_string_append(res, jv_string_value(res), grow);
+ -  }
+ -  jv_free(j);
+ -  return res;
+ -}
+ -
+  jv jv_string_split(jv j, jv sep) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_STRING));
+ -  assert(JVP_HAS_KIND(sep, JV_KIND_STRING));
+ +  assert(jv_get_kind(j) == JV_KIND_STRING);
+ +  assert(jv_get_kind(sep) == JV_KIND_STRING);
+    const char *jstr = jv_string_value(j);
+    const char *jend = jstr + jv_string_length_bytes(jv_copy(j));
+    const char *sepstr = jv_string_value(sep);
+@@ -1383,7 +701,7 @@
+  }
+  
+  jv jv_string_explode(jv j) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_STRING));
+ +  assert(jv_get_kind(j) == JV_KIND_STRING);
+    const char* i = jv_string_value(j);
+    int len = jv_string_length_bytes(jv_copy(j));
+    const char* end = i + len;
+@@ -1396,7 +714,7 @@
+  }
+  
+  jv jv_string_implode(jv j) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_ARRAY));
+ +  assert(jv_get_kind(j) == JV_KIND_ARRAY);
+    int len = jv_array_length(jv_copy(j));
+    jv s = jv_string_empty(len);
+    int i;
+@@ -1405,11 +723,9 @@
+  
+    for (i = 0; i < len; i++) {
+      jv n = jv_array_get(jv_copy(j), i);
+ -    assert(JVP_HAS_KIND(n, JV_KIND_NUMBER));
+ +    assert(jv_get_kind(n) == JV_KIND_NUMBER);
+      int nv = jv_number_value(n);
+ -    jv_free(n);
+ -    // outside codepoint range or in utf16 surrogate pair range
+ -    if (nv < 0 || nv > 0x10FFFF || (nv >= 0xD800 && nv <= 0xDFFF))
+ +    if (nv > 0x10FFFF)
+        nv = 0xFFFD; // U+FFFD REPLACEMENT CHARACTER
+      s = jv_string_append_codepoint(s, nv);
+    }
+@@ -1419,19 +735,19 @@
+  }
+  
+  unsigned long jv_string_hash(jv j) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_STRING));
+ +  assert(jv_get_kind(j) == JV_KIND_STRING);
+    uint32_t hash = jvp_string_hash(j);
+    jv_free(j);
+    return hash;
+  }
+  
+  const char* jv_string_value(jv j) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_STRING));
+ +  assert(jv_get_kind(j) == JV_KIND_STRING);
+    return jvp_string_ptr(j)->data;
+  }
+  
+  jv jv_string_slice(jv j, int start, int end) {
+ -  assert(JVP_HAS_KIND(j, JV_KIND_STRING));
+ +  assert(jv_get_kind(j) == JV_KIND_STRING);
+    const char *s = jv_string_value(j);
+    int len = jv_string_length_bytes(jv_copy(j));
+    int i;
+@@ -1542,8 +858,6 @@
+   * Objects (internal helpers)
+   */
+  
+ -#define JVP_FLAGS_OBJECT  JVP_MAKE_FLAGS(JV_KIND_OBJECT, JVP_PAYLOAD_ALLOCATED)
+ -
+  struct object_slot {
+    int next; /* next slot with same hash, for collisions */
+    uint32_t hash;
+@@ -1580,22 +894,22 @@
+    for (int i=0; i<size*2; i++) {
+      hashbuckets[i] = -1;
+    }
+ -  jv r = {JVP_FLAGS_OBJECT, 0, 0, size, {&obj->refcnt}};
+ +  jv r = {JV_KIND_OBJECT, 0, 0, size, {&obj->refcnt}};
+    return r;
+  }
+  
+  static jvp_object* jvp_object_ptr(jv o) {
+ -  assert(JVP_HAS_KIND(o, JV_KIND_OBJECT));
+ +  assert(jv_get_kind(o) == JV_KIND_OBJECT);
+    return (jvp_object*)o.u.ptr;
+  }
+  
+  static uint32_t jvp_object_mask(jv o) {
+ -  assert(JVP_HAS_KIND(o, JV_KIND_OBJECT));
+ +  assert(jv_get_kind(o) == JV_KIND_OBJECT);
+    return (o.size * 2) - 1;
+  }
+  
+  static int jvp_object_size(jv o) {
+ -  assert(JVP_HAS_KIND(o, JV_KIND_OBJECT));
+ +  assert(jv_get_kind(o) == JV_KIND_OBJECT);
+    return o.size;
+  }
+  
+@@ -1643,7 +957,7 @@
+  }
+  
+  static jv* jvp_object_read(jv object, jv key) {
+ -  assert(JVP_HAS_KIND(key, JV_KIND_STRING));
+ +  assert(jv_get_kind(key) == JV_KIND_STRING);
+    int* bucket = jvp_object_find_bucket(object, key);
+    struct object_slot* slot = jvp_object_find_slot(object, key, bucket);
+    if (slot == 0) return 0;
+@@ -1651,7 +965,7 @@
+  }
+  
+  static void jvp_object_free(jv o) {
+ -  assert(JVP_HAS_KIND(o, JV_KIND_OBJECT));
+ +  assert(jv_get_kind(o) == JV_KIND_OBJECT);
+    if (jvp_refcnt_dec(o.u.ptr)) {
+      for (int i=0; i<jvp_object_size(o); i++) {
+        struct object_slot* slot = jvp_object_get_slot(o, i);
+@@ -1665,7 +979,7 @@
+  }
+  
+  static jv jvp_object_rehash(jv object) {
+ -  assert(JVP_HAS_KIND(object, JV_KIND_OBJECT));
+ +  assert(jv_get_kind(object) == JV_KIND_OBJECT);
+    assert(jvp_refcnt_unshared(object.u.ptr));
+    int size = jvp_object_size(object);
+    jv new_object = jvp_object_new(size * 2);
+@@ -1684,7 +998,7 @@
+  }
+  
+  static jv jvp_object_unshare(jv object) {
+ -  assert(JVP_HAS_KIND(object, JV_KIND_OBJECT));
+ +  assert(jv_get_kind(object) == JV_KIND_OBJECT);
+    if (jvp_refcnt_unshared(object.u.ptr))
+      return object;
+  
+@@ -1733,7 +1047,7 @@
+  }
+  
+  static int jvp_object_delete(jv* object, jv key) {
+ -  assert(JVP_HAS_KIND(key, JV_KIND_STRING));
+ +  assert(jv_get_kind(key) == JV_KIND_STRING);
+    *object = jvp_object_unshare(*object);
+    int* bucket = jvp_object_find_bucket(*object, key);
+    int* prev_ptr = bucket;
+@@ -1777,21 +1091,6 @@
+    return len1 == len2;
+  }
+  
+ -static int jvp_object_contains(jv a, jv b) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_OBJECT));
+ -  assert(JVP_HAS_KIND(b, JV_KIND_OBJECT));
+ -  int r = 1;
+ -
+ -  jv_object_foreach(b, key, b_val) {
+ -    jv a_val = jv_object_get(jv_copy(a), key);
+ -
+ -    r = jv_contains(a_val, b_val);
+ -
+ -    if (!r) break;
+ -  }
+ -  return r;
+ -}
+ -
+@@ -1801,8 +1100,8 @@
+  }
+  
+  jv jv_object_get(jv object, jv key) {
+ -  assert(JVP_HAS_KIND(object, JV_KIND_OBJECT));
+ -  assert(JVP_HAS_KIND(key, JV_KIND_STRING));
+ +  assert(jv_get_kind(object) == JV_KIND_OBJECT);
+ +  assert(jv_get_kind(key) == JV_KIND_STRING);
+    jv* slot = jvp_object_read(object, key);
+    jv val;
+    if (slot) {
+@@ -1816,8 +1115,8 @@
+  }
+  
+  int jv_object_has(jv object, jv key) {
+ -  assert(JVP_HAS_KIND(object, JV_KIND_OBJECT));
+ -  assert(JVP_HAS_KIND(key, JV_KIND_STRING));
+ +  assert(jv_get_kind(object) == JV_KIND_OBJECT);
+ +  assert(jv_get_kind(key) == JV_KIND_STRING);
+    jv* slot = jvp_object_read(object, key);
+    int res = slot ? 1 : 0;
+    jv_free(object);
+@@ -1826,8 +1125,8 @@
+  }
+  
+  jv jv_object_set(jv object, jv key, jv value) {
+ -  assert(JVP_HAS_KIND(object, JV_KIND_OBJECT));
+ -  assert(JVP_HAS_KIND(key, JV_KIND_STRING));
+ +  assert(jv_get_kind(object) == JV_KIND_OBJECT);
+ +  assert(jv_get_kind(key) == JV_KIND_STRING);
+    // copy/free of object, key, value coalesced
+    jv* slot = jvp_object_write(&object, key);
+    jv_free(*slot);
+@@ -1836,22 +1135,22 @@
+  }
+  
+  jv jv_object_delete(jv object, jv key) {
+ -  assert(JVP_HAS_KIND(object, JV_KIND_OBJECT));
+ -  assert(JVP_HAS_KIND(key, JV_KIND_STRING));
+ +  assert(jv_get_kind(object) == JV_KIND_OBJECT);
+ +  assert(jv_get_kind(key) == JV_KIND_STRING);
+    jvp_object_delete(&object, key);
+    jv_free(key);
+    return object;
+  }
+  
+  int jv_object_length(jv object) {
+ -  assert(JVP_HAS_KIND(object, JV_KIND_OBJECT));
+ +  assert(jv_get_kind(object) == JV_KIND_OBJECT);
+    int n = jvp_object_length(object);
+    jv_free(object);
+    return n;
+  }
+  
+  jv jv_object_merge(jv a, jv b) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_OBJECT));
+ +  assert(jv_get_kind(a) == JV_KIND_OBJECT);
+    jv_object_foreach(b, k, v) {
+      a = jv_object_set(a, k, v);
+    }
+@@ -1860,14 +1159,14 @@
+  }
+  
+  jv jv_object_merge_recursive(jv a, jv b) {
+ -  assert(JVP_HAS_KIND(a, JV_KIND_OBJECT));
+ -  assert(JVP_HAS_KIND(b, JV_KIND_OBJECT));
+ +  assert(jv_get_kind(a) == JV_KIND_OBJECT);
+ +  assert(jv_get_kind(b) == JV_KIND_OBJECT);
+  
+    jv_object_foreach(b, k, v) {
+      jv elem = jv_object_get(jv_copy(a), jv_copy(k));
+      if (jv_is_valid(elem) &&
+ -        JVP_HAS_KIND(elem, JV_KIND_OBJECT) &&
+ -        JVP_HAS_KIND(v, JV_KIND_OBJECT)) {
+ +        jv_get_kind(elem) == JV_KIND_OBJECT &&
+ +        jv_get_kind(v) == JV_KIND_OBJECT) {
+        a = jv_object_set(a, k, jv_object_merge_recursive(elem, v));
+      } else {
+        jv_free(elem);
+@@ -1878,6 +1177,25 @@
+    return a;
+  }
+  
+ +int jv_object_contains(jv a, jv b) {
+ +  assert(jv_get_kind(a) == JV_KIND_OBJECT);
+ +  assert(jv_get_kind(b) == JV_KIND_OBJECT);
+ +  int r = 1;
+ +
+ +  jv_object_foreach(b, key, b_val) {
+ +    jv a_val = jv_object_get(jv_copy(a), jv_copy(key));
+ +
+ +    r = jv_contains(a_val, b_val);
+ +    jv_free(key);
+ +
+ +    if (!r) break;
+ +  }
+ +
+ +  jv_free(a);
+ +  jv_free(b);
+ +  return r;
+ +}
+ +
+@@ -1889,12 +1207,12 @@
+  }
+  
+  int jv_object_iter(jv object) {
+ -  assert(JVP_HAS_KIND(object, JV_KIND_OBJECT));
+ +  assert(jv_get_kind(object) == JV_KIND_OBJECT);
+    return jv_object_iter_next(object, -1);
+  }
+  
+  int jv_object_iter_next(jv object, int iter) {
+ -  assert(JVP_HAS_KIND(object, JV_KIND_OBJECT));
+ +  assert(jv_get_kind(object) == JV_KIND_OBJECT);
+    assert(iter != ITER_FINISHED);
+    struct object_slot* slot;
+    do {
+@@ -1910,7 +1228,7 @@
+  
+  jv jv_object_iter_key(jv object, int iter) {
+    jv s = jvp_object_get_slot(object, iter)->string;
+ -  assert(JVP_HAS_KIND(s, JV_KIND_STRING));
+ +  assert(jv_get_kind(s) == JV_KIND_STRING);
+    return jv_copy(s);
+  }
+  
+@@ -1922,36 +1240,34 @@
+   * Memory management
+   */
+  jv jv_copy(jv j) {
+ -  if (JVP_IS_ALLOCATED(j)) {
+ +  if (jv_get_kind(j) == JV_KIND_ARRAY ||
+ +      jv_get_kind(j) == JV_KIND_STRING ||
+ +      jv_get_kind(j) == JV_KIND_OBJECT ||
+ +      (jv_get_kind(j) == JV_KIND_INVALID && j.u.ptr != 0)) {
+      jvp_refcnt_inc(j.u.ptr);
+    }
+    return j;
+  }
+  
+  void jv_free(jv j) {
+ -  switch(JVP_KIND(j)) {
+ -    case JV_KIND_ARRAY:
+ -      jvp_array_free(j);
+ -      break;
+ -    case JV_KIND_STRING:
+ -      jvp_string_free(j);
+ -      break;
+ -    case JV_KIND_OBJECT:
+ -      jvp_object_free(j);
+ -      break;
+ -    case JV_KIND_INVALID:
+ -      jvp_invalid_free(j);
+ -      break;
+ -    case JV_KIND_NUMBER:
+ -      jvp_number_free(j);
+ -      break;
+ +  if (jv_get_kind(j) == JV_KIND_ARRAY) {
+ +    jvp_array_free(j);
+ +  } else if (jv_get_kind(j) == JV_KIND_STRING) {
+ +    jvp_string_free(j);
+ +  } else if (jv_get_kind(j) == JV_KIND_OBJECT) {
+ +    jvp_object_free(j);
+ +  } else if (jv_get_kind(j) == JV_KIND_INVALID) {
+ +    jvp_invalid_free(j);
+    }
+  }
+  
+  int jv_get_refcnt(jv j) {
+ -  if (JVP_IS_ALLOCATED(j)) {
+ +  switch (jv_get_kind(j)) {
+ +  case JV_KIND_ARRAY:
+ +  case JV_KIND_STRING:
+ +  case JV_KIND_OBJECT:
+      return j.u.ptr->count;
+ -  } else {
+ +  default:
+      return 1;
+    }
+  }
+@@ -1964,17 +1280,14 @@
+    int r;
+    if (jv_get_kind(a) != jv_get_kind(b)) {
+      r = 0;
+ -  } else if (JVP_IS_ALLOCATED(a) &&
+ -             JVP_IS_ALLOCATED(b) &&
+ -             a.kind_flags == b.kind_flags &&
+ +  } else if (jv_get_kind(a) == JV_KIND_NUMBER) {
+ +    r = jv_number_value(a) == jv_number_value(b);
+ +  } else if (a.kind_flags == b.kind_flags &&
+               a.size == b.size &&
+               a.u.ptr == b.u.ptr) {
+      r = 1;
+    } else {
+      switch (jv_get_kind(a)) {
+ -    case JV_KIND_NUMBER:
+ -      r = jvp_number_equal(a, b);
+ -      break;
+      case JV_KIND_ARRAY:
+        r = jvp_array_equal(a, b);
+        break;
+@@ -2001,10 +1314,18 @@
+        || a.size != b.size) {
+      r = 0;
+    } else {
+ -    if (JVP_IS_ALLOCATED(a) /* b has the same flags */) {
+ +    switch (jv_get_kind(a)) {
+ +    case JV_KIND_ARRAY:
+ +    case JV_KIND_STRING:
+ +    case JV_KIND_OBJECT:
+        r = a.u.ptr == b.u.ptr;
+ -    } else {
+ -      r = memcmp(&a.u.ptr, &b.u.ptr, sizeof(a.u)) == 0;
+ +      break;
+ +    case JV_KIND_NUMBER:
+ +      r = memcmp(&a.u.number, &b.u.number, sizeof(a.u.number)) == 0;
+ +      break;
+ +    default:
+ +      r = 1;
+ +      break;
+      }
+    }
+    jv_free(a);
+@@ -2016,18 +1337,12 @@
+    int r = 1;
+    if (jv_get_kind(a) != jv_get_kind(b)) {
+      r = 0;
+ -  } else if (JVP_HAS_KIND(a, JV_KIND_OBJECT)) {
+ -    r = jvp_object_contains(a, b);
+ -  } else if (JVP_HAS_KIND(a, JV_KIND_ARRAY)) {
+ -    r = jvp_array_contains(a, b);
+ -  } else if (JVP_HAS_KIND(a, JV_KIND_STRING)) {
+ -    int b_len = jv_string_length_bytes(jv_copy(b));
+ -    if (b_len != 0) {
+ -      r = _jq_memmem(jv_string_value(a), jv_string_length_bytes(jv_copy(a)),
+ -                     jv_string_value(b), b_len) != 0;
+ -    } else {
+ -      r = 1;
+ -    }
+ +  } else if (jv_get_kind(a) == JV_KIND_OBJECT) {
+ +    r = jv_object_contains(jv_copy(a), jv_copy(b));
+ +  } else if (jv_get_kind(a) == JV_KIND_ARRAY) {
+ +    r = jv_array_contains(jv_copy(a), jv_copy(b));
+ +  } else if (jv_get_kind(a) == JV_KIND_STRING) {
+ +    r = strstr(jv_string_value(a), jv_string_value(b)) != 0;
+    } else {
+      r = jv_equal(jv_copy(a), jv_copy(b));
+    }
+
+""""""
+modified file: tests/jq.test
+--- workspace/jqlang/jq/a09a4d/newer/tests/jq.test
++++ workspace/jqlang/jq/a09a4d/jq-1.6/tests/jq.test
+@@ -61,18 +61,17 @@
+  null
+  "interpolation"
+  
+ -@text,@json,([1,.]|@csv,@tsv),@html,(@uri|.,@urid),@sh,(@base64|.,@base64d)
+ -"!()<>&'\"\t"
+ -"!()<>&'\"\t"
+ -"\"!()<>&'\\\"\\t\""
+ -"1,\"!()<>&'\"\"\t\""
+ -"1\t!()<>&'\"\\t"
+ -"!()<>&'"\t"
+ -"%21%28%29%3C%3E%26%27%22%09"
+ -"!()<>&'\"\t"
+ -"'!()<>&'\\''\"\t'"
+ -"ISgpPD4mJyIJ"
+ -"!()<>&'\"\t"
+ +@text,@json,([1,.] | (@csv, @tsv)),@html,@uri,@sh,@base64,(@base64 | @base64d)
+ +"<>&'\"\t"
+ +"<>&'\"\t"
+ +"\"<>&'\\\"\\t\""
+ +"1,\"<>&'\"\"\t\""
+ +"1\t<>&'\"\\t"
+ +"<>&'"\t"
+ +"%3C%3E%26'%22%09"
+ +"'<>&'\\''\"\t'"
+ +"PD4mJyIJ"
+ +"<>&'\"\t"
+  
+  # regression test for #436
+  @base64
+@@ -87,10 +86,6 @@
+  "\u03bc"
+  "%CE%BC"
+  
+ -@urid
+ -"%CE%BC"
+ -"\u03bc"
+ -
+  @html "<b>\(.)</b>"
+  "<script>hax</script>"
+  "<b><script>hax</script></b>"
+@@ -151,13 +146,6 @@
+  {"foo": {"bar": 20}}
+  20
+  
+ -.e0, .E1, .E-1, .E+1
+ -{"e0": 1, "E1": 2, "E": 3}
+ -1
+ -2
+ -2
+ -4
+ -
+  [.[]|.foo?]
+  [1,[2],{"foo":3,"bar":4},{},{"foo":5}]
+  [3,null,5]
+@@ -177,16 +165,6 @@
+  [.[]|.[1:3]?]
+  [1,null,true,false,"abcdef",{},{"a":1,"b":2},[],[1,2,3,4,5],[1,2]]
+  [null,"bc",[],[2,3],[2]]
+ -
+ -# chaining/suffix-list, with and without dot
+ -map(try .a[] catch ., try .a.[] catch ., .a[]?, .a.[]?)
+ -[{"a": [1,2]}, {"a": 123}]
+ -[1,2,1,2,1,2,1,2,"Cannot iterate over number (123)","Cannot iterate over number (123)"]
+ -
+ -# oss-fuzz #66070: objects[] leaks if a non-last element throws an error
+ -try ["OK", (.[] | error)] catch ["KO", .]
+ -{"a":["b"],"c":["d"]}
+ -["KO",["b"]]
+  
+  #
+  # Negative array indices
+@@ -258,9 +236,9 @@
+  2
+  3
+  
+ -[.[-4,-3,-2,-1,0,1,2,3]]
+ +.[-2]
+  [1,2,3]
+ -[null,1,2,3,1,2,3,null]
+ +2
+  
+  [range(0;10)]
+  null
+@@ -322,57 +300,13 @@
+  [{"a":1}, {"b":2}, {"a":3, "b":4}]
+  [-1, -1, -4]
+  
+ -[foreach range(5) as $x (0; .+$x | select($x!=2); [$x,.])]
+ -null
+ -[[0,0],[1,1],[3,4],[4,8]]
+ -
+  [limit(3; .[])]
+  [11,22,33,44,55,66,77,88,99]
+  [11,22,33]
+  
+ -[limit(0; error)]
+ -"badness"
+ -[]
+ -
+ -[limit(1; 1, error)]
+ -"badness"
+ -[1]
+ -
+ -try limit(-1; error) catch .
+ -null
+ -"limit doesn't support negative count"
+ -
+ -[skip(3; .[])]
+ -[1,2,3,4,5,6,7,8,9]
+ -[4,5,6,7,8,9]
+ -
+ -[skip(0,2,3,4; .[])]
+ -[1,2,3]
+ -[1,2,3,3]
+ -
+ -[skip(3; .[])]
+ -[]
+ -[]
+ -
+ -try skip(-1; error) catch .
+ -null
+ -"skip doesn't support negative count"
+ -
+ -nth(1; 0,1,error("foo"))
+ -null
+ -1
+ -
+ -[first(range(.)), last(range(.))]
+ +[first(range(.)), last(range(.)), nth(0; range(.)), nth(5; range(.)), try nth(-1; range(.)) catch .]
+  10
+ -[0,9]
+ -
+ -[first(range(.)), last(range(.))]
+ -0
+ -[]
+ -
+ -[nth(0,5,9,10,15; range(.)), try nth(-1; range(.)) catch .]
+ -10
+ -[0,5,9,"nth doesn't support negative indices"]
+ +[0,9,0,5,"nth doesn't support negative indices"]
+  
+  # Check that first(g) does not extract more than one value from g
+  first(1,error("foo"))
+@@ -380,7 +314,7 @@
+  1
+  
+  #
+ -# Check that various builtins evaluate all arguments where appropriate,
+ +# Check that various builtins evalute all arguments where appropriate,
+  # doing cartesian products where appropriate.
+  #
+  
+@@ -590,34 +524,6 @@
+  null
+  [2, 8, 10, 14]
+  
+ -1e-19 + 1e-20 - 5e-21
+ -null
+ -1.05e-19
+ -
+ -1 / 1e-17
+ -null
+ -1e+17
+ -
+ -9E999999999, 9999999999E999999990, 1E-999999999, 0.000000001E-999999990
+ -null
+ -9E+999999999
+ -9.999999999E+999999999
+ -1E-999999999
+ -1E-999999999
+ -
+ -5E500000000 > 5E-5000000000, 10000E500000000 > 10000E-5000000000
+ -null
+ -true
+ -true
+ -
+ -# #2825
+ -(1e999999999, 10e999999999) > (1e-1147483646, 0.1e-1147483646)
+ -null
+ -true
+ -true
+ -true
+ -true
+ -
+  25 % 7
+  null
+  4
+@@ -625,14 +531,6 @@
+  49732 % 472
+  null
+  172
+ -
+ -[(infinite, -infinite) % (1, -1, infinite)]
+ -null
+ -[0,0,0,0,0,-1]
+ -
+ -[nan % 1, 1 % nan | isnan]
+ -null
+ -[true,true]
+  
+  1 + tonumber + ("10" | tonumber)
+  4
+@@ -679,19 +577,6 @@
+  [0,1,2]
+  [1,2,3]
+  
+ -[add(null), add(range(range(10))), add(empty), add(10,range(10))]
+ -null
+ -[null,120,null,55]
+ -
+ -# Real-world use case for add(empty)
+ -.sum = add(.arr[])
+ -{"arr":[]}
+ -{"arr":[],"sum":null}
+ -
+ -add({(.[]):1}) | keys
+ -["a","a","b","a","d","b","d","a","d"]
+ -["a","b","d"]
+ -
+  #
+  # User-defined functions
+  # Oh god.
+@@ -710,10 +595,6 @@
+  def f(a;b;c;d;e;f): [a+1,b,c,d,e,f]; f(.[0];.[1];.[0];.[0];.[0];.[0])
+  [1,2]
+  [2,2,1,1,1,1]
+ -
+ -def f: 1; def g: f, def f: 2; def g: 3; f, def f: g; f, g; def f: 4; [f, def f: g; def g: 5; f, g]+[f,g]
+ -null
+ -[4,1,2,3,3,5,4,1,2,3,3]
+  
+  # Test precedence of 'def' vs '|'
+  def a: 0; . | a
+@@ -829,10 +710,6 @@
+  null
+  null
+  
+ -reduce range(5) as $x (0; .+$x | select($x!=2))
+ -null
+ -8
+ -
+  # Destructuring
+  . as {$a, b: [$c, {$d}]} | [$a, $c, $d]
+  {"a":1, "b":[2,{"d":3}]}
+@@ -966,51 +843,6 @@
+  [1,2,3,4,true]
+  true
+  
+ -# Check short-circuiting
+ -any(true, error; .)
+ -"badness"
+ -true
+ -
+ -all(false, error; .)
+ -"badness"
+ -false
+ -
+ -any(not)
+ -[]
+ -false
+ -
+ -all(not)
+ -[]
+ -true
+ -
+ -any(not)
+ -[false]
+ -true
+ -
+ -all(not)
+ -[false]
+ -true
+ -
+ -[any,all]
+ -[]
+ -[false,true]
+ -
+ -[any,all]
+ -[true]
+ -[true,true]
+ -
+ -[any,all]
+ -[false]
+ -[false,false]
+ -
+ -[any,all]
+ -[true,false]
+ -[true,false]
+ -
+ -[any,all]
+ -[null,null,true]
+ -[true,false]
+ -
+  #
+  # Paths
+  #
+@@ -1051,6 +883,10 @@
+  [paths]
+  [1,[[],{"a":2}]]
+  [[0],[1],[1,0],[1,1],[1,1,"a"]]
+ +
+ +[leaf_paths]
+ +[1,[[],{"a":2}]]
+ +[[0],[1,1,"a"]]
+  
+  ["foo",1] as $p | getpath($p), setpath($p; 20), delpaths([$p])
+  {"bar": 42, "foo": ["a", "b", "c", "d"]}
+@@ -1092,28 +928,6 @@
+  del(.[1], .[-6], .[2], .[-3:9])
+  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  [0, 3, 5, 6, 9]
+ -
+ -# negative index
+ -setpath([-1]; 1)
+ -[0]
+ -[1]
+ -
+ -pick(.a.b.c)
+ -null
+ -{"a":{"b":{"c":null}}}
+ -
+ -pick(first)
+ -[1,2]
+ -[1]
+ -
+ -pick(first|first)
+ -[[10,20],30]
+ -[[10]]
+ -
+ -# negative indices in path expressions (since last/1 is .[-1])
+ -try pick(last) catch .
+ -[1,2]
+ -"Out of bounds negative array index"
+  
+  #
+  # Assignment
+@@ -1166,19 +980,6 @@
+  {"a":[{"b":5}]}
+  {"a":[{"c":3,"b":5}]}
+  
+ -# #2051, deletion using assigning empty against arrays
+ -(.[] | select(. >= 2)) |= empty
+ -[1,5,3,0,7]
+ -[1,0]
+ -
+ -.[] |= select(. % 2 == 0)
+ -[0,1,2,3,4,5]
+ -[0,2,4]
+ -
+ -.foo[1,4,2,3] |= empty
+ -{"foo":[0,1,2,3,4,5]}
+ -{"foo":[0,5]}
+ -
+  .[2][3] = 1
+  [4]
+  [4, null, [null, null, null, 1]]
+@@ -1234,26 +1035,6 @@
+  [if null then 3 else 5,6 end]
+  null
+  [5,6]
+ -
+ -[if true then 3 end]
+ -7
+ -[3]
+ -
+ -[if false then 3 end]
+ -7
+ -[7]
+ -
+ -[if false then 3 else . end]
+ -7
+ -[7]
+ -
+ -[if false then 3 elif false then 4 end]
+ -7
+ -[7]
+ -
+ -[if false then 3 elif false then 4 else . end]
+ -7
+ -[7]
+  
+  [.[] | [.foo[] // .bar]]
+  [{"foo":[1,2], "bar": 42}, {"foo":[1], "bar": null}, {"foo":[null,false,3], "bar": 18}, {"foo":[], "bar":42}, {"foo": [null,false,null], "bar": 41}]
+@@ -1310,28 +1091,6 @@
+  {}
+  [true, true, false]
+  
+ -# containment operator (embedded NULs!)
+ -[contains(""), contains("\u0000")]
+ -"\u0000"
+ -[true, true]
+ -
+ -[contains(""), contains("a"), contains("ab"), contains("c"), contains("d")]
+ -"ab\u0000cd"
+ -[true, true, true, true, true]
+ -
+ -[contains("cd"), contains("b\u0000"), contains("ab\u0000")]
+ -"ab\u0000cd"
+ -[true, true, true]
+ -
+ -[contains("b\u0000c"), contains("b\u0000cd"), contains("b\u0000cd")]
+ -"ab\u0000cd"
+ -[true, true, true]
+ -
+ -[contains("@"), contains("\u0000@"), contains("\u0000what")]
+ -"ab\u0000cd"
+ -[false, false, false]
+ -
+ -
+  # Try/catch and general `?` operator
+  [.[]|try if . == 0 then error("foo") elif . == 1 then .a elif . == 2 then empty else . end catch .]
+  [0,1,2,3]
+@@ -1345,12 +1104,6 @@
+  [null,true,{"a":1}]
+  []
+  
+ -.[] | try error catch .
+ -[1,null,2]
+ -1
+ -null
+ -2
+ -
+  try error("\($__loc__)") catch .
+  null
+  "{\"file\":\"<top-level>\",\"line\":1}"
+@@ -1384,30 +1137,6 @@
+  "a,bc,def,ghij,klmno"
+  [1,13,[1,4,8,13]]
+  
+ -[ index("aba"), rindex("aba"), indices("aba") ]
+ -"xababababax"
+ -[1,7,[1,3,5,7]]
+ -
+ -# trim
+ -# \u000b is vertical tab (\v not supported by json)
+ -map(trim), map(ltrim), map(rtrim)
+ -[" \n\t\r\f\u000b", "","  ", "a", " a ", "abc", "  abc  ", "  abc", "abc  "]
+ -["", "", "", "a", "a", "abc", "abc", "abc", "abc"]
+ -["", "", "", "a", "a ", "abc", "abc  ", "abc", "abc  "]
+ -["", "", "", "a", " a", "abc", "  abc", "  abc", "abc"]
+ -
+ -trim, ltrim, rtrim
+ -"\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000abc\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000"
+ -"abc"
+ -"abc\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000"
+ -"\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000abc"
+ -
+ -try trim catch ., try ltrim catch ., try rtrim catch .
+ -123
+ -"trim input must be a string"
+ -"trim input must be a string"
+ -"trim input must be a string"
+ -
+  indices(1)
+  [0,1,1,2,3,4,1,5]
+  [1,2,6]
+@@ -1424,22 +1153,6 @@
+  "a,b, cd,e, fgh, ijkl"
+  [3,9,14]
+  
+ -index("!")
+ -"здравствуй мир!"
+ -14
+ -
+ -.[:rindex("x")]
+ -"正xyz"
+ -"正"
+ -
+ -indices("o")
+ -"🇬🇧oo"
+ -[2,3]
+ -
+ -indices("o")
+ -"ƒoo"
+ -[1,2]
+ -
+  [.[]|split(",")]
+  ["a, bc, def, ghij, jklmn, a,b, c,d, e,f", "a,b,c,d, e,f,g,h"]
+  [["a"," bc"," def"," ghij"," jklmn"," a","b"," c","d"," e","f"],["a","b","c","d"," e","f","g","h"]]
+@@ -1451,26 +1164,6 @@
+  [.[] * 3]
+  ["a", "ab", "abc"]
+  ["aaa", "ababab", "abcabcabc"]
+ -
+ -[.[] * "abc"]
+ -[-1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 3.7, 10.0]
+ -[null,null,"","","abc","abc","abcabcabc","abcabcabcabcabcabcabcabcabcabc"]
+ -
+ -[. * (nan,-nan)]
+ -"abc"
+ -[null,null]
+ -
+ -. * 100000 | [.[:10],.[-10:]]
+ -"abc"
+ -["abcabcabca","cabcabcabc"]
+ -
+ -. * 1000000000
+ -""
+ -""
+ -
+ -try (. * 1000000000) catch .
+ -"abc"
+ -"Repeat string result too long"
+  
+  [.[] / ","]
+  ["a, bc, def, ghij, jklmn, a,b, c,d, e,f", "a,b,c,d, e,f,g,h"]
+@@ -1560,10 +1253,6 @@
+  [[0,1], ["a","b","c"]]
+  [false, true]
+  
+ -has(nan)
+ -[0,1,2]
+ -false
+ -
+  keys
+  [42,3,35]
+  [0,1,2]
+@@ -1646,29 +1335,13 @@
+  [[1], [2,3]]
+  [[1,2],[null,3]]
+  
+ -transpose
+ -[]
+ -[]
+ -
+  ascii_upcase
+  "useful but not for é"
+  "USEFUL BUT NOT FOR é"
+  
+ -bsearch(0,1,2,3,4)
+ +bsearch(4)
+  [1,2,3]
+ --1
+ -0
+ -1
+ -2
+  -4
+ -
+ -bsearch({x:1})
+ -[{ "x": 0 },{ "x": 1 },{ "x": 2 }]
+ -1
+ -
+ -try ["OK", bsearch(0)] catch ["KO",.]
+ -"aa"
+ -["KO","string (\"aa\") cannot be searched from"]
+  
+  # strptime tests are in optional.test
+  
+@@ -1680,40 +1353,10 @@
+  1435677542.822351
+  "Tuesday, June 30, 2015"
+  
+ -strftime("%Y-%m-%dT%H:%M:%SZ")
+ -[2024,2,15]
+ -"2024-03-15T00:00:00Z"
+ -
+ -mktime
+ -[2024,8,21]
+ -1726876800
+ -
+  gmtime
+  1425599507
+  [2015,2,5,23,51,47,4,63]
+  
+ -# test invalid tm input
+ -try strftime("%Y-%m-%dT%H:%M:%SZ") catch .
+ -["a",1,2,3,4,5,6,7]
+ -"strftime/1 requires parsed datetime inputs"
+ -
+ -try strflocaltime("%Y-%m-%dT%H:%M:%SZ") catch .
+ -["a",1,2,3,4,5,6,7]
+ -"strflocaltime/1 requires parsed datetime inputs"
+ -
+ -try mktime catch .
+ -["a",1,2,3,4,5,6,7]
+ -"mktime requires parsed datetime inputs"
+ -
+ -# oss-fuzz #67403: non-string argument with number input fails assert
+ -try ["OK", strftime([])] catch ["KO", .]
+ -0
+ -["KO","strftime/1 requires a string format"]
+ -
+ -try ["OK", strflocaltime({})] catch ["KO", .]
+ -0
+ -["KO","strflocaltime/1 requires a string format"]
+ -
+  # module system
+  import "a" as foo; import "b" as bar; def fooa: foo::a; [fooa, bar::a, bar::b, foo::a]
+  null
+@@ -1726,37 +1369,12 @@
+  include "c"; [a, c]
+  null
+  [0,"acmehbah"]
+ -
+ -import "data" as $e; import "data" as $d; [$d[].this,$e[].that,$d::d[].this,$e::e[].that]|join(";")
+ -null
+ -"is a test;is too;is a test;is too"
+ -
+ -# Regression test for #2000
+ -import "data" as $a; import "data" as $b; def f: {$a, $b}; f
+ -null
+ -{"a":[{"this":"is a test","that":"is too"}],"b":[{"this":"is a test","that":"is too"}]}
+ -
+ -include "shadow1"; e
+ -null
+ -2
+ -
+ -include "shadow1"; include "shadow2"; e
+ -null
+ -3
+ -
+ -import "shadow1" as f; import "shadow2" as f; import "shadow1" as e; [e::e, f::e]
+ -null
+ -[2,3]
+  
+  %%FAIL
+  module (.+1); 0
+  jq: error: Module metadata must be constant at <top-level>, line 1:
+  
+  %%FAIL
+ -module []; 0
+ -jq: error: Module metadata must be an object at <top-level>, line 1:
+ -
+ -%%FAIL
+  include "a" (.+1); 0
+  jq: error: Module metadata must be constant at <top-level>, line 1:
+  
+@@ -1774,15 +1392,7 @@
+  
+  modulemeta
+  "c"
+ -{"whatever":null,"deps":[{"as":"foo","is_data":false,"relpath":"a"},{"search":"./","as":"d","is_data":false,"relpath":"d"},{"search":"./","as":"d2","is_data":false,"relpath":"d"},{"search":"./../lib/jq","as":"e","is_data":false,"relpath":"e"},{"search":"./../lib/jq","as":"f","is_data":false,"relpath":"f"},{"as":"d","is_data":true,"relpath":"data"}],"defs":["a/0","c/0"]}
+ -
+ -modulemeta | .deps | length
+ -"c"
+ -6
+ -
+ -modulemeta | .defs | length
+ -"c"
+ -2
+ +{"whatever":null,"deps":[{"as":"foo","is_data":false,"relpath":"a"},{"search":"./","as":"d","is_data":false,"relpath":"d"},{"search":"./","as":"d2","is_data":false,"relpath":"d"},{"search":"./../lib/jq","as":"e","is_data":false,"relpath":"e"},{"search":"./../lib/jq","as":"f","is_data":false,"relpath":"f"},{"as":"d","is_data":true,"relpath":"data"}]}
+  
+  %%FAIL IGNORE MSG
+  import "syntaxerror" as e; .
+@@ -1799,19 +1409,6 @@
+  try -. catch .
+  "very-long-string"
+  "string (\"very-long-...) cannot be negated"
+ -
+ -try (.-.) catch .
+ -"very-long-string"
+ -"string (\"very-long-...) and string (\"very-long-...) cannot be subtracted"
+ -
+ -"x" * range(0; 12; 2) + "☆" * 5 | try -. catch .
+ -null
+ -"string (\"☆☆☆...) cannot be negated"
+ -"string (\"xx☆☆...) cannot be negated"
+ -"string (\"xxxx☆☆...) cannot be negated"
+ -"string (\"xxxxxx☆...) cannot be negated"
+ -"string (\"xxxxxxxx...) cannot be negated"
+ -"string (\"xxxxxxxxxx...) cannot be negated"
+  
+  join(",")
+  ["1",2,true,false,3.4]
+@@ -1845,24 +1442,16 @@
+  0
+  "number (1) and number (0) cannot be divided because the divisor is zero"
+  
+ -try (1/0) catch .
+ -0
+ -"number (1) and number (0) cannot be divided because the divisor is zero"
+ -
+ -try (0/0) catch .
+ -0
+ -"number (0) and number (0) cannot be divided because the divisor is zero"
+ -
+  try (1%.) catch .
+  0
+  "number (1) and number (0) cannot be divided (remainder) because the divisor is zero"
+  
+ -try (1%0) catch .
+ -0
+ -"number (1) and number (0) cannot be divided (remainder) because the divisor is zero"
+ +%%FAIL
+ +1/0
+ +jq: error: Division by zero? at <top-level>, line 1:
+  
+  # Basic numbers tests: integers, powers of two
+ -[range(-52;52;1)] as $powers | [$powers[]|pow(2;.)|log2|round] == $powers
+ +[range(-52;52;1)] as $powers | [$powers[]|pow(2;.)|log2] == $powers
+  null
+  true
+  
+@@ -1891,17 +1480,6 @@
+  true
+  true
+  true
+ -
+ -range(5;13)|IN(range(0;10;3))
+ -null
+ -false
+ -true
+ -false
+ -false
+ -true
+ -false
+ -false
+ -false
+  
+  range(10;12)|IN(range(10))
+  null
+@@ -1938,378 +1516,4 @@
+  null
+  false
+  
+ -# Regression test for #1815
+ -index("")
+ -""
+ -null
+ -
+ -# check that dead code removal occurs after builtin it generation
+ -builtins|length > 10
+ -null
+ -true
+ -
+ -"-1"|IN(builtins[] / "/"|.[1])
+ -null
+ -false
+ -
+ -all(builtins[] / "/"; .[1]|tonumber >= 0)
+ -null
+ -true
+ -
+ -builtins|any(.[:1] == "_")
+ -null
+ -false
+ -
+ -## Test ability to use keywords (uncomment after eval is pushed)
+ -#(.[] as $kw | "\"{\($kw)} as $\($kw) | $\($kw) | {$\($kw)} | {\($kw):.\($kw)}\""|eval|empty),null
+ -#["as","def","module","import","include","if","then","else","elif","end","reduce","foreach","and","or","try","catch","label","break","__loc__"]
+ -#null
+ -#
+ -#(.[] as $kw | "\"def f($\($kw)): $\($kw); f(.)\""|eval|empty),null
+ -#["as","def","module","import","include","if","then","else","elif","end","reduce","foreach","and","or","try","catch","label","break","__loc__"]
+ -#null
+ -
+ -
+ -#
+ -# Tests to cover the new toliteral number functionality
+ -# For an example see #1652 and other linked issues
+ -#
+ -
+ -# We are backward and sanity compatible
+ -
+ -map(. == 1)
+ -[1, 1.0, 1.000, 100e-2, 1e+0, 0.0001e4]
+ -[true, true, true, true, true, true]
+ -
+ -# When no arithmetic is involved jq should preserve the literal value
+ -
+ -.[0] | tostring | . == if have_decnum then "13911860366432393" else "13911860366432392" end
+ -[13911860366432393]
+ -true
+ -
+ -.x | tojson | . == if have_decnum then "13911860366432393" else "13911860366432392" end
+ -{"x":13911860366432393}
+ -true
+ -
+ -(13911860366432393 == 13911860366432392) | . == if have_decnum then false else true end
+ -null
+ -true
+ -
+ -
+ -# Applying arithmetic to the value will truncate the result to double
+ -
+ -. - 10
+ -13911860366432393
+ -13911860366432382
+ -
+ -.[0] - 10
+ -[13911860366432393]
+ -13911860366432382
+ -
+ -.x - 10
+ -{"x":13911860366432393}
+ -13911860366432382
+ -
+ -# Unary negation preserves numerical precision
+ --. | tojson == if have_decnum then "-13911860366432393" else "-13911860366432392" end
+ -13911860366432393
+ -true
+ -
+ --. | tojson == if have_decnum then "0.12345678901234567890123456789" else "0.12345678901234568" end
+ --0.12345678901234567890123456789
+ -true
+ -
+ -[1E+1000,-1E+1000 | tojson] == if have_decnum then ["1E+1000","-1E+1000"] else ["1.7976931348623157e+308","-1.7976931348623157e+308"] end
+ -null
+ -true
+ -
+ -. |= try . catch .
+ -1
+ -1
+ -
+ -# decnum to double conversion
+ -.[] as $n | $n+0 | [., tostring, . == $n]
+ -[-9007199254740993, -9007199254740992, 9007199254740992, 9007199254740993, 13911860366432393]
+ -[-9007199254740992,"-9007199254740992",true]
+ -[-9007199254740992,"-9007199254740992",true]
+ -[9007199254740992,"9007199254740992",true]
+ -[9007199254740992,"9007199254740992",true]
+ -[13911860366432392,"13911860366432392",true]
+ -
+ -# abs, fabs, length
+ -abs
+ -"abc"
+ -"abc"
+ -
+ -map(abs)
+ -[-0, 0, -10, -1.1]
+ -[0,0,10,1.1]
+ -
+ -map(fabs)
+ -[-0, 0, -10, -1.1]
+ -[0,0,10,1.1]
+ -
+ -map(abs == length) | unique
+ -[-10, -1.1, -1e-1, 1000000000000000002]
+ -[true]
+ -
+ -# The following is NOT prescriptive:
+ -map(abs)
+ -[0.1,1000000000000000002]
+ -[1e-1, 1000000000000000002]
+ -
+ -[1E+1000,-1E+1000 | abs | tojson] | unique == if have_decnum then ["1E+1000"] else ["1.7976931348623157e+308"] end
+ -null
+ -true
+ -
+ -[1E+1000,-1E+1000 | length | tojson] | unique == if have_decnum then ["1E+1000"] else ["1.7976931348623157e+308"] end
+ -null
+ -true
+ -
+ -# Using a keyword as variable/label name
+ -
+ -123 as $label | $label
+ -null
+ -123
+ -
+ -[ label $if | range(10) | ., (select(. == 5) | break $if) ]
+ -null
+ -[0,1,2,3,4,5]
+ -
+ -reduce .[] as $then (4 as $else | $else; . as $elif | . + $then * $elif)
+ -[1,2,3]
+ -96
+ -
+ -1 as $foreach | 2 as $and | 3 as $or | { $foreach, $and, $or, a }
+ -{"a":4,"b":5}
+ -{"foreach":1,"and":2,"or":3,"a":4}
+ -
+ -[ foreach .[] as $try (1 as $catch | $catch - 1; . + $try; .) ]
+ -[10,9,8,7]
+ -[10,19,27,34]
+ -
+ -
+ -# Object construction
+ -
+ -{ a, $__loc__, c }
+ -{"a":[1,2,3],"b":"foo","c":{"hi":"hey"}}
+ -{"a":[1,2,3],"__loc__":{"file":"<top-level>","line":1},"c":{"hi":"hey"}}
+ -
+ -1 as $x | "2" as $y | "3" as $z | { $x, as, $y: 4, ($z): 5, if: 6, foo: 7 }
+ -{"as":8}
+ -{"x":1,"as":8,"2":4,"3":5,"if":6,"foo":7}
+ -
+ -
+ -# nan is parsed as a valid NaN value from JSON
+ -
+ -fromjson | isnan
+ -"nan"
+ -true
+ -
+ -tojson | fromjson
+ -{"a":nan}
+ -{"a":null}
+ -
+ -# also "nan with payload" #2985
+ -if have_decnum then fromjson else nan end | isnan
+ -"nan1234"
+ -true
+ -
+ -
+ -# calling input/0, or debug/0 in a test doesn't crash jq
+ -
+ -try input catch .
+ -null
+ -"break"
+ -
+ -debug
+ -1
+ -1
+ -
+ -# try/catch catches more than it should #1859
+ -"foo" | try ((try . catch "caught too much") | error) catch "caught just right"
+ -null
+ -"caught just right"
+ -
+ -.[]|(try (if .=="hi" then . else error end) catch empty) | "\(.) there!"
+ -["hi","ho"]
+ -"hi there!"
+ -
+ -try (["hi","ho"]|.[]|(try . catch (if .=="ho" then "BROKEN"|error else empty end)) | if .=="ho" then error else "\(.) there!" end) catch "caught outside \(.)"
+ -null
+ -"hi there!"
+ -"caught outside ho"
+ -
+ -.[]|(try . catch (if .=="ho" then "BROKEN"|error else empty end)) | if .=="ho" then error else "\(.) there!" end
+ -["hi","ho"]
+ -"hi there!"
+ -
+ -try (try error catch "inner catch \(.)") catch "outer catch \(.)"
+ -"foo"
+ -"inner catch foo"
+ -
+ -try ((try error catch "inner catch \(.)")|error) catch "outer catch \(.)"
+ -"foo"
+ -"outer catch inner catch foo"
+ -
+ -# Also #1859, but from #1885
+ -first(.?,.?)
+ -null
+ -null
+ -
+ -# Also #1859, but from #2140
+ -{foo: "bar"} | .foo |= .?
+ -null
+ -{"foo": "bar"}
+ -
+ -# Also #1859, but from #2220
+ -. |= try 2
+ -1
+ -2
+ -
+ -. |= try 2 catch 3
+ -1
+ -2
+ -
+ -.[] |= try tonumber
+ -["1", "2a", "3", " 4 ", "5.67", ".89", "-876", "+5.43", 21]
+ -[1, 3, 5.67, 0.89, -876, 5.43, 21]
+ -
+ -# Also 1859, but from 2073
+ -any(keys[]|tostring?;true)
+ -{"a":"1","b":"2","c":"3"}
+ -true
+ -
+ -
+ -# explode/implode
+ -# test replacement character (65533) for outside codepoint range and 0xd800 (55296) - 0xdfff (57343) utf16 surrogate pair range
+ -# 1.1 and 1.9 to test round down of non-ints
+ -implode|explode
+ -[-1,0,1,2,3,1114111,1114112,55295,55296,57343,57344,1.1,1.9]
+ -[65533,0,1,2,3,1114111,65533,55295,65533,65533,57344,1,1]
+ -
+ -map(try implode catch .)
+ -[123,["a"],[nan]]
+ -["implode input must be an array","string (\"a\") can't be imploded, unicode codepoint needs to be numeric","number (null) can't be imploded, unicode codepoint needs to be numeric"]
+ -
+ -# walk
+ -walk(.)
+ -{"x":0}
+ -{"x":0}
+ -
+ -walk(1)
+ -{"x":0}
+ -1
+ -
+ -# The following is a regression test, not a requirement:
+ -[walk(.,1)]
+ -{"x":0}
+ -[{"x":0},1]
+ -
+ -# Issue #2584
+ -walk(select(IN({}, []) | not))
+ -{"a":1,"b":[]}
+ -{"a":1}
+ -
+ -# #2815
+ -[range(10)] | .[1.2:3.5]
+ -null
+ -[1,2,3]
+ -
+ -[range(10)] | .[1.5:3.5]
+ -null
+ -[1,2,3]
+ -
+ -[range(10)] | .[1.7:3.5]
+ -null
+ -[1,2,3]
+ -
+ -[range(10)] | .[1.7:4294967295]
+ -null
+ -[1,2,3,4,5,6,7,8,9]
+ -
+ -[range(10)] | .[1.7:-4294967296]
+ -null
+ -[]
+ -
+ -[[range(10)] | .[1.1,1.5,1.7]]
+ -null
+ -[1,1,1]
+ -
+ -[range(5)] | .[1.1] = 5
+ -null
+ -[0,5,2,3,4]
+ -
+ -[range(3)] | .[nan:1]
+ -null
+ -[0]
+ -
+ -[range(3)] | .[1:nan]
+ -null
+ -[1,2]
+ -
+ -[range(3)] | .[nan]
+ -null
+ -null
+ -
+ -try ([range(3)] | .[nan] = 9) catch .
+ -null
+ -"Cannot set array element at NaN index"
+ -
+ -try ("foobar" | .[1.5:3.5] = "xyz") catch .
+ -null
+ -"Cannot update string slices"
+ -
+ -try ([range(10)] | .[1.5:3.5] = ["xyz"]) catch .
+ -null
+ -[0,"xyz",4,5,6,7,8,9]
+ -
+ -try ("foobar" | .[1.5]) catch .
+ -null
+ -"Cannot index string with number"
+ -
+ -
+ -# setpath/2 does not leak the input after an invalid get #2970
+ -
+ -try ["ok", setpath([1]; 1)] catch ["ko", .]
+ -{"hi":"hello"}
+ -["ko","Cannot index object with number"]
+ -
+ -try fromjson catch .
+ -"{'a': 123}"
+ -"Invalid string literal; expected \", but got ' at line 1, column 5 (while parsing '{'a': 123}')"
+ -
+ -# ltrimstr/1 rtrimstr/1 don't leak on invalid input #2977
+ -
+ -try ltrimstr(1) catch "x", try rtrimstr(1) catch "x" | "ok"
+ -"hi"
+ -"ok"
+ -"ok"
+ -
+ -try ltrimstr("x") catch "x", try rtrimstr("x") catch "x" | "ok"
+ -{"hey":[]}
+ -"ok"
+ -"ok"
+ -
+ -# ltrimstr/1 and rtrimstr/1 return an error for non-strings. #2969
+ -
+ -.[] as [$x, $y] | try ["ok", ($x | ltrimstr($y))] catch ["ko", .]
+ -[["hi",1],[1,"hi"],["hi","hi"],[1,1]]
+ -["ko","startswith() requires string inputs"]
+ -["ko","startswith() requires string inputs"]
+ -["ok",""]
+ -["ko","startswith() requires string inputs"]
+ -
+ -.[] as [$x, $y] | try ["ok", ($x | rtrimstr($y))] catch ["ko", .]
+ -[["hi",1],[1,"hi"],["hi","hi"],[1,1]]
+ -["ko","endswith() requires string inputs"]
+ -["ko","endswith() requires string inputs"]
+ -["ok",""]
+ -["ko","endswith() requires string inputs"]
+ -
+ -
+ -# oss-fuzz #66061: setpath/2 leaks when indexing array with array
+ -
+ -try ["OK", setpath([[1]]; 1)] catch ["KO", .]
+ -[]
+ -["KO","Cannot update field at array index of array"]
+ +
+
+""""""
+modified file: tests/shtest
+--- workspace/jqlang/jq/a09a4d/newer/tests/shtest
++++ workspace/jqlang/jq/a09a4d/jq-1.6/tests/shtest
+@@ -1,21 +1,8 @@
+ -#!/bin/sh -x
+ +#!/bin/sh
+  
+  . "${0%/*}/setup" "$@"
+  
+ -msys=false
+ -mingw=false
+ -case "$(uname -s)" in
+ -MSYS*)  msys=true;;
+ -MINGW*) mingw=true;;
+ -esac
+ -
+ -JQ_NO_B=$JQ
+ -JQ="$JQ -b"
+ -
+  PATH=$JQBASEDIR:$PATH $JQBASEDIR/tests/jq-f-test.sh > /dev/null
+ -
+ -SHELL=/bin/sh
+ -export SHELL
+  
+  if [ -f "$JQBASEDIR/.libs/libinject_errors.so" ]; then
+    # Do some simple error injection tests to check that we're handling
+@@ -37,29 +24,69 @@
+  $VALGRIND $Q $JQ -Rne '[inputs] == ["a\u0000b", "c\u0000d", "e"]' $d/input
+  
+  ## Test constant folding
+ +
+ +## XXX If we add a builtin to list the program's disassembly then we can
+ +## move all of these into tests/all.test
+ +
+ +# String constant folding (addition only)
+  nref=$($VALGRIND $Q $JQ -n --debug-dump-disasm '"foo"' | wc -l)
+ -for exp in '1+1' '1-1' '2*3' '9/3' '9%3' '9==3' '9!=3' \
+ -  '9<3' '9>3' '9<=3' '9>=3' '1+2*3-4/5%6' '"foo" + "bar"'; do
+ -  n=$($VALGRIND $Q $JQ -n --debug-dump-disasm "$exp" | wc -l)
+ -  if [ $n -ne $nref ]; then
+ -    echo "Constant expression folding didn't work: $exp"
+ -    exit 1
+ -  fi
+ -done
+ +
+ +# Numeric constant folding (not all ops yet)
+ +n=$($VALGRIND $Q $JQ -n --debug-dump-disasm '1+1' | wc -l)
+ +if [ $n -ne $nref ]; then
+ +    echo "Constant expression folding for strings didn't work"
+ +    exit 1
+ +fi
+ +n=$($VALGRIND $Q $JQ -n --debug-dump-disasm '1-1' | wc -l)
+ +if [ $n -ne $nref ]; then
+ +    echo "Constant expression folding for strings didn't work"
+ +    exit 1
+ +fi
+ +n=$($VALGRIND $Q $JQ -n --debug-dump-disasm '2*3' | wc -l)
+ +if [ $n -ne $nref ]; then
+ +    echo "Constant expression folding for strings didn't work"
+ +    exit 1
+ +fi
+ +n=$($VALGRIND $Q $JQ -n --debug-dump-disasm '9/3' | wc -l)
+ +if [ $n -ne $nref ]; then
+ +    echo "Constant expression folding for strings didn't work"
+ +    exit 1
+ +fi
+ +n=$($VALGRIND $Q $JQ -n --debug-dump-disasm '9==3' | wc -l)
+ +if [ $n -ne $nref ]; then
+ +    echo "Constant expression folding for strings didn't work"
+ +    exit 1
+ +fi
+ +n=$($VALGRIND $Q $JQ -n --debug-dump-disasm '9!=3' | wc -l)
+ +if [ $n -ne $nref ]; then
+ +    echo "Constant expression folding for strings didn't work"
+ +    exit 1
+ +fi
+ +n=$($VALGRIND $Q $JQ -n --debug-dump-disasm '9<=3' | wc -l)
+ +if [ $n -ne $nref ]; then
+ +    echo "Constant expression folding for strings didn't work"
+ +    exit 1
+ +fi
+ +n=$($VALGRIND $Q $JQ -n --debug-dump-disasm '9>=3' | wc -l)
+ +if [ $n -ne $nref ]; then
+ +    echo "Constant expression folding for strings didn't work"
+ +    exit 1
+ +fi
+  
+  ## Test JSON sequence support
+ -cat > $d/expected <<EOF
+ -jq: ignoring parse error: Truncated value at line 2, column 5
+ -jq: ignoring parse error: Truncated value at line 2, column 25
+ -jq: ignoring parse error: Truncated value at line 2, column 41
+ +
+ +cat > $d/expected <<EOF
+ +ignoring parse error: Truncated value at line 2, column 5
+ +ignoring parse error: Truncated value at line 2, column 25
+ +ignoring parse error: Truncated value at line 2, column 41
+  EOF
+  printf '1\0362 3\n[0,1\036[4,5]true"ab"{"c":4\036{}{"d":5,"e":6"\036false\n'|$VALGRIND $Q $JQ -ces --seq '. == [2,3,[4,5],true,"ab",{},false]' > /dev/null 2> $d/out
+  cmp $d/out $d/expected
+  
+  cat > $d/expected <<EOF
+ -jq: ignoring parse error: Truncated value at line 2, column 5
+ -jq: ignoring parse error: Truncated value at line 2, column 25
+ -jq: ignoring parse error: Truncated value at line 3, column 1
+ +ignoring parse error: Truncated value at line 2, column 5
+ +ignoring parse error: Truncated value at line 2, column 25
+ +ignoring parse error: Truncated value at line 3, column 1
+  EOF
+  printf '1\0362 3\n[0,1\036[4,5]true"ab"{"c":4\036{}{"d":5,"e":6"false\n\036null'|$VALGRIND $Q $JQ -ces --seq '. == [2,3,[4,5],true,"ab",{},null]' > /dev/null 2> $d/out
+  cmp $d/out $d/expected
+@@ -67,22 +94,16 @@
+  # Note that here jq sees no inputs at all but it still succeeds because
+  # --seq ignores parse errors
+  cat > $d/expected <<EOF
+ -jq: ignoring parse error: Unfinished abandoned text at EOF at line 1, column 4
+ -EOF
+ -printf '"foo' | $JQ -c --seq . > $d/out 2>&1
+ -cmp $d/out $d/expected
+ -
+ -# with -e option should give 4 here as there's no valid output after
+ -# ignoring parse errors with --seq.
+ -printf '"foo' | $JQ -ce --seq . > $d/out 2>&1 || ret=$?
+ -[ $ret -eq 4 ]
+ +ignoring parse error: Unfinished abandoned text at EOF at line 1, column 4
+ +EOF
+ +printf '"foo' | $JQ -ce --seq . > $d/out 2>&1
+  cmp $d/out $d/expected
+  
+  # Numeric values truncated by EOF are ignored
+  cat > $d/expected <<EOF
+ -jq: ignoring parse error: Unfinished abandoned text at EOF at line 1, column 1
+ -EOF
+ -printf '1' | $JQ -c --seq . > $d/out 2>&1
+ +ignoring parse error: Unfinished abandoned text at EOF at line 1, column 1
+ +EOF
+ +printf '1' | $JQ -ce --seq . > $d/out 2>&1
+  cmp $d/out $d/expected
+  
+  cat > $d/expected <<EOF
+@@ -93,35 +114,6 @@
+    exit 2
+  fi
+  cmp $d/out $d/expected
+ -
+ -# Test control characters for #2909
+ -cat > $d/expected <<EOF
+ -jq: parse error: Invalid string: control characters from U+0000 through U+001F must be escaped at line 1, column 3
+ -EOF
+ -for i in 1 2 30 31; do
+ -  if printf "\"$(printf '\\%03o' $i)\"" | $JQ '.' > $d/out 2>&1; then
+ -    printf 'Error expected but jq exited successfully\n' 1>&2
+ -    exit 2
+ -  fi
+ -  cmp $d/out $d/expected
+ -done
+ -printf '" ~\\u007f"\n' > $d/expected
+ -printf "\"$(printf '\\%03o' 32 126 127)\"" | $JQ '.' > $d/out 2>&1
+ -cmp $d/out $d/expected
+ -
+ -## Test --exit-status
+ -data='{"i": 1}\n{"i": 2}\n{"i": 3}\n'
+ -printf "$data" | $JQ --exit-status 'select(.i==1)' > /dev/null 2>&1
+ -printf "$data" | $JQ --exit-status 'select(.i==2)' > /dev/null 2>&1
+ -printf "$data" | $JQ --exit-status 'select(.i==3)' > /dev/null 2>&1
+ -ret=0
+ -printf "$data" | $JQ --exit-status 'select(.i==4)' > /dev/null 2>&1 || ret=$?
+ -[ $ret -eq 4 ]
+ -ret=0
+ -printf "$data" | $JQ --exit-status 'select(.i==2) | false' > /dev/null 2>&1 || ret=$?
+ -[ $ret -eq 1 ]
+ -printf "$data" | $JQ --exit-status 'select(.i==2) | true' > /dev/null 2>&1
+ -
+  
+  # Regression test for #951
+  printf '"a\n' > $d/input
+@@ -130,21 +122,6 @@
+    exit 2
+  fi
+  
+ -# Regression test for #2146
+ -if echo "foobar" | $JQ .; then
+ -  printf 'Issue #2146 is back?\n' 1>&2
+ -  exit 1
+ -elif [ $? -ne 5 ]; then
+ -  echo "Invalid input had wrong error code" 1>&2
+ -  exit 1
+ -fi
+ -
+ -# Regression test for #2367; make sure to call jq twice
+ -if ! echo '{"a": 1E9999999999}' | $JQ . | $JQ -e .a; then
+ -  printf 'Issue #2367 is back?\n' 1>&2
+ -  exit 1
+ -fi
+ -
+  # Regression test for #1534
+  echo "[1,2,3,4]" > $d/expected
+  printf "[1,2][3,4]" | $JQ -cs add > $d/out 2>&1
+@@ -152,61 +129,14 @@
+  printf "[1,2][3,4]\n" | $JQ -cs add > $d/out 2>&1
+  cmp $d/out $d/expected
+  
+ -# Regression test for --raw-output0
+ -printf "a\0b\0" > $d/expected
+ -printf '["a", "b"]' | $VALGRIND $Q $JQ --raw-output0 '.[]' > $d/out
+ -cmp $d/out $d/expected
+ -printf "a\0" > $d/expected
+ -if printf '["a", "c\\u0000d", "b"]' | $VALGRIND $Q $JQ --raw-output0 '.[]' > $d/out; then
+ -  echo "Should exit error on string containing NUL with --raw-output0" 1>&2
+ -  exit 1
+ -elif [ $? -ne 5 ]; then
+ -  echo "Invalid error code" 1>&2
+ -  exit 1
+ -else
+ -  cmp $d/out $d/expected
+ -fi
+ -
+ -# Regression tests for #3194
+ -echo 42 > $d/expected
+ -$JQ -nn 42 > $d/out 2>&1
+ -cmp $d/out $d/expected
+ -
+ -$JQ -nL. 42 > $d/out 2>&1
+ -cmp $d/out $d/expected
+ -$JQ -nL . 42 > $d/out 2>&1
+ -cmp $d/out $d/expected
+ -
+ -$JQ -h > $d/expected 2>&1
+ -$JQ -hV > $d/out 2>&1
+ -cmp $d/out $d/expected
+ -$JQ -h -V > $d/out 2>&1
+ -cmp $d/out $d/expected
+ -
+ -$JQ -V > $d/expected 2>&1
+ -$JQ -Vh > $d/out 2>&1
+ -cmp $d/out $d/expected
+ -$JQ -V -h > $d/out 2>&1
+ -cmp $d/out $d/expected
+ -
+ -# CRLF line break support #1219
+ -if ! x=$($JQ -n "$(printf '1\r\n+\r\n2')") || [ "$x" != '3' ]; then
+ -  echo 'CRLF line break support failed?' 1>&2
+ -  exit 1
+ -fi
+  
+  ## Test streaming parser
+  
+  ## If we add an option to stream to the `import ... as $symbol;` directive
+  ## then we can move these tests into tests/all.test.
+ -$VALGRIND $Q $JQ -c '. as $d|path(..) as $p|$d|getpath($p)|select((type|. != "array" and . != "object") or length==0)|[$p,.]' < "$JQTESTDIR/torture/input0.json" > $d/out0
+ +$VALGRIND $Q $JQ -c '. as $d|path(..) as $p|$d|getpath($p)|scalars_or_empty|[$p,.]' < "$JQTESTDIR/torture/input0.json" > $d/out0
+  $VALGRIND $Q $JQ --stream -c '.|select(length==2)' < "$JQTESTDIR/torture/input0.json" > $d/out1
+  diff $d/out0 $d/out1
+ -
+ -printf '["Unfinished JSON term at EOF at line 1, column 1",[0]]\n' > $d/expected
+ -printf '[' | $VALGRIND $Q $JQ --stream-errors -c . > $d/out 2>&1
+ -diff $d/out $d/expected
+ -
+  
+  ## XXX This test can be moved to tests/all.test _now_
+  clean=false
+@@ -229,7 +159,7 @@
+          if [ -n "$VALGRIND" ]; then
+              grep '^==[0-9][0-9]*== ERROR SUMMARY: 0 errors' $d/err > /dev/null
+          else
+ -            tail -n1 -- "$d/err" | grep -Ei 'assert|abort|core' && false
+ +            tail -1 $d/err | egrep -i 'assert|abort|core' && false
+          fi
+  
+          dd "if=tests/torture/input0.json" bs=$i count=1 2>/dev/null |
+@@ -237,85 +167,13 @@
+          if [ -n "$VALGRIND" ]; then
+              grep '^==[0-9][0-9]*== ERROR SUMMARY: 0 errors' $d/err > /dev/null
+          else
+ -            tail -n1 -- "$d/err" | grep -Ei 'assert|abort|core' && false
+ +            tail -1 $d/err | egrep -i 'assert|abort|core' && false
+          fi
+  
+          diff $d/out0 $d/out1
+      done
+  else
+      echo "Not doing torture tests"
+ -fi
+ -
+ -## Regression test for issue #2378 assert when stream parse broken object pair
+ -echo '{"a":1,"b",' | $JQ --stream  > /dev/null 2> $d/err || true
+ -grep 'Objects must consist of key:value pairs' $d/err > /dev/null
+ -
+ -## Regression tests for issue #2463 assert when stream parse non-scalar object key
+ -echo '{{"a":"b"}}' | $JQ --stream > /dev/null 2> $d/err || true
+ -grep "Expected string key after '{', not '{'" $d/err > /dev/null
+ -echo '{"x":"y",{"a":"b"}}' | $JQ --stream > /dev/null 2> $d/err || true
+ -grep "Expected string key after ',' in object, not '{'" $d/err > /dev/null
+ -echo '{["a","b"]}' | $JQ --stream > /dev/null 2> $d/err || true
+ -grep "Expected string key after '{', not '\\['" $d/err > /dev/null
+ -echo '{"x":"y",["a","b"]}' | $JQ --stream > /dev/null 2> $d/err || true
+ -grep "Expected string key after ',' in object, not '\\['" $d/err > /dev/null
+ -
+ -# debug, stderr
+ -$VALGRIND $Q $JQ -n '"test", {} | debug, stderr' >/dev/null
+ -$JQ -n -c -j '"hello\nworld", null, [false, 0], {"foo":["bar"]}, "\n" | stderr' >$d/out 2>$d/err
+ -cat > $d/expected <<'EOF'
+ -hello
+ -worldnull[false,0]{"foo":["bar"]}
+ -EOF
+ -cmp $d/out $d/expected
+ -cmp $d/err $d/expected
+ -
+ -# --arg, --argjson, $ARGS.named
+ -$VALGRIND $JQ -n -c --arg foo 1 --argjson bar 2 '{$foo, $bar} | ., . == $ARGS.named' > $d/out
+ -printf '{"foo":"1","bar":2}\ntrue\n' > $d/expected
+ -cmp $d/out $d/expected
+ -
+ -# --slurpfile, --rawfile
+ -$VALGRIND $JQ -n --slurpfile foo $JQBASEDIR/tests/modules/data.json \
+ -  --rawfile bar $JQBASEDIR/tests/modules/data.json '{$foo, $bar}' > $d/out
+ -cat > $d/expected <<'EOF'
+ -{
+ -  "foo": [
+ -    {
+ -      "this": "is a test",
+ -      "that": "is too"
+ -    }
+ -  ],
+ -  "bar": "{\n  \"this\": \"is a test\",\n  \"that\": \"is too\"\n}\n"
+ -}
+ -EOF
+ -cmp $d/out $d/expected
+ -
+ -# --args, --jsonargs, $ARGS.positional
+ -$VALGRIND $JQ -n -c --args '$ARGS.positional' foo bar baz > $d/out
+ -printf '["foo","bar","baz"]\n' > $d/expected
+ -cmp $d/out $d/expected
+ -$VALGRIND $JQ -n -c --jsonargs '$ARGS.positional' null true '[]' '{}' > $d/out
+ -printf '[null,true,[],{}]\n' > $d/expected
+ -cmp $d/out $d/expected
+ -$VALGRIND $JQ -n -c '$ARGS.positional' --args foo 1 --jsonargs 2 '{}' --args 3 4 > $d/out
+ -printf '["foo","1",2,{},"3","4"]\n' > $d/expected
+ -cmp $d/out $d/expected
+ -$VALGRIND $JQ -n -c '$ARGS.positional' --args --jsonargs > $d/out
+ -printf '[]\n' > $d/expected
+ -cmp $d/out $d/expected
+ -
+ -## Regression test for issue #2572 assert when using --jsonargs and invalid JSON
+ -$VALGRIND $JQ -n --jsonargs null invalid && EC=$? || EC=$?
+ -if [ "$EC" -ne 2 ]; then
+ -    echo "--jsonargs exited with wrong exit code, expected 2 got $EC" 1>&2
+ -    exit 1
+ -fi
+ -# this tests the args_done code path "--"
+ -$VALGRIND $JQ -n --jsonargs null -- invalid && EC=$? || EC=$?
+ -if [ "$EC" -ne 2 ]; then
+ -    echo "--jsonargs exited with wrong exit code, expected 2 got $EC" 1>&2
+ -    exit 1
+  fi
+  
+  ## Fuzz parser
+@@ -339,29 +197,13 @@
+  
+  # Check handling of ~/.jq; these can't move into jq_test.c yet because
+  # they depend on $HOME
+ -if [ "$(HOME="$mods/home1" $VALGRIND $Q $JQ -nr fg)" != foobar ]; then
+ +if [ "$(HOME="$mods" $VALGRIND $Q $JQ -nr fg)" != foobar ]; then
+      echo "Bug #479 appears to be back" 1>&2
+      exit 1
+  fi
+  
+ -if $msys || $mingw; then
+ -    HOME_BAK=$HOME
+ -    unset HOME
+ -    if [ "$(USERPROFILE="$mods/home1" $VALGRIND $Q $JQ -nr foo)" != baz ]; then
+ -        echo "Bug #3104 regressed (sourcing %USERPROFILE%/.jq on Windows)" 1>&2
+ -        exit 1
+ -    fi
+ -    export HOME=$HOME_BAK
+ -    unset HOME_BAK
+ -fi
+ -
+ -if [ $(HOME="$mods/home1" $VALGRIND $Q $JQ --debug-dump-disasm -n fg | grep '^[a-z]' | wc -l) -ne 3 ]; then
+ +if [ $(HOME="$mods" $VALGRIND $Q $JQ --debug-dump-disasm -n fg | grep '^[a-z]' | wc -l) -gt 3 ]; then
+      echo "Binding too many defs into program" 1>&2
+ -    exit 1
+ -fi
+ -
+ -if ! HOME="$mods/home2" $VALGRIND $Q $JQ -n 'include "g"; empty'; then
+ -    echo "Mishandling directory ~/.jq" 1>&2
+      exit 1
+  fi
+  
+@@ -401,128 +243,39 @@
+      echo "jq halt_error(1) had unexpected output" 1>&2
+      exit 1
+  fi
+ -if [ -n "$($VALGRIND $Q $JQ -n '"xyz\n" | halt_error(1)' 2>/dev/null)" ]; then
+ +if [ -n "$($VALGRIND $Q $JQ -n '"xyz\n"|halt_error(1)' 2>/dev/null)" ]; then
+      echo "jq halt_error(1) had unexpected output on stdout" 1>&2
+      exit 1
+  fi
+ -if [ "$($VALGRIND $Q $JQ -n '"xy" | halt_error(1)' 2>&1 || echo "z")" != "xyz" ]; then
+ +if [ "$($VALGRIND $Q $JQ -n '"xyz\n"|halt_error(1)' 2>&1)" != xyz ]; then
+      echo "jq halt_error(1) had unexpected output" 1>&2
+      exit 1
+  fi
+ -if [ "$($VALGRIND $Q $JQ -n '"x\u0000y\u0000z" | halt_error(1)' 2>&1 | tr '\0' '.')" != "x.y.z" ]; then
+ -    echo "jq halt_error(1) had unexpected output" 1>&2
+ -    exit 1
+ -fi
+ -if [ "$($VALGRIND $Q $JQ -n '{"a":"xyz"} | halt_error(1)' 2>&1)" != '{"a":"xyz"}' ]; then
+ -    echo "jq halt_error(1) had unexpected output" 1>&2
+ -    exit 1
+ -fi
+  
+  # Check $JQ_COLORS
+ -unset JQ_COLORS
+ -
+ -## Default colors, null input
+  $JQ -Ccn . > $d/color
+ -printf '\033[0;90mnull\033[0m\n' > $d/expect
+ -cmp $d/color $d/expect
+ -
+ -## Set non-default color, null input
+ +printf '\033[1;30mnull\033[0m\n' > $d/expect
+ +cmp $d/color $d/expect
+  JQ_COLORS='4;31' $JQ -Ccn . > $d/color
+  printf '\033[4;31mnull\033[0m\n' > $d/expect
+  cmp $d/color $d/expect
+ -
+ -## Default colors, complex input
+ -$JQ -Ccn '[{"a":true,"b":false},"abc",123,null]' > $d/color
+ -{
+ -  printf '\033[1;39m[\033[0m'
+ -  printf '\033[1;39m{\033[0m'
+ -  printf '\033[1;34m"a"\033[0m'
+ -  printf '\033[1;39m:\033[0m'
+ -  printf '\033[0;39mtrue\033[0m'
+ -  printf '\033[1;39m,\033[0m'
+ -  printf '\033[1;34m"b"\033[0m'
+ -  printf '\033[1;39m:\033[0m'
+ -  printf '\033[0;39mfalse\033[0m'
+ -  printf '\033[1;39m}\033[0m'
+ -  printf '\033[1;39m,\033[0m'
+ -  printf '\033[0;32m"abc"\033[0m'
+ -  printf '\033[1;39m,\033[0m'
+ -  printf '\033[0;39m123\033[0m'
+ -  printf '\033[1;39m,\033[0m'
+ -  printf '\033[0;90mnull\033[0m'
+ -  printf '\033[1;39m]\033[0m\n'
+ -} > $d/expect
+ -cmp $d/color $d/expect
+ -
+ -## Set non-default colors, complex input
+ -JQ_COLORS='0;30:0;31:0;32:0;33:0;34:1;35:1;36:1;37' \
+ -  $JQ -Ccn '[{"a":true,"b":false},"abc",123,null]' > $d/color
+ -{
+ -  printf '\033[1;35m[\033[0m'
+ -  printf '\033[1;36m{\033[0m'
+ -  printf '\033[1;37m"a"\033[0m'
+ -  printf '\033[1;36m:\033[0m'
+ -  printf '\033[0;32mtrue\033[0m'
+ -  printf '\033[1;36m,\033[0m'
+ -  printf '\033[1;37m"b"\033[0m'
+ -  printf '\033[1;36m:\033[0m'
+ -  printf '\033[0;31mfalse\033[0m'
+ -  printf '\033[1;36m}\033[0m'
+ -  printf '\033[1;35m,\033[0m'
+ -  printf '\033[0;34m"abc"\033[0m'
+ -  printf '\033[1;35m,\033[0m'
+ -  printf '\033[0;33m123\033[0m'
+ -  printf '\033[1;35m,\033[0m'
+ -  printf '\033[0;30mnull\033[0m'
+ -  printf '\033[1;35m]\033[0m\n'
+ -} > $d/expect
+ -cmp $d/color $d/expect
+ -
+ -## Default colors, complex input, indented
+ -$JQ -Cn '[{"a":true,"b":false},"abc",123,null]' > $d/color
+ -{
+ -  printf '\033[1;39m[\033[0m\n'
+ -  printf '  \033[1;39m{\033[0m\n'
+ -  printf '    \033[1;34m"a"\033[0m'
+ -  printf '\033[1;39m:\033[0m '
+ -  printf '\033[0;39mtrue\033[0m'
+ -  printf '\033[1;39m,\033[0m\n'
+ -  printf '    \033[1;34m"b"\033[0m'
+ -  printf '\033[1;39m:\033[0m '
+ -  printf '\033[0;39mfalse\033[0m\n'
+ -  printf '  \033[1;39m}\033[0m'
+ -  printf '\033[1;39m,\033[0m\n'
+ -  printf '  \033[0;32m"abc"\033[0m'
+ -  printf '\033[1;39m,\033[0m\n'
+ -  printf '  \033[0;39m123\033[0m'
+ -  printf '\033[1;39m,\033[0m\n'
+ -  printf '  \033[0;90mnull\033[0m\n'
+ -  printf '\033[1;39m]\033[0m\n'
+ -} > $d/expect
+ -cmp $d/color $d/expect
+ -
+ -## Set non-default colors, complex input, indented
+ -JQ_COLORS='0;30:0;31:0;32:0;33:0;34:1;35:1;36:1;37' \
+ -  $JQ -Cn '[{"a":true,"b":false},"abc",123,null]' > $d/color
+ -{
+ -  printf '\033[1;35m[\033[0m\n'
+ -  printf '  \033[1;36m{\033[0m\n'
+ -  printf '    \033[1;37m"a"\033[0m'
+ -  printf '\033[1;36m:\033[0m '
+ -  printf '\033[0;32mtrue\033[0m'
+ -  printf '\033[1;36m,\033[0m\n'
+ -  printf '    \033[1;37m"b"\033[0m'
+ -  printf '\033[1;36m:\033[0m '
+ -  printf '\033[0;31mfalse\033[0m\n'
+ -  printf '  \033[1;36m}\033[0m'
+ -  printf '\033[1;35m,\033[0m\n'
+ -  printf '  \033[0;34m"abc"\033[0m'
+ -  printf '\033[1;35m,\033[0m\n'
+ -  printf '  \033[0;33m123\033[0m'
+ -  printf '\033[1;35m,\033[0m\n'
+ -  printf '  \033[0;30mnull\033[0m\n'
+ -  printf '\033[1;35m]\033[0m\n'
+ -} > $d/expect
+ +JQ_COLORS='1;30:0;31:0;32:0;33:0;34:1;35:1;36' \
+ +  $JQ -Ccn '[{"a":true,"b":false},123,null]' > $d/color
+ +(
+ +printf '\033[1;35m[\033[1;36m{'
+ +printf '\033[0m\033[34;1m"a"\033['
+ +printf '0m\033[1;36m:\033[0m\033['
+ +printf '0;32mtrue\033[0m\033[1'
+ +printf ';36m,\033[0m\033[34;1m'
+ +printf '"b"\033[0m\033[1;36m:\033'
+ +printf '[0m\033[0;31mfalse\033'
+ +printf '[0m\033[1;36m\033[1;36'
+ +printf 'm}\033[0m\033[1;35m,\033['
+ +printf '0;33m123\033[0m\033[1;'
+ +printf '35m,\033[1;30mnull\033'
+ +printf '[0m\033[1;35m\033[1;35'
+ +printf 'm]\033[0m\n'
+ +) > $d/expect
+  cmp $d/color $d/expect
+  
+  # Check garbage in JQ_COLORS.  We write each color sequence into a 16
+@@ -531,223 +284,26 @@
+  # on stderr.
+  set -vx
+  echo 'Failed to set $JQ_COLORS' > $d/expect_warning
+ -$JQ -Ccn '[{"a":true,"b":false},"abc",123,null]' > $d/expect
+ +$JQ -Ccn '[{"a":true,"b":false},123,null]' > $d/expect
+  JQ_COLORS='garbage;30:*;31:,;3^:0;$%:0;34:1;35:1;36' \
+ -  $JQ -Ccn '[{"a":true,"b":false},"abc",123,null]' > $d/color 2>$d/warning
+ +  $JQ -Ccn '[{"a":true,"b":false},123,null]' > $d/color 2>$d/warning
+  cmp $d/color $d/expect
+  cmp $d/warning $d/expect_warning
+  JQ_COLORS='1234567890123456789;30:0;31:0;32:0;33:0;34:1;35:1;36' \
+ -  $JQ -Ccn '[{"a":true,"b":false},"abc",123,null]' > $d/color 2>$d/warning
+ +  $JQ -Ccn '[{"a":true,"b":false},123,null]' > $d/color 2>$d/warning
+  cmp $d/color $d/expect
+  cmp $d/warning $d/expect_warning
+  JQ_COLORS='1;31234567890123456789:0;31:0;32:0;33:0;34:1;35:1;36' \
+ -  $JQ -Ccn '[{"a":true,"b":false},"abc",123,null]' > $d/color 2>$d/warning
+ +  $JQ -Ccn '[{"a":true,"b":false},123,null]' > $d/color 2>$d/warning
+  cmp $d/color $d/expect
+  cmp $d/warning $d/expect_warning
+  JQ_COLORS='1234567890123456;1234567890123456:1234567890123456;1234567890123456:1234567890123456;1234567890123456:1234567890123456;1234567890123456:1234567890123456;1234567890123456:1234567890123456;1234567890123456:1234567890123456;1234567890123456' \
+ -  $JQ -Ccn '[{"a":true,"b":false},"abc",123,null]' > $d/color 2>$d/warning
+ +  $JQ -Ccn '[{"a":true,"b":false},123,null]' > $d/color 2>$d/warning
+  cmp $d/color $d/expect
+  cmp $d/warning $d/expect_warning
+  JQ_COLORS="0123456789123:0123456789123:0123456789123:0123456789123:0123456789123:0123456789123:0123456789123:0123456789123:" \
+ -  $JQ -Ccn '[{"a":true,"b":false},"abc",123,null]' > $d/color 2>$d/warning
+ -cmp $d/color $d/expect
+ -cmp $d/warning $d/expect_warning
+ -
+ -# Check $NO_COLOR
+ -test_no_color=true
+ -$msys  && test_no_color=false
+ -$mingw && test_no_color=false
+ -if $test_no_color && command -v script >/dev/null 2>&1; then
+ -  unset NO_COLOR
+ -  if script -qc echo /dev/null >/dev/null 2>&1; then
+ -    faketty() { script -qec "$*" /dev/null; }
+ -  else # macOS
+ -    faketty() { script -q /dev/null "$@" /dev/null |
+ -      sed 's/^\x5E\x44\x08\x08//'; }
+ -  fi
+ -
+ -  faketty $JQ_NO_B -n . > $d/color
+ -  printf '\033[0;90mnull\033[0m\r\n' > $d/expect
+ -  od -tc $d/expect
+ -  od -tc $d/color
+ -  cmp $d/color $d/expect
+ -  faketty env NO_COLOR= $JQ_NO_B -n . > $d/color
+ -  printf '\033[0;90mnull\033[0m\r\n' > $d/expect
+ -  od -tc $d/expect
+ -  od -tc $d/color
+ -  cmp $d/color $d/expect
+ -  faketty env NO_COLOR=1 $JQ_NO_B -n . > $d/color
+ -  printf 'null\r\n' > $d/expect
+ -  od -tc $d/expect
+ -  od -tc $d/color
+ -  cmp $d/color $d/expect
+ -  faketty env NO_COLOR=1 $JQ_NO_B -Cn . > $d/color
+ -  printf '\033[0;90mnull\033[0m\r\n' > $d/expect
+ -  od -tc $d/expect
+ -  od -tc $d/color
+ -  cmp $d/color $d/expect
+ -fi
+ -
+ -# #2785
+ -if $VALGRIND $Q $JQ -n -f "$JQTESTDIR/no-main-program.jq" > $d/out 2>&1; then
+ -  echo "jq -f $JQTESTDIR/no-main-program.jq succeeded"
+ -  exit 1
+ -else
+ -  EC=$?
+ -  if [ $EC -eq 1 ]; then
+ -    echo "jq -f $JQTESTDIR/no-main-program.jq failed with memory errors"
+ -    exit 1
+ -  fi
+ -  if [ $EC -ne 3 ]; then
+ -    echo "jq -f $JQTESTDIR/no-main-program.jq failed with wrong exit code ($EC)"
+ -    exit 1
+ -  fi
+ -fi
+ -cat > $d/expected <<EOF
+ -jq: error: Top-level program not given (try ".")
+ -jq: 1 compile error
+ -EOF
+ -if ! diff $d/expected $d/out; then
+ -  echo "jq -f $JQTESTDIR/no-main-program.jq failed but its error message is not the expected one"
+ -  exit 1
+ -fi
+ -
+ -if ! $VALGRIND $Q $JQ -n -f "$JQTESTDIR/yes-main-program.jq" > $d/out 2>&1; then
+ -  echo "jq -f $JQTESTDIR/yes-main-program.jq failed"
+ -  exit 1
+ -fi
+ -
+ -if ! $msys && ! $mingw && locales=$(locale -a); then
+ -  { l=$(grep -Ev '^(C|LANG|POSIX|en)' | grep -Ei '\.utf-?8$' | head -n1) ;} \
+ -<<EOF
+ -$locales
+ -EOF
+ -  if [ -z "$l" ]; then
+ -    echo "WARNING: Not testing localization"
+ -  else
+ -    date=$(LC_ALL=$l date +'%a %d %b %Y at %H:%M:%S')
+ -    if ! LC_ALL=$l $JQ -nR --arg date "$date" '$date|strptime("%a %d %b %Y at %H:%M:%S")'; then
+ -      echo "jq does not honor LC_ALL environment variable"
+ -      exit 1
+ -    fi
+ -  fi
+ -fi
+ -
+ -# Comments!
+ -if ! x=$($JQ -n '123 # comment') || [ "$x" != 123 ]; then
+ -  echo 'comment did not work'
+ -  exit 1
+ -fi
+ -
+ -cr=$(printf \\r)
+ -if ! x=$($JQ -n "1 # foo$cr + 2") || [ "$x" != 1 ]; then
+ -  echo 'regression: carriage return terminates comment'
+ -  exit 1
+ -fi
+ -
+ -if ! x=$($JQ -cn '[
+ -  1,
+ -  # foo \
+ -  2,
+ -  # bar \\
+ -  3,
+ -  4, # baz \\\
+ -  5, \
+ -  6,
+ -  7
+ -  # comment \
+ -    comment \
+ -    comment
+ -]') || [ "$x" != '[1,3,4,7]' ]; then
+ -  echo 'multiline comment was not handled correctly'
+ -  exit 1
+ -fi
+ -
+ -if ! x=$($JQ -cn "$(printf '[\r\n1,# comment\r\n2,# comment\\\r\ncomment\r\n3\r\n]')") \
+ -  || [ "$x" != '[1,2,3]' ]; then
+ -  echo 'multiline comment with CRLF line breaks was not handled correctly'
+ -  exit 1
+ -fi
+ -
+ -# CVE-2023-50268: No stack overflow comparing a nan with a large payload
+ -if $JQ -ne 'have_decnum'; then
+ -  $VALGRIND $Q $JQ '1 != .' <<\EOF >/dev/null
+ -  Nan4000
+ -EOF
+ -fi
+ -
+ -# Allow passing the inline jq script before -- #2919
+ -if ! r=$($JQ --args -rn -- '$ARGS.positional[0]' bar) || [ "$r" != bar ]; then
+ -    echo "passing the inline script after -- didn't work"
+ -    exit 1
+ -fi
+ -if ! r=$($JQ --args -rn 1 -- '$ARGS.positional[0]' bar) || [ "$r" != 1 ]; then
+ -    echo "passing the inline script before -- didn't work"
+ -    exit 1
+ -fi
+ -
+ -# CVE-2023-50246: No heap overflow for '-10E-1000000001'
+ -$VALGRIND $Q $JQ . <<\NUM
+ --10E-1000000001
+ -NUM
+ -
+ -# test for --indent and --compact-output -- #1465
+ -printf '[1,2]\n' > $d/expected
+ -$JQ --compact-output -n "[1,2]" > $d/out
+ -cmp $d/out $d/expected
+ -
+ -printf '[\n1,\n2\n]\n' > $d/expected
+ -$JQ --indent 0 -n "[1,2]" > $d/out
+ -cmp $d/out $d/expected
+ -
+ -printf '[\n 1,\n 2\n]\n' > $d/expected
+ -$JQ --indent 1 -n "[1,2]" > $d/out
+ -cmp $d/out $d/expected
+ -
+ -printf '[\n     1,\n     2\n]\n' > $d/expected
+ -$JQ --indent 5 -n "[1,2]" > $d/out
+ -cmp $d/out $d/expected
+ -
+ -printf '[\n{\n"a": 1\n}\n]\n' > $d/expected
+ -$JQ --indent 0 -n "[{a:1}]" > $d/out
+ -cmp $d/out $d/expected
+ -
+ -printf '[\n {\n  "a": 1\n }\n]\n' > $d/expected
+ -$JQ --indent 1 -n "[{a:1}]" > $d/out
+ -cmp $d/out $d/expected
+ -
+ -printf '[\n      {\n            "a": 1\n      }\n]\n' > $d/expected
+ -$JQ --indent 6 -n "[{a:1}]" > $d/out
+ -cmp $d/out $d/expected
+ -
+ -if ! $msys && ! $mingw; then
+ -  # Test handling of timezones -- #2429, #2475
+ -  if ! r=$(TZ=Asia/Tokyo $JQ -rn '1731627341 | strflocaltime("%F %T %z %Z")') \
+ -    || [ "$r" != "2024-11-15 08:35:41 +0900 JST" ]; then
+ -    echo "Incorrectly formatted local time"
+ -    exit 1
+ -  fi
+ -
+ -  if ! r=$(TZ=Europe/Paris $JQ -rn '1731627341 | strflocaltime("%F %T %z %Z")') \
+ -    || [ "$r" != "2024-11-15 00:35:41 +0100 CET" ]; then
+ -    echo "Incorrectly formatted local time"
+ -    exit 1
+ -  fi
+ -
+ -  if ! r=$(TZ=Europe/Paris $JQ -rn '1731627341 | strftime("%F %T %z %Z")') \
+ -    || ( [ "$r" != "2024-11-14 23:35:41 +0000 UTC" ] \
+ -      && [ "$r" != "2024-11-14 23:35:41 +0000 GMT" ] ); then
+ -    echo "Incorrectly formatted universal time"
+ -    exit 1
+ -  fi
+ -
+ -  if ! r=$(TZ=Etc/GMT+7 $JQ -nc '1731627341 | .,. | [strftime("%FT%T"),strflocaltime("%FT%T%z")]'
+ -) \
+ -    || [ "$r" != '["2024-11-14T23:35:41","2024-11-14T16:35:41-0700"]
+ -["2024-11-14T23:35:41","2024-11-14T16:35:41-0700"]' ]; then
+ -    echo "strftime or strftimelocal are not pure functions"
+ -    exit 1
+ -  fi
+ -fi
+ +  $JQ -Ccn '[{"a":true,"b":false},123,null]' > $d/color 2>$d/warning
+ +cmp $d/color $d/expect
+ +cmp $d/warning $d/expect_warning
+  
+  exit 0
+
+""""""
+
+2025-05-28 22:14:31.375 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-05-28 22:14:31.375 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/jqlang/jq/a09a4d/llm_output/output_jq-1.6_qwen-plus.patch
+2025-05-28 22:14:31.375 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-05-28 22:14:31.376 | INFO     | modules.llm_adapter:_call_llm:740 - llm.run() result:{'openai_responses': ['diff --git a/src/jv.c b/src/jv.c\nindex fd6cfcabc3..0fbdcfaa7e 100644\n--- a/src/jv.c\n+++ b/src/jv.c\n@@ -585,6 +585,11 @@ static jv jvp_literal_number_new(const char * literal) {\n     return JV_INVALID;\n   }\n   if (decNumberIsNaN(&n->num_decimal)) {\n+    // Reject NaN with payload.\n+    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {\n+      jv_mem_free(n);\n+      return JV_INVALID;\n+    }\n     jv_mem_free(n);\n     return jv_number(NAN);\n   }\n\ndiff --git a/tests/jq.test b/tests/jq.test\nindex 2e3c1e8bd7..f5a57b1823 100644\n--- a/tests/jq.test\n+++ b/tests/jq.test\n@@ -2110,11 +2110,17 @@ tojson | fromjson\n {"a":nan}\n {"a":null}\n \n-# also "nan with payload" #2985\n-if have_decnum then fromjson else nan end | isnan\n-"nan1234"\n+# NaN with payload is not parsed\n+.[] | try (fromjson | isnan) catch .\n+["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]\n true\n-\n+true\n+"Invalid numeric literal at EOF at line 1, column 4 (while parsing \'NaN1\')"\n+"Invalid numeric literal at EOF at line 1, column 5 (while parsing \'NaN10\')"\n+"Invalid numeric literal at EOF at line 1, column 6 (while parsing \'NaN100\')"\n+"Invalid numeric literal at EOF at line 1, column 7 (while parsing \'NaN1000\')"\n+"Invalid numeric literal at EOF at line 1, column 8 (while parsing \'NaN10000\')"\n+"Invalid numeric literal at EOF at line 1, column 9 (while parsing \'NaN100000\')"\n \n # calling input/0, or debug/0 in a test doesn\'t crash jq'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-05-28 22:14:31.376 | INFO     | modules.llm_adapter:_parse_llm_response:822 - 原始LLM响应(前100字符): diff --git a/src/jv.c b/src/jv.c
+index fd6cfcabc3..0fbdcfaa7e 100644
+--- a/src/jv.c
++++ b/src/jv.c
+@...
+2025-05-28 22:14:31.377 | INFO     | modules.llm_adapter:_parse_llm_response:856 - 找到diff --git格式，内容前100字符: diff --git a/src/jv.c b/src/jv.c
+index fd6cfcabc3..0fbdcfaa7e 100644
+--- a/src/jv.c
++++ b/src/jv.c
+@...
+2025-05-28 22:14:31.378 | INFO     | modules.llm_adapter:_save_llm_response:991 - LLM响应已保存到: workspace/jqlang/jq/a09a4d/llm_output/output_jq-1.6_qwen-plus.patch
+2025-05-28 22:14:31.378 | INFO     | modules.llm_adapter:_save_llm_response:992 - 原始LLM响应已保存到: workspace/jqlang/jq/a09a4d/llm_output/raw_output_jq-1.6_qwen-plus.patch
+2025-05-28 22:14:31.378 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/jqlang/jq/a09a4d/evaluations/llm_adapter/metrics_a09a4d_20250528_221431.json
+2025-05-28 22:14:31.379 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: patch_adapter
+2025-05-28 22:14:31.379 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/jqlang/jq/a09a4d/llm_output/output_jq-1.6_qwen-plus.patch
+2025-05-28 22:14:31.381 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_jq-1.6_20250528_221431
+2025-05-28 22:14:31.413 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/src/jv.c b/src/jv.c
+index fd6cfcabc3..0fbdcfaa7e 100644
+--- a/src/jv.c
++++ b/src/jv.c
+@@ -585,6 +585,11 @@ static jv jvp_literal_number_new(const char * literal) {
+     return JV_INVALID;
+   }
+   if (decNumberIsNaN(&n->num_decimal)) {
++    // Reject NaN with payload.
++    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {
++      jv_mem_free(n);
++      return JV_INVALID;
++    }
+     jv_mem_free(n);
+     return jv_number(NAN);
+   }
+
+diff --git a/tests/jq.test b/tests/jq.test
+index 2e3c1e8bd7..f5a57b1823 100644
+--- a/tests/jq.test
++++ b/tests/jq.test
+@@ -2110,11 +2110,17 @@ tojson | fromjson
+ {"a":nan}
+ {"a":null}
+ 
+-# also "nan with payload" #2985
+-if have_decnum then fromjson else nan end | isnan
+-"nan1234"
++# NaN with payload is not parsed
++.[] | try (fromjson | isnan) catch .
++["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]
+ true
+-
++true
++"Invalid numeric literal at EOF at line 1, column 4 (while parsing 'NaN1')"
++"Invalid numeric literal at EOF at line 1, column 5 (while parsing 'NaN10')"
++"Invalid numeric literal at EOF at line 1, column 6 (while parsing 'NaN100')"
++"Invalid numeric literal at EOF at line 1, column 7 (while parsing 'NaN1000')"
++"Invalid numeric literal at EOF at line 1, column 8 (while parsing 'NaN10000')"
++"Invalid numeric literal at EOF at line 1, column 9 (while parsing 'NaN100000')"
+ 
+ # calling input/0, or debug/0 in a test doesn't crash jq
+2025-05-28 22:14:31.413 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -585,6 +585,11 @@ static jv jvp_literal_number_new(const char * literal) {
+     return JV_INVALID;
+   }
+   if (decNumberIsNaN(&n->num_decimal)) {
++    // Reject NaN with payload.
++    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {
++      jv_mem_free(n);
++      return JV_INVALID;
++    }
+     jv_mem_free(n);
+     return jv_number(NAN);
+   }
+
+2025-05-28 22:14:31.414 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -585,6 +585,11 @@ static jv jvp_literal_number_new(const char * literal) {
+     return JV_INVALID;
+   }
+   if (decNumberIsNaN(&n->num_decimal)) {
++    // Reject NaN with payload.
++    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {
++      jv_mem_free(n);
++      return JV_INVALID;
++    }
+     jv_mem_free(n);
+     return jv_number(NAN);
+   }
+
+2025-05-28 22:14:31.415 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 585, 'old_count': 6, 'new_start': 585, 'new_count': 11}, 'lines': [('context', '    return JV_INVALID;'), ('context', '  }'), ('context', '  if (decNumberIsNaN(&n->num_decimal)) {'), ('add', '    // Reject NaN with payload.'), ('add', '    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {'), ('add', '      jv_mem_free(n);'), ('add', '      return JV_INVALID;'), ('add', '    }'), ('context', '    jv_mem_free(n);'), ('context', '    return jv_number(NAN);'), ('context', '  }')]}
+2025-05-28 22:14:31.417 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-05-28 22:14:31.417 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 585, 'old_count': 6, 'new_start': 585, 'new_count': 11}, 'lines': [('context', '    return JV_INVALID;'), ('context', '  }'), ('context', '  if (decNumberIsNaN(&n->num_decimal)) {'), ('add', '    // Reject NaN with payload.'), ('add', '    if (n->num_decimal.digits > 1 || *n->num_decimal.lsu != 0) {'), ('add', '      jv_mem_free(n);'), ('add', '      return JV_INVALID;'), ('add', '    }'), ('context', '    jv_mem_free(n);'), ('context', '    return jv_number(NAN);'), ('context', '  }')]}
+2025-05-28 22:14:31.418 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: src/jv.c
+2025-05-28 22:14:31.419 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -2110,11 +2110,17 @@ tojson | fromjson
+ {"a":nan}
+ {"a":null}
+ 
+-# also "nan with payload" #2985
+-if have_decnum then fromjson else nan end | isnan
+-"nan1234"
++# NaN with payload is not parsed
++.[] | try (fromjson | isnan) catch .
++["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]
+ true
+-
++true
++"Invalid numeric literal at EOF at line 1, column 4 (while parsing 'NaN1')"
++"Invalid numeric literal at EOF at line 1, column 5 (while parsing 'NaN10')"
++"Invalid numeric literal at EOF at line 1, column 6 (while parsing 'NaN100')"
++"Invalid numeric literal at EOF at line 1, column 7 (while parsing 'NaN1000')"
++"Invalid numeric literal at EOF at line 1, column 8 (while parsing 'NaN10000')"
++"Invalid numeric literal at EOF at line 1, column 9 (while parsing 'NaN100000')"
+ 
+ # calling input/0, or debug/0 in a test doesn't crash jq
+2025-05-28 22:14:31.420 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -2110,11 +2110,17 @@ tojson | fromjson
+ {"a":nan}
+ {"a":null}
+ 
+-# also "nan with payload" #2985
+-if have_decnum then fromjson else nan end | isnan
+-"nan1234"
++# NaN with payload is not parsed
++.[] | try (fromjson | isnan) catch .
++["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]
+ true
+-
++true
++"Invalid numeric literal at EOF at line 1, column 4 (while parsing 'NaN1')"
++"Invalid numeric literal at EOF at line 1, column 5 (while parsing 'NaN10')"
++"Invalid numeric literal at EOF at line 1, column 6 (while parsing 'NaN100')"
++"Invalid numeric literal at EOF at line 1, column 7 (while parsing 'NaN1000')"
++"Invalid numeric literal at EOF at line 1, column 8 (while parsing 'NaN10000')"
++"Invalid numeric literal at EOF at line 1, column 9 (while parsing 'NaN100000')"
+ 
+ # calling input/0, or debug/0 in a test doesn't crash jq
+2025-05-28 22:14:31.420 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 2110, 'old_count': 11, 'new_start': 2110, 'new_count': 17}, 'lines': [('context', '{"a":nan}'), ('context', '{"a":null}'), ('context', ''), ('remove', '# also "nan with payload" #2985'), ('remove', 'if have_decnum then fromjson else nan end | isnan'), ('remove', '"nan1234"'), ('add', '# NaN with payload is not parsed'), ('add', '.[] | try (fromjson | isnan) catch .'), ('add', '["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]'), ('context', 'true'), ('remove', ''), ('add', 'true'), ('add', '"Invalid numeric literal at EOF at line 1, column 4 (while parsing \'NaN1\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 5 (while parsing \'NaN10\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 6 (while parsing \'NaN100\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 7 (while parsing \'NaN1000\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 8 (while parsing \'NaN10000\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 9 (while parsing \'NaN100000\')"'), ('context', ''), ('context', "# calling input/0, or debug/0 in a test doesn't crash jq")]}
+2025-05-28 22:14:31.424 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-05-28 22:14:31.424 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 2110, 'old_count': 11, 'new_start': 2110, 'new_count': 17}, 'lines': [('context', '{"a":nan}'), ('context', '{"a":null}'), ('context', ''), ('remove', '# also "nan with payload" #2985'), ('remove', 'if have_decnum then fromjson else nan end | isnan'), ('remove', '"nan1234"'), ('add', '# NaN with payload is not parsed'), ('add', '.[] | try (fromjson | isnan) catch .'), ('add', '["NaN","-NaN","NaN1","NaN10","NaN100","NaN1000","NaN10000","NaN100000"]'), ('context', 'true'), ('remove', ''), ('add', 'true'), ('add', '"Invalid numeric literal at EOF at line 1, column 4 (while parsing \'NaN1\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 5 (while parsing \'NaN10\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 6 (while parsing \'NaN100\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 7 (while parsing \'NaN1000\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 8 (while parsing \'NaN10000\')"'), ('add', '"Invalid numeric literal at EOF at line 1, column 9 (while parsing \'NaN100000\')"'), ('context', ''), ('context', "# calling input/0, or debug/0 in a test doesn't crash jq")]}
+2025-05-28 22:14:31.425 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: tests/jq.test
+2025-05-28 22:14:31.426 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/jq/src/jv.c
+2025-05-28 22:14:31.426 | INFO     | modules.patch_adapter:_generate_adapted_patch:271 - 文件未修改: src/jv.c
+2025-05-28 22:14:31.426 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/jq/tests/jq.test
+2025-05-28 22:14:31.427 | INFO     | modules.patch_adapter:_generate_adapted_patch:271 - 文件未修改: tests/jq.test
+2025-05-28 22:14:31.427 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-05-28 22:14:31.427 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_jq-1.6_20250528_221431
+2025-05-28 22:14:31.440 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-05-28 22:14:31.441 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-05-28 22:14:31.442 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/jqlang/jq/a09a4d/metrics/patch_adapter_metrics.json
+2025-05-28 22:14:31.442 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 0.70秒
+2025-05-28 22:14:31.442 | INFO     | __main__:_merge_patches:1029 - 开始合并补丁...
+2025-05-28 22:14:31.442 | WARNING  | __main__:_merge_patches:1153 - 没有找到可合并的补丁
+2025-05-28 22:14:31.443 | INFO     | __main__:_save_results:703 - 已复制最终补丁到结果目录: results/jq_jq-1.6_a09a4d_20250528_221431/upstream_a09a4d.patch
+2025-05-28 22:14:31.446 | INFO     | __main__:_save_results:841 - 结果已保存到: results/jq_jq-1.6_a09a4d_20250528_221431/result.json
+2025-05-28 22:14:31.446 | INFO     | __main__:_print_summary:883 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-05-28 22:14:31.447 | INFO     | __main__:_print_summary:906 - ==================================================
+2025-05-28 22:14:31.447 | INFO     | __main__:_print_summary:907 - 处理摘要 - 提交: a09a4d
+2025-05-28 22:14:31.447 | INFO     | __main__:_print_summary:908 - 适配状态: 适配失败 (方法: failed)
+2025-05-28 22:14:31.447 | INFO     | __main__:_print_summary:913 - 块分析统计:
+2025-05-28 22:14:31.447 | INFO     | __main__:_print_summary:914 - - 总块数: 3
+2025-05-28 22:14:31.448 | INFO     | __main__:_print_summary:915 - - 无冲突块数: 0
+2025-05-28 22:14:31.448 | INFO     | __main__:_print_summary:916 - - 成功适配块数: 0
+2025-05-28 22:14:31.448 | INFO     | __main__:_print_summary:917 - - 适配失败块数: 3
+2025-05-28 22:14:31.448 | INFO     | __main__:_print_summary:918 - - 编译失败块数: 0
+2025-05-28 22:14:31.448 | INFO     | __main__:_print_summary:922 - 总执行时间: 0.70秒
+2025-05-28 22:14:31.448 | INFO     | __main__:_print_summary:927 - ==================================================
+2025-05-28 22:14:31.449 | INFO     | __main__:run:303 - 处理完成

@@ -27,8 +27,23 @@ from patch_processor import PatchProcessor
 
 class LLMAdapterModule(BaseModule):
     """LLM补丁适配模块"""
+    DEFAULT_CONTEXT_LINES = 150 # 回退机制默认上下文行数
+    MAX_FUNCTION_LINES_THRESHOLD = 150 # 如果找到的函数超过此长度，则使用回退机制
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
+        self._function_context_stats = {
+            'total': 0, # 总计处理的块数
+            'success': 0, # 成功提取到函数上下文的次数
+            'failure_reasons': {}, # 提取失败原因统计
+            'fallback_triggered': 0 # 触发回退机制的次数
+        }
+        # 为了效率，在此处编译正则表达式
+        self.py_def_pattern = re.compile(r'^\s*(async\s+)?def\s+[\w_]+\s*\([\s\S]*?\):')
+        self.js_func_pattern = re.compile(r'^\s*((async\s+)?function\*?\s+[\w\$]+\s*\(|(const|let|var)\s+[\w\$]+\s*=\s*(async\s*)?(\([\s\S]*?\)|[\w\$]+)\s*=>)')
+        self.java_method_pattern = re.compile(r'^\s*(public|private|protected|internal)?\s*(static|final|virtual|override)?\s*([\w\<\>\[\],\s\.\?]+\s+){1,3}[\w_]+\s*\([\s\S]*?\)\s*(\{?|throws)?') # 改进了返回类型和泛型处理
+        self.generic_func_pattern = re.compile(r'^\s*([\w\<\>\[\],\s\*\&]+\s+)?[\w\~\*\&\$]+\s*\(.*?\)\s*(\{?|[^;])$', re.IGNORECASE) # 更通用，参数匹配更宽松
+        self.patterns = [self.py_def_pattern, self.js_func_pattern, self.java_method_pattern, self.generic_func_pattern]
+
         self.type = ModuleType.LLM_ADAPTER
         self.name = "llm_adapter"
         self.prompt_template = self._load_prompt_template()
@@ -73,8 +88,22 @@ class LLMAdapterModule(BaseModule):
             # 保存LLM响应
             response_path = self._save_llm_response(context, parsed_response)
             
-            # # 测试LLM生成的补丁是否可以应用
-            # apply_result = self._test_patch_apply(context, response_path)
+            # 输出执行摘要
+            execution_time = (datetime.now() - start_time).total_seconds()
+            prompt_type = "函数级别补丁" if 'function_level_patch' in prompt_data else "标准上下文差异"
+            use_enhanced_prompt = context.config.module_configs.get('llm_adapter', {}).get('use_enhanced_prompt', False)
+            
+            logger.info("=" * 50)
+            logger.info(f"LLM适配器执行完成 - 摘要")
+            logger.info(f"提示模式: {'增强模式' if use_enhanced_prompt else '标准模式'}")
+            logger.info(f"提示类型: {prompt_type}")
+            logger.info(f"函数上下文统计: 总尝试: {self._function_context_stats['total']}, 成功: {self._function_context_stats['success']}, 回退: {self._function_context_stats['fallback_triggered']}")
+            if self._function_context_stats['total'] > 0:
+                success_rate = (self._function_context_stats['success'] / self._function_context_stats['total']) * 100
+                logger.info(f"函数上下文提取成功率: {success_rate:.1f}%")
+            logger.info(f"执行时间: {execution_time:.2f} 秒")
+            logger.info(f"生成的补丁保存到: {response_path}")
+            logger.info("=" * 50)
             
             # 更新上下文
             context.llm_output = {
@@ -90,7 +119,7 @@ class LLMAdapterModule(BaseModule):
             # 更新指标
             self._update_metrics(
                 success=True,
-                execution_time=(datetime.now() - start_time).total_seconds(),
+                execution_time=execution_time,
                 # apply_success=apply_result.get('success', False),
                 # apply_error=apply_result.get('error')
             )
@@ -106,11 +135,19 @@ class LLMAdapterModule(BaseModule):
             }
             context.last_error = str(e)
             
+            # 输出错误摘要
+            execution_time = (datetime.now() - start_time).total_seconds()
+            logger.info("=" * 50)
+            logger.info(f"LLM适配器执行失败 - 摘要")
+            logger.info(f"错误: {str(e)}")
+            logger.info(f"执行时间: {execution_time:.2f} 秒")
+            logger.info("=" * 50)
+            
             # 更新指标
             self._update_metrics(
                 success=False,
                 error_type='exception',
-                execution_time=(datetime.now() - start_time).total_seconds()
+                execution_time=execution_time
             )
         
         # 保存指标
@@ -178,6 +215,8 @@ class LLMAdapterModule(BaseModule):
             # 使用函数级上下文和完整文件内容的增强模式
             logger.info("使用函数级上下文和完整文件内容的增强模式") #1.PATCH CHUNK 函数上下文 2.旧版本完整文件
             prompt_data = self._prepare_enhanced_prompt(context, patch_content)
+            import pprint
+            pprint.pprint(f"prompt_data:{prompt_data}")
         else:
             # 获取传统的上下文差异
             logger.info("使用传统上下文差异") #1.PATCH 2.DIFF
@@ -220,6 +259,45 @@ class LLMAdapterModule(BaseModule):
         modified_files = self._extract_affected_files(patch_content)
         logger.info(f"补丁修改的文件: {modified_files}")
         
+        # 尝试直接使用git show -W获取整个补丁的函数级上下文
+        logger.info("尝试使用git show -W获取整个补丁的函数级上下文")
+        function_level_patch = self._generate_function_level_patch(context)
+        if function_level_patch:
+            logger.info("成功生成函数级别的补丁，将使用函数级别的提示模板")
+            
+            # 为每个修改的文件收集信息
+            file_contexts = []
+            
+            for file_path in modified_files:
+                try:
+                    # 获取旧版本(目标版本)的文件内容
+                    old_file_content = self._get_file_content_from_target(context, file_path)
+                    
+                    file_contexts.append({
+                        'file_path': file_path,
+                        'old_file_content': old_file_content,
+                        'exists_in_old_version': old_file_content is not None
+                    })
+                    
+                except Exception as e:
+                    logger.error(f"处理文件 {file_path} 时出错: {e}")
+                    logger.error(traceback.format_exc())
+            
+            # 构建增强的提示数据，使用函数级别的补丁
+            enhanced_prompt = {
+                'patch_content': patch_content,
+                'target_version': context.config.target_version,
+                'function_level_patch': function_level_patch,  # 添加函数级别的补丁
+                'modified_files': file_contexts,  # 添加旧版本文件内容
+                'feedback_instruction': '',
+                'enhanced_prompt': True
+            }
+            
+            return enhanced_prompt
+        
+        # 如果无法直接生成函数级别的补丁，回退到逐块提取函数上下文的方法
+        logger.info("无法直接生成函数级别的补丁，回退到逐块提取函数上下文的方法")
+        
         # 为每个修改的文件收集信息
         file_contexts = []
         
@@ -227,6 +305,7 @@ class LLMAdapterModule(BaseModule):
             try:
                 # 获取修改块的信息
                 chunks_info = self._extract_chunk_info(patch_content, file_path)
+                logger.info(f"文件 {file_path} 包含 {len(chunks_info)} 个修改块")
                 
                 # 获取新版本的文件（如果存在于本地仓库）
                 new_file_content = self._get_file_content_from_upstream(context, file_path)
@@ -237,13 +316,73 @@ class LLMAdapterModule(BaseModule):
                 # 为每个修改块获取函数级上下文
                 function_contexts = []
                 if new_file_content:
-                    for chunk in chunks_info:
-                        func_context = self._extract_function_context(new_file_content, chunk['start_line'], chunk['end_line'])
-                        if func_context:
+                    for i, chunk in enumerate(chunks_info):
+                        # 确保 start_line 对新内容有效。
+                        # _extract_chunk_info 中的块 'start_line' 和 'end_line' 是针对 *新* 文件的。
+                        if chunk.get('new_count', 0) == 0 and chunk.get('old_count', 0) > 0: # 这是一个纯删除的chunk
+                            logger.info(f"跳过文件 {file_path} 中的块 {i+1}/{len(chunks_info)} (行 {chunk['start_line']}-{chunk['end_line']})：纯删除块")
+                            continue # 对于纯删除的块，在新文件中没有对应的行来查找函数上下文
+
+                        logger.info(f"处理文件 {file_path} 中的块 {i+1}/{len(chunks_info)} (行 {chunk['start_line']}-{chunk['end_line']})")
+                        func_context_str = self._extract_function_context(
+                            new_file_content, 
+                            chunk['start_line'], 
+                            # 确保 end_line 有效，对于0行chunk（例如文件末尾添加空行），end_line可能小于start_line
+                            chunk['end_line'] if chunk['end_line'] >= chunk['start_line'] else chunk['start_line'],
+                            file_path
+                        )
+                        
+                        if func_context_str:
                             function_contexts.append({
                                 'lines': f"{chunk['start_line']}-{chunk['end_line']}",
-                                'context': func_context
+                                'context': func_context_str
                             })
+                            logger.info(f"文件 {file_path} 块 {i+1}/{len(chunks_info)} 成功提取函数上下文，长度: {len(func_context_str.split('\n'))}行")
+                        else:
+                            logger.warning(f"文件 {file_path} 块 {i+1}/{len(chunks_info)} 未能提取函数上下文")
+                else:
+                    logger.warning(f"无法获取文件 {file_path} 的新文件内容以提取函数上下文")
+                    
+                    # 尝试直接使用git show -W获取函数上下文
+                    if hasattr(context, 'commit') and hasattr(context.commit, 'commit_sha'):
+                        commit_sha = context.commit.commit_sha
+                        # 确保commit_sha不包含.patch后缀
+                        if commit_sha.endswith('.patch'):
+                            commit_sha = commit_sha.replace('.patch', '')
+                        
+                        try:
+                            logger.info(f"直接使用git show -W获取文件 {file_path} 在 {commit_sha} 的函数上下文")
+                            result = subprocess.run(
+                                ['git', 'show', '-W', f'{commit_sha}:{file_path}'],
+                                cwd=repo_path,
+                                capture_output=True,
+                                text=True,
+                                check=True
+                            )
+                            
+                            # 为每个chunk提取函数上下文
+                            for i, chunk in enumerate(chunks_info):
+                                logger.info(f"从git show -W输出中提取文件 {file_path} 块 {i+1}/{len(chunks_info)} (行 {chunk['start_line']}-{chunk['end_line']}) 的函数上下文")
+                                func_context_str = self._extract_function_from_git_show_output(
+                                    result.stdout,
+                                    chunk['start_line'],
+                                    chunk['end_line'] if chunk['end_line'] >= chunk['start_line'] else chunk['start_line']
+                                )
+                                
+                                if func_context_str:
+                                    function_contexts.append({
+                                        'lines': f"{chunk['start_line']}-{chunk['end_line']}",
+                                        'context': func_context_str
+                                    })
+                                    logger.info(f"文件 {file_path} 块 {i+1}/{len(chunks_info)} 成功从git show -W提取函数上下文，长度: {len(func_context_str.split('\n'))}行")
+                                else:
+                                    logger.warning(f"文件 {file_path} 块 {i+1}/{len(chunks_info)} 未能从git show -W提取函数上下文")
+                        except Exception as e:
+                            logger.warning(f"直接使用git show -W获取文件 {file_path} 函数上下文时出错: {e}")
+                    pass
+
+                # 打印函数上下文提取统计信息
+                logger.info(f"文件 {file_path} 的函数上下文提取统计: 总块数: {len(chunks_info)}, 成功提取: {len(function_contexts)}")
                 
                 file_contexts.append({
                     'file_path': file_path,
@@ -258,349 +397,231 @@ class LLMAdapterModule(BaseModule):
                 logger.error(traceback.format_exc())
         
         # 构建增强的提示数据
+        logger.info(f"共处理 {len(modified_files)} 个文件，提取了 {sum(len(fc['function_contexts']) for fc in file_contexts)} 个函数上下文")
         enhanced_prompt = {
             'patch_content': patch_content,
             'target_version': context.config.target_version,
-            'context_diff': self._get_context_diff(context, patch_content),  # 仍然保留传统差异以供参考
             'modified_files': file_contexts,
             'feedback_instruction': '',
             'enhanced_prompt': True
         }
         
         return enhanced_prompt
-    
-    def _extract_chunk_info(self, patch_content: str, file_path: str) -> List[Dict[str, Any]]:
+        
+    def _generate_function_level_patch(self, context: ModuleContext) -> Optional[str]:
         """
-        从补丁内容中提取特定文件的修改块信息
-        
-        :param patch_content: 补丁内容
-        :param file_path: 文件路径
-        :return: 包含修改块信息的列表
-        """
-        chunks = []
-        
-        # 找到特定文件的差异部分
-        file_diff_pattern = re.compile(r'diff --git a/' + re.escape(file_path) + r' b/' + re.escape(file_path) + r'.*?(?=diff --git|\Z)', re.DOTALL)
-        file_diff_match = file_diff_pattern.search(patch_content)
-        
-        if not file_diff_match:
-            logger.warning(f"未找到文件 {file_path} 的差异部分")
-            return chunks
-        
-        file_diff = file_diff_match.group(0)
-        
-        # 查找所有的@@行，这些行标记了修改块的开始
-        hunk_header_pattern = re.compile(r'@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@')
-        for match in hunk_header_pattern.finditer(file_diff):
-            old_start = int(match.group(1))
-            old_count = int(match.group(2) or 1)
-            new_start = int(match.group(3))
-            new_count = int(match.group(4) or 1)
-            
-            # 获取当前块的结束位置
-            start_pos = match.end()
-            next_match = hunk_header_pattern.search(file_diff, start_pos)
-            end_pos = next_match.start() if next_match else len(file_diff)
-            
-            # 提取当前块内容
-            chunk_content = file_diff[start_pos:end_pos]
-            
-            chunks.append({
-                'start_line': new_start,
-                'end_line': new_start + new_count - 1,
-                'old_start': old_start,
-                'old_end': old_start + old_count - 1,
-                'content': chunk_content.strip()
-            })
-        
-        return chunks
-    
-    def _get_file_content_from_upstream(self, context: ModuleContext, file_path: str) -> Optional[str]:
-        """
-        获取文件在上游(新版本)的内容
+        使用git show -W直接生成整个补丁的函数级别上下文
         
         :param context: 模块上下文
-        :param file_path: 文件路径
-        :return: 文件内容，如果文件不存在则返回None
+        :return: 函数级别的补丁内容，如果失败则返回None
         """
         try:
-            # 可以尝试直接从GitHub API获取，或者从本地仓库获取
-            # 这里先实现从本地仓库获取的方法
-            repo_path = context.config.repo_path
-            
-            # 获取当前分支
-            current_branch = subprocess.run(
-                ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
-                cwd=repo_path,
-                capture_output=True,
-                text=True,
-                check=True
-            ).stdout.strip()
-            
-            # 创建临时分支来获取最新版本的文件
-            temp_branch = f"temp_upstream_check_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            
-            try:
-                # 创建临时分支指向最新的主分支或者特定的上游分支
-                # 这里假设'origin/master'是最新的上游分支
-                upstream_branch = context.config.module_configs.get('llm_adapter', {}).get('upstream_branch', 'origin/master')
-                
-                # 尝试创建临时分支
-                subprocess.run(
-                    ['git', 'checkout', '-b', temp_branch, upstream_branch],
-                    cwd=repo_path,
-                    capture_output=True,
-                    check=True
-                )
-                
-                # 检查文件是否存在
-                full_path = os.path.join(repo_path, file_path)
-                if os.path.exists(full_path):
-                    with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
-                        content = f.read()
-                    return content
-                else:
-                    logger.warning(f"文件 {file_path} 在上游分支 {upstream_branch} 中不存在")
-                    return None
-                    
-            finally:
-                # 切回原始分支
-                subprocess.run(
-                    ['git', 'checkout', current_branch],
-                    cwd=repo_path,
-                    capture_output=True,
-                    check=True
-                )
-                
-                # 删除临时分支
-                subprocess.run(
-                    ['git', 'branch', '-D', temp_branch],
-                    cwd=repo_path,
-                    capture_output=True,
-                    check=False  # 忽略错误
-                )
-                
-        except Exception as e:
-            logger.error(f"获取上游文件内容时出错: {e}")
-            logger.error(traceback.format_exc())
-            return None
-    
-    def _get_file_content_from_target(self, context: ModuleContext, file_path: str) -> Optional[str]:
-        """
-        获取文件在目标版本(旧版本)的内容
-        
-        :param context: 模块上下文
-        :param file_path: 文件路径
-        :return: 文件内容，如果文件不存在则返回None
-        """
-        try:
-            repo_path = context.config.repo_path
-            target_version = context.config.target_version
-            
-            # 获取当前分支
-            current_branch = subprocess.run(
-                ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
-                cwd=repo_path,
-                capture_output=True,
-                text=True,
-                check=True
-            ).stdout.strip()
-            
-            # 创建临时分支
-            temp_branch = f"temp_target_check_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            
-            try:
-                # 创建临时分支指向目标版本
-                subprocess.run(
-                    ['git', 'checkout', '-b', temp_branch, target_version],
-                    cwd=repo_path,
-                    capture_output=True,
-                    check=True
-                )
-                
-                # 文件可能在旧版本中有不同的路径，尝试使用backtrack_apply模块中的映射逻辑
-                try:
-                    from modules.backtrack_apply import BacktrackApplyModule
-                    backtrack_module = BacktrackApplyModule(context.config)
-                    path_mapping = backtrack_module._map_file_paths(repo_path, [file_path])
-                    mapped_path = path_mapping.get(file_path, file_path)
-                except ImportError:
-                    # 如果无法导入，就使用原路径
-                    mapped_path = file_path
-                    
-                # 检查文件是否存在
-                full_path = os.path.join(repo_path, mapped_path)
-                if os.path.exists(full_path):
-                    with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
-                        content = f.read()
-                    return content
-                else:
-                    logger.warning(f"文件 {mapped_path} 在目标版本 {target_version} 中不存在")
-                    return None
-                    
-            finally:
-                # 切回原始分支
-                subprocess.run(
-                    ['git', 'checkout', current_branch],
-                    cwd=repo_path,
-                    capture_output=True,
-                    check=True
-                )
-                
-                # 删除临时分支
-                subprocess.run(
-                    ['git', 'branch', '-D', temp_branch],
-                    cwd=repo_path,
-                    capture_output=True,
-                    check=False  # 忽略错误
-                )
-                
-        except Exception as e:
-            logger.error(f"获取目标版本文件内容时出错: {e}")
-            logger.error(traceback.format_exc())
-            return None
-    
-    def _extract_function_context(self, file_content: str, start_line: int, end_line: int) -> Optional[str]:
-        """
-        提取修改区块所在的函数级上下文
-        
-        :param file_content: 文件内容
-        :param start_line: 修改开始行
-        :param end_line: 修改结束行
-        :return: 函数上下文，如果无法确定则返回None
-        """
-        # 初始化统计信息
-        if not hasattr(self, '_function_context_stats'):
-            self._function_context_stats = {
-                'total': 0,
-                'success': 0,
-                'failure_reasons': {}
-            }
-        
-        self._function_context_stats['total'] += 1
-        
-        try:
-            lines = file_content.split('\n')
-            
-            # 安全检查
-            if start_line < 1 or start_line > len(lines) or end_line < 1 or end_line > len(lines):
-                logger.warning(f"行号超出范围: {start_line}-{end_line}，文件总行数: {len(lines)}")
-                self._add_failure_reason('line_out_of_range')
+            if not hasattr(context, 'commit') or not hasattr(context.commit, 'commit_sha'):
+                logger.warning("无法获取commit_sha，无法生成函数级别的补丁")
                 return None
+                
+            commit_sha = context.commit.commit_sha
+            # 确保commit_sha不包含.patch后缀
+            if commit_sha.endswith('.patch'):
+                commit_sha = commit_sha.replace('.patch', '')
+                logger.info(f"移除commit_sha的.patch后缀: {commit_sha}")
+                
+            repo_path = context.config.repo_path
             
-            # 向上查找函数开始（如 "void function_name(" 或 "int function_name{"）
-            function_start = start_line - 1
-            # 常见函数标记的正则表达式
-            function_start_pattern = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]*\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(')
+            # 使用git show -W生成函数级别的补丁
+            logger.info(f"使用git show -W生成函数级别的补丁，commit_sha: {commit_sha}, repo_path: {repo_path}")
+            start_time = datetime.now()
+            result = subprocess.run(
+                ['git', 'show', '-W', commit_sha],
+                cwd=repo_path,
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            execution_time = (datetime.now() - start_time).total_seconds()
             
-            # Python、JavaScript、Java等语言的函数定义
-            js_func_pattern = re.compile(r'^(async\s+)?function\s+[\w$]+\s*\(')
-            py_func_pattern = re.compile(r'^(async\s+)?def\s+[\w_]+\s*\(')
-            java_method_pattern = re.compile(r'^(\s*)(public|private|protected)?\s*(static)?\s*[\w<>[\],\s]+\s+[\w_]+\s*\(')
+            # 检查结果
+            if result.stdout:
+                # 分析输出内容
+                output_lines = result.stdout.split('\n')
+                function_count = output_lines.count('@@ ')  # 估算函数数量
+                
+                # 保存函数级别的补丁到文件，便于调试
+                function_level_patch_path = context.commit.base_dir / "function_level_patch.diff"
+                with open(function_level_patch_path, 'w', encoding='utf-8') as f:
+                    f.write(result.stdout)
+                
+                # 计算补丁大小
+                patch_size_kb = len(result.stdout) / 1024
+                
+                logger.info(f"函数级别的补丁生成成功: {function_level_patch_path}")
+                logger.info(f"补丁统计: 大小: {patch_size_kb:.2f} KB, 估计函数数量: {function_count}, 生成耗时: {execution_time:.2f} 秒")
+                return result.stdout
+            else:
+                logger.warning(f"git show -W命令执行成功，但没有输出 (耗时: {execution_time:.2f} 秒)")
+                return None
+                
+        except subprocess.CalledProcessError as e:
+            logger.error(f"生成函数级别的补丁时出错: {e.stderr}")
+            if hasattr(e, 'stdout') and e.stdout:
+                logger.debug(f"命令输出: {e.stdout[:500]}..." if len(e.stdout) > 500 else e.stdout)
+            return None
+        except Exception as e:
+            logger.error(f"生成函数级别的补丁时出错: {e}")
+            logger.error(traceback.format_exc())
+            return None
             
-            # 类方法
-            method_pattern = re.compile(r'^\s*(public|private|protected)?\s*(static)?\s*[\w<>[\],\s]+\s+[\w_]+\s*\(')
-            py_method_pattern = re.compile(r'^\s+def\s+[\w_]+\s*\(')
-            js_method_pattern = re.compile(r'^\s+[\w$]+\s*\(')
-            js_arrow_func_pattern = re.compile(r'(const|let|var)\s+[\w$]+\s*=\s*(\(.*\)|[\w$]+)\s*=>')
+    def _extract_function_from_git_show_output(self, git_output: str, start_line: int, end_line: int) -> Optional[str]:
+        """
+        从git show -W的输出中提取包含指定行范围的函数。
+        
+        :param git_output: git show -W命令的输出
+        :param start_line: 目标起始行
+        :param end_line: 目标结束行
+        :return: 提取的函数上下文，如果没有找到则返回None
+        """
+        try:
+            # git show -W的输出格式为：
+            # @@ -start,count +start,count @@ function signature
+            # 函数内容...
             
-            # 记录当前缩进级别（对于Python很重要）
-            target_indent = None
-            for i in range(start_line - 1, -1, -1):
+            # 解析输出，查找包含目标行的函数
+            functions = []
+            current_function = []
+            current_start_line = -1
+            
+            lines = git_output.split('\n')
+            i = 0
+            while i < len(lines):
                 line = lines[i]
+                # 查找函数头部
+                if line.startswith("@@ "):
+                    # 如果已经在处理一个函数，保存它
+                    if current_function:
+                        functions.append((current_start_line, current_function))
+                        current_function = []
+                    
+                    # 解析新函数的起始行
+                    match = re.search(r'@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@', line)
+                    if match:
+                        current_start_line = int(match.group(1))
+                        # 包含函数签名行
+                        current_function.append(line)
+                else:
+                    # 添加函数内容
+                    if current_start_line != -1:
+                        current_function.append(line)
                 
-                # 对于Python，检查缩进级别
-                if target_indent is None and line.strip() and i < start_line - 1:
-                    # 计算修改行的缩进
-                    current_line = lines[start_line - 1]
-                    if current_line.strip():
-                        target_indent = len(current_line) - len(current_line.lstrip())
+                i += 1
+            
+            # 保存最后一个函数
+            if current_function:
+                functions.append((current_start_line, current_function))
+            
+            # 查找包含目标行的函数
+            for func_start_line, func_content in functions:
+                # 计算函数的结束行
+                func_end_line = func_start_line + len(func_content) - 1
                 
-                # 检查各种函数定义模式
-                if (function_start_pattern.search(line) or
-                        js_func_pattern.search(line) or
-                        py_func_pattern.search(line) or
-                        java_method_pattern.search(line) or
-                        method_pattern.search(line) or
-                        py_method_pattern.search(line) or
-                        js_method_pattern.search(line) or
-                        js_arrow_func_pattern.search(line)):
-                    
-                    function_start = i
-                    
-                    # 继续向上查找函数注释
-                    comment_start = function_start
-                    for j in range(function_start - 1, max(0, function_start - 20), -1):
-                        prev_line = lines[j]
-                        # 如果是空行或者注释，继续向上
-                        if not prev_line.strip() or prev_line.strip().startswith(('/*', '*', '//', '#', '"""', "'''")):
-                            comment_start = j
-                        else:
-                            break
-                    
-                    function_start = comment_start
-                    break
+                # 检查目标行是否在此函数范围内
+                if (func_start_line <= start_line <= func_end_line or 
+                    func_start_line <= end_line <= func_end_line or
+                    (start_line <= func_start_line and end_line >= func_end_line)):
+                    # 返回函数内容，跳过第一行（函数签名行）
+                    return '\n'.join(func_content[1:])
             
-            # 向下查找函数结束
-            # 使用括号匹配或缩进级别来确定函数结束位置
-            function_end = end_line - 1
-            
-            # 括号匹配（对于C、Java、JavaScript等使用大括号的语言）
-            brace_count = 0
-            found_opening_brace = False
-            
-            # 检查函数起始行有没有左括号
-            for c in lines[function_start]:
-                if c == '{':
-                    found_opening_brace = True
-                    brace_count += 1
-                elif c == '}':
-                    brace_count -= 1
-            
-            # 如果是使用大括号的语言
-            if found_opening_brace:
-                for i in range(function_start + 1, len(lines)):
-                    for c in lines[i]:
-                        if c == '{':
-                            brace_count += 1
-                        elif c == '}':
-                            brace_count -= 1
-                            if brace_count == 0:
-                                function_end = i
-                                break
-                    
-                    if brace_count == 0:
-                        break
-            
-            # 如果是Python等使用缩进的语言
-            elif target_indent is not None:
-                # 找出函数结束的位置（第一个缩进级别小于等于函数定义的行）
-                for i in range(function_start + 1, len(lines)):
-                    line = lines[i]
-                    if line.strip() and not line.strip().startswith(('#', '"""', "'''")):
-                        current_indent = len(line) - len(line.lstrip())
-                        # 如果缩进变回与函数定义同级或更小，说明函数结束了
-                        if current_indent <= target_indent:
-                            function_end = i - 1
-                            break
-                
-                # 如果没找到结束位置，说明函数持续到文件末尾
-                if function_end == end_line - 1:
-                    function_end = len(lines) - 1
-            
-            # 提取函数代码
-            function_code = '\n'.join(lines[function_start:function_end + 1])
-            
-            self._function_context_stats['success'] += 1
-            return function_code
+            # 如果没有找到包含目标行的函数
+            return None
         
         except Exception as e:
-            logger.error(f"提取函数上下文时出错: {e}")
-            logger.error(traceback.format_exc())
-            self._add_failure_reason('exception')
+            logger.warning(f"解析git show -W输出时出错: {e}")
             return None
     
-    def _add_failure_reason(self, reason):
+    def _extract_fallback_context(self, lines: List[str], chunk_start_line: int, chunk_end_line: int, max_lines: int) -> Optional[str]:
+        """
+        提取围绕代码块的回退上下文。
+        1. 定义一个最多 `max_lines` 行的初始窗口，以代码块为中心。
+        2. 在此窗口内，从代码块向外扩展至最近的空行，或扩展至窗口边界。
+        chunk_start_line 和 chunk_end_line 是基于1的行号。
+        """
+        num_total_lines = len(lines) # 文件总行数
+        chunk_start_idx = chunk_start_line - 1  # 0-based 索引
+        chunk_end_idx = chunk_end_line - 1    # 0-based 索引
+
+        if not (0 <= chunk_start_idx < num_total_lines and 0 <= chunk_end_idx < num_total_lines and chunk_start_idx <= chunk_end_idx):
+            # logger.warning(f"回退机制的块索引无效: {chunk_start_idx+1}-{chunk_end_idx+1} (文件总行数: {num_total_lines})。")
+            if 0 <= chunk_start_idx < num_total_lines: # 如果可能，返回最小上下文
+                 return lines[chunk_start_idx] 
+            return None
+
+        # 1. 定义初始搜索窗口 (max_lines 行，尝试将块居中)
+        chunk_actual_length = chunk_end_idx - chunk_start_idx + 1 # 块的实际长度
+        
+        # 为达到 max_lines，理想情况下在块前后添加的行数
+        lines_to_add = max_lines - chunk_actual_length
+        
+        if lines_to_add < 0: # 如果块本身就比 max_lines 长
+            # 将 max_lines 窗口置于块的中心
+            chunk_center_idx = chunk_start_idx + chunk_actual_length // 2
+            window_start_idx = max(0, chunk_center_idx - max_lines // 2)
+            window_end_idx = min(num_total_lines - 1, window_start_idx + max_lines - 1)
+        else:
+            lines_before = lines_to_add // 2 # 块前添加的行数
+            lines_after = lines_to_add - lines_before # 块后添加的行数 (处理奇数情况)
+
+            window_start_idx = max(0, chunk_start_idx - lines_before)
+            window_end_idx = min(num_total_lines - 1, chunk_end_idx + lines_after)
+
+            # 如果窗口碰触到文件边界并且还有剩余预算，则进行调整
+            current_len = window_end_idx - window_start_idx + 1
+            if current_len < max_lines:
+                remaining_budget = max_lines - current_len
+                if window_start_idx == 0 and window_end_idx < num_total_lines - 1: # 碰触到文件顶部
+                    window_end_idx = min(num_total_lines - 1, window_end_idx + remaining_budget)
+                elif window_end_idx == num_total_lines - 1 and window_start_idx > 0: # 碰触到文件底部
+                    window_start_idx = max(0, window_start_idx - remaining_budget)
+        
+        # 确保窗口大小正确 (特别是在原始块非常大的情况下)
+        if (window_end_idx - window_start_idx + 1) > max_lines:
+            window_end_idx = window_start_idx + max_lines - 1
+
+
+        # 2. 从块向空行扩展，但保持在 [window_start_idx, window_end_idx] 窗口内
+        # 向上搜索空行或窗口边界
+        final_start_idx = chunk_start_idx
+        for i in range(chunk_start_idx - 1, window_start_idx - 1, -1): # 从块的上一行向上搜索到窗口顶
+            if not lines[i].strip(): # 找到空行
+                final_start_idx = i + 1 # 上下文在此空行之后开始
+                break
+            final_start_idx = i # 此非空行为当前可能的起始点
+        
+        # 向下搜索空行或窗口边界
+        final_end_idx = chunk_end_idx
+        for i in range(chunk_end_idx + 1, window_end_idx + 1): # 从块的下一行向下搜索到窗口底
+            if not lines[i].strip(): # 找到空行
+                final_end_idx = i - 1 # 上下文在此空行之前结束
+                break
+            final_end_idx = i # 此非空行为当前可能的结束点
+
+        # 确保最终选择包含块并且在初始确定的窗口内
+        final_start_idx = max(window_start_idx, min(final_start_idx, chunk_start_idx))
+        final_end_idx = min(window_end_idx, max(final_end_idx, chunk_end_idx))
+
+        if final_start_idx > final_end_idx: # 仅当窗口格式错误或非常小时才应发生
+            # logger.warning(f"回退上下文导致起始大于结束。使用块本身或小窗口。")
+            # 默认为块周围的一个小区域，在 max_lines 限制内
+            final_start_idx = max(0, chunk_start_idx - max_lines // 4 )
+            final_end_idx = min(num_total_lines -1, chunk_end_idx + max_lines // 4)
+            if (final_end_idx - final_start_idx +1) > max_lines:
+                final_end_idx = final_start_idx + max_lines -1
+
+
+        # logger.info(f"块 {chunk_start_line}-{chunk_end_line} 的回退上下文: "
+        #             f"窗口 [{window_start_idx+1}-{window_end_idx+1}], "
+        #             f"最终行 [{final_start_idx+1}-{final_end_idx+1}]")
+        return '\n'.join(lines[final_start_idx : final_end_idx + 1])
+    
+    def _add_failure_reason(self, reason: str):
         """增加失败原因统计"""
         if not hasattr(self, '_function_context_stats'):
             return
@@ -609,6 +630,174 @@ class LLMAdapterModule(BaseModule):
             self._function_context_stats['failure_reasons'] = {}
         
         self._function_context_stats['failure_reasons'][reason] = self._function_context_stats['failure_reasons'].get(reason, 0) + 1
+        logger.debug(f"上下文提取失败: {reason}")
+
+    def _extract_function_context(self, file_content: str, start_line: int, end_line: int, file_path: str = "untitled") -> Optional[str]:
+        """
+        为一个修改过的代码块提取函数级别的上下文。
+        使用git show -W命令获取函数级别的上下文，如果失败则回退到基于窗口的上下文。
+        start_line 和 end_line 是基于1的行号。
+        """
+        self._function_context_stats['total'] += 1
+        
+        try:
+            lines = file_content.split('\n')
+            num_total_lines = len(lines)
+
+            if not (1 <= start_line <= num_total_lines and 1 <= end_line <= num_total_lines and start_line <= end_line):
+                # logger.warning(f"行号 [{start_line}-{end_line}] 超出文件 '{file_path}' ({num_total_lines} 行) 的范围。使用回退。")
+                self._add_failure_reason('line_out_of_range')
+                self._function_context_stats['fallback_triggered'] += 1
+                return self._extract_fallback_context(lines, start_line, end_line, self.DEFAULT_CONTEXT_LINES)
+
+            chunk_start_idx = start_line - 1 # 0-based 内部使用
+            # chunk_end_idx = end_line - 1   # 0-based, 不直接用于函数搜索的起始点
+
+            func_def_line_idx = -1 # 函数定义行的索引
+            func_def_indent = -1   # 函数定义行的缩进级别
+            is_python_like = False # 是否为类Python（基于缩进）的语言
+            
+            # 从 chunk_start_idx 向上搜索函数定义
+            # 将搜索限制在合理的行数内，例如 chunk_start_idx 之上100行
+            search_limit_up = max(-1, chunk_start_idx - 100) # -1 是因为 range 对于结束值是 exclusives
+            for i in range(chunk_start_idx, search_limit_up, -1):
+                line_text_with_indent = lines[i] # 带缩进的原始行文本
+                # 优化：如果行太短不可能是定义，或者相对于块的缩进过深，则跳过。
+                # 这需要仔细考虑，以免过早排除有效情况。
+
+                for pattern_idx, pattern in enumerate(self.patterns):
+                    match = pattern.search(line_text_with_indent)
+                    if match:
+                        func_def_line_idx = i
+                        func_def_indent = len(line_text_with_indent) - len(line_text_with_indent.lstrip())
+                        if pattern_idx == 0: # py_def_pattern
+                            is_python_like = True
+                        # else if pattern_idx == 1 and "=>" in line_text_with_indent: # JS箭头函数可能不像典型括号语言那样使用大括号
+                            # 可能需要不同处理或确保括号逻辑的健壮性
+                        break  # 找到模式匹配，跳出内部循环
+                if func_def_line_idx != -1:
+                    break # 找到函数定义行，跳出外部循环
+            
+            if func_def_line_idx == -1:
+                # logger.info(f"在文件 '{file_path}' 的行 {start_line} 之上未找到函数定义。使用回退。")
+                self._add_failure_reason('no_func_def_found_upwards')
+                self._function_context_stats['fallback_triggered'] += 1
+                return self._extract_fallback_context(lines, start_line, end_line, self.DEFAULT_CONTEXT_LINES)
+
+            # 找到了一个潜在的函数定义。现在包含其正上方的注释。
+            actual_func_start_idx = func_def_line_idx
+            for i in range(func_def_line_idx - 1, max(-1, func_def_line_idx - 25), -1): # 向上检查最多25行以查找注释
+                line_text_stripped = lines[i].strip()
+                if not line_text_stripped or line_text_stripped.startswith(('#', '//', '/*', '*', '"""', "'''")):
+                    actual_func_start_idx = i
+                else: # 找到非注释、非空行，停止。
+                    break 
+
+            # 现在找到函数结束的位置
+            actual_func_end_idx = -1
+            if is_python_like:
+                # 类Python语言：结束位置由缩进减少到 func_def_indent 或更少，或文件结束（EOF）决定
+                for i in range(actual_func_start_idx + 1, num_total_lines):
+                    current_line_text = lines[i]
+                    current_line_stripped = current_line_text.strip()
+                    
+                    if not current_line_stripped or current_line_stripped.startswith('#'): # 跳过空行或注释行
+                        if i == num_total_lines - 1: # 在注释/空行上到达EOF
+                            actual_func_end_idx = i
+                        continue # 处理下一行
+                    
+                    current_indent = len(current_line_text) - len(current_line_text.lstrip())
+                    if current_indent <= func_def_indent:
+                        actual_func_end_idx = i - 1 # 前一行是函数的结尾
+                        break
+                    if i == num_total_lines - 1: # 到达文件末尾且仍然缩进
+                        actual_func_end_idx = i
+                
+                if actual_func_end_idx == -1: # 例如单行函数或在EOF之前只找到def行
+                     actual_func_end_idx = max(actual_func_start_idx, num_total_lines -1 if actual_func_start_idx < num_total_lines else actual_func_start_idx)
+                     if actual_func_start_idx == num_total_lines -1 : actual_func_end_idx = actual_func_start_idx
+
+
+            else: # 基于大括号的语言 (启发式方法)
+                brace_count = 0 # 大括号计数器
+                found_initial_brace = False # 是否找到初始的开大括号
+                # 从函数定义行开始搜索第一个 '{'。
+                # 它可能在定义行本身，或在下面几行 (K&R 风格)。
+                start_brace_search_from_idx = func_def_line_idx 
+                
+                for i in range(start_brace_search_from_idx, min(num_total_lines, start_brace_search_from_idx + 10)): # 在10行内寻找 '{'
+                    line_str = lines[i]
+                    open_brace_col = line_str.find('{') # 查找开大括号的位置
+                    if open_brace_col != -1:
+                        found_initial_brace = True
+                        # 处理此行上从第一个 '{' 开始的所有大括号
+                        for char_scan_idx in range(open_brace_col, len(line_str)):
+                            char_val = line_str[char_scan_idx]
+                            if char_val == '{': brace_count += 1
+                            elif char_val == '}': brace_count -= 1
+                        
+                        if brace_count == 0: # 函数在包含 '{' 的同一行结束
+                            actual_func_end_idx = i
+                            break 
+                        start_brace_search_from_idx = i + 1 # 从此行的 *下一* 行继续完整扫描
+                        break # 找到初始大括号，进入下一扫描阶段
+                
+                if not found_initial_brace:
+                    # logger.info(f"在文件 '{file_path}' 的行 {func_def_line_idx+1} 处未找到假定基于括号的函数的开括号。使用回退。")
+                    self._add_failure_reason('no_opening_brace')
+                    self._function_context_stats['fallback_triggered'] += 1
+                    return self._extract_fallback_context(lines, start_line, end_line, self.DEFAULT_CONTEXT_LINES)
+
+                if actual_func_end_idx == -1: # 如果不是在初始括号行结束的单行函数
+                    for i in range(start_brace_search_from_idx, num_total_lines):
+                        for char_val in lines[i]:
+                            if char_val == '{': brace_count += 1
+                            elif char_val == '}': brace_count -= 1
+                        if brace_count == 0 and found_initial_brace : # 找到匹配的闭大括号
+                            actual_func_end_idx = i
+                            break
+                    if actual_func_end_idx == -1 and found_initial_brace: # 大括号不平衡，假设扩展到EOF
+                        # logger.debug(f"文件 '{file_path}' 中行 {func_def_line_idx+1} 处的函数大括号不平衡。假设EOF为结尾。")
+                        actual_func_end_idx = num_total_lines - 1 # 假设在文件末尾结束
+            
+            if actual_func_end_idx == -1 :
+                # logger.info(f"无法确定文件 '{file_path}' 中行 {actual_func_start_idx+1} 处定义的函数结尾。使用回退。")
+                self._add_failure_reason('func_end_not_determined')
+                self._function_context_stats['fallback_triggered'] += 1
+                return self._extract_fallback_context(lines, start_line, end_line, self.DEFAULT_CONTEXT_LINES)
+
+            actual_func_end_idx = max(actual_func_start_idx, actual_func_end_idx) # 确保结束不先于开始
+
+            func_length = actual_func_end_idx - actual_func_start_idx + 1
+            if func_length > self.MAX_FUNCTION_LINES_THRESHOLD:
+                # logger.info(f"文件 '{file_path}' 中位于 [{actual_func_start_idx+1}-{actual_func_end_idx+1}] ({func_length} 行) 的函数 "
+                #             f"超过阈值 {self.MAX_FUNCTION_LINES_THRESHOLD}。使用回退。")
+                self._add_failure_reason('func_too_long')
+                self._function_context_stats['fallback_triggered'] += 1
+                return self._extract_fallback_context(lines, start_line, end_line, self.DEFAULT_CONTEXT_LINES)
+            
+            self._function_context_stats['success'] += 1
+            return '\n'.join(lines[actual_func_start_idx : actual_func_end_idx + 1])
+
+        except Exception as e:
+            # logger.error(f"提取文件 '{file_path}' [{start_line}-{end_line}] 的函数上下文时出错: {e}")
+            # logger.error(traceback.format_exc()) # 详细错误信息
+            self._add_failure_reason('exception_in_extract_func')
+            self._function_context_stats['fallback_triggered'] += 1
+            if 'lines' in locals() and isinstance(lines, list): # 检查 'lines' 是否已定义
+                 return self._extract_fallback_context(lines, start_line, end_line, self.DEFAULT_CONTEXT_LINES)
+            return None # 如果 file_content 始终是有效字符串，则理想情况下不应到达此处
+   
+    
+    # def _add_failure_reason(self, reason):
+    #     """增加失败原因统计"""
+    #     if not hasattr(self, '_function_context_stats'):
+    #         return
+        
+    #     if 'failure_reasons' not in self._function_context_stats:
+    #         self._function_context_stats['failure_reasons'] = {}
+        
+    #     self._function_context_stats['failure_reasons'][reason] = self._function_context_stats['failure_reasons'].get(reason, 0) + 1
     
     def _get_context_diff(self, context: ModuleContext, patch_content: str) -> str:
         """获取上下文差异"""
@@ -691,47 +880,70 @@ class LLMAdapterModule(BaseModule):
     
     def _call_llm(self, prompt_data: Dict[str, Any], context: ModuleContext) -> str:
         """调用LLM模型"""
-        # 创建ModuleContext对象供LLMAssistant使用
-        # llm_context = ModuleContext(
-        #     config=context.config,
-        #     commit=context.commit  # 保持原有的commit信息
-        # )
-        
-        # # 获取backport模板
-        # template = None
-        # for t in self.prompt_template:
-        #     if t['id'] == config.prompt_id:
-        #         template = t
-        #         break
-        
-        # if not template:
-        #     raise ValueError(f"未找到{config.prompt_id}提示模板")
-        
         # 配置LLMAssistant所需的参数
+        extra_values = {
+            'patchCode': prompt_data['patch_content'],
+        }
+        
+        # 确定使用哪种提示模板
+        prompt_id = "backport-diff"  # 默认使用标准的diff模板
+        
+        # 如果有函数级别的补丁，添加到prompt_values中并使用function_level模板
+        if 'function_level_patch' in prompt_data:
+            # 使用新的backport-func模板
+            prompt_id = "backport-func"
+            
+            # 准备旧版本文件内容
+            old_version_files = {}
+            if 'modified_files' in prompt_data:
+                for file_info in prompt_data['modified_files']:
+                    file_path = file_info.get('file_path', '')
+                    old_content = file_info.get('old_file_content', '')
+                    if file_path and old_content:
+                        old_version_files[file_path] = old_content
+            
+            # 格式化旧版本文件内容
+            old_version_files_str = ""
+            for file_path, content in old_version_files.items():
+                file_ext = os.path.splitext(file_path)[1][1:] or "txt"  # 获取文件扩展名，默认为txt
+                old_version_files_str += f"File: {file_path}\n```{file_ext}\n{content}\n```\n\n"
+            
+            # 设置函数级别补丁和旧版本文件内容
+            extra_values = {
+                'functionLevelPatch': prompt_data['function_level_patch'],
+                'oldVersionFiles': old_version_files_str
+            }
+            
+            logger.info(f"使用函数级别的补丁，切换到提示模板: {prompt_id}")
+            logger.info(f"准备了 {len(old_version_files)} 个旧版本文件内容")
+            
+        elif 'context_diff' in prompt_data:
+            extra_values['diffCode'] = prompt_data['context_diff']
+            # 检查是否使用增强提示模式
+            use_enhanced_prompt = context.config.module_configs.get('llm_adapter', {}).get('use_enhanced_prompt', False)
+            if use_enhanced_prompt:
+                prompt_id = "backport-diff"  # 使用标准diff模板
+                logger.info(f"使用增强提示模式，但没有函数级别的补丁，使用标准diff模板: {prompt_id}")
+            else:
+                prompt_id = "backport-diff"  # 使用标准diff模板
+                logger.info(f"使用标准提示模式，使用diff模板: {prompt_id}")
+        
         llm_config = {
-            # 'model': context.config.model,
-            # 'response_file': context.config.response_file,
-            # 'prompt_template_file': context.config.prompt_template_file,
-            # 'prompt_id': context.config.prompt_id,
+            'prompt_template_file': context.config.prompt_template_file,
+            'prompt_id': prompt_id,  # 使用确定的prompt_id
             'extra_config': {
-                'prompt_values': [{
-                    'patchCode': prompt_data['patch_content'],
-                    'diffCode': prompt_data['context_diff']
-                }]
+                'prompt_values': [extra_values]
             }
         }
+        
         # 创建新的ModuleContext，使用原始配置并添加新的配置
         llm_context = ModuleContext(
             config=context.config.model_copy(update=llm_config),  # 使用pydantic的model_copy方法
             commit=context.commit
         )
-        # 更新context的config
-        # context.config.update(llm_config)
         
         # 初始化LLMAssistant
         llm = LLMAssistant(llm_context)
-        # 直接设置prompts，避免重复加载模板文件
-        # llm.prompts = template['prompts']
         
         try:
             # 调用run方法获取结果
@@ -1665,3 +1877,150 @@ Generated patch from complete file responses
             f.write(f"- report.html: HTML格式评估报告\n")
             f.write(f"- chunks/: 每个修改块的详细信息\n")
             f.write(f"- llm_io/: LLM输入输出信息\n")
+
+    def _get_file_content_from_target(self, context: ModuleContext, file_path: str) -> Optional[str]:
+        """
+        获取文件在目标版本(旧版本)的内容
+        
+        :param context: 模块上下文
+        :param file_path: 文件路径
+        :return: 文件内容，如果文件不存在则返回None
+        """
+        try:
+            repo_path = context.config.repo_path
+            target_version = context.config.target_version
+            
+            # 获取当前分支
+            current_branch = subprocess.run(
+                ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
+                cwd=repo_path,
+                capture_output=True,
+                text=True,
+                check=True
+            ).stdout.strip()
+            
+            # 创建临时分支
+            temp_branch = f"temp_target_check_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            
+            try:
+                # 创建临时分支指向目标版本
+                subprocess.run(
+                    ['git', 'checkout', '-b', temp_branch, target_version],
+                    cwd=repo_path,
+                    capture_output=True,
+                    check=True
+                )
+                
+                # 文件可能在旧版本中有不同的路径，尝试使用backtrack_apply模块中的映射逻辑
+                try:
+                    from modules.backtrack_apply import BacktrackApplyModule
+                    backtrack_module = BacktrackApplyModule(context.config)
+                    path_mapping = backtrack_module._map_file_paths(repo_path, [file_path])
+                    mapped_path = path_mapping.get(file_path, file_path)
+                except ImportError:
+                    # 如果无法导入，就使用原路径
+                    mapped_path = file_path
+                    
+                # 检查文件是否存在
+                full_path = os.path.join(repo_path, mapped_path)
+                if os.path.exists(full_path):
+                    with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
+                    logger.info(f"成功获取文件 {mapped_path} 在目标版本 {target_version} 的内容，大小: {len(content)} 字节")
+                    return content
+                else:
+                    logger.warning(f"文件 {mapped_path} 在目标版本 {target_version} 中不存在")
+                    return None
+                    
+            finally:
+                # 切回原始分支
+                subprocess.run(
+                    ['git', 'checkout', current_branch],
+                    cwd=repo_path,
+                    capture_output=True,
+                    check=True
+                )
+                
+                # 删除临时分支
+                subprocess.run(
+                    ['git', 'branch', '-D', temp_branch],
+                    cwd=repo_path,
+                    capture_output=True,
+                    check=False  # 忽略错误
+                )
+                
+        except Exception as e:
+            logger.error(f"获取目标版本文件内容时出错: {e}")
+            logger.error(traceback.format_exc())
+            return None
+
+    def _get_file_content_from_upstream(self, context: ModuleContext, file_path: str) -> Optional[str]:
+        """
+        获取文件在上游(新版本)的内容
+        
+        :param context: 模块上下文
+        :param file_path: 文件路径
+        :return: 文件内容，如果文件不存在则返回None
+        """
+        try:
+            # 可以尝试直接从GitHub API获取，或者从本地仓库获取
+            # 这里先实现从本地仓库获取的方法
+            repo_path = context.config.repo_path
+            
+            # 获取当前分支
+            current_branch = subprocess.run(
+                ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
+                cwd=repo_path,
+                capture_output=True,
+                text=True,
+                check=True
+            ).stdout.strip()
+            
+            # 创建临时分支来获取最新版本的文件
+            temp_branch = f"temp_upstream_check_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            
+            try:
+                # 创建临时分支指向最新的主分支或者特定的上游分支
+                # 这里假设'origin/master'是最新的上游分支
+                upstream_branch = context.config.module_configs.get('llm_adapter', {}).get('upstream_branch', 'origin/master')
+                
+                # 尝试创建临时分支
+                subprocess.run(
+                    ['git', 'checkout', '-b', temp_branch, upstream_branch],
+                    cwd=repo_path,
+                    capture_output=True,
+                    check=True
+                )
+                
+                # 检查文件是否存在
+                full_path = os.path.join(repo_path, file_path)
+                if os.path.exists(full_path):
+                    with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
+                    logger.info(f"成功获取文件 {file_path} 在上游分支 {upstream_branch} 的内容，大小: {len(content)} 字节")
+                    return content
+                else:
+                    logger.warning(f"文件 {file_path} 在上游分支 {upstream_branch} 中不存在")
+                    return None
+                    
+            finally:
+                # 切回原始分支
+                subprocess.run(
+                    ['git', 'checkout', current_branch],
+                    cwd=repo_path,
+                    capture_output=True,
+                    check=True
+                )
+                
+                # 删除临时分支
+                subprocess.run(
+                    ['git', 'branch', '-D', temp_branch],
+                    cwd=repo_path,
+                    capture_output=True,
+                    check=False  # 忽略错误
+                )
+                
+        except Exception as e:
+            logger.error(f"获取上游文件内容时出错: {e}")
+            logger.error(traceback.format_exc())
+            return None
