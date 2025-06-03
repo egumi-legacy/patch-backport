@@ -1,0 +1,224 @@
+2025-06-03 20:14:27.159 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250603_201427.log
+2025-06-03 20:14:27.159 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-03 20:14:27.160 | INFO     | __main__:_process_mode1:349 - 处理补丁: https://sourceforge.net/p/sox/code/ci/f8587e2d50dad72d40453ac1191c539ee9e50381/
+2025-06-03 20:14:27.160 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-06-03 20:14:27.161 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-06-03 20:14:27.163 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-06-03 20:14:27.163 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-06-03 20:14:27.164 | INFO     | __main__:_process_mode1:356 - 目标版本: ['sox-14.4.2']
+2025-06-03 20:14:27.164 | INFO     | __main__:_process_mode1:363 - 开始处理版本: sox-14.4.2
+2025-06-03 20:14:27.164 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: f8587e2d50dad72d40453ac1191c539ee9e50381
+2025-06-03 20:14:27.165 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-06-03 20:14:27.165 | INFO     | modules.direct_apply:_download_patch:240 - 上游补丁文件已存在: workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-03 20:14:27.166 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-03 20:14:27.166 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-03 20:14:27.180 | INFO     | modules.direct_apply:_prepare_test_branch:363 - 删除已存在的测试分支: test_patch_sox-14.4.2
+2025-06-03 20:14:27.187 | INFO     | modules.direct_apply:_prepare_test_branch:376 - 创建测试分支: test_patch_sox-14.4.2
+2025-06-03 20:14:27.200 | ERROR    | modules.direct_apply:_apply_patch:316 - 补丁应用失败: Patch format detection failed.
+
+2025-06-03 20:14:27.209 | WARNING  | modules.direct_apply:_cleanup_test_branch:470 - 清理分支时发生错误: error: pathspec '4.0.14' did not match any file(s) known to git
+
+2025-06-03 20:14:27.209 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-06-03 20:14:27.210 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-03 20:14:27.210 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-03 20:14:27.210 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 59 行内容
+2025-06-03 20:14:27.211 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/Makefile.am
+2025-06-03 20:14:27.211 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/Makefile.am @@ -95,7 +95,7 @@ (modification)
+2025-06-03 20:14:27.211 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/xmalloc.c
+2025-06-03 20:14:27.212 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/xmalloc.c @@ -57,6 +57,16 @@ (modification)
+2025-06-03 20:14:27.212 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/xmalloc.h
+2025-06-03 20:14:27.212 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/xmalloc.h @@ -25,11 +25,12 @@ (modification)
+2025-06-03 20:14:27.213 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 3 个修改块
+2025-06-03 20:14:27.213 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 3 个块
+2025-06-03 20:14:27.213 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-03 20:14:27.214 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/chunk_001_20250603_201427.patch (修改文件: src/Makefile.am)
+2025-06-03 20:14:27.214 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/chunk_002_20250603_201427.patch (修改文件: src/xmalloc.c)
+2025-06-03 20:14:27.215 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/chunk_003_20250603_201427.patch (修改文件: src/xmalloc.h)
+2025-06-03 20:14:27.215 | INFO     | modules.chunk_analyzer:execute:60 - 已为 3 个块创建单独的补丁文件
+2025-06-03 20:14:27.215 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-03 20:14:27.216 | INFO     | modules.chunk_analyzer:execute:66 - commit f8587e2d50dad72d40453ac1191c539ee9e50381
+Author: Mans Rullgard <mans@mansr.com>
+Date:   Wed Apr 24 17:39:45 2019 +0100
+
+    fix possible overflow in lsx_(re)valloc() size calculation (CVE-2019-8355)
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 42573ec5..d5f6d125 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -95,7 +95,7 @@ libsox_la_LIBADD += @GOMP_LIBS@
+ 
+ libsox_la_CFLAGS = @WARN_CFLAGS@
+ libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \
+-  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'
++  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'
+ 
+ if HAVE_WIN32_LTDL
+   libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h
+
+2025-06-03 20:14:27.216 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-03 20:14:27.217 | INFO     | modules.chunk_analyzer:execute:66 - commit f8587e2d50dad72d40453ac1191c539ee9e50381
+Author: Mans Rullgard <mans@mansr.com>
+Date:   Wed Apr 24 17:39:45 2019 +0100
+
+    fix possible overflow in lsx_(re)valloc() size calculation (CVE-2019-8355)
+
+diff --git a/src/xmalloc.c b/src/xmalloc.c
+index 56fe6944..72c9ea4d 100644
+--- a/src/xmalloc.c
++++ b/src/xmalloc.c
+@@ -57,6 +57,16 @@ void *lsx_calloc(size_t n, size_t size)
+   return lsx_checkptr(calloc(n + !n, size + !size));
+ }
+ 
++void *lsx_realloc_array(void *p, size_t n, size_t size)
++{
++  if (n > (size_t)-1 / size) {
++    lsx_fail("malloc size overflow");
++    exit(2);
++  }
++
++  return lsx_realloc(p, n * size);
++}
++
+ char *lsx_strdup(const char *s)
+ {
+   return lsx_checkptr(strdup(s));
+
+2025-06-03 20:14:27.217 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-03 20:14:27.218 | INFO     | modules.chunk_analyzer:execute:66 - commit f8587e2d50dad72d40453ac1191c539ee9e50381
+Author: Mans Rullgard <mans@mansr.com>
+Date:   Wed Apr 24 17:39:45 2019 +0100
+
+    fix possible overflow in lsx_(re)valloc() size calculation (CVE-2019-8355)
+
+diff --git a/src/xmalloc.h b/src/xmalloc.h
+index 92ac64d9..21ff6630 100644
+--- a/src/xmalloc.h
++++ b/src/xmalloc.h
+@@ -25,11 +25,12 @@
+ 
+ LSX_RETURN_VALID void *lsx_malloc(size_t size);
+ LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);
++LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);
+ LSX_RETURN_VALID char *lsx_strdup(const char *s);
+ 
+ #define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))
+ #define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)
+-#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))
+-#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))
++#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))
++#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))
+ 
+ #endif
+
+2025-06-03 20:14:27.219 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/3 个块补丁: chunk_001_20250603_201427.patch
+2025-06-03 20:14:27.226 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_001_20250603_201427.patch 应用失败: error: patch failed: src/Makefile.am:95
+error: src/Makefile.am: patch does not apply
+
+2025-06-03 20:14:27.226 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/3 个块补丁: chunk_002_20250603_201427.patch
+2025-06-03 20:14:27.234 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_002_20250603_201427.patch 应用失败: error: patch failed: src/xmalloc.c:57
+error: src/xmalloc.c: patch does not apply
+
+2025-06-03 20:14:27.235 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/3 个块补丁: chunk_003_20250603_201427.patch
+2025-06-03 20:14:27.243 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_003_20250603_201427.patch 应用失败: error: patch failed: src/xmalloc.h:25
+error: src/xmalloc.h: patch does not apply
+
+2025-06-03 20:14:27.243 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-06-03 20:14:27.244 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 3
+2025-06-03 20:14:27.244 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 0
+2025-06-03 20:14:27.244 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 3
+2025-06-03 20:14:27.244 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 0 个块补丁，总共 3 个
+2025-06-03 20:14:27.245 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/remaining_chunks_20250603_201427.patch
+2025-06-03 20:14:27.246 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 3 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/remaining_chunks_20250603_201427.patch
+2025-06-03 20:14:27.246 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/remaining_chunks_20250603_201427.patch
+2025-06-03 20:14:27.246 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.04秒
+2025-06-03 20:14:27.247 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/sox/code/f8587e/evaluations/chunk_analyzer/metrics_f8587e_20250603_201427.json
+2025-06-03 20:14:27.248 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250603_201427
+2025-06-03 20:14:27.249 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250603_201427
+2025-06-03 20:14:27.249 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250603_201427/patches
+2025-06-03 20:14:27.250 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250603_201427/patches
+2025-06-03 20:14:27.252 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250603_201427/patches/original_patch.txt
+2025-06-03 20:14:27.252 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250603_201427
+2025-06-03 20:14:27.253 | WARNING  | modules.chunk_analyzer:_get_patch_content:1289 - 未找到任何应用成功的补丁文件
+2025-06-03 20:14:27.253 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250603_201427
+2025-06-03 20:14:27.254 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250603_201427/patches/remaining_patch.txt
+2025-06-03 20:14:27.255 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/remaining_chunks_20250603_201427.patch
+2025-06-03 20:14:27.255 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250603_201427
+2025-06-03 20:14:27.258 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: llm_adapter
+2025-06-03 20:14:27.258 | INFO     | modules.llm_adapter:execute:70 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-03 20:14:27.258 | INFO     | modules.llm_adapter:execute:72 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-03 20:14:27.259 | INFO     | modules.llm_adapter:_prepare_prompt_data:222 - 使用传统上下文差异
+2025-06-03 20:14:27.259 | INFO     | modules.llm_adapter:_get_context_diff:807 - diff_file: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/diff
+2025-06-03 20:14:27.260 | ERROR    | modules.llm_adapter:_get_context_diff:846 - 执行patch_processor失败: 'repo'
+2025-06-03 20:14:27.261 | ERROR    | modules.llm_adapter:_get_context_diff:862 - 获取上下文差异失败: cannot access local variable 'traceback' where it is not associated with a value
+2025-06-03 20:14:27.264 | ERROR    | modules.llm_adapter:_get_context_diff:864 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 834, in _get_context_diff
+    result = patch_processor.run()
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/patch_processor.py", line 197, in run
+    commit_content = self.git_operations.get_commit_content(self.commit_info)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/git_operations.py", line 134, in get_commit_content
+    url = f"https://api.github.com/repos/{commit_info['owner']}/{commit_info['repo']}/commits/{commit_info['commit_sha']}"
+                                                                 ~~~~~~~~~~~^^^^^^^^
+KeyError: 'repo'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 847, in _get_context_diff
+    logger.error(f"错误堆栈: {traceback.format_exc()}")
+                              ^^^^^^^^^
+UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value
+
+2025-06-03 20:14:27.264 | INFO     | modules.llm_adapter:_call_llm:930 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-03 20:14:27.354 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-03 20:14:27.355 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/sox/code/f8587e/llm_output/output_sox-14.4.2_qwen-plus.patch
+2025-06-03 20:14:27.355 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-06-03 20:14:27.355 | INFO     | modules.llm_adapter:_call_llm:952 - llm.run() result:{'openai_responses': [''], 'request_tokens': [0], 'response_tokens': [0]}
+2025-06-03 20:14:27.356 | INFO     | modules.llm_adapter:_parse_llm_response:1034 - 原始LLM响应(前100字符): ...
+2025-06-03 20:14:27.356 | WARNING  | modules.llm_adapter:_parse_llm_response:1072 - 未找到任何已知补丁格式，返回完整响应
+2025-06-03 20:14:27.357 | INFO     | modules.llm_adapter:_save_llm_response:1203 - LLM响应已保存到: workspace/sox/code/f8587e/llm_output/output_sox-14.4.2_qwen-plus.patch
+2025-06-03 20:14:27.357 | INFO     | modules.llm_adapter:_save_llm_response:1204 - 原始LLM响应已保存到: workspace/sox/code/f8587e/llm_output/raw_output_sox-14.4.2_qwen-plus.patch
+2025-06-03 20:14:27.357 | INFO     | modules.llm_adapter:execute:96 - ==================================================
+2025-06-03 20:14:27.358 | INFO     | modules.llm_adapter:execute:97 - LLM适配器执行完成 - 摘要
+2025-06-03 20:14:27.358 | INFO     | modules.llm_adapter:execute:98 - 提示模式: 标准模式
+2025-06-03 20:14:27.358 | INFO     | modules.llm_adapter:execute:99 - 提示类型: 标准上下文差异
+2025-06-03 20:14:27.358 | INFO     | modules.llm_adapter:execute:100 - 函数上下文统计: 总尝试: 0, 成功: 0, 回退: 0
+2025-06-03 20:14:27.358 | INFO     | modules.llm_adapter:execute:104 - 执行时间: 0.10 秒
+2025-06-03 20:14:27.359 | INFO     | modules.llm_adapter:execute:105 - 生成的补丁保存到: workspace/sox/code/f8587e/llm_output/output_sox-14.4.2_qwen-plus.patch
+2025-06-03 20:14:27.359 | INFO     | modules.llm_adapter:execute:106 - ==================================================
+2025-06-03 20:14:27.359 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/sox/code/f8587e/evaluations/llm_adapter/metrics_f8587e_20250603_201427.json
+2025-06-03 20:14:27.360 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: patch_adapter
+2025-06-03 20:14:27.360 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/sox/code/f8587e/llm_output/output_sox-14.4.2_qwen-plus.patch
+2025-06-03 20:14:27.361 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_sox-14.4.2_20250603_201427
+2025-06-03 20:14:27.390 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+
+2025-06-03 20:14:27.391 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-06-03 20:14:27.391 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_sox-14.4.2_20250603_201427
+2025-06-03 20:14:27.410 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-06-03 20:14:27.411 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-06-03 20:14:27.411 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/sox/code/f8587e/metrics/patch_adapter_metrics.json
+2025-06-03 20:14:27.411 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 0.25秒
+2025-06-03 20:14:27.412 | INFO     | __main__:_merge_patches:1064 - 开始合并补丁...
+2025-06-03 20:14:27.412 | WARNING  | __main__:_merge_patches:1188 - 没有找到可合并的补丁
+2025-06-03 20:14:27.413 | INFO     | __main__:_save_results:738 - 已复制最终补丁到结果目录: results/code_sox-14.4.2_f8587e_20250603_201427/upstream_f8587e.patch
+2025-06-03 20:14:27.414 | INFO     | __main__:_save_results:876 - 结果已保存到: results/code_sox-14.4.2_f8587e_20250603_201427/result.json
+2025-06-03 20:14:27.414 | INFO     | __main__:_print_summary:918 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-06-03 20:14:27.414 | INFO     | __main__:_print_summary:941 - ==================================================
+2025-06-03 20:14:27.414 | INFO     | __main__:_print_summary:942 - 处理摘要 - 提交: f8587e
+2025-06-03 20:14:27.415 | INFO     | __main__:_print_summary:943 - 适配状态: 适配失败 (方法: failed)
+2025-06-03 20:14:27.415 | INFO     | __main__:_print_summary:948 - 块分析统计:
+2025-06-03 20:14:27.415 | INFO     | __main__:_print_summary:949 - - 总块数: 3
+2025-06-03 20:14:27.415 | INFO     | __main__:_print_summary:950 - - 无冲突块数: 0
+2025-06-03 20:14:27.415 | INFO     | __main__:_print_summary:951 - - 成功适配块数: 0
+2025-06-03 20:14:27.416 | INFO     | __main__:_print_summary:952 - - 适配失败块数: 3
+2025-06-03 20:14:27.416 | INFO     | __main__:_print_summary:953 - - 编译失败块数: 0
+2025-06-03 20:14:27.416 | INFO     | __main__:_print_summary:957 - 总执行时间: 0.25秒
+2025-06-03 20:14:27.417 | INFO     | __main__:_print_summary:962 - ==================================================
+2025-06-03 20:14:27.417 | INFO     | __main__:run:338 - 处理完成

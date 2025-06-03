@@ -1,0 +1,82 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "chunks_info": {
+      "total_chunks": 1,
+      "no_conflict_chunks": 1,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 0,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-03T17:26:39.049362"
+  },
+  "to_adapt_commit": {
+    "sha": "f70911261a84333b077c29908e1242f69d7439eb",
+    "patch_url": "https://sourceforge.net/p/sox/code/ci/f70911261a84333b077c29908e1242f69d7439eb/",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f70911/chunk_patches/chunk_001_20250603_172639.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "sox-14.4.2",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "Patch format detection failed.\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f70911/patches/upstream_f70911.patch",
+      "timestamp": "2025-06-03T17:26:39.022107"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f70911/patches/upstream_f70911.patch",
+      "total_chunks": 1,
+      "applied_chunks": 1,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f70911/chunk_patches/chunk_001_20250603_172639.patch"
+      ],
+      "remaining_patch": null,
+      "timestamp": "2025-06-03T17:26:39.036667",
+      "success": true
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f70911/chunk_patches/chunk_001_20250603_172639.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-03T17:26:37.189229",
+    "end_time": "2025-06-03T17:26:39.046132",
+    "total_seconds": 1.856903,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "patch_content": "commit f70911261a84333b077c29908e1242f69d7439eb\nAuthor: Mans Rullgard <mans@mansr.com>\nDate:   Wed Apr 24 14:57:34 2019 +0100\n\n    fix possible buffer size overflow in lsx_make_lpf() (CVE-2019-8354)\n    \n    The multiplication in the size argument malloc() might overflow,\n    resulting in a small buffer being allocated.  Use calloc() instead.\n\ndiff --git a/src/effects_i_dsp.c b/src/effects_i_dsp.c\nindex a979b501..e32dfa05 100644\n--- a/src/effects_i_dsp.c\n+++ b/src/effects_i_dsp.c\n@@ -357,7 +357,7 @@ double * lsx_make_lpf(int num_taps, double Fc, double beta, double rho,\n     double scale, sox_bool dc_norm)\n {\n   int i, m = num_taps - 1;\n-  double * h = malloc(num_taps * sizeof(*h)), sum = 0;\n+  double * h = calloc(num_taps, sizeof(*h)), sum = 0;\n   double mult = scale / lsx_bessel_I_0(beta), mult1 = 1 / (.5 * m + rho);\n   assert(Fc >= 0 && Fc <= 1);\n   lsx_debug(\"make_lpf(n=%i Fc=%.7g \u03b2=%g \u03c1=%g dc-norm=%i scale=%g)\", num_taps, Fc, beta, rho, dc_norm, scale);\n",
+    "llm_output": null,
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "sox-14.4.2",
+      "commit_sha": "f70911261a84333b077c29908e1242f69d7439eb",
+      "timestamp": "2025-06-03T17:26:39.049375",
+      "execution_path": "chunk_analyzer (all chunks)"
+    }
+  }
+}

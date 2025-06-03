@@ -207,6 +207,15 @@ class DirectApplyModule(BaseModule):
         patch_dir = context.patch_dir
         # patch_dir.mkdir(parents=True, exist_ok=True)
         
+        # 检查配置中是否已经提供了patch_path
+        if hasattr(context.config, 'patch_path') and context.config.patch_path:
+            patch_path = Path(context.config.patch_path)
+            if patch_path.exists():
+                logger.info(f"使用配置中提供的补丁文件: {patch_path}")
+                return patch_path.absolute()
+            else:
+                logger.warning(f"配置中提供的补丁文件不存在: {patch_path}")
+        
         patch_path = patch_dir / f"upstream_{context.commit.commit_sha[:6]}.patch"
         
         # 检查是否有downstream_sha（模式1可能没有）
@@ -232,18 +241,39 @@ class DirectApplyModule(BaseModule):
             # 确保返回绝对路径
             return Path(patch_path.absolute())
         else:
-            from patch_utils import download_patch
+            from patch_utils import download_patch, generate_patch_from_git
             logger.info(f"上游补丁文件不存在，下载补丁")
-            success = download_patch(context.commit.patch_url, patch_path).exists()
             
-            if success:
-                logger.info(f"上游补丁下载成功: {patch_path}")
-                # self.context.commit.patch_path = patch_path
-                # 确保返回绝对路径
-                return Path(patch_path.absolute())
+            try:
+                # 尝试下载补丁
+                success = download_patch(context.commit.patch_url, patch_path).exists()
+                
+                if success:
+                    logger.info(f"上游补丁下载成功: {patch_path}")
+                    # 确保返回绝对路径
+                    return Path(patch_path.absolute())
+                else:
+                    logger.warning(f"补丁下载失败: {context.commit.patch_url}")
+            except Exception as e:
+                logger.warning(f"补丁下载出错: {e}")
+            
+            # 下载失败，尝试从本地仓库生成补丁
+            logger.info(f"尝试从本地仓库生成补丁")
+            if context.commit.commit_sha and context.config.repo_path:
+                patch_path = generate_patch_from_git(
+                    context.commit.commit_sha,
+                    context.config.repo_path,
+                    patch_path
+                )
+                if patch_path and patch_path.exists():
+                    logger.info(f"成功从本地仓库生成补丁: {patch_path}")
+                    return Path(patch_path.absolute())
+                else:
+                    logger.error(f"从本地仓库生成补丁失败")
             else:
-                logger.error(f"补丁下载失败: {context.commit.patch_url}")
-                return None
+                logger.error(f"无法从本地仓库生成补丁: commit_sha={context.commit.commit_sha}, repo_path={context.config.repo_path}")
+            
+            return None
         
 
     def _apply_patch(self, context: ModuleContext, patch_path: Path, branch_name: str):
@@ -280,7 +310,6 @@ class DirectApplyModule(BaseModule):
                 result['output'] = apply_process.stdout
                 logger.info(f"补丁应用成功: {patch_path}")
             else:
-                
                 result['error'] = apply_process.stderr
                 result['error_type'] = self._categorize_error(apply_process.stderr)
                 logger.error(f"补丁应用失败: {result['error']}")
@@ -365,12 +394,12 @@ class DirectApplyModule(BaseModule):
         except subprocess.CalledProcessError as e:
             logger.error(f"准备测试分支失败: {e.stderr}")
             # 发生错误时，尝试清理
-            self._cleanup_test_branch(branch_name)
+            self._cleanup_test_branch(context, branch_name)
             return None
         except Exception as e:
             logger.error(f"准备测试分支时发生错误: {str(e)}")
             # 发生错误时，尝试清理
-            self._cleanup_test_branch(branch_name)
+            self._cleanup_test_branch(context, branch_name)
             return None
         
 

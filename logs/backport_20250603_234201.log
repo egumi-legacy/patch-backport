@@ -1,0 +1,68 @@
+2025-06-03 23:42:01.094 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250603_234201.log
+2025-06-03 23:42:01.094 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-03 23:42:01.095 | INFO     | __main__:_process_mode1:349 - 处理补丁: https://sourceforge.net/p/mcj/fig2dev/ci/da8992f44b84a337b4edaa67fc8b36b55eaef696/
+2025-06-03 23:42:01.095 | ERROR    | core.adaptation_pipeline:_load_modules:68 - 加载模块 direct_apply 失败: repo_path is required
+2025-06-03 23:42:01.097 | ERROR    | core.adaptation_pipeline:_load_modules:70 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/core/adaptation_pipeline.py", line 63, in _load_modules
+    module_instance = module_class(module_config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 22, in __init__
+    raise ValueError("repo_path is required")
+ValueError: repo_path is required
+
+2025-06-03 23:42:01.098 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-03 23:42:01.100 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-03 23:42:01.101 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-03 23:42:01.101 | INFO     | __main__:_process_mode1:356 - 目标版本: ['3.2.8.b-1']
+2025-06-03 23:42:01.101 | INFO     | __main__:_process_mode1:363 - 开始处理版本: 3.2.8.b-1
+2025-06-03 23:42:01.102 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: da8992f44b84a337b4edaa67fc8b36b55eaef696
+2025-06-03 23:42:01.102 | INFO     | modules.chunk_analyzer:_should_run:494 - 直接应用未执行，跳过补丁分块分析
+2025-06-03 23:42:01.103 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-03 23:42:01.103 | INFO     | modules.llm_adapter:execute:70 - context.commit.patch_path: None
+2025-06-03 23:42:01.103 | ERROR    | modules.llm_adapter:execute:128 - LLM处理过程发生错误: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-06-03 23:42:01.106 | ERROR    | modules.llm_adapter:execute:129 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 71, in execute
+    patch_path = Path(context.commit.patch_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 1162, in __init__
+    super().__init__(*args)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+2025-06-03 23:42:01.106 | INFO     | modules.llm_adapter:execute:140 - ==================================================
+2025-06-03 23:42:01.107 | INFO     | modules.llm_adapter:execute:141 - LLM适配器执行失败 - 摘要
+2025-06-03 23:42:01.107 | INFO     | modules.llm_adapter:execute:142 - 错误: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-06-03 23:42:01.107 | INFO     | modules.llm_adapter:execute:143 - 执行时间: 0.00 秒
+2025-06-03 23:42:01.108 | INFO     | modules.llm_adapter:execute:144 - ==================================================
+2025-06-03 23:42:01.110 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/mcj/fig2dev/da8992/evaluations/llm_adapter/metrics_da8992_20250603_234201.json
+2025-06-03 23:42:01.110 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-03 23:42:01.111 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 找不到LLM响应文件
+2025-06-03 23:42:01.112 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 46, in execute
+    llm_response_path = self._get_llm_response_path(context)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 129, in _get_llm_response_path
+    raise ValueError("找不到LLM响应文件")
+ValueError: 找不到LLM响应文件
+
+2025-06-03 23:42:01.113 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/mcj/fig2dev/da8992/metrics/patch_adapter_metrics.json
+2025-06-03 23:42:01.114 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 0.01秒
+2025-06-03 23:42:01.115 | INFO     | __main__:_merge_patches:1064 - 开始合并补丁...
+2025-06-03 23:42:01.115 | WARNING  | __main__:_merge_patches:1188 - 没有找到可合并的补丁
+2025-06-03 23:42:01.118 | INFO     | __main__:_save_results:876 - 结果已保存到: results/fig2dev_3.2.8.b-1_da8992_20250603_234201/result.json
+2025-06-03 23:42:01.118 | INFO     | __main__:_print_summary:918 - context.patch_adapter_result: {'success': False, 'error': '找不到LLM响应文件'}
+2025-06-03 23:42:01.119 | INFO     | __main__:_print_summary:941 - ==================================================
+2025-06-03 23:42:01.119 | INFO     | __main__:_print_summary:942 - 处理摘要 - 提交: da8992
+2025-06-03 23:42:01.119 | INFO     | __main__:_print_summary:943 - 适配状态: 适配失败 (方法: failed)
+2025-06-03 23:42:01.120 | INFO     | __main__:_print_summary:948 - 块分析统计:
+2025-06-03 23:42:01.120 | INFO     | __main__:_print_summary:949 - - 总块数: 0
+2025-06-03 23:42:01.120 | INFO     | __main__:_print_summary:950 - - 无冲突块数: 0
+2025-06-03 23:42:01.121 | INFO     | __main__:_print_summary:951 - - 成功适配块数: 0
+2025-06-03 23:42:01.121 | INFO     | __main__:_print_summary:952 - - 适配失败块数: 0
+2025-06-03 23:42:01.121 | INFO     | __main__:_print_summary:953 - - 编译失败块数: 0
+2025-06-03 23:42:01.122 | INFO     | __main__:_print_summary:957 - 总执行时间: 0.01秒
+2025-06-03 23:42:01.122 | INFO     | __main__:_print_summary:960 - 最后错误: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-06-03 23:42:01.122 | INFO     | __main__:_print_summary:962 - ==================================================
+2025-06-03 23:42:01.123 | INFO     | __main__:run:338 - 处理完成
+2025-06-03 23:42:01.127 | INFO     | __main__:clean_config:1876 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

@@ -5,6 +5,7 @@ from loguru import logger
 from modules.base_module import BaseModule
 import importlib
 import copy
+import traceback
 # from core.adaptation_result import AdaptationResult
 # from config_manager import ProjectConfig
 from core.parameter_manager import ModuleContext, BaseConfig
@@ -65,6 +66,8 @@ class AdaptationPipeline:
                 logger.info(f"已加载模块: {module_name}")
             except Exception as e:
                 logger.error(f"加载模块 {module_name} 失败: {e}")
+                
+                logger.error(f"错误堆栈: {traceback.format_exc()}")
         
         return modules
     

@@ -8,9 +8,10 @@ from loguru import logger
 import dotenv
 import json
 # from patch_evaluator import PatchEvaluator
-from patch_utils import download_patch
+from patch_utils import download_patch, parse_github_url
 from core.parameter_manager import ModuleContext
 from typing import Optional, Dict, Any, List
+
 
 _DEFAULT_COMMITS_FILE = Path(__file__).parent / "commits.json"
 
@@ -66,9 +67,10 @@ class GitOperations:
         else:
             self.url = context.config.patch_url
         self.allowed_ref_fields = ['commit_sha', 'tag', 'branch']
-        self.commit_info = self.parse_github_url(self.url) if self.url else None
+        
+        self.commit_info = parse_github_url(self.url) if self.url else None
         self.owner = self.commit_info['owner'] if self.commit_info else None
-        self.repo = self.commit_info['repo'] if self.commit_info else None
+        self.repo = self.commit_info['name'] if self.commit_info else None
 
         # 如果context有commits_pages_start属性，则使用context的commits_pages_start
         if hasattr(context.config, 'commits_pages_start'):
@@ -97,7 +99,7 @@ class GitOperations:
         repo = repo if repo else self.repo
         commit_info = {
             'owner': owner,
-            'repo': repo,
+            'name': repo,
         }
         
         # 从 kwargs 中提取第一个键值对
@@ -110,26 +112,27 @@ class GitOperations:
         
         return commit_info
 
-    def parse_github_url(self, url):
-        """处理输入可能是patch_url或repo_url的情况"""
-        # 解析github url，获取owner, repo, commit_sha
-        pattern = r'https://github\.com/([^/]+)/([^/]+)/commit/([^/]+)'
-        match = re.search(pattern, url)
-        if match:
-            owner, repo, commit_sha = match.groups()
-            return {'owner': owner, 'repo': repo, 'commit_sha': commit_sha}
-        else:
-            pattern = r'https://github\.com/([^/]+)/([^/]+)'
-            match = re.match(pattern, url)
-            if not match:
-                raise ValueError("无效的 GitHub 仓库 URL")
-            owner, repo = match.groups()
-            return {'owner': owner, 'repo': repo, 'commit_sha': None}
+    # def parse_github_url(self, url):
+    #     """处理输入可能是patch_url或repo_url的情况"""
+    #     # 解析github url，获取owner, repo, commit_sha
+    #     pattern = r'https://github\.com/([^/]+)/([^/]+)/commit/([^/]+)'
+    #     match = re.search(pattern, url)
+    #     if match:
+    #         owner, repo, commit_sha = match.groups()
+    #         return {'owner': owner, 'repo': repo, 'commit_sha': commit_sha}
+    #     else:
+    #         pattern = r'https://github\.com/([^/]+)/([^/]+)'
+    #         match = re.match(pattern, url)
+    #         if not match:
+    #             raise ValueError("无效的 GitHub 仓库 URL")
+    #         owner, repo = match.groups()
+    #         return {'owner': owner, 'repo': repo, 'commit_sha': None}
         
 
     def get_commit_content(self, commit_info: Dict[str, str]) -> Dict[str, Any]:
-        """获取提交内容"""
-        url = f"https://api.github.com/repos/{commit_info['owner']}/{commit_info['repo']}/commits/{commit_info['commit_sha']}"
+        """获取提交内容，优先使用GitHub API，失败则尝试本地Git仓库"""
+        # 尝试使用GitHub API获取提交内容
+        url = f"https://api.github.com/repos/{commit_info['owner']}/{commit_info['name']}/commits/{commit_info['commit_sha']}"
         
         try:
             response = requests.get(url, headers=self.headers)
@@ -137,11 +140,105 @@ class GitOperations:
             commit_content = response.json()
             return commit_content
         except requests.exceptions.HTTPError as e:
-            logger.error(f"获取提交内容失败: {e.response.status_code}, {e.response.text}")
-            # 返回一个带有空files列表的字典，防止KeyError
+            logger.warning(f"GitHub API获取提交内容失败: {e.response.status_code}, {e.response.text}")
+            logger.info("尝试使用本地Git仓库获取提交内容...")
+            return self._get_commit_content_local(commit_info)
+        except Exception as e:
+            logger.warning(f"GitHub API获取提交内容失败: {e}")
+            logger.info("尝试使用本地Git仓库获取提交内容...")
+            return self._get_commit_content_local(commit_info)
+
+    def _get_commit_content_local(self, commit_info: Dict[str, str]) -> Dict[str, Any]:
+        """使用本地Git仓库获取提交内容"""
+        if not self.repo_path:
+            logger.error("未设置本地仓库路径，无法使用本地Git操作")
+            return {"files": []}
+        
+        commit_sha = commit_info['commit_sha']
+        result = {}
+        
+        try:
+            # 获取提交的文件列表
+            files_cmd = subprocess.run(
+                ['git', 'show', '--name-status', '--pretty=format:', commit_sha],
+                cwd=self.repo_path,
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            
+            # 解析文件列表
+            files = []
+            for line in files_cmd.stdout.strip().split('\n'):
+                if not line:
+                    continue
+                parts = line.split('\t')
+                if len(parts) >= 2:
+                    status, filename = parts[0], parts[-1]
+                    
+                    # 获取文件的差异
+                    try:
+                        patch_cmd = subprocess.run(
+                            ['git', 'show', '--format=', '-p', f'{commit_sha}', '--', filename],
+                            cwd=self.repo_path,
+                            capture_output=True,
+                            text=True,
+                            check=True
+                        )
+                        patch_content = patch_cmd.stdout
+                    except Exception as e:
+                        logger.warning(f"获取文件 {filename} 的差异失败: {e}")
+                        patch_content = ""
+                    
+                    files.append({
+                        'filename': filename,
+                        'status': status,
+                        'patch': patch_content,
+                        'sha': None  # 本地模式下可能无法获取文件sha
+                    })
+            
+            # 获取父提交信息
+            parents_cmd = subprocess.run(
+                ['git', 'show', '--pretty=%P', '--no-patch', commit_sha],
+                cwd=self.repo_path,
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            
+            parent_shas = parents_cmd.stdout.strip().split()
+            parents = []
+            for parent_sha in parent_shas:
+                if parent_sha:
+                    parents.append({'sha': parent_sha})
+            
+            # 获取提交信息
+            commit_msg_cmd = subprocess.run(
+                ['git', 'show', '--pretty=%B', '--no-patch', commit_sha],
+                cwd=self.repo_path,
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            
+            # 构建结果
+            result = {
+                'sha': commit_sha,
+                'files': files,
+                'parents': parents,
+                'commit': {
+                    'message': commit_msg_cmd.stdout.strip()
+                }
+            }
+            
+            logger.info(f"成功从本地Git仓库获取提交 {commit_sha} 的内容，包含 {len(files)} 个文件")
+            return result
+            
+        except subprocess.CalledProcessError as e:
+            logger.error(f"从本地Git仓库获取提交内容失败: {e.stderr}")
             return {"files": []}
         except Exception as e:
-            logger.error(f"获取提交内容失败: {e}")
+            logger.error(f"从本地Git仓库获取提交内容失败: {e}")
             return {"files": []}
 
     def get_commit_file_list(self, commit_content):
@@ -206,7 +303,7 @@ class GitOperations:
     def _get_file_contents_remote(self, file_path_list, ref):
         """使用GitHub API获取文件内容（原有的远程获取逻辑）"""
         owner = ref['owner']
-        repo = ref['repo']
+        repo = ref['name']
         
         # 从ref中获取引用值
         for field in self.allowed_ref_fields:
@@ -362,17 +459,77 @@ class GitOperations:
         return None
 
     def get_file_before_commit(self, commit_info):
+        """获取提交前的文件内容，处理非GitHub仓库的情况"""
         owner = commit_info['owner']
-        repo = commit_info['repo']
+        repo = commit_info['name']
 
         commit_content = self.get_commit_content(commit_info)
         changed_files = self.get_commit_file_list(commit_content)
         
-        # 获取commit之前的commit
+        # 检查是否有父提交信息
+        if 'parents' not in commit_content or not commit_content['parents']:
+            logger.warning("提交内容中没有父提交信息，尝试使用本地Git仓库获取")
+            
+            if not self.repo_path:
+                logger.error("未设置本地仓库路径，无法获取父提交")
+                return []
+            
+            try:
+                # 使用git命令获取父提交SHA
+                parent_cmd = subprocess.run(
+                    ['git', 'show', '--pretty=%P', '--no-patch', commit_info['commit_sha']],
+                    cwd=self.repo_path,
+                    capture_output=True,
+                    text=True,
+                    check=True
+                )
+                
+                parent_sha = parent_cmd.stdout.strip().split()[0] if parent_cmd.stdout.strip() else None
+                
+                if not parent_sha:
+                    logger.error(f"无法获取提交 {commit_info['commit_sha']} 的父提交")
+                    return []
+                
+                # 使用本地Git仓库获取文件内容
+                file_contents = []
+                for file_path in changed_files:
+                    try:
+                        content_cmd = subprocess.run(
+                            ['git', 'show', f'{parent_sha}:{file_path}'],
+                            cwd=self.repo_path,
+                            capture_output=True,
+                            text=True
+                        )
+                        
+                        if content_cmd.returncode == 0:
+                            file_contents.append({
+                                'filename': file_path,
+                                'content': content_cmd.stdout,
+                                'sha': None
+                            })
+                        else:
+                            logger.warning(f"无法获取文件 {file_path} 在父提交 {parent_sha} 的内容")
+                    except Exception as e:
+                        logger.warning(f"获取文件 {file_path} 内容失败: {e}")
+                
+                return file_contents
+                
+            except subprocess.CalledProcessError as e:
+                logger.error(f"获取父提交失败: {e.stderr}")
+                return []
+            except Exception as e:
+                logger.error(f"获取父提交失败: {e}")
+                return []
+        
+        # 原有逻辑：使用GitHub API获取父提交的文件内容
         parent_commit_sha = commit_content['parents'][0]['sha']
         parent_commit_info = self.make_commit_info(commit_sha=parent_commit_sha)
-        # parent_commit_content = self.get_commit_content(parent_commit_info)
-        parent_file_contents = self.get_file_contents_from_ref(changed_files, parent_commit_info)
+        parent_file_contents = self.get_file_contents_from_ref(
+            changed_files, 
+            parent_commit_info,
+            True,
+            self.repo_path
+            )
 
         return parent_file_contents
     

@@ -1,0 +1,131 @@
+From a16c4b6bb0b126047c68dafbdf6311ac1586fc0b Mon Sep 17 00:00:00 2001
+From: Bryan Call <bcall@apache.org>
+Date: Tue, 4 Mar 2025 11:39:44 -0800
+Subject: [PATCH] Fix chunked pipelined requests (#12071)
+
+* Fix pipelined request for chunked bodies
+
+This addresses a variety of bugs concerning pipelined requests. In
+particular, the HttpTunnel logic had fundamentally assumed that it could
+consume all bytes available in the producer's reader. If a request was
+pipelined after a previous request that had a chunked body, this would
+result in the second request being unparsed and either sent along to the
+origin or dropped on the floor, depening on configuration. This adds an
+explicit autest for pipelined requests and addresses these issues.
+
+This patch largely does the following:
+
+1. Updates the copy_partial_post_data data to take the number of bytes
+   it consumes rather than consuming all bytes in the reader. It also
+   now returns the number of bytes it consumes, which the tunnel needs
+   to keep track of the number of bytes it processes.
+2. Previous to this patch, the HttpTunnel assumed that it could consume
+   all bytes in the reader originally passed to it (all bytes in
+   init_bytes_done). This simply will not work for pipelined requests.
+   This addresses this issue by adding a new variable to the tunnel:
+   bytes_consumed. This way the tunnel can keep track of how many bytes
+   it consumed while processing the request body, which allows the
+   HttpSM to later process just the right number of bytes from its
+   reader rather than eating into any pipelined requests that follow it.
+3. The HttpSM must not consume bytes from its client reader that are
+   pipelined requests. It now uses the tunnel's processing
+   bytes_consumed to process bytes from its reader rather than simply
+   consuming all read_available() bytes from it.
+
+* Fix bytes consumed chunk computation
+
+Fix a possible miscalculation of bytes consumed while parsing chunked
+content.
+
+* is_read_closed fix
+
+* Verify expected responses are received.
+
+* Updated formatting
+
+---------
+
+Co-authored-by: Brian Neradt <brian.neradt@gmail.com>
+---
+ proxy/ProxyTransaction.cc                     |   6 +
+ proxy/ProxyTransaction.h                      |   1 +
+ proxy/http/HttpSM.cc                          |  70 ++++--
+ proxy/http/HttpSM.h                           |  14 +-
+ proxy/http/HttpTunnel.cc                      | 171 +++++++++------
+ proxy/http/HttpTunnel.h                       | 151 +++++++++++--
+ proxy/http2/Http2Stream.cc                    |   6 +
+ proxy/http2/Http2Stream.h                     |   1 +
+ src/traffic_server/FetchSM.cc                 |   3 +-
+ tests/gold_tests/pipeline/pipeline.test.py    | 137 ++++++++++++
+ tests/gold_tests/pipeline/pipeline_client.py  | 104 +++++++++
+ tests/gold_tests/pipeline/pipeline_server.py  | 201 ++++++++++++++++++
+ .../gold_tests/redirect/redirect_post.test.py |   1 +
+ .../timeout/inactive_client_timeout.test.py   |   9 +-
+ tests/gold_tests/timeout/slow_server.yaml     |  37 +++-
+ 15 files changed, 796 insertions(+), 116 deletions(-)
+ create mode 100644 tests/gold_tests/pipeline/pipeline.test.py
+ create mode 100644 tests/gold_tests/pipeline/pipeline_client.py
+ create mode 100644 tests/gold_tests/pipeline/pipeline_server.py
+
+diff --git a/proxy/http/HttpTunnel.h b/proxy/http/HttpTunnel.h
+index 3ce994b11ed..3aac38aca68 100644
+--- a/proxy/http/HttpTunnel.h
++++ b/proxy/http/HttpTunnel.h
+@@ -209,12 +256,51 @@ struct HttpTunnelProducer {
+   bool do_dechunking       = false;
+   bool do_chunked_passthru = false;
+ 
+-  int64_t init_bytes_done = 0; // bytes passed in buffer
+-  int64_t nbytes          = 0; // total bytes (client's perspective)
+-  int64_t ntodo           = 0; // what this vc needs to do
+-  int64_t bytes_read      = 0; // total bytes read from the vc
+-  int handler_state       = 0; // state used the handlers
+-  int last_event          = 0; ///< Tracking for flow control restarts.
++  /** The number of bytes available in the reader at the start of the tunnel.
++   *
++   * @note In the case of pipelined requests, not all these bytes should be used.
++   */
++  int64_t init_bytes_done = 0;
++
++  /** The total number of bytes read from the reader, including any @a skip_bytes.
++   *
++   * In straightforward cases where @a total_bytes is specified (non-INT64_MAX),
++   * these should wind up being the same as @a total_bytes. For unspecified,
++   * generally chunked content, this will be the number of bytes actually
++   * consumed from the reader.
++   *
++   * @note that in the case of pipelined requests, this may be less than @a
++   * init_bytes_done because some of those bytes might be for a future request
++   * rather than for this body/tunnel.
++   */
++  int64_t bytes_consumed = 0;
++
++  /** The total number of bytes to be transferred through the tunnel.
++   *
++   * This will include any bytes skipped at the start of the tunnel.
++   *
++   * @note This is set by the creator of the tunnel and in the simple case the
++   * value is precisely known via a Content-Length header value. However, a user
++   * may set this to INT64_MAX or any negative value to indicate that the total
++   * is unknown at the start of the tunnel (such as is the case with chunked
++   * encoded content).
++   */
++  int64_t total_bytes = 0;
++
++  /** The number of bytes still to read after @a init_bytes_done to reach @a
++   * total_bytes.
++   *
++   * A value of zero indicates that all the required bytes have already been
++   * read off the socket. @a ntodo will be used to indicate how much more we
++   * have to read.
++   */
++  int64_t ntodo = 0;
++
++  /** The number of bytes read from the vc since the start of the tunnel. */
++  int64_t bytes_read = 0;
++
++  int handler_state = 0; // state used the handlers
++  int last_event    = 0; ///< Tracking for flow control restarts.
+ 
+   int num_consumers = 0;
+ 

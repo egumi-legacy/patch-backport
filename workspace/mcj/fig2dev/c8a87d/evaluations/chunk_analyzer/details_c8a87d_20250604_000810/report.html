@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>chunk_analyzer 模块评估报告 - c8a87d</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+    h1, h2, h3 { color: #2c3e50; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 20px; }
+    .success { color: #27ae60; }
+    .error { color: #e74c3c; }
+    .info { color: #3498db; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    th { background-color: #f8f9fa; }
+    tr:hover { background-color: #f5f5f5; }
+    pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    .progress-container { width: 100%; background-color: #f1f1f1; border-radius: 5px; }
+    .progress-bar { height: 20px; border-radius: 5px; }
+    .success-bg { background-color: #4CAF50; }
+    .pending-bg { background-color: #2196F3; }
+    .error-bg { background-color: #f44336; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+    .tag-success { background-color: #e8f5e9; color: #2e7d32; }
+    .tag-error { background-color: #ffebee; color: #c62828; }
+    .tag-pending { background-color: #e3f2fd; color: #1565c0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>chunk_analyzer 模块评估报告</h1>
+    
+    <div class="card">
+      <h2>基本信息</h2>
+      <table>
+        <tr>
+          <td width="150"><strong>模块名称</strong></td>
+          <td>chunk_analyzer</td>
+        </tr>
+        <tr>
+          <td><strong>模块类型</strong></td>
+          <td>ModuleType.CHUNK_ANALYZER</td>
+        </tr>
+        <tr>
+          <td><strong>提交SHA</strong></td>
+          <td>c8a87d22036e62bac0c6f7836078d8103caa6457</td>
+        </tr>
+        <tr>
+          <td><strong>目标版本</strong></td>
+          <td>3.2.8b</td>
+        </tr>
+        <tr>
+          <td><strong>执行时间</strong></td>
+          <td>2025-06-04T00:08:10.400323</td>
+        </tr>
+        <tr>
+          <td><strong>状态</strong></td>
+          <td>
+            <span class="tag tag-success">成功</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输入信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>原始补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/upstream_c8a87d.patch</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>代码仓库路径</strong></td>
+                  <td>/home/elpsy/.cache/port-patch/mcj_fig2dev</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输出信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>状态</strong></td>
+                  <td>成功</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总尝试次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>执行时间</strong></td>
+                  <td>0.055568</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总块数</strong></td>
+                  <td>6</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功应用块数</strong></td>
+                  <td>2</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功率</strong></td>
+                  <td>33.33%</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>剩余补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/remaining_chunks_20250604_000810.patch</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    
+        <div class="card">
+          <h2>补丁块应用统计</h2>
+          
+          <div class="progress-container">
+            <div class="progress-bar success-bg" style="width: 33%"></div>
+          </div>
+          <p>
+            成功应用 <strong class="success">2</strong> 个块，
+            总共 <strong>6</strong> 个块
+            (成功率: <strong>33.3%</strong>)
+          </p>
+        </div>
+        
+        <div class="card">
+          <h2>补丁内容详情</h2>
+          <div class="tabs">
+            <div class="tab-header">
+              <button class="tab-button active" onclick="openTab(event, 'original-patch')">原始补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'applied-patches')">应用成功的补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'remaining-patch')">未应用成功的补丁</button>
+            </div>
+            
+            <div id="original-patch" class="tab-content" style="display:block;">
+              <h3>原始补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001
+From: Thomas Loimer &lt;thomas.loimer@tuwien.ac.at&gt;
+Date: Wed, 22 Jan 2025 23:27:43 +0100
+Subject: [PATCH] Reject arcs with co-incident points, ticket #186
+
+
+diff --git a/fig2dev/object.h b/fig2dev/object.h
+index 7f83939..50afbf0 100644
+--- a/fig2dev/object.h
++++ b/fig2dev/object.h
+@@ -3,7 +3,7 @@
+  * Copyright (c) 1991 by Micah Beck
+  * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+  * Parts Copyright (c) 1989-2015 by Brian V. Smith
+- * Parts Copyright (c) 2015-2023 by Thomas Loimer
++ * Parts Copyright (c) 2015-2025 by Thomas Loimer
+  *
+  * Any party obtaining a copy of these files is granted, free of charge, a
+  * full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+@@ -92,10 +92,10 @@ typedef struct f_ellipse {
+ 	struct f_ellipse	*next;
+ } F_ellipse;
+ 
+-#define INVALID_ELLIPSE(e)	\
++#define INVALID_ELLIPSE(e)						\
+ 	e-&gt;type &lt; T_ELLIPSE_BY_RAD || e-&gt;type &gt; T_CIRCLE_BY_DIA ||	\
+-	COMMON_PROPERTIES(e) || (e-&gt;direction != 1 && e-&gt;direction != 0) || \
+-	e-&gt;radiuses.x == 0 || e-&gt;radiuses.y == 0 || \
++	COMMON_PROPERTIES(e) || (e-&gt;direction != 1 && e-&gt;direction != 0) ||  \
++	e-&gt;radiuses.x == 0 || e-&gt;radiuses.y == 0 ||			\
+ 	e-&gt;angle &lt; -7. || e-&gt;angle &gt; 7.
+ 
+ typedef struct f_arc {
+@@ -126,12 +126,16 @@ typedef struct f_arc {
+ #define CIRCARC       9
+ #define CIRCULARARC   &gt; 8
+ 
+-#define INVALID_ARC(a)	\
++#define COINCIDENT(a, b)	(a.x == b.x && a.y == b.y)
++#define INVALID_ARC(a)							\
+ 	a-&gt;type &lt; T_OPEN_ARC || a-&gt;type &gt; T_PIE_WEDGE_ARC ||		\
+ 	COMMON_PROPERTIES(a) || a-&gt;cap_style &lt; 0 || a-&gt;cap_style &gt; 2 ||	\
+ 	a-&gt;center.x &lt; COORD_MIN || a-&gt;center.x &gt; COORD_MAX ||		\
+ 	a-&gt;center.y &lt; COORD_MIN || a-&gt;center.y &gt; COORD_MAX ||		\
+-	(a-&gt;direction != 0 && a-&gt;direction != 1)
++	(a-&gt;direction != 0 && a-&gt;direction != 1) ||			\
++	COINCIDENT(a-&gt;point[0], a-&gt;point[1]) ||				\
++	COINCIDENT(a-&gt;point[0], a-&gt;point[2]) ||				\
++	COINCIDENT(a-&gt;point[1], a-&gt;point[2])
+ 
+ typedef struct f_line {
+ 	int			type;
+diff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at
+index 1b4baea..da9ea3e 100644
+--- a/fig2dev/tests/read.at
++++ b/fig2dev/tests/read.at
+@@ -2,7 +2,7 @@ dnl Fig2dev: Translate Fig code to various Devices
+ dnl Copyright (c) 1991 by Micah Beck
+ dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+ dnl Parts Copyright (c) 1989-2015 by Brian V. Smith
+-dnl Parts Copyright (c) 2015-2024 by Thomas Loimer
++dnl Parts Copyright (c) 2015-2025 by Thomas Loimer
+ dnl
+ dnl Any party obtaining a copy of these files is granted, free of charge, a
+ dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+@@ -14,7 +14,7 @@ dnl party to do so, with the only requirement being that the above copyright
+ dnl and this permission notice remain intact.
+ 
+ dnl read.at
+-dnl Author: Thomas Loimer, 2017-2024
++dnl Author: Thomas Loimer, 2017-2025
+ 
+ 
+ AT_BANNER([Sanitize and harden input.])
+@@ -248,6 +248,16 @@ EOF
+ ])
+ AT_CLEANUP
+ 
++AT_SETUP([reject arcs with coincident points, ticket #186])
++AT_KEYWORDS(read.c arc)
++AT_CHECK([fig2dev -L pict2e &lt;&lt;EOF
++FIG_FILE_TOP
++5 1 0 15 0 7 50 0 -1 0.0 1 0 0 0 0.0 0.0 1 1 1 1 2 0
++EOF
++], 1, ignore, [Invalid arc object at line 10.
++])
++AT_CLEANUP
++
+ AT_SETUP([survive debian bugs #881143, #881144])
+ AT_KEYWORDS([font pic tikz])
+ AT_CHECK([fig2dev -L pic &lt;&lt;EOF
+-- 
+2.25.1
+
+</pre>
+              </div>
+            </div>
+            
+            <div id="applied-patches" class="tab-content">
+              <h3>应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">
+
+# ===== 应用成功的补丁块 1 =====
+
+From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001
+From: Thomas Loimer &lt;thomas.loimer@tuwien.ac.at&gt;
+Date: Wed, 22 Jan 2025 23:27:43 +0100
+Subject: [PATCH] Reject arcs with co-incident points, ticket #186
+
+
+diff --git a/fig2dev/object.h b/fig2dev/object.h
+index 7f83939..50afbf0 100644
+--- a/fig2dev/object.h
++++ b/fig2dev/object.h
+@@ -92,10 +92,10 @@ typedef struct f_ellipse {
+ 	struct f_ellipse	*next;
+ } F_ellipse;
+ 
+-#define INVALID_ELLIPSE(e)	\
++#define INVALID_ELLIPSE(e)						\
+ 	e-&gt;type &lt; T_ELLIPSE_BY_RAD || e-&gt;type &gt; T_CIRCLE_BY_DIA ||	\
+-	COMMON_PROPERTIES(e) || (e-&gt;direction != 1 && e-&gt;direction != 0) || \
+-	e-&gt;radiuses.x == 0 || e-&gt;radiuses.y == 0 || \
++	COMMON_PROPERTIES(e) || (e-&gt;direction != 1 && e-&gt;direction != 0) ||  \
++	e-&gt;radiuses.x == 0 || e-&gt;radiuses.y == 0 ||			\
+ 	e-&gt;angle &lt; -7. || e-&gt;angle &gt; 7.
+ 
+ typedef struct f_arc {
+
+
+# ===== 应用成功的补丁块 2 =====
+
+From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001
+From: Thomas Loimer &lt;thomas.loimer@tuwien.ac.at&gt;
+Date: Wed, 22 Jan 2025 23:27:43 +0100
+Subject: [PATCH] Reject arcs with co-incident points, ticket #186
+
+
+diff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at
+index 1b4baea..da9ea3e 100644
+--- a/fig2dev/tests/read.at
++++ b/fig2dev/tests/read.at
+@@ -248,6 +248,16 @@ EOF
+ ])
+ AT_CLEANUP
+ 
++AT_SETUP([reject arcs with coincident points, ticket #186])
++AT_KEYWORDS(read.c arc)
++AT_CHECK([fig2dev -L pict2e &lt;&lt;EOF
++FIG_FILE_TOP
++5 1 0 15 0 7 50 0 -1 0.0 1 0 0 0 0.0 0.0 1 1 1 1 2 0
++EOF
++], 1, ignore, [Invalid arc object at line 10.
++])
++AT_CLEANUP
++
+ AT_SETUP([survive debian bugs #881143, #881144])
+ AT_KEYWORDS([font pic tikz])
+ AT_CHECK([fig2dev -L pic &lt;&lt;EOF
+-- 
+2.25.1
+
+</pre>
+              </div>
+            </div>
+            
+            <div id="remaining-patch" class="tab-content">
+              <h3>未应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001
+From: Thomas Loimer &lt;thomas.loimer@tuwien.ac.at&gt;
+Date: Wed, 22 Jan 2025 23:27:43 +0100
+Subject: [PATCH] Reject arcs with co-incident points, ticket #186
+
+
+diff --git a/fig2dev/object.h b/fig2dev/object.h
+index 7f83939..50afbf0 100644
+--- a/fig2dev/object.h
++++ b/fig2dev/object.h
+@@ -3,7 +3,7 @@
+  * Copyright (c) 1991 by Micah Beck
+  * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+  * Parts Copyright (c) 1989-2015 by Brian V. Smith
+- * Parts Copyright (c) 2015-2023 by Thomas Loimer
++ * Parts Copyright (c) 2015-2025 by Thomas Loimer
+  *
+  * Any party obtaining a copy of these files is granted, free of charge, a
+  * full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+@@ -126,12 +126,16 @@ typedef struct f_arc {
+ #define CIRCARC       9
+ #define CIRCULARARC   &gt; 8
+ 
+-#define INVALID_ARC(a)	\
++#define COINCIDENT(a, b)	(a.x == b.x && a.y == b.y)
++#define INVALID_ARC(a)							\
+ 	a-&gt;type &lt; T_OPEN_ARC || a-&gt;type &gt; T_PIE_WEDGE_ARC ||		\
+ 	COMMON_PROPERTIES(a) || a-&gt;cap_style &lt; 0 || a-&gt;cap_style &gt; 2 ||	\
+ 	a-&gt;center.x &lt; COORD_MIN || a-&gt;center.x &gt; COORD_MAX ||		\
+ 	a-&gt;center.y &lt; COORD_MIN || a-&gt;center.y &gt; COORD_MAX ||		\
+-	(a-&gt;direction != 0 && a-&gt;direction != 1)
++	(a-&gt;direction != 0 && a-&gt;direction != 1) ||			\
++	COINCIDENT(a-&gt;point[0], a-&gt;point[1]) ||				\
++	COINCIDENT(a-&gt;point[0], a-&gt;point[2]) ||				\
++	COINCIDENT(a-&gt;point[1], a-&gt;point[2])
+ 
+ typedef struct f_line {
+ 	int			type;
+diff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at
+index 1b4baea..da9ea3e 100644
+--- a/fig2dev/tests/read.at
++++ b/fig2dev/tests/read.at
+@@ -2,7 +2,7 @@ dnl Fig2dev: Translate Fig code to various Devices
+ dnl Copyright (c) 1991 by Micah Beck
+ dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+ dnl Parts Copyright (c) 1989-2015 by Brian V. Smith
+-dnl Parts Copyright (c) 2015-2024 by Thomas Loimer
++dnl Parts Copyright (c) 2015-2025 by Thomas Loimer
+ dnl
+ dnl Any party obtaining a copy of these files is granted, free of charge, a
+ dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+@@ -14,7 +14,7 @@ dnl party to do so, with the only requirement being that the above copyright
+ dnl and this permission notice remain intact.
+ 
+ dnl read.at
+-dnl Author: Thomas Loimer, 2017-2024
++dnl Author: Thomas Loimer, 2017-2025
+ 
+ 
+ AT_BANNER([Sanitize and harden input.])
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+                <div class="card">
+                  <h2>应用成功的补丁块</h2>
+                  <table>
+                    <tr>
+                      <th>块索引</th>
+                      <th>修改文件</th>
+                      <th>修改位置</th>
+                      <th>操作</th>
+                    </tr>
+                    
+                    <tr>
+                      <td>1</td>
+                      <td>fig2dev/object.h</td>
+                      <td>92-92</td>
+                      <td><a href="applied_chunk_1.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>2</td>
+                      <td>fig2dev/tests/read.at</td>
+                      <td>248-248</td>
+                      <td><a href="applied_chunk_2.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+                  </table>
+                </div>
+                
+            <div class="card">
+              <h2>剩余补丁</h2>
+              <p>有 <strong class="info">4</strong> 个块未成功应用，已生成剩余补丁:</p>
+              <p><code>/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/remaining_chunks_20250604_000810.patch</code></p>
+              <p><a href="remaining_patch.diff" target="_blank">查看剩余补丁</a></p>
+            </div>
+            
+        <style>
+        .code-container {
+          max-height: 500px;
+          overflow-y: auto;
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          border: 1px solid #eee;
+        }
+        
+        .code-block {
+          padding: 15px;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: monospace;
+          font-size: 13px;
+          line-height: 1.4;
+        }
+        
+        /* 为补丁内容添加语法高亮 */
+        .code-block .add {
+          background-color: #e6ffed;
+          color: #22863a;
+        }
+        
+        .code-block .remove {
+          background-color: #ffeef0;
+          color: #cb2431;
+        }
+        
+        .code-block .hunk {
+          color: #0366d6;
+          background-color: #f1f8ff;
+        }
+        
+        .code-block .header {
+          color: #6f42c1;
+          font-weight: bold;
+        }
+        </style>
+        
+        <script>
+        // 对补丁内容应用简单的语法高亮
+        document.addEventListener('DOMContentLoaded', function() {
+          const codeBlocks = document.querySelectorAll('.code-block');
+          codeBlocks.forEach(function(block) {
+            let html = block.innerHTML;
+            
+            // 替换添加的行
+            html = html.replace(/^(\+[^+].*)/gm, '<span class="add">$1</span>');
+            
+            // 替换删除的行
+            html = html.replace(/^(-[^-].*)/gm, '<span class="remove">$1</span>');
+            
+            // 替换区块头
+            html = html.replace(/^(@@.*@@)/gm, '<span class="hunk">$1</span>');
+            
+            // 替换diff头 - 修复无效转义序列
+            html = html.replace(/^(diff --git.*|index.*|---.*|\+\+\+.*)/gm, '<span class="header">$1</span>');
+            
+            block.innerHTML = html;
+          });
+        });
+        </script>
+        
+    
+  </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+[
+  {
+    "索引": 1,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/chunk_patches/chunk_001_20250603_213442.patch",
+    "实际补丁": null,
+    "修改文件": "src/effects_i_dsp.c",
+    "修改位置": "362-362",
+    "内容": "commit 2ce02fea7b350de9ddfbcf542ba4dd59a8ab255b\nAuthor: Mans Rullgard <mans@mansr.com>\nDate:   Wed Apr 24 15:08:51 2019 +0100\n\n    fix possible null pointer deref in lsx_make_lpf() (CVE-2019-8357)\n    \n    If the buffer allocation fails, return NULL.\n\ndiff --git a/src/effects_i_dsp.c b/src/effects_i_dsp.c\nindex e32dfa05..88b1b390 100644\n--- a/src/effects_i_dsp.c\n+++ b/src/effects_i_dsp.c\n@@ -362,6 +362,9 @@ double * lsx_make_lpf(int num_taps, double Fc, double beta, double rho,\n   assert(Fc >= 0 && Fc <= 1);\n   lsx_debug(\"make_lpf(n=%i Fc=%.7g β=%g ρ=%g dc-norm=%i scale=%g)\", num_taps, Fc, beta, rho, dc_norm, scale);\n \n+  if (!h)\n+    return NULL;\n+\n   for (i = 0; i <= m / 2; ++i) {\n     double z = i - .5 * m, x = z * M_PI, y = z * mult1;\n     h[i] = x? sin(Fc * x) / x : Fc;\n"
+  }
+]

@@ -34,6 +34,7 @@ from llm_assistant import LLMAssistant
 from patch_evaluator import PatchEvaluator
 from patch_processor import PatchProcessor
 # from utils.git_operations import parse_github_url
+from patch_utils import parse_repo_url as patch_utils_parse_repo_url, download_patch, generate_patch_from_git
 
 
 def find_existing_repo(repo_base_path: Path, repo_url: str) -> Optional[Path]:
@@ -48,20 +49,24 @@ def find_existing_repo(repo_base_path: Path, repo_url: str) -> Optional[Path]:
         如果找到，返回仓库路径；否则返回None
     """
     try:
-        # 解析仓库名称
-        repo_name = repo_url.rstrip('/').split('/')[-1]
-        if repo_name.endswith('.git'):
-            repo_name = repo_name[:-4]
+        # 解析仓库信息
+        repo_info = parse_repo_url(repo_url)
+        repo_owner = repo_info['owner']
+        repo_name = repo_info['name']
+        
+        # 使用owner_name格式作为本地仓库名称
+        local_repo_name = f"{repo_owner}_{repo_name}"
         
         # 检查可能的仓库路径
         potential_paths = [
+            repo_base_path / local_repo_name,  # owner_name格式
             repo_base_path / repo_name,  # 直接用仓库名
             repo_base_path / repo_name.lower(),  # 小写仓库名
         ]
         
         # 检查每个潜在路径是否是一个git仓库
         for path in potential_paths:
-            logger.info(f"path:{path}")
+            logger.info(f"检查潜在仓库路径: {path}")
             git_dir = path / '.git'
             if git_dir.exists() and git_dir.is_dir():
                 # 验证远程URL是否匹配
@@ -98,6 +103,27 @@ def normalize_git_url(url: str) -> str:
     return url
 
 
+def parse_repo_url(url: str) -> Dict[str, str]:
+    """
+    从不同格式的仓库URL中解析owner和name信息，并提供正确的克隆URL
+    
+    使用patch_utils.py中的实现，保持一致性
+    
+    Args:
+        url: 仓库URL
+        
+    Returns:
+        包含owner、name和clone_url的字典
+    """
+    result = patch_utils_parse_repo_url(url)
+    # 只保留我们需要的字段
+    return {
+        'owner': result['owner'],
+        'name': result['name'],
+        'clone_url': result['clone_url']
+    }
+
+
 def clone_repo(repo_url: str, target_dir: Path) -> bool:
     """
     克隆仓库到指定目录
@@ -115,9 +141,14 @@ def clone_repo(repo_url: str, target_dir: Path) -> bool:
         # 确保目标目录存在
         target_dir.parent.mkdir(parents=True, exist_ok=True)
         
+        # 获取正确的克隆URL
+        repo_info = parse_repo_url(repo_url)
+        clone_url = repo_info['clone_url']
+        logger.info(f"使用克隆URL: {clone_url}")
+        
         # 克隆仓库
         result = subprocess.run(
-            ['git', 'clone', repo_url, str(target_dir)],
+            ['git', 'clone', clone_url, str(target_dir)],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
@@ -127,7 +158,7 @@ def clone_repo(repo_url: str, target_dir: Path) -> bool:
             logger.error(f"克隆仓库失败: {result.stderr}")
             return False
             
-        logger.info(f"成功克隆仓库到 {target_dir}")
+        logger.info(f"成功克隆仓库到: {target_dir}")
         return True
     except Exception as e:
         logger.error(f"克隆仓库时出错: {e}")
@@ -195,11 +226,15 @@ def handle_repo_url(repo_url: str, config_data: dict) -> tuple:
     
     logger.info(f"使用基础仓库路径: {base_path}")
     
-    # 从URL解析仓库名称
-    repo_name = repo_url.rstrip('/').split('/')[-1]
-    if repo_name.endswith('.git'):
-        repo_name = repo_name[:-4]
-        
+    # 解析仓库URL，获取owner和name
+    repo_info = parse_repo_url(repo_url)
+    repo_owner = repo_info['owner']
+    repo_name = repo_info['name']
+    clone_url = repo_info['clone_url']
+    
+    # 使用owner_name格式作为本地仓库名称
+    local_repo_name = f"{repo_owner}_{repo_name}"
+    
     # 查找是否存在该仓库
     existing_repo = find_existing_repo(base_path, repo_url)
     if existing_repo:
@@ -207,8 +242,8 @@ def handle_repo_url(repo_url: str, config_data: dict) -> tuple:
         return str(base_path), str(existing_repo)
     
     # 仓库不存在，需要克隆
-    target_dir = base_path / repo_name
-    if clone_repo(repo_url, target_dir):
+    target_dir = base_path / local_repo_name
+    if clone_repo(clone_url, target_dir):
         return str(base_path), str(target_dir)
     else:
         # 克隆失败，使用原始路径
@@ -1494,54 +1529,24 @@ def validate_commit_arg(arg_value):
     
     valid_commits = []
     for commit in commits:
-        # 检查是否是URL格式
-        if commit.startswith("http") and "/commit/" in commit:
+        # 检查是否是URL格式 - 支持多种平台
+        if commit.startswith("http") and (
+            "/commit/" in commit or  # GitHub/Gitee格式
+            ("/ci/" in commit and "sourceforge.net" in commit)  # SourceForge格式
+        ):
             valid_commits.append(commit)
         # 检查是否是Commit Hash格式
         elif re.fullmatch(r'[0-9a-fA-F]+', commit) and len(commit) >= 6:
             valid_commits.append(commit)
         else:
             raise argparse.ArgumentTypeError(
-                f"'{commit}' 不是有效的补丁URL（需以http开头并包含/commit/）或commit hash"
+                f"'{commit}' 不是有效的补丁URL（需以http开头并包含/commit/或/ci/）或commit hash"
             )
     
     if not valid_commits:
         raise argparse.ArgumentTypeError("必须提供至少一个有效的commit")
     
     return valid_commits
-
-def download_patch(url: str, output_path: Path) -> Path:
-    """
-    下载补丁文件
-    
-    Args:
-        url: 补丁文件URL
-        output_path: 输出路径
-        
-    Returns:
-        下载的文件路径
-    """
-    try:
-        # 确保输出目录存在
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # 下载文件
-        logger.info(f"开始下载补丁: {url} -> {output_path}")
-        
-        # 使用requests下载
-        import requests
-        response = requests.get(url, allow_redirects=True)
-        response.raise_for_status()  # 确保请求成功
-        
-        # 写入文件
-        with open(output_path, 'wb') as f:
-            f.write(response.content)
-            
-        logger.info(f"补丁下载成功: {output_path}")
-        return output_path
-    except Exception as e:
-        logger.error(f"下载补丁失败: {e}")
-        return Path()  # 返回空路径表示失败
 
 def find_or_clone_repo(repo_url: str, repo_base_path: Path) -> Path:
     """
@@ -1558,13 +1563,18 @@ def find_or_clone_repo(repo_url: str, repo_base_path: Path) -> Path:
         # 确保基础目录存在
         repo_base_path.mkdir(parents=True, exist_ok=True)
         
-        # 从URL解析仓库名称
-        repo_name = repo_url.rstrip('/').split('/')[-1]
-        if repo_name.endswith('.git'):
-            repo_name = repo_name[:-4]
+        # 解析仓库信息
+        repo_info = parse_repo_url(repo_url)
+        repo_owner = repo_info['owner']
+        repo_name = repo_info['name']
+        clone_url = repo_info['clone_url']
+        
+        # 使用owner_name格式作为本地仓库名称
+        local_repo_name = f"{repo_owner}_{repo_name}"
         
         # 检查可能的仓库路径
         potential_paths = [
+            repo_base_path / local_repo_name,  # owner_name格式
             repo_base_path / repo_name,  # 直接用仓库名
             repo_base_path / repo_name.lower(),  # 小写仓库名
         ]
@@ -1585,13 +1595,13 @@ def find_or_clone_repo(repo_url: str, repo_base_path: Path) -> Path:
                 if result.returncode == 0:
                     remote_url = result.stdout.strip()
                     # 简单验证URL是否匹配(忽略.git后缀和协议差异)
-                    if normalize_git_url(remote_url) == normalize_git_url(repo_url):
+                    if normalize_git_url(remote_url) == normalize_git_url(clone_url):
                         logger.info(f"找到已存在的仓库: {path}")
                         return path
         
         # 如果没有找到匹配的仓库，克隆一个新的
-        logger.info(f"没有找到仓库，开始克隆: {repo_url}")
-        clone_path = repo_base_path / repo_name
+        logger.info(f"没有找到仓库，开始克隆: {clone_url}")
+        clone_path = repo_base_path / local_repo_name
         
         # 如果路径已存在但不是正确的仓库，先删除
         if clone_path.exists():
@@ -1601,9 +1611,10 @@ def find_or_clone_repo(repo_url: str, repo_base_path: Path) -> Path:
             else:
                 clone_path.unlink()
         
-        # 克隆仓库
+        # 使用解析得到的clone_url进行克隆
+        logger.info(f"使用克隆URL: {clone_url}")
         result = subprocess.run(
-            ['git', 'clone', repo_url, str(clone_path)],
+            ['git', 'clone', clone_url, str(clone_path)],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
@@ -1618,6 +1629,7 @@ def find_or_clone_repo(repo_url: str, repo_base_path: Path) -> Path:
         
     except Exception as e:
         logger.error(f"查找或克隆仓库时出错: {e}")
+        logger.error(traceback.format_exc())
         raise
 
 def verify_commit_exists(commit: str, repo_path: Path) -> bool:
@@ -1680,6 +1692,12 @@ def process_multiple_commits(commits: list, config_data: dict, repo_path: Path, 
             updated_config = config_data.copy()
             updated_config['mode1']['patch_url'] = commit_info['patch_url']
             
+            # 如果commit_info中直接提供了patch_path，添加到配置中
+            if 'patch_path' in commit_info:
+                logger.info(f"使用本地生成的补丁文件: {commit_info['patch_path']}")
+                if 'patch_path' not in updated_config['mode1']:
+                    updated_config['mode1']['patch_path'] = commit_info['patch_path']
+            
             # 保存更新后的配置
             updated_config_path = f"temp_config_{idx}.yaml"
             with open(updated_config_path, 'w') as f:
@@ -1714,270 +1732,360 @@ def extract_commit_info(commit: str, repo_path: Path, config_data: dict) -> Opti
     repo_owner = config_data['common'].get('repo_owner', '')
     repo_name = config_data['common'].get('repo_name', '')
     
-    if commit.startswith("http") and "/commit/" in commit:
-        # 解析URL中的信息
-        from patch_utils import parse_github_url
-        url_info = parse_github_url(commit)
-        if url_info:
-            repo_owner = url_info['owner']
-            repo_name = url_info['repo']
-            commit_hash = url_info['commit_sha']
+    if commit.startswith("http"):
+        # 解析不同格式的URL
+        repo_info = patch_utils_parse_repo_url(commit)
+        repo_owner = repo_info['owner']
+        repo_name = repo_info['name']
+        
+        if repo_info['commit_sha']:
+            commit_hash = repo_info['commit_sha']
+        else:
+            # 尝试从URL中提取commit hash
+            if "/commit/" in commit:
+                # GitHub/Gitee格式
+                commit_hash = commit.split("/commit/")[1].split(".")[0]  # 移除可能的.patch后缀
+            elif "/-/commit/" in commit:
+                # GitLab特殊格式
+                commit_hash = commit.split("/-/commit/")[1].split(".")[0]
+            elif "/ci/" in commit:
+                # SourceForge格式
+                commit_hash = commit.split("/ci/")[1].split("/")[0]
     
     # 验证commit是否存在于仓库中
-    if not verify_commit_exists(commit_hash, repo_path):
-        logger.warning(f"Commit {commit_hash} 不存在于仓库中")
+    if verify_commit_exists(commit_hash, repo_path):
+        logger.info(f"Commit {commit_hash} 存在于仓库中")
         
-        # 如果是URL格式，尝试下载补丁验证
+        # 构建patch URL
+        if not repo_owner or not repo_name:
+            logger.error(f"无法从配置或URL中提取仓库所有者和名称")
+            return None
+        
+        # 根据不同平台构建不同的patch URL
+        patch_url = None
+        repo_url = config_data['common'].get('repo_url', '')
+        
+        if "github.com" in repo_url:
+            patch_url = f"https://github.com/{repo_owner}/{repo_name}/commit/{commit_hash}.patch"
+        elif "gitee.com" in repo_url:
+            patch_url = f"https://gitee.com/{repo_owner}/{repo_name}/commit/{commit_hash}.patch"
+        elif "gitlab.com" in repo_url:
+            patch_url = f"https://gitlab.com/{repo_owner}/{repo_name}/-/commit/{commit_hash}.patch"
+        elif "sourceforge.net" in repo_url or "sf.net" in repo_url:
+            # SourceForge URL格式：项目名/仓库名
+            patch_url = f"https://sourceforge.net/p/{repo_owner}/{repo_name}/ci/{commit_hash}/"
+        else:
+            # 默认使用GitHub格式
+            patch_url = f"https://github.com/{repo_owner}/{repo_name}/commit/{commit_hash}.patch"
+        
+        return {
+            'commit_sha': commit_hash,
+            'patch_url': patch_url,
+            'repo_owner': repo_owner,
+            'repo_name': repo_name
+        }
+    else:
+        logger.warning(f"Commit {commit_hash} 不存在于仓库中，尝试下载或生成补丁")
+        
+        # 创建临时目录用于下载补丁
+        temp_dir = Path("temp_patches")
+        temp_dir.mkdir(exist_ok=True)
+        
+        patch_path = temp_dir / f"{commit_hash[:8]}.patch"
+        patch_url = None
+        
+        # 如果是URL格式，尝试下载补丁
         if commit.startswith("http"):
             # 构建patch URL
-            if not commit.endswith('.patch'):
-                patch_url = f"{commit}.patch"
-            else:
+            if "github.com" in commit:
+                if not commit.endswith('.patch'):
+                    patch_url = f"{commit}.patch"
+                else:
+                    patch_url = commit
+            elif "gitee.com" in commit:
+                if not commit.endswith('.patch'):
+                    patch_url = f"{commit}.patch"
+                else:
+                    patch_url = commit
+            elif "gitlab.com" in commit:
+                # GitLab使用特殊格式
+                if "/-/commit/" in commit:
+                    base_url = commit.split("/-/commit/")[0]
+                    commit_id = commit.split("/-/commit/")[1].split(".")[0]
+                    patch_url = f"{base_url}/-/commit/{commit_id}.patch"
+                else:
+                    # 尝试标准格式
+                    if not commit.endswith('.patch'):
+                        patch_url = f"{commit}.patch"
+                    else:
+                        patch_url = commit
+            elif "sourceforge.net" in commit:
+                # SourceForge不提供直接的补丁下载，使用原始URL
                 patch_url = commit
-                
-            # 创建临时目录用于下载补丁
-            temp_dir = Path("temp_patches")
-            temp_dir.mkdir(exist_ok=True)
             
-            patch_path = temp_dir / f"{commit_hash[:8]}.patch"
-            if download_patch(patch_url, patch_path).exists():
-                logger.info(f"成功下载补丁: {patch_path}")
+            if patch_url:
+                try:
+                    # 尝试下载补丁
+                    from patch_utils import download_patch
+                    if download_patch(patch_url, patch_path).exists():
+                        logger.info(f"成功下载补丁: {patch_path}")
+                        return {
+                            'commit_sha': commit_hash,
+                            'patch_url': patch_url,
+                            'repo_owner': repo_owner,
+                            'repo_name': repo_name
+                        }
+                    else:
+                        logger.warning(f"下载补丁失败: {patch_url}")
+                except Exception as e:
+                    logger.warning(f"下载补丁出错: {e}")
+        
+        # 尝试从本地仓库生成补丁
+        try:
+            from patch_utils import generate_patch_from_git
+            if generate_patch_from_git(commit_hash, repo_path, patch_path):
+                logger.info(f"成功从本地仓库生成补丁: {patch_path}")
+                
+                # 构造一个虚拟的patch_url
+                if not patch_url:
+                    patch_url = f"local://{repo_path}/{commit_hash}"
+                
                 return {
                     'commit_sha': commit_hash,
                     'patch_url': patch_url,
                     'repo_owner': repo_owner,
-                    'repo_name': repo_name
+                    'repo_name': repo_name,
+                    'patch_path': str(patch_path)  # 直接提供patch_path
                 }
-            else:
-                logger.error(f"下载补丁失败: {patch_url}")
-                return None
-        else:
-            logger.error(f"Commit {commit_hash} 不存在于仓库中，无法处理")
-            return None
-    
-    # 构建patch URL
-    if not repo_owner or not repo_name:
-        logger.error(f"无法从配置或URL中提取仓库所有者和名称")
+        except Exception as e:
+            logger.error(f"从本地仓库生成补丁失败: {e}")
+        
+        logger.error(f"无法获取提交 {commit_hash} 的补丁")
         return None
     
-    patch_url = f"https://github.com/{repo_owner}/{repo_name}/commit/{commit_hash}.patch"
-    
-    return {
-        'commit_sha': commit_hash,
-        'patch_url': patch_url,
-        'repo_owner': repo_owner,
-        'repo_name': repo_name
-    }
+def clean_config(config_data: dict, config_path: str):
+    config_data['mode1']['branch'] = None
+    config_data['mode1']['repo_url'] = None
+    config_data['mode2']['branch'] = None
+    config_data['mode2']['repo_url'] = None
+    # 写入配置文件
+    with open(config_path, 'w') as f:
+        yaml.dump(config_data, f)
+    logger.info(f"清理配置文件: {config_path}")
 
 def main():
     """主函数"""
     # 获取默认配置文件路径
-    default_config_path = get_default_config_path()
-    
-    parser = argparse.ArgumentParser(description="补丁移植工具")
-    parser.add_argument('commit_pos', type=validate_commit_arg, nargs='?', default=None,
-                       help="补丁URL或commit hash（位置参数，多个用逗号分隔）")
-    parser.add_argument('--config', '-c', type=str, default=str(default_config_path),
-                       help=f"配置文件路径 (默认: {default_config_path})")
-    parser.add_argument('--repo-url', '-r', type=str, required=False,
-                       help="Git仓库URL (必填)")
-    parser.add_argument('--mode', '-m', type=int, choices=[1, 2], default=1,
-                       help="处理模式: 1=单个补丁, 2=批量处理 (默认: 1)")
-    # parser.add_argument('--commit', '-p', type=str, required=False,
-    #                     help="补丁URL或commit hash（命名参数）")
-    parser.add_argument('--target', '-t', type=str, required=False,
-                       help="目标版本，可以是tag或commit hash (必填)")
-    
-    # 先解析参数，不检查未知参数，用于处理URL中可能包含的特殊字符
-    args, unknown = parser.parse_known_args()
-    
-    # 检查是否在未知参数中有完整的URL，如果有可能是commit参数
-    if unknown and args.commit_pos is None:
-        # 尝试找出看起来像URL的参数
-        valid_commits = []
-        for arg in unknown:
-            if (arg.startswith("http") and "/commit/" in arg) or \
-               (re.fullmatch(r'[0-9a-fA-F]+', arg) and len(arg) >= 6):
-                valid_commits.append(arg)
-                unknown.remove(arg)
-        
-        if valid_commits:
-            args.commit_pos = valid_commits
-    
-    # 如果还有未知参数，报错
-    if unknown:
-        parser.error(f"未识别的参数: {' '.join(unknown)}")
-    
-    # 加载配置文件
-    config_path = args.config
     try:
-        with open(config_path, 'r') as f:
-            config_data = yaml.safe_load(f)
-            print("config_data:")
-            pprint.pprint(config_data)
-    except Exception as e:
-        print(f"加载配置文件失败: {e}")
-        sys.exit(1)
+        default_config_path = get_default_config_path()
+        
+        parser = argparse.ArgumentParser(description="补丁移植工具")
+        parser.add_argument('commit_pos', type=validate_commit_arg, nargs='?', default=None,
+                        help="补丁URL或commit hash（位置参数，多个用逗号分隔）")
+        parser.add_argument('--config', '-c', type=str, default=str(default_config_path),
+                        help=f"配置文件路径 (默认: {default_config_path})")
+        parser.add_argument('--repo-url', '-r', type=str, required=False,
+                        help="Git仓库URL (必填)")
+        parser.add_argument('--mode', '-m', type=int, choices=[1, 2], default=1,
+                        help="处理模式: 1=单个补丁, 2=批量处理 (默认: 1)")
+        # parser.add_argument('--commit', '-p', type=str, required=False,
+        #                     help="补丁URL或commit hash（命名参数）")
+        parser.add_argument('--target', '-t', type=str, required=False,
+                        help="目标版本，可以是tag或commit hash (必填)")
+        
+        # 先解析参数，不检查未知参数，用于处理URL中可能包含的特殊字符
+        args, unknown = parser.parse_known_args()
+        
+        # 检查是否在未知参数中有完整的URL，如果有可能是commit参数
+        if unknown and args.commit_pos is None:
+            # 尝试找出看起来像URL的参数
+            valid_commits = []
+            for arg in unknown:
+                if (arg.startswith("http") and "/commit/" in arg) or \
+                (re.fullmatch(r'[0-9a-fA-F]+', arg) and len(arg) >= 6):
+                    valid_commits.append(arg)
+                    unknown.remove(arg)
+            
+            if valid_commits:
+                args.commit_pos = valid_commits
+        
+        # 如果还有未知参数，报错
+        if unknown:
+            parser.error(f"未识别的参数: {' '.join(unknown)}")
+        
+        # 加载配置文件
+        config_path = args.config
+        try:
+            with open(config_path, 'r') as f:
+                config_data = yaml.safe_load(f)
+                # print("config_data:")
+                # pprint.pprint(config_data)
+        except Exception as e:
+            print(f"加载配置文件失败: {e}")
+            sys.exit(1)
 
-    # 确保有commits或配置中已有patch_url
-    if args.mode == 1 and not (args.commit_pos or config_data['mode1'].get('patch_url')):
-        print("错误: 模式1下必须指定补丁URL或commit hash")
-        sys.exit(1)
+        # 确保有commits或配置中已有patch_url
+        if args.mode == 1 and not (args.commit_pos or config_data['mode1'].get('patch_url')):
+            print("错误: 模式1下必须指定补丁URL或commit hash")
+            sys.exit(1)
+            
+        if not (args.target or config_data['common'].get('target_version')):
+            print("错误: 必须指定目标版本")
+            sys.exit(1)
+            
+        # 处理仓库URL并获取仓库路径
+        repo_url = args.repo_url or config_data['common'].get('repo_url', '')
+        if not repo_url:
+            print("错误: 必须指定Git仓库URL")
+            sys.exit(1)
         
-    if not (args.target or config_data['common'].get('target_version')):
-        print("错误: 必须指定目标版本")
-        sys.exit(1)
+        # 根据命令行参数更新配置
+        if args.mode:
+            config_data['common']['mode'] = args.mode
+            
+        if args.target:
+            config_data['common']['target_version'] = args.target
+            
+        # 如果branch未指定或为None，设置为与target_version相同
+        if args.mode == 1:
+            # 确保mode1中存在branch配置
+            if 'branch' not in config_data['mode1'] or config_data['mode1']['branch'] is None:
+                target_version = config_data['common']['target_version']
+                # 如果target_version是列表，使用第一个值
+                if isinstance(target_version, list):
+                    branch_value = target_version[0]
+                else:
+                    branch_value = target_version
+                config_data['mode1']['branch'] = branch_value
+                logger.info(f"branch未指定，设置为与target_version相同: {branch_value}")
+        # 对mode2也做同样处理
+        elif args.mode == 2:
+            if 'branch' not in config_data['mode2'] or config_data['mode2']['branch'] is None:
+                target_version = config_data['common']['target_version']
+                # 如果target_version是列表，使用第一个值
+                if isinstance(target_version, list):
+                    branch_value = target_version[0]
+                else:
+                    branch_value = target_version
+                config_data['mode2']['branch'] = branch_value
+                logger.info(f"branch未指定，设置为与target_version相同: {branch_value}")
         
-    # 处理仓库URL并获取仓库路径
-    repo_url = args.repo_url or config_data['common'].get('repo_url', '')
-    if not repo_url:
-        print("错误: 必须指定Git仓库URL")
-        sys.exit(1)
-    
-    # 根据命令行参数更新配置
-    if args.mode:
-        config_data['common']['mode'] = args.mode
-        
-    if args.target:
-        config_data['common']['target_version'] = args.target
-        
-    # 如果branch未指定或为None，设置为与target_version相同
-    if args.mode == 1:
-        # 确保mode1中存在branch配置
-        if 'branch' not in config_data['mode1'] or config_data['mode1']['branch'] is None:
-            target_version = config_data['common']['target_version']
-            # 如果target_version是列表，使用第一个值
-            if isinstance(target_version, list):
-                branch_value = target_version[0]
-            else:
-                branch_value = target_version
-            config_data['mode1']['branch'] = branch_value
-            logger.info(f"branch未指定，设置为与target_version相同: {branch_value}")
-    # 对mode2也做同样处理
-    elif args.mode == 2:
-        if 'branch' not in config_data['mode2'] or config_data['mode2']['branch'] is None:
-            target_version = config_data['common']['target_version']
-            # 如果target_version是列表，使用第一个值
-            if isinstance(target_version, list):
-                branch_value = target_version[0]
-            else:
-                branch_value = target_version
-            config_data['mode2']['branch'] = branch_value
-            logger.info(f"branch未指定，设置为与target_version相同: {branch_value}")
-    
-    # 查找或克隆仓库
-    try:
-        # 获取repo_base_path，默认使用 ~/.cache/port_patch/
-        repo_base_path = config_data['common'].get('repo_base_path', '')
-        if not repo_base_path:
-            repo_base_path = Path.home() / '.cache' / 'port_patch'
-            config_data['common']['repo_base_path'] = str(repo_base_path)
-        else:
-            # 扩展路径中的特殊字符
-            repo_base_path = expand_path(repo_base_path)
         
         # 查找或克隆仓库
-        repo_path = find_or_clone_repo(repo_url, repo_base_path)
-        config_data['common']['repo_path'] = str(repo_path)
-        logger.info(f"使用仓库路径: {repo_path}")
-        # # 从仓库URL解析owner和name
-        # from patch_utils import parse_github_url
-        # url_info = parse_github_url(repo_url)
-        # if url_info:
-        #     config_data['common']['repo_owner'] = url_info['owner']
-        #     config_data['common']['repo_name'] = url_info['repo']
-        
-        # # 更新repo_url配置
-        # if args.mode == 1:
-        #     config_data['common']['repo_url'] = repo_url
-        # else:
-        #     config_data['mode2']['repo_url'] = repo_url
-            
-    # if commit_param and args.mode == 1:
-    #     # 如果提供的是commit hash而不是完整URL，需要构建完整URL
-    #     if not commit_param.startswith('http'):
-    #         # 从repo_url解析owner和repo
-    #         from patch_utils import parse_github_url
-    #         info = parse_github_url(args.repo_url)
-    #         if info:
-    #             patch_url = f"https://github.com/{info['owner']}/{info['repo']}/commit/{commit_param}.patch"
-    #             config_data['mode1']['patch_url'] = patch_url
-    #     else:
-    #         # 如果是完整的commit URL，根据是否包含.patch后缀处理
-    #         if commit_param.endswith('.patch'):
-    #             config_data['mode1']['patch_url'] = commit_param
-    #         else:
-    #             config_data['mode1']['patch_url'] = f"{commit_param}.patch"
-    #     # 保存更新后的配置
-    #     with open(config_path, 'w') as f:
-    #         yaml.dump(config_data, f)         
-    # except Exception as e:
-    #     logger.error(f"处理仓库路径时出错: {e}")
-    #     sys.exit(1)
-    except Exception as e:
-        logger.error(f"处理仓库路径时出错: {e}")
-        sys.exit(1)
-    
-    # 从仓库URL解析owner和name
-    from patch_utils import parse_github_url
-    url_info = parse_github_url(repo_url)
-    if url_info:
-        config_data['common']['repo_owner'] = url_info['owner']
-        config_data['common']['repo_name'] = url_info['repo']
-    
-    # 更新repo_url配置
-    if args.mode == 1:
-        config_data['common']['repo_url'] = repo_url
-    else:
-        config_data['mode2']['repo_url'] = repo_url
-        
-    # 保存更新后的配置
-    with open(config_path, 'w') as f:
-        yaml.dump(config_data, f)
-    
-    # 根据模式处理
-    if args.mode == 1:
-        # 如果有commit参数，处理它们
-        if args.commit_pos:
-            # 将输入的单个字符串转为列表
-            commits = args.commit_pos
-            if isinstance(commits, str):
-                commits = [commits]
-            
-            # 如果只有一个commit，使用普通流程
-            if len(commits) == 1:
-                # 提取commit信息
-                commit_info = extract_commit_info(commits[0], repo_path, config_data)
-                if commit_info:
-                    config_data['mode1']['patch_url'] = commit_info['patch_url']
-                    
-                    # 保存更新后的配置
-                    with open(config_path, 'w') as f:
-                        yaml.dump(config_data, f)
-                    
-                    # 创建并运行工具
-                    tool = PatchBackportTool(config_path=config_path)
-                    tool.run()
-                else:
-                    logger.error(f"无法处理commit: {commits[0]}")
-                    sys.exit(1)
+        try:
+            # 获取repo_base_path，默认使用 ~/.cache/port_patch/
+            repo_base_path = config_data['common'].get('repo_base_path', '')
+            if not repo_base_path:
+                repo_base_path = Path.home() / '.cache' / 'port_patch'
+                config_data['common']['repo_base_path'] = str(repo_base_path)
             else:
-                # 处理多个commit
-                process_multiple_commits(commits, config_data, repo_path, config_path)
+                # 扩展路径中的特殊字符
+                repo_base_path = expand_path(repo_base_path)
+            
+            # 查找或克隆仓库
+            repo_path = find_or_clone_repo(repo_url, repo_base_path)
+            config_data['common']['repo_path'] = str(repo_path)
+            logger.info(f"使用仓库路径: {repo_path}")
+            
+            # # 更新repo_url配置
+            # if args.mode == 1:
+            #     config_data['common']['repo_url'] = repo_url
+            # else:
+            #     config_data['mode2']['repo_url'] = repo_url
+                
+        # if commit_param and args.mode == 1:
+        #     # 如果提供的是commit hash而不是完整URL，需要构建完整URL
+        #     if not commit_param.startswith('http'):
+        #         # 从repo_url解析owner和repo
+        #         from patch_utils import parse_github_url
+        #         info = parse_github_url(args.repo_url)
+        #         if info:
+        #             patch_url = f"https://github.com/{info['owner']}/{info['repo']}/commit/{commit_param}.patch"
+        #             config_data['mode1']['patch_url'] = patch_url
+        #     else:
+        #         # 如果是完整的commit URL，根据是否包含.patch后缀处理
+        #         if commit_param.endswith('.patch'):
+        #             config_data['mode1']['patch_url'] = commit_param
+        #         else:
+        #             config_data['mode1']['patch_url'] = f"{commit_param}.patch"
+        #     # 保存更新后的配置
+        #     with open(config_path, 'w') as f:
+        #         yaml.dump(config_data, f)         
+        # except Exception as e:
+        #     logger.error(f"处理仓库路径时出错: {e}")
+        #     sys.exit(1)
+        except Exception as e:
+            logger.error(f"处理仓库路径时出错: {e}")
+            sys.exit(1)
+        
+        # 从仓库URL解析owner和name
+        repo_info = parse_repo_url(repo_url)
+        config_data['common']['repo_owner'] = repo_info['owner']
+        config_data['common']['repo_name'] = repo_info['name']
+        
+        # 更新repo_url配置
+        if args.mode == 1:
+            config_data['common']['repo_url'] = repo_url
         else:
-            # 使用配置文件中的patch_url
+            config_data['mode2']['repo_url'] = repo_url
+        
+        print("config_data:")
+        pprint.pprint(config_data)
+        # 保存更新后的配置
+        with open(config_path, 'w') as f:
+            yaml.dump(config_data, f)
+        
+        # 根据模式处理
+        if args.mode == 1:
+            # 如果有commit参数，处理它们
+            if args.commit_pos:
+                # 将输入的单个字符串转为列表
+                commits = args.commit_pos
+                if isinstance(commits, str):
+                    commits = [commits]
+                
+                # 如果只有一个commit，使用普通流程
+                if len(commits) == 1:
+                    # 提取commit信息
+                    commit_info = extract_commit_info(commits[0], repo_path, config_data)
+                    if commit_info:
+                        config_data['mode1']['patch_url'] = commit_info['patch_url']
+                        
+                        # 保存更新后的配置
+                        with open(config_path, 'w') as f:
+                            yaml.dump(config_data, f)
+                        
+                        # 创建并运行工具
+                        tool = PatchBackportTool(config_path=config_path)
+                        tool.run()
+                    else:
+                        logger.error(f"无法处理commit: {commits[0]}")
+                        sys.exit(1)
+                else:
+                    # 处理多个commit
+                    process_multiple_commits(commits, config_data, repo_path, config_path)
+            else:
+                # 使用配置文件中的patch_url
+                tool = PatchBackportTool(config_path=config_path)
+                tool.run()
+        else:
+            # 模式2：批量处理
+            try:
+                with open(config_path, 'w') as f:
+                    yaml.dump(config_data, f, default_flow_style=False)
+            except Exception as e:
+                print(f"保存配置文件失败: {e}")
+                sys.exit(1)
             tool = PatchBackportTool(config_path=config_path)
             tool.run()
-    else:
-        # 模式2：批量处理
-        try:
-            with open(config_path, 'w') as f:
-                yaml.dump(config_data, f, default_flow_style=False)
-        except Exception as e:
-            print(f"保存配置文件失败: {e}")
-            sys.exit(1)
-        tool = PatchBackportTool(config_path=config_path)
-        tool.run()
+    except Exception as e:
+        logger.error(f"处理时出错: {e}")
+        logger.error(f"错误信息: {traceback.format_exc()}")
+        
+    finally:
+        clean_config(config_data, config_path)
+        
+
 
 
 if __name__ == "__main__":

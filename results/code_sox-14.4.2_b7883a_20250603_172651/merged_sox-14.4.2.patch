@@ -1,0 +1,94 @@
+From 10dfc78df2e8377be93c82de5b8bde36887c4a6c Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Tue, 3 Jun 2025 17:26:51 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A7?=
+ =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ src/fft4g.c | 18 ++++++++++++++++++
+ src/fft4g.h |  2 ++
+ 2 files changed, 20 insertions(+)
+
+diff --git a/src/fft4g.c b/src/fft4g.c
+index 38a8bcc0..88a2a7ec 100644
+--- a/src/fft4g.c
++++ b/src/fft4g.c
+@@ -322,6 +322,9 @@ static void rftfsub(int n, double *a, int nc, double const *c);
+ 
+ void cdft(int n, int isgn, double *a, int *ip, double *w)
+ {
++    if (n > FFT4G_MAX_SIZE)
++        return;
++
+     if (n > (ip[0] << 2)) {
+         makewt(n >> 2, ip, w);
+     }
+@@ -344,6 +347,9 @@ void rdft(int n, int isgn, double *a, int *ip, double *w)
+     int nw, nc;
+     double xi;
+     
++    if (n > FFT4G_MAX_SIZE)
++        return;
++
+     nw = ip[0];
+     if (n > (nw << 2)) {
+         nw = n >> 2;
+@@ -384,6 +390,9 @@ void ddct(int n, int isgn, double *a, int *ip, double *w)
+     int j, nw, nc;
+     double xr;
+     
++    if (n > FFT4G_MAX_SIZE)
++        return;
++
+     nw = ip[0];
+     if (n > (nw << 2)) {
+         nw = n >> 2;
+@@ -435,6 +444,9 @@ void ddst(int n, int isgn, double *a, int *ip, double *w)
+     int j, nw, nc;
+     double xr;
+     
++    if (n > FFT4G_MAX_SIZE)
++        return;
++
+     nw = ip[0];
+     if (n > (nw << 2)) {
+         nw = n >> 2;
+@@ -486,6 +498,9 @@ void dfct(int n, double *a, double *t, int *ip, double *w)
+     int j, k, l, m, mh, nw, nc;
+     double xr, xi, yr, yi;
+     
++    if (n > FFT4G_MAX_SIZE)
++        return;
++
+     nw = ip[0];
+     if (n > (nw << 3)) {
+         nw = n >> 3;
+@@ -576,6 +591,9 @@ void dfst(int n, double *a, double *t, int *ip, double *w)
+     int j, k, l, m, mh, nw, nc;
+     double xr, xi, yr, yi;
+     
++    if (n > FFT4G_MAX_SIZE)
++        return;
++
+     nw = ip[0];
+     if (n > (nw << 3)) {
+         nw = n >> 3;
+diff --git a/src/fft4g.h b/src/fft4g.h
+index 2b8051ca..95ee3413 100644
+--- a/src/fft4g.h
++++ b/src/fft4g.h
+@@ -13,6 +13,8 @@
+  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  */
+ 
++#define FFT4G_MAX_SIZE 262144
++
+ void lsx_cdft(int, int, double *, int *, double *);
+ void lsx_rdft(int, int, double *, int *, double *);
+ void lsx_ddct(int, int, double *, int *, double *);
+-- 
+2.25.1
+

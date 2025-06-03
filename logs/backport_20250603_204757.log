@@ -1,0 +1,211 @@
+2025-06-03 20:47:57.997 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250603_204757.log
+2025-06-03 20:47:57.997 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-03 20:47:57.997 | INFO     | __main__:_process_mode1:349 - 处理补丁: https://github.com/rails/rails/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-06-03 20:47:57.998 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-06-03 20:47:57.998 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-06-03 20:47:58.001 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-06-03 20:47:58.001 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-06-03 20:47:58.002 | INFO     | __main__:_process_mode1:356 - 目标版本: ['v5.2.7']
+2025-06-03 20:47:58.002 | INFO     | __main__:_process_mode1:363 - 开始处理版本: v5.2.7
+2025-06-03 20:47:58.003 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-06-03 20:47:58.003 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-06-03 20:47:58.006 | INFO     | modules.direct_apply:execute:51 - 从缓存中获取到直接应用结果: {'error': "error: actionpack/lib/action_dispatch/http/filter_parameters.rb: does not exist in index\nhint: Use 'git am --show-current-patch' to see the failed patch\n", 'message': '补丁应用失败', 'patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch', 'success': False, 'timestamp': '2025-03-19T07:43:59.050397'}
+2025-06-03 20:47:58.006 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-06-03 20:47:58.007 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-03 20:47:58.007 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-03 20:47:58.007 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 38 行内容
+2025-06-03 20:47:58.008 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: actionpack/lib/action_dispatch/http/filter_parameters.rb
+2025-06-03 20:47:58.008 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: actionpack/lib/action_dispatch/http/filter_parameters.rb @@ -73,12 +73,17 @@ (modification)
+2025-06-03 20:47:58.009 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 1 个修改块
+2025-06-03 20:47:58.009 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 1 个块
+2025-06-03 20:47:58.009 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-03 20:47:58.011 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250603_204758.patch (修改文件: actionpack/lib/action_dispatch/http/filter_parameters.rb)
+2025-06-03 20:47:58.011 | INFO     | modules.chunk_analyzer:execute:60 - 已为 1 个块创建单独的补丁文件
+2025-06-03 20:47:58.012 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-03 20:47:58.012 | INFO     | modules.chunk_analyzer:execute:66 - From fb493bebae1a9b83e494fe7edbf01f6167d606fd Mon Sep 17 00:00:00 2001
+From: John Hawthorn <john@hawthorn.email>
+Date: Thu, 10 Oct 2024 20:41:33 -0700
+Subject: [PATCH] Avoid backtracking in filtered_query_string
+
+Thanks scyoon for the patch
+
+CVE-2024-41128
+---
+ .../lib/action_dispatch/http/filter_parameters.rb   | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb
+index 7ad1ba3e0eb0e..b02f0d6f85341 100644
+--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb
++++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb
+@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:
+         ActiveSupport::ParameterFilter.new(filters)
+       end
+ 
+-      KV_RE   = "[^&;=]+"
+-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}
+       def filtered_query_string # :doc:
+-        query_string.gsub(PAIR_RE) do |_|
+-          parameter_filter.filter($1 => $2).first.join("=")
++        parts = query_string.split(/([&;])/)
++        filtered_parts = parts.map do |part|
++          if part.include?("=")
++            key, value = part.split("=", 2)
++            parameter_filter.filter(key => value).first.join("=")
++          else
++            part
++          end
+         end
++        filtered_parts.join("")
+       end
+     end
+   end
+
+2025-06-03 20:47:58.012 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/1 个块补丁: chunk_001_20250603_204758.patch
+2025-06-03 20:47:58.073 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_001_20250603_204758.patch 应用失败: error: patch failed: actionpack/lib/action_dispatch/http/filter_parameters.rb:73
+error: actionpack/lib/action_dispatch/http/filter_parameters.rb: patch does not apply
+
+2025-06-03 20:47:58.074 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-06-03 20:47:58.074 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 1
+2025-06-03 20:47:58.074 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 0
+2025-06-03 20:47:58.074 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 1
+2025-06-03 20:47:58.075 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 0 个块补丁，总共 1 个
+2025-06-03 20:47:58.076 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/remaining_chunks_20250603_204758.patch
+2025-06-03 20:47:58.076 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/remaining_chunks_20250603_204758.patch
+2025-06-03 20:47:58.077 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/remaining_chunks_20250603_204758.patch
+2025-06-03 20:47:58.077 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.07秒
+2025-06-03 20:47:58.078 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/metrics_fb493b_20250603_204758.json
+2025-06-03 20:47:58.080 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250603_204758
+2025-06-03 20:47:58.081 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250603_204758
+2025-06-03 20:47:58.081 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250603_204758/patches
+2025-06-03 20:47:58.090 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250603_204758/patches
+2025-06-03 20:47:58.099 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250603_204758/patches/original_patch.txt
+2025-06-03 20:47:58.100 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250603_204758
+2025-06-03 20:47:58.100 | WARNING  | modules.chunk_analyzer:_get_patch_content:1289 - 未找到任何应用成功的补丁文件
+2025-06-03 20:47:58.101 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250603_204758
+2025-06-03 20:47:58.107 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250603_204758/patches/remaining_patch.txt
+2025-06-03 20:47:58.108 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/remaining_chunks_20250603_204758.patch
+2025-06-03 20:47:58.108 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250603_204758
+2025-06-03 20:47:58.111 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: llm_adapter
+2025-06-03 20:47:58.111 | INFO     | modules.llm_adapter:execute:70 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-03 20:47:58.112 | INFO     | modules.llm_adapter:execute:72 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-03 20:47:58.112 | INFO     | modules.llm_adapter:_prepare_prompt_data:222 - 使用传统上下文差异
+2025-06-03 20:47:58.112 | INFO     | modules.llm_adapter:_get_context_diff:807 - diff_file: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/diff
+2025-06-03 20:47:58.113 | INFO     | modules.llm_adapter:_get_context_diff:811 - diff_content: modified file: actionpack/lib/action_dispatch/http/filter_parameters.rb
+--- workspace/rails/rails/fb493b/newer/actionpack/lib/action_dispatch/http/filter_parameters.rb
++++ workspace/rails/rails/fb493b/v5.2.7/actionpack/lib/action_dispatch/http/filter_parameters.rb
+@@ -1,6 +1,6 @@
+  # frozen_string_literal: true
+  
+ -require "active_support/parameter_filter"
+ +require "action_dispatch/http/parameter_filter"
+  
+  module ActionDispatch
+    module Http
+@@ -9,8 +9,8 @@
+      # sub-hashes of the params hash to filter. Filtering only certain sub-keys
+      # from a hash is possible by using the dot notation: 'credit_card.number'.
+      # If a block is given, each key and value of the params hash and all
+ -    # sub-hashes are passed to it, where the value or the key can be replaced using
+ -    # String#replace or similar methods.
+ +    # sub-hashes is passed to it, where the value or the key can be replaced using
+ +    # String#replace or similar method.
+      #
+      #   env["action_dispatch.parameter_filter"] = [:password]
+      #   => replaces the value to all keys matching /password/i with "[FILTERED]"
+@@ -23,13 +23,13 @@
+      #   change { file: { code: "xxxx"} }
+      #
+      #   env["action_dispatch.parameter_filter"] = -> (k, v) do
+ -    #     v.reverse! if k.match?(/secret/i)
+ +    #     v.reverse! if k =~ /secret/i
+      #   end
+      #   => reverses the value to all keys matching /secret/i
+      module FilterParameters
+        ENV_MATCH = [/RAW_POST_DATA/, "rack.request.form_vars"] # :nodoc:
+ -      NULL_PARAM_FILTER = ActiveSupport::ParameterFilter.new # :nodoc:
+ -      NULL_ENV_FILTER   = ActiveSupport::ParameterFilter.new ENV_MATCH # :nodoc:
+ +      NULL_PARAM_FILTER = ParameterFilter.new # :nodoc:
+ +      NULL_ENV_FILTER   = ParameterFilter.new ENV_MATCH # :nodoc:
+  
+        def initialize
+          super
+@@ -41,8 +41,6 @@
+        # Returns a hash of parameters with all sensitive data replaced.
+        def filtered_parameters
+          @filtered_parameters ||= parameter_filter.filter(parameters)
+ -      rescue ActionDispatch::Http::Parameters::ParseError
+ -        @filtered_parameters = {}
+        end
+  
+        # Returns a hash of request.env with all sensitive data replaced.
+@@ -56,6 +54,7 @@
+        end
+  
+      private
+ +
+        def parameter_filter # :doc:
+          parameter_filter_for fetch_header("action_dispatch.parameter_filter") {
+            return NULL_PARAM_FILTER
+@@ -70,7 +69,7 @@
+        end
+  
+        def parameter_filter_for(filters) # :doc:
+ -        ActiveSupport::ParameterFilter.new(filters)
+ +        ParameterFilter.new(filters)
+        end
+  
+        KV_RE   = "[^&;=]+"
+
+""""""
+
+2025-06-03 20:47:58.114 | INFO     | modules.llm_adapter:_call_llm:932 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-03 20:47:58.216 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-03 20:47:58.217 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/rails/rails/fb493b/llm_output/output_v5.2.7_qwen-plus.patch
+2025-06-03 20:47:58.217 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-06-03 20:47:58.217 | INFO     | modules.llm_adapter:_call_llm:954 - llm.run() result:{'openai_responses': [''], 'request_tokens': [0], 'response_tokens': [0]}
+2025-06-03 20:47:58.221 | INFO     | modules.llm_adapter:_parse_llm_response:1036 - 原始LLM响应(前100字符): ...
+2025-06-03 20:47:58.222 | WARNING  | modules.llm_adapter:_parse_llm_response:1074 - 未找到任何已知补丁格式，返回完整响应
+2025-06-03 20:47:58.230 | INFO     | modules.llm_adapter:_save_llm_response:1205 - LLM响应已保存到: workspace/rails/rails/fb493b/llm_output/output_v5.2.7_qwen-plus.patch
+2025-06-03 20:47:58.231 | INFO     | modules.llm_adapter:_save_llm_response:1206 - 原始LLM响应已保存到: workspace/rails/rails/fb493b/llm_output/raw_output_v5.2.7_qwen-plus.patch
+2025-06-03 20:47:58.231 | INFO     | modules.llm_adapter:execute:96 - ==================================================
+2025-06-03 20:47:58.231 | INFO     | modules.llm_adapter:execute:97 - LLM适配器执行完成 - 摘要
+2025-06-03 20:47:58.232 | INFO     | modules.llm_adapter:execute:98 - 提示模式: 标准模式
+2025-06-03 20:47:58.232 | INFO     | modules.llm_adapter:execute:99 - 提示类型: 标准上下文差异
+2025-06-03 20:47:58.232 | INFO     | modules.llm_adapter:execute:100 - 函数上下文统计: 总尝试: 0, 成功: 0, 回退: 0
+2025-06-03 20:47:58.232 | INFO     | modules.llm_adapter:execute:104 - 执行时间: 0.12 秒
+2025-06-03 20:47:58.232 | INFO     | modules.llm_adapter:execute:105 - 生成的补丁保存到: workspace/rails/rails/fb493b/llm_output/output_v5.2.7_qwen-plus.patch
+2025-06-03 20:47:58.233 | INFO     | modules.llm_adapter:execute:106 - ==================================================
+2025-06-03 20:47:58.234 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/rails/rails/fb493b/evaluations/llm_adapter/metrics_fb493b_20250603_204758.json
+2025-06-03 20:47:58.235 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: patch_adapter
+2025-06-03 20:47:58.235 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/rails/rails/fb493b/llm_output/output_v5.2.7_qwen-plus.patch
+2025-06-03 20:47:58.239 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_v5.2.7_20250603_204758
+2025-06-03 20:47:58.627 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+
+2025-06-03 20:47:58.628 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-06-03 20:47:58.628 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_v5.2.7_20250603_204758
+2025-06-03 20:47:58.654 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-06-03 20:47:58.656 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-06-03 20:47:58.657 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/rails/rails/fb493b/metrics/patch_adapter_metrics.json
+2025-06-03 20:47:58.657 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 0.65秒
+2025-06-03 20:47:58.658 | INFO     | __main__:_merge_patches:1064 - 开始合并补丁...
+2025-06-03 20:47:58.658 | WARNING  | __main__:_merge_patches:1188 - 没有找到可合并的补丁
+2025-06-03 20:47:58.659 | INFO     | __main__:_save_results:738 - 已复制最终补丁到结果目录: results/rails_v5.2.7_fb493b_20250603_204758/upstream_fb493b.patch
+2025-06-03 20:47:58.659 | INFO     | __main__:_save_results:876 - 结果已保存到: results/rails_v5.2.7_fb493b_20250603_204758/result.json
+2025-06-03 20:47:58.660 | INFO     | __main__:_print_summary:918 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-06-03 20:47:58.660 | INFO     | __main__:_print_summary:941 - ==================================================
+2025-06-03 20:47:58.660 | INFO     | __main__:_print_summary:942 - 处理摘要 - 提交: fb493b
+2025-06-03 20:47:58.661 | INFO     | __main__:_print_summary:943 - 适配状态: 适配失败 (方法: failed)
+2025-06-03 20:47:58.661 | INFO     | __main__:_print_summary:948 - 块分析统计:
+2025-06-03 20:47:58.661 | INFO     | __main__:_print_summary:949 - - 总块数: 1
+2025-06-03 20:47:58.662 | INFO     | __main__:_print_summary:950 - - 无冲突块数: 0
+2025-06-03 20:47:58.662 | INFO     | __main__:_print_summary:951 - - 成功适配块数: 0
+2025-06-03 20:47:58.663 | INFO     | __main__:_print_summary:952 - - 适配失败块数: 1
+2025-06-03 20:47:58.663 | INFO     | __main__:_print_summary:953 - - 编译失败块数: 0
+2025-06-03 20:47:58.663 | INFO     | __main__:_print_summary:957 - 总执行时间: 0.66秒
+2025-06-03 20:47:58.664 | INFO     | __main__:_print_summary:962 - ==================================================
+2025-06-03 20:47:58.664 | INFO     | __main__:run:338 - 处理完成

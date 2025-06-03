@@ -1,0 +1,46 @@
+diff --git a/fig2dev/read.c b/fig2dev/read.c
+index 387527b..f643f7e 100644
+--- a/fig2dev/read.c
++++ b/fig2dev/read.c
+@@ -1159,6 +1159,14 @@ sanitize_lineobject(
+ 					obj_name[l->type-2], line_no);
+ 			return -1;
+ 		}
++		if (l->type == T_ARC_BOX && l->radius == 0) {
++			put_msg("A %s, but zero corner radius "
++					"at line %d - convert "
++					"to a rectangle.",
++					obj_name[l->type - 2],
++					line_no);
++			l->type = T_BOX;
++		}
+ 	} /* l->type == any box or polygon */
+ 
+ 	/* above, a closed line might have been converted to a polyline */
+@@ -1414,7 +1422,7 @@ read_lineobject(FILE *fp, char **restrict line, size_t *line_len, int *line_no
+ 	F_point		*p, *q, *o = NULL;
+ 	F_control	*cp, *cq;
+ 	int		c, n, x, y, fa, ba;
+-	int		npts;
++	int		npts = 0;
+ 
+ 	Line_malloc(l);
+ 	l->points = NULL;
+@@ -1457,7 +1465,7 @@ read_lineobject(FILE *fp, char **restrict line, size_t *line_len, int *line_no
+ 
+ 	if (fa) {
+ 		if (get_line(fp, line, line_len, line_no) < 0 ||
+-				sscanf(*line, "%d%d%lf%lf%lf", &type, &style,
++			    sscanf(*line, "%d%d%lf%lf%lf", &type, &style,
+ 					&thickness, &wid, &ht) != 5) {
+ 			put_msg(Err_incomp, "line", *line_no);
+ 			free(l);
+@@ -1467,7 +1475,7 @@ read_lineobject(FILE *fp, char **restrict line, size_t *line_len, int *line_no
+ 	}
+ 	if (ba) {
+ 		if (get_line(fp, line, line_len, line_no) < 0 ||
+-				sscanf(*line, "%d%d%lf%lf%lf", &type, &style,
++			    sscanf(*line, "%d%d%lf%lf%lf", &type, &style,
+ 					&thickness, &wid, &ht) != 5) {
+ 			put_msg(Err_incomp, "line", *line_no);
+ 			free_linestorage(l);

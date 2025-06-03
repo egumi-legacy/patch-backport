@@ -1,0 +1,96 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "chunks_info": {
+      "total_chunks": 3,
+      "no_conflict_chunks": 0,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 3,
+      "compilation_failed_chunks": 0
+    },
+    "method": "failed",
+    "timestamp": "2025-06-03T21:50:42.521742"
+  },
+  "to_adapt_commit": {
+    "sha": "f8587e2d50dad72d40453ac1191c539ee9e50381",
+    "patch_url": "https://sourceforge.net/p/sox/code/ci/f8587e2d50dad72d40453ac1191c539ee9e50381/",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "sox-14.4.2",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "Patch format detection failed.\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch",
+      "timestamp": "2025-06-03T21:49:52.177329"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch",
+      "total_chunks": 3,
+      "applied_chunks": 0,
+      "applied_chunk_patches": [],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/remaining_chunks_20250603_214952.patch",
+      "timestamp": "2025-06-03T21:49:52.211153",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "Backport fix for possible overflow in lsx_(re)valloc() size calculation (CVE-2019-8355)\n\nThis patch backports the functionality of `lsx_realloc_array` to prevent potential\ninteger overflow during size calculations in `lsx_valloc` and `lsx_revalloc`.\nThe older version lacks some API changes, so the implementation has been adapted\nto fit the existing code structure.",
+      "prompt": {
+        "patch_content": "commit f8587e2d50dad72d40453ac1191c539ee9e50381\nAuthor: Mans Rullgard <mans@mansr.com>\nDate:   Wed Apr 24 17:39:45 2019 +0100\n\n    fix possible overflow in lsx_(re)valloc() size calculation (CVE-2019-8355)\n\ndiff --git a/src/Makefile.am b/src/Makefile.am\nindex 42573ec5..d5f6d125 100644\n--- a/src/Makefile.am\n+++ b/src/Makefile.am\n@@ -95,7 +95,7 @@ libsox_la_LIBADD += @GOMP_LIBS@\n \n libsox_la_CFLAGS = @WARN_CFLAGS@\n libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \\\n-  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'\n+  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'\n \n if HAVE_WIN32_LTDL\n   libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h\ndiff --git a/src/xmalloc.c b/src/xmalloc.c\nindex 56fe6944..72c9ea4d 100644\n--- a/src/xmalloc.c\n+++ b/src/xmalloc.c\n@@ -57,6 +57,16 @@ void *lsx_calloc(size_t n, size_t size)\n   return lsx_checkptr(calloc(n + !n, size + !size));\n }\n \n+void *lsx_realloc_array(void *p, size_t n, size_t size)\n+{\n+  if (n > (size_t)-1 / size) {\n+    lsx_fail(\"malloc size overflow\");\n+    exit(2);\n+  }\n+\n+  return lsx_realloc(p, n * size);\n+}\n+\n char *lsx_strdup(const char *s)\n {\n   return lsx_checkptr(strdup(s));\ndiff --git a/src/xmalloc.h b/src/xmalloc.h\nindex 92ac64d9..21ff6630 100644\n--- a/src/xmalloc.h\n+++ b/src/xmalloc.h\n@@ -25,11 +25,12 @@\n \n LSX_RETURN_VALID void *lsx_malloc(size_t size);\n LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);\n+LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);\n LSX_RETURN_VALID char *lsx_strdup(const char *s);\n \n #define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))\n #define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)\n-#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))\n-#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))\n+#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))\n+#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))\n \n #endif\n",
+        "target_version": "sox-14.4.2",
+        "context_diff": "modified file: src/Makefile.am\n--- workspace/sox/code/f8587e/newer/src/Makefile.am\n+++ workspace/sox/code/f8587e/sox-14.4.2/src/Makefile.am\n@@ -95,7 +95,7 @@\n  \n  libsox_la_CFLAGS = @WARN_CFLAGS@\n  libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \\\n -  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'\n +  -export-symbols-regex '^(sox_.*|lsx_(check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|fail_errno|filelength|find_(enum_(text|value)|file_extension)|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|realloc|rewind|seeki|sigfigs3p?|strcasecmp|tell|unreadb|write(b|_b_buf|buf|s)))$$'\n  \n  if HAVE_WIN32_LTDL\n    libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h\n@@ -194,6 +194,6 @@\n  # would run the test suite, but an uninstalled libltdl build cannot\n  # currently load its formats and effects, so the checks would fail.\n  installcheck:\n -\t$(srcdir)/tests.sh --bindir=$(DESTDIR)${bindir} --builddir=${builddir} --srcdir=${srcdir}\n -\t$(srcdir)/testall.sh --bindir=$(DESTDIR)${bindir} --srcdir=${srcdir}\n +\t$(srcdir)/tests.sh --bindir=${bindir} --builddir=${builddir} --srcdir=${srcdir}\n +\t$(srcdir)/testall.sh --bindir=${bindir} --srcdir=${srcdir}\n  \n\n\"\"\"\"\"\"\nmodified file: src/xmalloc.c\n--- workspace/sox/code/f8587e/newer/src/xmalloc.c\n+++ workspace/sox/code/f8587e/sox-14.4.2/src/xmalloc.c\n@@ -20,16 +20,6 @@\n  #include \"sox_i.h\"\n  #include <stdlib.h>\n  \n -static void *lsx_checkptr(void *ptr)\n -{\n -  if (!ptr) {\n -    lsx_fail(\"out of memory\");\n -    exit(2);\n -  }\n -\n -  return ptr;\n -}\n -\n\n\"\"\"\"\"\"\nmodified file: src/xmalloc.h\n--- workspace/sox/code/f8587e/newer/src/xmalloc.h\n+++ workspace/sox/code/f8587e/sox-14.4.2/src/xmalloc.h\n@@ -23,11 +23,10 @@\n  #include <stddef.h>\n  #include <string.h>\n  \n -LSX_RETURN_VALID void *lsx_malloc(size_t size);\n -LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);\n -LSX_RETURN_VALID char *lsx_strdup(const char *s);\n -\n +#define lsx_malloc(size) lsx_realloc(NULL, (size))\n +#define lsx_calloc(n,s) (((n)*(s))? memset(lsx_malloc((n)*(s)),0,(n)*(s)) : NULL)\n  #define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))\n +#define lsx_strdup(p) ((p)? strcpy((char *)lsx_malloc(strlen(p) + 1), p) : NULL)\n  #define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)\n  #define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))\n  #define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))\n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/sox/code/f8587e/llm_output/output_sox-14.4.2_qwen-plus.patch",
+      "timestamp": "2025-06-03T21:50:42.480317",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-03T21:49:52.149287",
+    "end_time": "2025-06-03T21:50:42.520001",
+    "total_seconds": 50.370714,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "patch_content": "commit f8587e2d50dad72d40453ac1191c539ee9e50381\nAuthor: Mans Rullgard <mans@mansr.com>\nDate:   Wed Apr 24 17:39:45 2019 +0100\n\n    fix possible overflow in lsx_(re)valloc() size calculation (CVE-2019-8355)\n\ndiff --git a/src/Makefile.am b/src/Makefile.am\nindex 42573ec5..d5f6d125 100644\n--- a/src/Makefile.am\n+++ b/src/Makefile.am\n@@ -95,7 +95,7 @@ libsox_la_LIBADD += @GOMP_LIBS@\n \n libsox_la_CFLAGS = @WARN_CFLAGS@\n libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \\\n-  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'\n+  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'\n \n if HAVE_WIN32_LTDL\n   libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h\ndiff --git a/src/xmalloc.c b/src/xmalloc.c\nindex 56fe6944..72c9ea4d 100644\n--- a/src/xmalloc.c\n+++ b/src/xmalloc.c\n@@ -57,6 +57,16 @@ void *lsx_calloc(size_t n, size_t size)\n   return lsx_checkptr(calloc(n + !n, size + !size));\n }\n \n+void *lsx_realloc_array(void *p, size_t n, size_t size)\n+{\n+  if (n > (size_t)-1 / size) {\n+    lsx_fail(\"malloc size overflow\");\n+    exit(2);\n+  }\n+\n+  return lsx_realloc(p, n * size);\n+}\n+\n char *lsx_strdup(const char *s)\n {\n   return lsx_checkptr(strdup(s));\ndiff --git a/src/xmalloc.h b/src/xmalloc.h\nindex 92ac64d9..21ff6630 100644\n--- a/src/xmalloc.h\n+++ b/src/xmalloc.h\n@@ -25,11 +25,12 @@\n \n LSX_RETURN_VALID void *lsx_malloc(size_t size);\n LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);\n+LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);\n LSX_RETURN_VALID char *lsx_strdup(const char *s);\n \n #define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))\n #define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)\n-#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))\n-#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))\n+#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))\n+#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))\n \n #endif\n",
+    "llm_output": "Backport fix for possible overflow in lsx_(re)valloc() size calculation (CVE-2019-8355)\n\nThis patch backports the functionality of `lsx_realloc_array` to prevent potential\ninteger overflow during size calculations in `lsx_valloc` and `lsx_revalloc`.\nThe older version lacks some API changes, so the implementation has been adapted\nto fit the existing code structure.",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": false,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "sox-14.4.2",
+      "commit_sha": "f8587e2d50dad72d40453ac1191c539ee9e50381",
+      "timestamp": "2025-06-03T21:50:42.521786",
+      "execution_path": "failed (no successful modules)",
+      "adaptation_method": "unknown"
+    }
+  }
+}

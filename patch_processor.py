@@ -5,6 +5,8 @@ import pprint
 import os
 import subprocess
 import base64
+import traceback
+import shutil
 from pathlib import Path
 from llm_assistant import LLMAssistant
 from loguru import logger
@@ -52,7 +54,7 @@ class PatchProcessor:
         # 从url解析仓库信息
         self.commit_info = parse_github_url(self.url)
         self.owner = self.commit_info['owner']
-        self.repo = self.commit_info['repo']
+        self.repo = self.commit_info['name']
         if self.commit_info['commit_sha']:
             self.patch_commit_sha = self.commit_info['commit_sha']
         
@@ -194,23 +196,43 @@ class PatchProcessor:
     def run(self):
         # 1. 使用已有的commit_info，不需要重新解析URL
         # commit_info已经在初始化时通过parse_github_url设置了
-        commit_content = self.git_operations.get_commit_content(self.commit_info)
-        file_list = self.git_operations.get_commit_file_list(commit_content)
+        try:
+            commit_content = self.git_operations.get_commit_content(self.commit_info)
+            
+            # 检查commit_content是否有效
+            if not commit_content or 'files' not in commit_content:
+                logger.warning("获取提交内容失败或内容不完整，尝试使用本地仓库")
+                # 确保有一个有效的文件列表，即使是空的
+                file_list = []
+            else:
+                file_list = self.git_operations.get_commit_file_list(commit_content)
+        except Exception as e:
+            logger.error(f"获取提交内容失败: {e}")
+            logger.error(f"错误堆栈: {traceback.format_exc()}")
+            file_list = []
+            commit_content = {"files": []}
 
         # 使用context.commit.base_dir而不是硬编码路径
         base_dir = self.base_dir
         
         # 2. 解析commit信息
         if not (base_dir / 'newer').exists() or not list((base_dir / 'newer').iterdir()):
-            # 获取commit前的文件内容
-            newer_file_contents = self.git_operations.get_file_before_commit(self.commit_info)
-            self.write_file_contents(newer_file_contents, 'newer')
+            try:
+                # 获取commit前的文件内容
+                newer_file_contents = self.git_operations.get_file_before_commit(self.commit_info)
+                if newer_file_contents:
+                    self.write_file_contents(newer_file_contents, 'newer')
+                else:
+                    logger.warning("无法获取提交前的文件内容")
+            except Exception as e:
+                logger.error(f"获取提交前的文件内容失败: {e}")
+                logger.error(f"错误堆栈: {traceback.format_exc()}")
 
         if not (base_dir / self.target_version).exists() or not list((base_dir / self.target_version).iterdir()):
             # 创建target_info字典，适应新的参数系统
             target_info = {
                 'owner': self.owner,
-                'repo': self.repo,
+                'name': self.repo,
                 'branch': self.target_version
             }
             
@@ -218,37 +240,95 @@ class PatchProcessor:
             repo_path = self.context.config.repo_path
             
             # 获取目标版本的文件内容
-            target_file_contents = self.git_operations.get_file_contents_from_ref(
-                file_list, 
-                target_info,
-                True, 
-                repo_path
-            )
-            self.write_file_contents(target_file_contents, self.target_version)
+            try:
+                target_file_contents = self.git_operations.get_file_contents_from_ref(
+                    file_list, 
+                    target_info,
+                    True,  # 优先使用本地仓库
+                    repo_path
+                )
+                if target_file_contents:
+                    self.write_file_contents(target_file_contents, self.target_version)
+                else:
+                    logger.warning(f"无法获取目标版本 {self.target_version} 的文件内容")
+            except Exception as e:
+                logger.error(f"获取目标版本文件内容失败: {e}")
+                logger.error(f"错误堆栈: {traceback.format_exc()}")
 
-        # 3. 获取两个版本文件的diff并保存
-        self.generate_folder_diff(base_dir / 'newer', base_dir / self.target_version, base_dir / 'diff')
-        # self.generate_folder_diff(base_dir / self.target_version, base_dir / 'newer', base_dir / 'diff')
+        # 3. 生成差异文件
+        try:
+            # 检查文件夹是否存在并且不为空
+            newer_exists = (base_dir / 'newer').exists() and list((base_dir / 'newer').iterdir())
+            target_exists = (base_dir / self.target_version).exists() and list((base_dir / self.target_version).iterdir())
+            
+            if newer_exists and target_exists:
+                self.generate_folder_diff(base_dir / 'newer', base_dir / self.target_version, base_dir / 'diff')
+            else:
+                logger.warning(f"无法生成差异文件: newer文件夹存在={newer_exists}, {self.target_version}文件夹存在={target_exists}")
+                # 创建一个空的diff文件，防止后续处理错误
+                with open(base_dir / 'diff', 'w', encoding='utf-8') as f:
+                    f.write("# 无法生成差异文件\n")
+        except Exception as e:
+            logger.error(f"生成差异文件失败: {e}")
+            logger.error(f"错误堆栈: {traceback.format_exc()}")
+            # 创建一个包含错误信息的diff文件
+            with open(base_dir / 'diff', 'w', encoding='utf-8') as f:
+                f.write(f"# 生成差异文件失败: {str(e)}\n")
 
-        # 4. 获取patch文件
-        # 使用curl模块将self.url中的github commit url后加上.patch获取patch文件并写入patch文件夹
-        # if not (base_dir / 'patch').exists():
-        #     (base_dir / 'patch').mkdir(parents=True)
-        
-        # if not (base_dir / 'patch' / 'patch.txt').exists():
-        #     patch_url = self.url + '.patch'
-        #     print(f"patch_url: {patch_url}")
-        #     output_file = str(base_dir / 'patch' / f'patch.txt')
-        #     # print(f"output_file: {output_file}")
-        #     subprocess.run(['curl', '-L', patch_url, '-o', output_file])
-        # patch_path = self.download_patch_by_type(self.url, 'upstream')
+        # 4. 使用patch文件
         patch_path = self.context.commit.patch_path
         
+        # 确保patch文件存在
+        if not os.path.exists(patch_path):
+            logger.warning(f"补丁文件不存在: {patch_path}")
+            # 尝试使用git format-patch命令生成补丁
+            try:
+                if self.context.config.repo_path:
+                    patch_dir = os.path.dirname(patch_path)
+                    os.makedirs(patch_dir, exist_ok=True)
+                    subprocess.run(
+                        ['git', 'format-patch', '-1', self.commit_info['commit_sha'], '-o', patch_dir],
+                        cwd=self.context.config.repo_path,
+                        check=True
+                    )
+                    # 查找生成的补丁文件
+                    patch_files = [f for f in os.listdir(patch_dir) if f.endswith('.patch')]
+                    if patch_files:
+                        # 使用第一个找到的补丁文件
+                        new_patch_path = os.path.join(patch_dir, patch_files[0])
+                        # 复制到预期的路径
+                        shutil.copy(new_patch_path, patch_path)
+                        logger.info(f"已使用git format-patch生成补丁文件: {patch_path}")
+                    else:
+                        logger.error("git format-patch未生成任何补丁文件")
+            except Exception as e:
+                logger.error(f"生成补丁文件失败: {e}")
+        
         # 创建返回值
-        patch_values = [{"patchCode": html.unescape(Path(patch_path).read_text()), 
-                         "diffCode": html.unescape((base_dir / 'diff').read_text())}]
-
-        return dict(prompt_values=patch_values)
+        patch_content = ""
+        diff_content = ""
+        
+        try:
+            if os.path.exists(patch_path):
+                with open(patch_path, 'r', encoding='utf-8', errors='replace') as f:
+                    patch_content = html.unescape(f.read())
+        except Exception as e:
+            logger.error(f"读取补丁文件失败: {e}")
+        
+        try:
+            if os.path.exists(base_dir / 'diff'):
+                with open(base_dir / 'diff', 'r', encoding='utf-8', errors='replace') as f:
+                    diff_content = html.unescape(f.read())
+        except Exception as e:
+            logger.error(f"读取差异文件失败: {e}")
+        
+        patch_values = [{"patchCode": patch_content, "diffCode": diff_content}]
+        
+        # 返回结果
+        return {
+            "status": "success" if patch_content or diff_content else "error",
+            "prompt_values": patch_values
+        }
         
         
 

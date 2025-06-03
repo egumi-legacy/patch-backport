@@ -1,0 +1,88 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "chunks_info": {
+      "total_chunks": 7,
+      "no_conflict_chunks": 7,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 0,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-03T17:26:51.566270"
+  },
+  "to_adapt_commit": {
+    "sha": "b7883ae1398499daaa926ae6621f088f0f531ed8",
+    "patch_url": "https://sourceforge.net/p/sox/code/ci/b7883ae1398499daaa926ae6621f088f0f531ed8/",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "workspace/sox/code/b7883a/patches/merged_sox-14.4.2.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "sox-14.4.2",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "Patch format detection failed.\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/b7883a/patches/upstream_b7883a.patch",
+      "timestamp": "2025-06-03T17:26:51.415231"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/b7883a/patches/upstream_b7883a.patch",
+      "total_chunks": 7,
+      "applied_chunks": 7,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/b7883a/chunk_patches/chunk_001_20250603_172651.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/b7883a/chunk_patches/chunk_002_20250603_172651.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/b7883a/chunk_patches/chunk_003_20250603_172651.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/b7883a/chunk_patches/chunk_004_20250603_172651.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/b7883a/chunk_patches/chunk_005_20250603_172651.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/b7883a/chunk_patches/chunk_006_20250603_172651.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/b7883a/chunk_patches/chunk_007_20250603_172651.patch"
+      ],
+      "remaining_patch": null,
+      "timestamp": "2025-06-03T17:26:51.467467",
+      "success": true
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "final_patch_path": "workspace/sox/code/b7883a/patches/merged_sox-14.4.2.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-03T17:26:44.207527",
+    "end_time": "2025-06-03T17:26:51.482404",
+    "total_seconds": 7.274877,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "patch_content": "From 10dfc78df2e8377be93c82de5b8bde36887c4a6c Mon Sep 17 00:00:00 2001\nFrom: elpsy <hewenkuan_work@foxmail.com>\nDate: Tue, 3 Jun 2025 17:26:51 +0800\nSubject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A7?=\n =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\n---\n src/fft4g.c | 18 ++++++++++++++++++\n src/fft4g.h |  2 ++\n 2 files changed, 20 insertions(+)\n\ndiff --git a/src/fft4g.c b/src/fft4g.c\nindex 38a8bcc0..88a2a7ec 100644\n--- a/src/fft4g.c\n+++ b/src/fft4g.c\n@@ -322,6 +322,9 @@ static void rftfsub(int n, double *a, int nc, double const *c);\n \n void cdft(int n, int isgn, double *a, int *ip, double *w)\n {\n+    if (n > FFT4G_MAX_SIZE)\n+        return;\n+\n     if (n > (ip[0] << 2)) {\n         makewt(n >> 2, ip, w);\n     }\n@@ -344,6 +347,9 @@ void rdft(int n, int isgn, double *a, int *ip, double *w)\n     int nw, nc;\n     double xi;\n     \n+    if (n > FFT4G_MAX_SIZE)\n+        return;\n+\n     nw = ip[0];\n     if (n > (nw << 2)) {\n         nw = n >> 2;\n@@ -384,6 +390,9 @@ void ddct(int n, int isgn, double *a, int *ip, double *w)\n     int j, nw, nc;\n     double xr;\n     \n+    if (n > FFT4G_MAX_SIZE)\n+        return;\n+\n     nw = ip[0];\n     if (n > (nw << 2)) {\n         nw = n >> 2;\n@@ -435,6 +444,9 @@ void ddst(int n, int isgn, double *a, int *ip, double *w)\n     int j, nw, nc;\n     double xr;\n     \n+    if (n > FFT4G_MAX_SIZE)\n+        return;\n+\n     nw = ip[0];\n     if (n > (nw << 2)) {\n         nw = n >> 2;\n@@ -486,6 +498,9 @@ void dfct(int n, double *a, double *t, int *ip, double *w)\n     int j, k, l, m, mh, nw, nc;\n     double xr, xi, yr, yi;\n     \n+    if (n > FFT4G_MAX_SIZE)\n+        return;\n+\n     nw = ip[0];\n     if (n > (nw << 3)) {\n         nw = n >> 3;\n@@ -576,6 +591,9 @@ void dfst(int n, double *a, double *t, int *ip, double *w)\n     int j, k, l, m, mh, nw, nc;\n     double xr, xi, yr, yi;\n     \n+    if (n > FFT4G_MAX_SIZE)\n+        return;\n+\n     nw = ip[0];\n     if (n > (nw << 3)) {\n         nw = n >> 3;\ndiff --git a/src/fft4g.h b/src/fft4g.h\nindex 2b8051ca..95ee3413 100644\n--- a/src/fft4g.h\n+++ b/src/fft4g.h\n@@ -13,6 +13,8 @@\n  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA\n  */\n \n+#define FFT4G_MAX_SIZE 262144\n+\n void lsx_cdft(int, int, double *, int *, double *);\n void lsx_rdft(int, int, double *, int *, double *);\n void lsx_ddct(int, int, double *, int *, double *);\n-- \n2.25.1\n\n",
+    "llm_output": null,
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "sox-14.4.2",
+      "commit_sha": "b7883ae1398499daaa926ae6621f088f0f531ed8",
+      "timestamp": "2025-06-03T17:26:51.566296",
+      "execution_path": "chunk_analyzer (all chunks)"
+    }
+  }
+}

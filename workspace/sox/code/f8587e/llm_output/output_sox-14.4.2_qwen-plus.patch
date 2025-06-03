@@ -1,0 +1,6 @@
+Backport fix for possible overflow in lsx_(re)valloc() size calculation (CVE-2019-8355)
+
+This patch backports the functionality of `lsx_realloc_array` to prevent potential
+integer overflow during size calculations in `lsx_valloc` and `lsx_revalloc`.
+The older version lacks some API changes, so the implementation has been adapted
+to fit the existing code structure.

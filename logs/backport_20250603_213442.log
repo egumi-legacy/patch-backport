@@ -1,0 +1,103 @@
+2025-06-03 21:34:42.150 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250603_213442.log
+2025-06-03 21:34:42.151 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-03 21:34:42.151 | INFO     | __main__:_process_mode1:349 - 处理补丁: https://sourceforge.net/p/sox/code/ci/2ce02fea7b350de9ddfbcf542ba4dd59a8ab255b/
+2025-06-03 21:34:42.152 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: direct_apply
+2025-06-03 21:34:42.152 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: chunk_analyzer
+2025-06-03 21:34:42.153 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: llm_adapter
+2025-06-03 21:34:42.153 | INFO     | core.adaptation_pipeline:_load_modules:65 - 已加载模块: patch_adapter
+2025-06-03 21:34:42.153 | INFO     | __main__:_process_mode1:356 - 目标版本: ['sox-14.4.2']
+2025-06-03 21:34:42.153 | INFO     | __main__:_process_mode1:363 - 开始处理版本: sox-14.4.2
+2025-06-03 21:34:42.154 | INFO     | core.adaptation_pipeline:process_patch:82 - 开始处理补丁: 2ce02fea7b350de9ddfbcf542ba4dd59a8ab255b
+2025-06-03 21:34:42.154 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: direct_apply
+2025-06-03 21:34:42.154 | INFO     | modules.direct_apply:_download_patch:240 - 上游补丁文件已存在: workspace/sox/code/2ce02f/patches/upstream_2ce02f.patch
+2025-06-03 21:34:42.155 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-03 21:34:42.155 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/patches/upstream_2ce02f.patch
+2025-06-03 21:34:42.164 | INFO     | modules.direct_apply:_prepare_test_branch:363 - 删除已存在的测试分支: test_patch_sox-14.4.2
+2025-06-03 21:34:42.169 | INFO     | modules.direct_apply:_prepare_test_branch:376 - 创建测试分支: test_patch_sox-14.4.2
+2025-06-03 21:34:42.181 | ERROR    | modules.direct_apply:_apply_patch:316 - 补丁应用失败: Patch format detection failed.
+
+2025-06-03 21:34:42.190 | WARNING  | modules.direct_apply:_cleanup_test_branch:470 - 清理分支时发生错误: error: pathspec '4.0.14' did not match any file(s) known to git
+
+2025-06-03 21:34:42.190 | INFO     | core.adaptation_pipeline:process_patch:103 - 执行模块: chunk_analyzer
+2025-06-03 21:34:42.190 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/patches/upstream_2ce02f.patch
+2025-06-03 21:34:42.191 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/patches/upstream_2ce02f.patch
+2025-06-03 21:34:42.191 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 22 行内容
+2025-06-03 21:34:42.191 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/effects_i_dsp.c
+2025-06-03 21:34:42.192 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/effects_i_dsp.c @@ -362,6 +362,9 @@ (modification)
+2025-06-03 21:34:42.192 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 1 个修改块
+2025-06-03 21:34:42.192 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 1 个块
+2025-06-03 21:34:42.192 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/patches/upstream_2ce02f.patch
+2025-06-03 21:34:42.193 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/chunk_patches/chunk_001_20250603_213442.patch (修改文件: src/effects_i_dsp.c)
+2025-06-03 21:34:42.193 | INFO     | modules.chunk_analyzer:execute:60 - 已为 1 个块创建单独的补丁文件
+2025-06-03 21:34:42.194 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-03 21:34:42.194 | INFO     | modules.chunk_analyzer:execute:66 - commit 2ce02fea7b350de9ddfbcf542ba4dd59a8ab255b
+Author: Mans Rullgard <mans@mansr.com>
+Date:   Wed Apr 24 15:08:51 2019 +0100
+
+    fix possible null pointer deref in lsx_make_lpf() (CVE-2019-8357)
+    
+    If the buffer allocation fails, return NULL.
+
+diff --git a/src/effects_i_dsp.c b/src/effects_i_dsp.c
+index e32dfa05..88b1b390 100644
+--- a/src/effects_i_dsp.c
++++ b/src/effects_i_dsp.c
+@@ -362,6 +362,9 @@ double * lsx_make_lpf(int num_taps, double Fc, double beta, double rho,
+   assert(Fc >= 0 && Fc <= 1);
+   lsx_debug("make_lpf(n=%i Fc=%.7g β=%g ρ=%g dc-norm=%i scale=%g)", num_taps, Fc, beta, rho, dc_norm, scale);
+ 
++  if (!h)
++    return NULL;
++
+   for (i = 0; i <= m / 2; ++i) {
+     double z = i - .5 * m, x = z * M_PI, y = z * mult1;
+     h[i] = x? sin(Fc * x) / x : Fc;
+
+2025-06-03 21:34:42.195 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/1 个块补丁: chunk_001_20250603_213442.patch
+2025-06-03 21:34:42.200 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_001_20250603_213442.patch
+2025-06-03 21:34:42.200 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-06-03 21:34:42.200 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 1
+2025-06-03 21:34:42.201 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 1
+2025-06-03 21:34:42.202 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 0
+2025-06-03 21:34:42.202 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 1 个块补丁，总共 1 个
+2025-06-03 21:34:42.202 | INFO     | modules.chunk_analyzer:execute:82 - 所有块补丁都已成功应用，无需创建剩余补丁
+2025-06-03 21:34:42.203 | INFO     | modules.chunk_analyzer:execute:108 - 所有补丁块应用成功，标记为完全成功
+2025-06-03 21:34:42.203 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.01秒
+2025-06-03 21:34:42.203 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/sox/code/2ce02f/evaluations/chunk_analyzer/metrics_2ce02f_20250603_213442.json
+2025-06-03 21:34:42.205 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/sox/code/2ce02f/evaluations/chunk_analyzer/details_2ce02f_20250603_213442
+2025-06-03 21:34:42.205 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/sox/code/2ce02f/evaluations/chunk_analyzer/details_2ce02f_20250603_213442
+2025-06-03 21:34:42.205 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/sox/code/2ce02f/evaluations/chunk_analyzer/details_2ce02f_20250603_213442/patches
+2025-06-03 21:34:42.206 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/sox/code/2ce02f/evaluations/chunk_analyzer/details_2ce02f_20250603_213442/patches
+2025-06-03 21:34:42.207 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/sox/code/2ce02f/evaluations/chunk_analyzer/details_2ce02f_20250603_213442/patches/original_patch.txt
+2025-06-03 21:34:42.207 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/sox/code/2ce02f/evaluations/chunk_analyzer/details_2ce02f_20250603_213442
+2025-06-03 21:34:42.207 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/sox/code/2ce02f/evaluations/chunk_analyzer/details_2ce02f_20250603_213442/patches/applied_chunk_1.txt
+2025-06-03 21:34:42.208 | INFO     | modules.chunk_analyzer:_get_patch_content:1282 - 已将合并的补丁块内容保存到: workspace/sox/code/2ce02f/evaluations/chunk_analyzer/details_2ce02f_20250603_213442/patches/all_applied_chunks.txt
+2025-06-03 21:34:42.208 | INFO     | modules.chunk_analyzer:_get_patch_content:1286 - 从context获取应用成功的补丁内容
+2025-06-03 21:34:42.209 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/sox/code/2ce02f/evaluations/chunk_analyzer/details_2ce02f_20250603_213442
+2025-06-03 21:34:42.209 | WARNING  | modules.chunk_analyzer:_get_patch_content:1344 - 未找到剩余补丁文件
+2025-06-03 21:34:42.209 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/sox/code/2ce02f/evaluations/chunk_analyzer/details_2ce02f_20250603_213442
+2025-06-03 21:34:42.211 | INFO     | core.adaptation_pipeline:process_patch:96 - 块分析器已成功应用所有块，跳过模块: LLMAdapterModule
+2025-06-03 21:34:42.212 | INFO     | core.adaptation_pipeline:process_patch:96 - 块分析器已成功应用所有块，跳过模块: PatchAdapterModule
+2025-06-03 21:34:42.212 | INFO     | core.adaptation_pipeline:process_patch:125 - 补丁处理完成，耗时: 0.06秒
+2025-06-03 21:34:42.212 | INFO     | __main__:_merge_patches:1064 - 开始合并补丁...
+2025-06-03 21:34:42.213 | INFO     | __main__:_merge_patches:1099 - chunk_results2:
+2025-06-03 21:34:42.213 | INFO     | __main__:_merge_patches:1101 - chunk_patches: [PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/chunk_patches/chunk_001_20250603_213442.patch')]
+2025-06-03 21:34:42.214 | INFO     | __main__:_merge_patches:1103 - Chunk分析器应用了 1/1 个chunks
+2025-06-03 21:34:42.214 | INFO     | __main__:_merge_patches:1107 - 所有chunks都已成功应用，跳过patch_adapter
+2025-06-03 21:34:42.215 | INFO     | __main__:_merge_patches:1112 - 使用唯一的chunk补丁: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/chunk_patches/chunk_001_20250603_213442.patch
+2025-06-03 21:34:42.216 | INFO     | __main__:_process_mode1:390 - 成功合并补丁到: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/chunk_patches/chunk_001_20250603_213442.patch
+2025-06-03 21:34:42.218 | INFO     | __main__:_save_results:738 - 已复制最终补丁到结果目录: results/code_sox-14.4.2_2ce02f_20250603_213442/chunk_001_20250603_213442.patch
+2025-06-03 21:34:42.219 | INFO     | __main__:_save_results:876 - 结果已保存到: results/code_sox-14.4.2_2ce02f_20250603_213442/result.json
+2025-06-03 21:34:42.219 | INFO     | __main__:_print_summary:918 - context.patch_adapter_result: []
+2025-06-03 21:34:42.219 | INFO     | __main__:_print_summary:941 - ==================================================
+2025-06-03 21:34:42.220 | INFO     | __main__:_print_summary:942 - 处理摘要 - 提交: 2ce02f
+2025-06-03 21:34:42.220 | INFO     | __main__:_print_summary:943 - 适配状态: 适配失败 (方法: failed)
+2025-06-03 21:34:42.220 | INFO     | __main__:_print_summary:948 - 块分析统计:
+2025-06-03 21:34:42.221 | INFO     | __main__:_print_summary:949 - - 总块数: 1
+2025-06-03 21:34:42.221 | INFO     | __main__:_print_summary:950 - - 无冲突块数: 1
+2025-06-03 21:34:42.221 | INFO     | __main__:_print_summary:951 - - 成功适配块数: 0
+2025-06-03 21:34:42.221 | INFO     | __main__:_print_summary:952 - - 适配失败块数: 0
+2025-06-03 21:34:42.222 | INFO     | __main__:_print_summary:953 - - 编译失败块数: 0
+2025-06-03 21:34:42.222 | INFO     | __main__:_print_summary:957 - 总执行时间: 0.06秒
+2025-06-03 21:34:42.222 | INFO     | __main__:_print_summary:962 - ==================================================
+2025-06-03 21:34:42.223 | INFO     | __main__:run:338 - 处理完成

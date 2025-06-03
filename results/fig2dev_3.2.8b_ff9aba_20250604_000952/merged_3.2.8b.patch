@@ -1,0 +1,38 @@
+From 27d9dddf16c13a7f1852dcc709c599fe50b5657c Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Wed, 4 Jun 2025 00:09:52 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A1?=
+ =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ fig2dev/tests/read.at | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at
+index 5dd5b50..98dea04 100644
+--- a/fig2dev/tests/read.at
++++ b/fig2dev/tests/read.at
+@@ -99,6 +99,17 @@ EOF
+ ])
+ AT_CLEANUP
+ 
++AT_SETUP([convert an arc-box with zero radius to a box])
++AT_KEYWORDS(read.c arc-box)
++AT_CHECK([fig2dev -L pict2e <<EOF
++FIG_FILE_TOP
++2 4 1 1 0 0 50 -1 -1 4.0 0 0 0 0 0 5
++	0 0 300 0 300 300 0 300 0 0
++EOF
++],0,ignore,[A rectangle with rounded corners, but zero corner radius at line 11 - convert to a rectangle.
++])
++AT_CLEANUP
++
+ AT_SETUP([fail on a malformed arc-box])
+ AT_KEYWORDS(read.c malformed arc-box)
+ AT_CHECK([fig2dev -L pict2e <<EOF
+-- 
+2.25.1
+

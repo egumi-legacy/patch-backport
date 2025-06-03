@@ -807,7 +807,7 @@ class LLMAdapterModule(BaseModule):
             logger.info(f"diff_file: {diff_file.absolute()}")
             # logger.info(f"absolute diff_file: {diff_file.absolute()}")
             if diff_file.exists():
-                clean_diff_content = html.unescape(diff_file.read_text())
+                clean_diff_content = html.unescape(diff_file.read_text(encoding='utf-8', errors='replace'))
                 logger.info(f"diff_content: {clean_diff_content}")
                 return clean_diff_content
                 
@@ -837,13 +837,16 @@ class LLMAdapterModule(BaseModule):
                 logger.info("="*10)
                 # 读取生成的diff文件
                 if diff_file.exists():
-                    return html.unescape(diff_file.read_text())
-                elif "prompt_values" in result and result["prompt_values"]:
+                    return html.unescape(diff_file.read_text(encoding='utf-8', errors='replace'))
+                elif result and "prompt_values" in result and result["prompt_values"]:
                     return result["prompt_values"][0]["diffCode"]
                 else:
-                    raise ValueError("无法获取diff内容")
+                    logger.warning("无法获取diff内容，使用原始补丁作为差异")
+                    return f"无法获取上下文差异，使用原始补丁作为差异：\n{patch_content}"
             except Exception as inner_e:
                 logger.error(f"执行patch_processor失败: {inner_e}")
+                import traceback
+                logger.error(f"错误堆栈: {traceback.format_exc()}")
                 # 尝试回退到替代方法
                 if hasattr(context.commit, 'patch_path'):
                     patch_path = context.commit.patch_path
@@ -853,7 +856,7 @@ class LLMAdapterModule(BaseModule):
                     
                     if patch_path.exists():
                         logger.info("使用patch文件作为diff内容")
-                        return patch_path.read_text()
+                        return patch_path.read_text(encoding='utf-8', errors='replace')
                 # 尝试直接使用patch_content作为diff
                 return patch_content
                 

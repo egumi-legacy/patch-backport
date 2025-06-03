@@ -1,7 +1,7 @@
-From 29fb9e96dbb19e5f8333de4494e15ddffcc258c2 Mon Sep 17 00:00:00 2001
+From 114254765a131e10991b118f1876e339ff077019 Mon Sep 17 00:00:00 2001
 From: elpsy <hewenkuan_work@foxmail.com>
-Date: Thu, 22 May 2025 16:04:11 +0800
-Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A54?=
+Date: Wed, 4 Jun 2025 00:19:06 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A53?=
  =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -10,10 +10,10 @@ Content-Transfer-Encoding: 8bit
 ---
  proxy/ProxyTransaction.cc                     |   6 +
  proxy/ProxyTransaction.h                      |   1 +
- proxy/http/HttpSM.cc                          |  69 ++++--
+ proxy/http/HttpSM.cc                          |  66 ++++--
  proxy/http/HttpSM.h                           |  14 +-
- proxy/http/HttpTunnel.cc                      | 152 ++++++++-----
- proxy/http/HttpTunnel.h                       | 117 ++++++++--
+ proxy/http/HttpTunnel.cc                      | 136 +++++++-----
+ proxy/http/HttpTunnel.h                       |  65 +++++-
  proxy/http2/Http2Stream.cc                    |   6 +
  proxy/http2/Http2Stream.h                     |   1 +
  src/traffic_server/FetchSM.cc                 |   3 +-
@@ -22,7 +22,7 @@ Content-Transfer-Encoding: 8bit
  tests/gold_tests/pipeline/pipeline_server.py  | 201 ++++++++++++++++++
  .../gold_tests/redirect/redirect_post.test.py |   1 +
  tests/gold_tests/timeout/slow_server.yaml     |  37 +++-
- 14 files changed, 748 insertions(+), 101 deletions(-)
+ 14 files changed, 691 insertions(+), 87 deletions(-)
  create mode 100644 tests/gold_tests/pipeline/pipeline.test.py
  create mode 100644 tests/gold_tests/pipeline/pipeline_client.py
  create mode 100644 tests/gold_tests/pipeline/pipeline_server.py
@@ -57,20 +57,10 @@ index 261af6829..1117880a0 100644
    // Implement VConnection interface.
    VIO *do_io_read(Continuation *c, int64_t nbytes = INT64_MAX, MIOBuffer *buf = nullptr) override;
 diff --git a/proxy/http/HttpSM.cc b/proxy/http/HttpSM.cc
-index ab269fbbd..9cc781071 100644
+index ab269fbbd..a362d2daa 100644
 --- a/proxy/http/HttpSM.cc
 +++ b/proxy/http/HttpSM.cc
-@@ -972,8 +972,7 @@ HttpSM::wait_for_full_body()
-   // Next order of business if copy the remaining data from the
-   //  header buffer into new buffer
-   int64_t post_bytes = chunked ? INT64_MAX : t_state.hdr_info.request_content_length;
--  client_request_body_bytes =
--    post_buffer->write(ua_txn->get_remote_reader(), chunked ? ua_txn->get_remote_reader()->read_avail() : post_bytes);
-+  post_buffer->write(ua_txn->get_remote_reader(), chunked ? ua_txn->get_remote_reader()->read_avail() : post_bytes);
- 
-   ua_txn->get_remote_reader()->consume(client_request_body_bytes);
-   p = tunnel.add_producer(ua_entry->vc, post_bytes, buf_start, &HttpSM::tunnel_handler_post_ua, HT_BUFFER_READ, "ua post buffer");
-@@ -3628,7 +3627,24 @@ int
+@@ -3628,7 +3628,24 @@ int
  HttpSM::tunnel_handler_post_ua(int event, HttpTunnelProducer *p)
  {
    STATE_ENTER(&HttpSM::tunnel_handler_post_ua, event);
@@ -96,7 +86,7 @@ index ab269fbbd..9cc781071 100644
  
    switch (event) {
    case VC_EVENT_INACTIVITY_TIMEOUT:
-@@ -6085,8 +6101,8 @@ HttpSM::do_setup_post_tunnel(HttpVC_t to_vc_type)
+@@ -6085,8 +6102,8 @@ HttpSM::do_setup_post_tunnel(HttpVC_t to_vc_type)
      IOBufferReader *postdata_producer_reader = postdata_producer_buffer->alloc_reader();
  
      postdata_producer_buffer->write(this->_postbuf.postdata_copy_buffer_start);
@@ -107,7 +97,7 @@ index ab269fbbd..9cc781071 100644
      p = tunnel.add_producer(HTTP_TUNNEL_STATIC_PRODUCER, post_bytes, postdata_producer_reader, (HttpProducerHandler) nullptr,
                              HT_STATIC, "redirect static agent post");
    } else {
-@@ -6115,12 +6131,27 @@ HttpSM::do_setup_post_tunnel(HttpVC_t to_vc_type)
+@@ -6115,12 +6132,27 @@ HttpSM::do_setup_post_tunnel(HttpVC_t to_vc_type)
  
      // Next order of business if copy the remaining data from the
      //  header buffer into new buffer
@@ -140,7 +130,7 @@ index ab269fbbd..9cc781071 100644
    }
    ua_entry->in_tunnel = true;
  
-@@ -6835,6 +6866,8 @@ HttpSM::server_transfer_init(MIOBuffer *buf, int hdr_size)
+@@ -6835,6 +6867,8 @@ HttpSM::server_transfer_init(MIOBuffer *buf, int hdr_size)
      //  we'll get is already in the buffer
      nbytes = server_txn->get_remote_reader()->read_avail() + hdr_size;
    } else if (t_state.hdr_info.response_content_length == HTTP_UNDEFINED_CL) {
@@ -149,7 +139,7 @@ index ab269fbbd..9cc781071 100644
      nbytes = -1;
    } else {
      //  Set to copy to the number of bytes we want to write as
-@@ -8549,16 +8582,18 @@ HttpSM::rewind_state_machine()
+@@ -8549,16 +8583,18 @@ HttpSM::rewind_state_machine()
  
  // YTS Team, yamsat Plugin
  // Function to copy the partial Post data while tunnelling
@@ -223,7 +213,7 @@ index 91e0504ce..05e15f5a7 100644
  
  inline void
 diff --git a/proxy/http/HttpTunnel.cc b/proxy/http/HttpTunnel.cc
-index dadd6c8ce..f82f6590a 100644
+index dadd6c8ce..8f0d9db4a 100644
 --- a/proxy/http/HttpTunnel.cc
 +++ b/proxy/http/HttpTunnel.cc
 @@ -38,6 +38,9 @@
@@ -236,58 +226,7 @@ index dadd6c8ce..f82f6590a 100644
  static const int min_block_transfer_bytes = 256;
  static const char *const CHUNK_HEADER_FMT = "%" PRIx64 "\r\n";
  // This should be as small as possible because it will only hold the
-@@ -181,7 +184,9 @@ ChunkedHandler::read_size()
-       data_size--;
-     }
-     chunked_reader->consume(bytes_used);
-+    bytes_consumed += bytes_used;
-   }
-+  return bytes_consumed;
- }
- 
- // int ChunkedHandler::transfer_bytes()
-@@ -233,10 +238,10 @@ ChunkedHandler::transfer_bytes()
-   return total_moved;
- }
- 
--void
-+int64_t
- ChunkedHandler::read_chunk()
- {
--  int64_t b = transfer_bytes();
-+  int64_t transferred_bytes = transfer_bytes();
- 
-   ink_assert(bytes_left >= 0);
-   if (bytes_left == 0) {
-@@ -244,21 +249,23 @@ ChunkedHandler::read_chunk()
- 
-     state = CHUNK_READ_SIZE_START;
-   } else if (bytes_left > 0) {
--    Debug("http_chunk", "read %" PRId64 " bytes of an %" PRId64 " chunk", b, cur_chunk_size);
-+    Debug("http_chunk", "read %" PRId64 " bytes of an %" PRId64 " chunk", transferred_bytes, cur_chunk_size);
-   }
-+  return transferred_bytes;
- }
- 
--void
-+int64_t
- ChunkedHandler::read_trailer()
- {
--  int64_t bytes_used;
--  bool done = false;
-+  int64_t bytes_consumed = 0;
-+  bool done              = false;
- 
-   while (chunked_reader->is_read_avail_more_than(0) && !done) {
-     const char *tmp   = chunked_reader->start();
-     int64_t data_size = chunked_reader->block_read_avail();
- 
-     ink_assert(data_size > 0);
-+    int64_t bytes_used = 0;
-     for (bytes_used = 0; data_size > 0; data_size--) {
-       bytes_used++;
- 
-@@ -289,43 +296,48 @@ ChunkedHandler::read_trailer()
+@@ -289,43 +292,48 @@ ChunkedHandler::read_trailer()
        tmp++;
      }
      chunked_reader->consume(bytes_used);
@@ -343,7 +282,7 @@ index dadd6c8ce..f82f6590a 100644
  
    ink_assert(max_chunk_header_len);
  
-@@ -366,6 +378,7 @@ ChunkedHandler::generate_chunked_content()
+@@ -366,6 +374,7 @@ ChunkedHandler::generate_chunked_content()
      chunked_buffer->write(dechunked_reader, write_val);
      chunked_size += write_val;
      dechunked_reader->consume(write_val);
@@ -351,7 +290,7 @@ index dadd6c8ce..f82f6590a 100644
  
      // Output the trailing CRLF.
      chunked_buffer->write("\r\n", 2);
-@@ -378,9 +391,9 @@ ChunkedHandler::generate_chunked_content()
+@@ -378,9 +387,9 @@ ChunkedHandler::generate_chunked_content()
      // Add the chunked transfer coding trailer.
      chunked_buffer->write("0\r\n\r\n", 5);
      chunked_size += 5;
@@ -363,7 +302,7 @@ index dadd6c8ce..f82f6590a 100644
  }
  
  HttpTunnelProducer::HttpTunnelProducer() : consumer_list() {}
-@@ -628,7 +641,7 @@ HttpTunnel::add_producer(VConnection *vc, int64_t nbytes_arg, IOBufferReader *re
+@@ -628,7 +637,7 @@ HttpTunnel::add_producer(VConnection *vc, int64_t nbytes_arg, IOBufferReader *re
    ink_assert(reader_start->mbuf);
    if ((p = alloc_producer()) != nullptr) {
      p->vc              = vc;
@@ -372,7 +311,7 @@ index dadd6c8ce..f82f6590a 100644
      p->buffer_start    = reader_start;
      p->read_buffer     = reader_start->mbuf;
      p->vc_handler      = sm_handler;
-@@ -640,22 +653,23 @@ HttpTunnel::add_producer(VConnection *vc, int64_t nbytes_arg, IOBufferReader *re
+@@ -640,22 +649,23 @@ HttpTunnel::add_producer(VConnection *vc, int64_t nbytes_arg, IOBufferReader *re
      p->do_dechunking       = false;
      p->do_chunked_passthru = false;
  
@@ -401,7 +340,7 @@ index dadd6c8ce..f82f6590a 100644
        p->alive        = false;
        p->read_success = true;
      } else {
-@@ -794,9 +808,15 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
+@@ -794,9 +804,15 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
        }
      }
    }
@@ -419,7 +358,7 @@ index dadd6c8ce..f82f6590a 100644
  
    ink_assert(p->vc != nullptr);
    active = true;
-@@ -831,17 +851,23 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
+@@ -831,17 +847,23 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
  
    int64_t read_start_pos = 0;
    if (p->vc_type == HT_CACHE_READ && sm->t_state.range_setup == HttpTransact::RANGE_NOT_TRANSFORM_REQUESTED) {
@@ -446,7 +385,7 @@ index dadd6c8ce..f82f6590a 100644
    // At least set up the consumer readers first so the data
    // doesn't disappear out from under the tunnel
    for (c = p->consumer_list.head; c; c = c->link.next) {
-@@ -870,9 +896,9 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
+@@ -870,9 +892,9 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
        c->buffer_reader = p->read_buffer->clone_reader(p->buffer_start);
      }
  
@@ -458,7 +397,7 @@ index dadd6c8ce..f82f6590a 100644
        c->buffer_reader->consume(c->skip_bytes);
      }
    }
-@@ -895,7 +921,8 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
+@@ -895,7 +917,8 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
          return;
        }
      } else {
@@ -468,7 +407,7 @@ index dadd6c8ce..f82f6590a 100644
      }
    } // end of added logic for partial POST
  
-@@ -903,6 +930,7 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
+@@ -903,6 +926,7 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
      // remove the chunked reader marker so that it doesn't act like a buffer guard
      p->chunked_handler.chunked_buffer->dealloc_reader(chunked_buffer_start);
      p->chunked_handler.dechunked_reader->consume(p->chunked_handler.skip_bytes);
@@ -476,7 +415,7 @@ index dadd6c8ce..f82f6590a 100644
  
      // If there is data to process in the buffer, do it now
      producer_handler(VC_EVENT_READ_READY, p);
-@@ -918,12 +946,10 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
+@@ -918,12 +942,10 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
            p->chunked_handler.chunked_reader->read_avail());
      if (!transform_consumer && (p->chunked_handler.chunked_reader->read_avail() >= p->chunked_handler.skip_bytes)) {
        p->chunked_handler.chunked_reader->consume(p->chunked_handler.skip_bytes);
@@ -490,7 +429,7 @@ index dadd6c8ce..f82f6590a 100644
  
      producer_handler(VC_EVENT_READ_READY, p);
      if (sm->get_postbuf_done() && p->vc_type == HT_HTTP_CLIENT) { // read_avail() == 0
-@@ -1038,7 +1064,10 @@ HttpTunnel::producer_handler_dechunked(int event, HttpTunnelProducer *p)
+@@ -1038,7 +1060,10 @@ HttpTunnel::producer_handler_dechunked(int event, HttpTunnelProducer *p)
      /* fallthrough */
    case VC_EVENT_READ_READY:
      p->last_event = p->chunked_handler.last_server_event = event;
@@ -502,7 +441,7 @@ index dadd6c8ce..f82f6590a 100644
        HttpTunnelConsumer *c;
        for (c = p->consumer_list.head; c; c = c->link.next) {
          if (c->alive) {
-@@ -1081,7 +1110,9 @@ HttpTunnel::producer_handler_chunked(int event, HttpTunnelProducer *p)
+@@ -1081,7 +1106,9 @@ HttpTunnel::producer_handler_chunked(int event, HttpTunnelProducer *p)
    }
  
    p->last_event = p->chunked_handler.last_server_event = event;
@@ -513,7 +452,7 @@ index dadd6c8ce..f82f6590a 100644
  
    // If we couldn't understand the encoding, return
    //   an error
-@@ -1135,16 +1166,10 @@ HttpTunnel::producer_handler(int event, HttpTunnelProducer *p)
+@@ -1135,16 +1162,10 @@ HttpTunnel::producer_handler(int event, HttpTunnelProducer *p)
  
    // Handle chunking/dechunking/chunked-passthrough if necessary.
    if (p->do_chunking) {
@@ -532,7 +471,7 @@ index dadd6c8ce..f82f6590a 100644
      event = producer_handler_chunked(event, p);
    } else {
      p->last_event = event;
-@@ -1167,7 +1192,12 @@ HttpTunnel::producer_handler(int event, HttpTunnelProducer *p)
+@@ -1167,7 +1188,12 @@ HttpTunnel::producer_handler(int event, HttpTunnelProducer *p)
          event = VC_EVENT_ERROR;
        }
      } else {
@@ -546,7 +485,7 @@ index dadd6c8ce..f82f6590a 100644
        if (event == VC_EVENT_READ_COMPLETE || event == HTTP_TUNNEL_EVENT_PRECOMPLETE || event == VC_EVENT_EOS) {
          sm->set_postbuf_done(true);
        }
-@@ -1202,6 +1232,9 @@ HttpTunnel::producer_handler(int event, HttpTunnelProducer *p)
+@@ -1202,6 +1228,9 @@ HttpTunnel::producer_handler(int event, HttpTunnelProducer *p)
      p->alive = false;
      if (p->read_vio) {
        p->bytes_read = p->read_vio->ndone;
@@ -556,7 +495,7 @@ index dadd6c8ce..f82f6590a 100644
      } else {
        // If we are chunked, we can receive the whole document
        //   along with the header without knowing it (due to
-@@ -1239,6 +1272,9 @@ HttpTunnel::producer_handler(int event, HttpTunnelProducer *p)
+@@ -1239,6 +1268,9 @@ HttpTunnel::producer_handler(int event, HttpTunnelProducer *p)
        p->alive = false;
        if (p->read_vio) {
          p->bytes_read = p->read_vio->ndone;
@@ -566,7 +505,7 @@ index dadd6c8ce..f82f6590a 100644
        } else {
          p->bytes_read = 0;
        }
-@@ -1460,6 +1496,9 @@ HttpTunnel::chain_abort_all(HttpTunnelProducer *p)
+@@ -1460,6 +1492,9 @@ HttpTunnel::chain_abort_all(HttpTunnelProducer *p)
      p->alive = false;
      if (p->read_vio) {
        p->bytes_read = p->read_vio->ndone;
@@ -576,7 +515,7 @@ index dadd6c8ce..f82f6590a 100644
      }
      if (p->self_consumer) {
        p->self_consumer->alive = false;
-@@ -1477,8 +1516,8 @@ HttpTunnel::chain_abort_all(HttpTunnelProducer *p)
+@@ -1477,8 +1512,8 @@ HttpTunnel::chain_abort_all(HttpTunnelProducer *p)
  int64_t
  HttpTunnel::final_consumer_bytes_to_write(HttpTunnelProducer *p, HttpTunnelConsumer *c)
  {
@@ -587,7 +526,7 @@ index dadd6c8ce..f82f6590a 100644
    if (p->alive) {
      consumer_n = INT64_MAX;
    } else {
-@@ -1488,25 +1527,25 @@ HttpTunnel::final_consumer_bytes_to_write(HttpTunnelProducer *p, HttpTunnelConsu
+@@ -1488,25 +1523,25 @@ HttpTunnel::final_consumer_bytes_to_write(HttpTunnelProducer *p, HttpTunnelConsu
          switch (action) {
          case TCA_CHUNK_CONTENT:
          case TCA_PASSTHRU_DECHUNKED_CONTENT:
@@ -620,7 +559,7 @@ index dadd6c8ce..f82f6590a 100644
      }
    }
    return consumer_n;
-@@ -1528,12 +1567,10 @@ HttpTunnel::finish_all_internal(HttpTunnelProducer *p, bool chain)
+@@ -1528,12 +1563,10 @@ HttpTunnel::finish_all_internal(HttpTunnelProducer *p, bool chain)
    TunnelChunkingAction_t action = p->chunking_action;
  
    if (action == TCA_PASSTHRU_CHUNKED_CONTENT) {
@@ -635,7 +574,7 @@ index dadd6c8ce..f82f6590a 100644
      }
    }
  
-@@ -1628,6 +1665,9 @@ HttpTunnel::close_vc(HttpTunnelConsumer *c)
+@@ -1628,6 +1661,9 @@ HttpTunnel::close_vc(HttpTunnelConsumer *c)
      p->alive = false;
      if (p->read_vio) {
        p->bytes_read = p->read_vio->ndone;
@@ -646,71 +585,10 @@ index dadd6c8ce..f82f6590a 100644
    }
  
 diff --git a/proxy/http/HttpTunnel.h b/proxy/http/HttpTunnel.h
-index b4a876ef8..10d05fc2c 100644
+index b4a876ef8..4af1bd82e 100644
 --- a/proxy/http/HttpTunnel.h
 +++ b/proxy/http/HttpTunnel.h
-@@ -138,14 +138,54 @@ struct ChunkedHandler {
-   /// If @a size is zero it is set to @c DEFAULT_MAX_CHUNK_SIZE.
-   void set_max_chunk_size(int64_t size);
- 
--  // Returns true if complete, false otherwise
--  bool process_chunked_content();
--  bool generate_chunked_content();
-+  /** Consumes and processes chunked content.
-+   *
-+   * This consumes data from @a chunked_reader and, if dechunking, writes the
-+   * dechunked body to @a dechunked_buffer.
-+   *
-+   * @return The number of bytes consumed from the chunked reader and true if
-+   * the entire chunked content is processed, false otherwise.
-+   */
-+  std::pair<int64_t, bool> process_chunked_content();
-+
-+  /** Writes chunked content.
-+   *
-+   * This reads from @a dechunked_reader and writes chunked formatted content to
-+   * @a chunked_buffer.
-+   *
-+   * @return The number of bytes consumed from the dechunked reader and true if
-+   * the entire chunked content is written, false otherwise.
-+   */
-+  std::pair<int64_t, bool> generate_chunked_content();
- 
- private:
--  void read_size();
--  void read_chunk();
--  void read_trailer();
-+  /** Read a chunk header containing the size of the chunk.
-+   *
-+   * @return The number of bytes consumed from the chunked buffer reader.
-+   */
-+  int64_t read_size();
-+
-+  /** Read a chunk body.
-+   *
-+   * This is called after read_size so that the chunk size is known.
-+   *
-+   * @return The number of bytes consumed from the chunked buffer reader.
-+   */
-+  int64_t read_chunk();
-+
-+  /** Read a chunk trailer.
-+   *
-+   * @return The number of bytes consumed from the chunked buffer reader.
-+   */
-+  int64_t read_trailer();
-+
-+  /** Transfer body bytes from the chunked reader.
-+   *
-+   * This will either simply consume the chunked body bytes in the case of
-+   * chunked passthrough, or transfer the chunked body to the dechunked buffer.
-+   *
-+   * @return The number of bytes consumed from the chunked buffer reader.
-+   */
-   int64_t transfer_bytes();
- };
- 
-@@ -200,12 +240,51 @@ struct HttpTunnelProducer {
+@@ -200,12 +200,51 @@ struct HttpTunnelProducer {
    bool do_dechunking       = false;
    bool do_chunked_passthru = false;
  
@@ -768,7 +646,7 @@ index b4a876ef8..10d05fc2c 100644
  
    int num_consumers = 0;
  
-@@ -223,6 +302,12 @@ struct HttpTunnelProducer {
+@@ -223,6 +262,12 @@ struct HttpTunnelProducer {
     */
    uint64_t backlog(uint64_t limit = UINT64_MAX ///< More than this is irrelevant
    );
@@ -781,7 +659,7 @@ index b4a876ef8..10d05fc2c 100644
    /// Check if producer is original (to ATS) source of data.
    /// @return @c true if this producer is the source of bytes from outside ATS.
    bool is_source() const;
-@@ -518,7 +603,7 @@ HttpTunnel::append_message_to_producer_buffer(HttpTunnelProducer *p, const char
+@@ -518,7 +563,7 @@ HttpTunnel::append_message_to_producer_buffer(HttpTunnelProducer *p, const char
    }
  
    p->read_buffer->write(msg, msg_len);
@@ -790,7 +668,7 @@ index b4a876ef8..10d05fc2c 100644
    p->bytes_read += msg_len;
  }
  
-@@ -585,6 +670,12 @@ HttpTunnelConsumer::is_sink() const
+@@ -585,6 +630,12 @@ HttpTunnelConsumer::is_sink() const
    return HT_HTTP_CLIENT == vc_type || HT_CACHE_WRITE == vc_type;
  }
  

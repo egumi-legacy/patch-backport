@@ -84,13 +84,16 @@ class Mode1Config(BaseConfig):
     repo_owner: str
     commit_sha: str
     
+    # 可选参数
+    patch_path: Optional[str] = None
+    
     @model_validator(mode='before')
     def process_field(cls, data: Any) -> Dict[str, str]:
         if isinstance(data, dict):
             info = parse_github_url(data['patch_url'])
             if not info:
                 raise ValueError(f"无法解析补丁URL: {data['patch_url']}")
-            repo_name = info['repo']
+            repo_name = info['name']
             repo_owner = info['owner']
             commit_sha = info['commit_sha']
             return {**data, "repo_name": repo_name, "repo_owner": repo_owner, "commit_sha": commit_sha}

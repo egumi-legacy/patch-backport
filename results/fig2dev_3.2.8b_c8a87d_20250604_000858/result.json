@@ -1,0 +1,99 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "chunks_info": {
+      "total_chunks": 6,
+      "no_conflict_chunks": 2,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 4,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-04T00:08:58.126580"
+  },
+  "to_adapt_commit": {
+    "sha": "c8a87d22036e62bac0c6f7836078d8103caa6457",
+    "patch_url": "https://sourceforge.net/p/mcj/fig2dev/ci/c8a87d22036e62bac0c6f7836078d8103caa6457/",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "workspace/mcj/fig2dev/c8a87d/patches/merged_3.2.8b.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "3.2.8b",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: fig2dev/object.h:3\nerror: fig2dev/object.h: patch does not apply\nerror: patch failed: fig2dev/tests/read.at:2\nerror: fig2dev/tests/read.at: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/upstream_c8a87d.patch",
+      "timestamp": "2025-06-04T00:08:10.332291"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/upstream_c8a87d.patch",
+      "total_chunks": 6,
+      "applied_chunks": 2,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_002_20250604_000810.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_006_20250604_000810.patch"
+      ],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/remaining_chunks_20250604_000810.patch",
+      "timestamp": "2025-06-04T00:08:10.398076",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "Reject arcs with co-incident points, ticket #186\n\nBackported patch to prevent the creation of arcs where all points are co-incident.\nThis ensures better input sanitization and avoids potential runtime issues.",
+      "prompt": {
+        "patch_content": "From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001\nFrom: Thomas Loimer <thomas.loimer@tuwien.ac.at>\nDate: Wed, 22 Jan 2025 23:27:43 +0100\nSubject: [PATCH] Reject arcs with co-incident points, ticket #186\n\n\ndiff --git a/fig2dev/object.h b/fig2dev/object.h\nindex 7f83939..50afbf0 100644\n--- a/fig2dev/object.h\n+++ b/fig2dev/object.h\n@@ -3,7 +3,7 @@\n  * Copyright (c) 1991 by Micah Beck\n  * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul\n  * Parts Copyright (c) 1989-2015 by Brian V. Smith\n- * Parts Copyright (c) 2015-2023 by Thomas Loimer\n+ * Parts Copyright (c) 2015-2025 by Thomas Loimer\n  *\n  * Any party obtaining a copy of these files is granted, free of charge, a\n  * full and unrestricted irrevocable, world-wide, paid up, royalty-free,\n@@ -126,12 +126,16 @@ typedef struct f_arc {\n #define CIRCARC       9\n #define CIRCULARARC   > 8\n \n-#define INVALID_ARC(a)\t\\\n+#define COINCIDENT(a, b)\t(a.x == b.x && a.y == b.y)\n+#define INVALID_ARC(a)\t\t\t\t\t\t\t\\\n \ta->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||\t\t\\\n \tCOMMON_PROPERTIES(a) || a->cap_style < 0 || a->cap_style > 2 ||\t\\\n \ta->center.x < COORD_MIN || a->center.x > COORD_MAX ||\t\t\\\n \ta->center.y < COORD_MIN || a->center.y > COORD_MAX ||\t\t\\\n-\t(a->direction != 0 && a->direction != 1)\n+\t(a->direction != 0 && a->direction != 1) ||\t\t\t\\\n+\tCOINCIDENT(a->point[0], a->point[1]) ||\t\t\t\t\\\n+\tCOINCIDENT(a->point[0], a->point[2]) ||\t\t\t\t\\\n+\tCOINCIDENT(a->point[1], a->point[2])\n \n typedef struct f_line {\n \tint\t\t\ttype;\ndiff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at\nindex 1b4baea..da9ea3e 100644\n--- a/fig2dev/tests/read.at\n+++ b/fig2dev/tests/read.at\n@@ -2,7 +2,7 @@ dnl Fig2dev: Translate Fig code to various Devices\n dnl Copyright (c) 1991 by Micah Beck\n dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul\n dnl Parts Copyright (c) 1989-2015 by Brian V. Smith\n-dnl Parts Copyright (c) 2015-2024 by Thomas Loimer\n+dnl Parts Copyright (c) 2015-2025 by Thomas Loimer\n dnl\n dnl Any party obtaining a copy of these files is granted, free of charge, a\n dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,\n@@ -14,7 +14,7 @@ dnl party to do so, with the only requirement being that the above copyright\n dnl and this permission notice remain intact.\n \n dnl read.at\n-dnl Author: Thomas Loimer, 2017-2024\n+dnl Author: Thomas Loimer, 2017-2025\n \n \n AT_BANNER([Sanitize and harden input.])\n",
+        "target_version": "3.2.8b",
+        "context_diff": "modified file: fig2dev/object.h\n--- workspace/mcj/fig2dev/c8a87d/newer/fig2dev/object.h\n+++ workspace/mcj/fig2dev/c8a87d/3.2.8b/fig2dev/object.h\n@@ -3,7 +3,7 @@\n   * Copyright (c) 1991 by Micah Beck\n   * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul\n   * Parts Copyright (c) 1989-2015 by Brian V. Smith\n - * Parts Copyright (c) 2015-2023 by Thomas Loimer\n + * Parts Copyright (c) 2015-2020 by Thomas Loimer\n   *\n   * Any party obtaining a copy of these files is granted, free of charge, a\n   * full and unrestricted irrevocable, world-wide, paid up, royalty-free,\n@@ -57,13 +57,12 @@\n  \tstruct f_comment\t*next;\n  } F_comment;\n  \n -#define\tSTYLE_VAL_MAX\t6400.0\t/* dash length 80 inches, that is enough */\n  #define COMMON_PROPERTIES(o)\t\t\t\t\t\t\\\n  \to->style < SOLID_LINE || o->style > DASH_3_DOTS_LINE ||\t\t\\\n  \to->thickness < 0 || o->depth < 0 || o->depth > 999 ||\t\t\\\n  \to->fill_style < UNFILLED ||\t\t\t\t\t\\\n  \to->fill_style >= NUMSHADES + NUMTINTS + NUMPATTERNS ||\t\t\\\n -\to->style_val < 0.0 || o->style_val > STYLE_VAL_MAX\n +\to->style_val < 0.0\n  \n  typedef struct f_ellipse {\n  \tint\t\t\ttype;\n@@ -115,16 +114,12 @@\n  \tint\t\t\tcap_style;\n -\tfloat \t\t\tangle;\t\t/* for elliptical arcs, new for V4.0 */\n  \tint\t\t\tdirection;\n  \tstruct {double x, y;}\tcenter;\n  \tstruct f_pos\t\tpoint[3];\n  \tstruct f_comment\t*comments;\n  \tstruct f_arc\t\t*next;\n  } F_arc;\n -\n -#define CIRCARC       9\n -#define CIRCULARARC   > 8\n  \n  #define INVALID_ARC(a)\t\\\n  \ta->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||\t\t\\\n@@ -156,7 +151,6 @@\n  \t      for ARC, LINE and SPLINE (LINE has join_style following cap_style */\n  \tint\t\t\tjoin_style;\n  \tint\t\t\tradius;\t/* for T_ARC_BOX */\n -\tint\t\t\tnum_points;\n  \tstruct f_pos\t\tlast[2]; /* last and penultimate point */\n  \tstruct f_pic\t\t*pic;\n  \tstruct f_comment\t*comments;\n\n\"\"\"\"\"\"\nmodified file: fig2dev/tests/read.at\n--- workspace/mcj/fig2dev/c8a87d/newer/fig2dev/tests/read.at\n+++ workspace/mcj/fig2dev/c8a87d/3.2.8b/fig2dev/tests/read.at\n@@ -2,7 +2,7 @@\n  dnl Copyright (c) 1991 by Micah Beck\n  dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul\n  dnl Parts Copyright (c) 1989-2015 by Brian V. Smith\n -dnl Parts Copyright (c) 2015-2024 by Thomas Loimer\n +dnl Parts Copyright (c) 2015-2021 by Thomas Loimer\n  dnl\n  dnl Any party obtaining a copy of these files is granted, free of charge, a\n  dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,\n@@ -14,7 +14,7 @@\n  dnl and this permission notice remain intact.\n  \n  dnl read.at\n -dnl Author: Thomas Loimer, 2017-2024\n +dnl Author: Thomas Loimer, 2017-2020\n  \n  \n  AT_BANNER([Sanitize and harden input.])\n@@ -96,41 +96,6 @@\n  \t 0 600\n  EOF\n  ],0,ignore,[A rectangle with 1 points at line 11 - convert to a polyline.\n -])\n -AT_CLEANUP\n -\n -AT_SETUP([convert box with two points to a polyline, #142])\n -AT_KEYWORDS(read.c gbx)\n -AT_CHECK([fig2dev -L gbx <<EOF\n -FIG_FILE_TOP\n -2 2 0 1 -1 -1 50 -1 -1 0.0 1 0 -1 0 0 2\n -\t 0 0 0 600\n -EOF\n -],0,ignore,[An open rectangle at line 11 - close it.\n -A rectangle with 3 points at line 11 - convert to a polyline.\n -])\n -AT_CLEANUP\n -\n -AT_SETUP([convert box with three points to polygon, #152])\n -AT_KEYWORDS(read.c gbx)\n -AT_CHECK([fig2dev -L gbx <<EOF\n -FIG_FILE_TOP\n -2 2 0 1 -1 -1 50 -1 -1 0.0 1 0 -1 0 0 3\n -\t 0 0 0 600 600 0\n -EOF\n -],0,ignore,[An open rectangle at line 11 - close it.\n -A rectangle with 3 corners at line 11 - convert to a polygon.\n -])\n -AT_CLEANUP\n -\n -AT_SETUP([convert an arc-box with zero radius to a box])\n -AT_KEYWORDS(read.c arc-box)\n -AT_CHECK([fig2dev -L pict2e <<EOF\n -FIG_FILE_TOP\n -2 4 1 1 0 0 50 -1 -1 4.0 0 0 0 0 0 5\n -\t0 0 300 0 300 300 0 300 0 0\n -EOF\n -],0,ignore,[A rectangle with rounded corners, but zero corner radius at line 11 - convert to a rectangle.\n  ])\n  AT_CLEANUP\n  \n@@ -202,7 +167,7 @@\n  \t10000000000000 0 1 60 120\n  0 0 600 0\n  EOF\n -], 0, ignore, [Invalid arrow at line 11.\n +], 1, ignore, [Invalid forward arrow at line 11.\n  ])\n  AT_CLEANUP\n  \n@@ -420,19 +385,6 @@\n  ])\n  AT_CLEANUP\n  \n -AT_SETUP([Ignore splines with only co-incident points])\n -AT_KEYWORDS([read.c])\n -AT_CHECK([fig2dev -L box <<EOF\n -FIG_FILE_TOP\n -# some comment\n -3 4 0 1 0 0 0 0 -1 0.0 0 0 0 4\n -  1200 600 1200 600 1200 600 1200 600\n - 0 1 1 0\n -EOF\n -], 1, ignore, [Invalid spline with only co-incident points at or before line 13.\n -])\n -AT_CLEANUP\n -\n  AT_SETUP([accept closed splines with three points])\n  AT_KEYWORDS([read.c])\n  AT_CHECK([fig2dev -L box <<EOF\n@@ -598,18 +550,6 @@\n  ])\n  AT_CLEANUP\n  \n -AT_SETUP([Allow text with leading spaces, ticket #181])\n -AT_KEYWORDS([read.c])\n -AT_CHECK([fig2dev -L eps <<EOF | $SED -n '70,$ s/.*\\((.*spaces)\\).*/\\1/p'\n -FIG_FILE_TOP\n -4 0 0 50 -1 4 20 0 4 330 1665 0 600 no spaces\\001\n -4 0 0 50 -1 4 20 0 4 330 1590 0 0     spaces\\001\n -EOF\n -], 0, [(no spaces)\n -(    spaces)\n -])\n -AT_CLEANUP\n -\n  AT_BANNER([Dynamically allocate picture file name.])\n  \n  AT_SETUP([prepend fig file path to picture file name])\n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/mcj/fig2dev/c8a87d/llm_output/output_3.2.8b_qwen-plus.patch",
+      "timestamp": "2025-06-04T00:08:57.989363",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "final_patch_path": "workspace/mcj/fig2dev/c8a87d/patches/merged_3.2.8b.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-04T00:08:09.674381",
+    "end_time": "2025-06-04T00:08:58.040323",
+    "total_seconds": 48.365942,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "patch_content": "From 9f806620db9e2033bbe2954ab8bbd8b3306b63c0 Mon Sep 17 00:00:00 2001\nFrom: elpsy <hewenkuan_work@foxmail.com>\nDate: Wed, 4 Jun 2025 00:08:58 +0800\nSubject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A2?=\n =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\n---\n fig2dev/object.h      |  6 +++---\n fig2dev/tests/read.at | 10 ++++++++++\n 2 files changed, 13 insertions(+), 3 deletions(-)\n\ndiff --git a/fig2dev/object.h b/fig2dev/object.h\nindex 5a2f6e4..a9ec529 100644\n--- a/fig2dev/object.h\n+++ b/fig2dev/object.h\n@@ -91,10 +91,10 @@ typedef struct f_ellipse {\n \tstruct f_ellipse\t*next;\n } F_ellipse;\n \n-#define INVALID_ELLIPSE(e)\t\\\n+#define INVALID_ELLIPSE(e)\t\t\t\t\t\t\\\n \te->type < T_ELLIPSE_BY_RAD || e->type > T_CIRCLE_BY_DIA ||\t\\\n-\tCOMMON_PROPERTIES(e) || (e->direction != 1 && e->direction != 0) || \\\n-\te->radiuses.x == 0 || e->radiuses.y == 0 || \\\n+\tCOMMON_PROPERTIES(e) || (e->direction != 1 && e->direction != 0) ||  \\\n+\te->radiuses.x == 0 || e->radiuses.y == 0 ||\t\t\t\\\n \te->angle < -7. || e->angle > 7.\n \n typedef struct f_arc {\ndiff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at\nindex 5dd5b50..af14a64 100644\n--- a/fig2dev/tests/read.at\n+++ b/fig2dev/tests/read.at\n@@ -213,6 +213,16 @@ EOF\n ])\n AT_CLEANUP\n \n+AT_SETUP([reject arcs with coincident points, ticket #186])\n+AT_KEYWORDS(read.c arc)\n+AT_CHECK([fig2dev -L pict2e <<EOF\n+FIG_FILE_TOP\n+5 1 0 15 0 7 50 0 -1 0.0 1 0 0 0 0.0 0.0 1 1 1 1 2 0\n+EOF\n+], 1, ignore, [Invalid arc object at line 10.\n+])\n+AT_CLEANUP\n+\n AT_SETUP([survive debian bugs #881143, #881144])\n AT_KEYWORDS([font pic tikz])\n AT_CHECK([fig2dev -L pic <<EOF\n-- \n2.25.1\n\n",
+    "llm_output": "Reject arcs with co-incident points, ticket #186\n\nBackported patch to prevent the creation of arcs where all points are co-incident.\nThis ensures better input sanitization and avoids potential runtime issues.",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "3.2.8b",
+      "commit_sha": "c8a87d22036e62bac0c6f7836078d8103caa6457",
+      "timestamp": "2025-06-04T00:08:58.126597",
+      "execution_path": "chunk_analyzer (2/6 chunks)",
+      "adaptation_method": "unknown"
+    }
+  }
+}

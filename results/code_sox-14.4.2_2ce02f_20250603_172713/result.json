@@ -1,0 +1,82 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "chunks_info": {
+      "total_chunks": 1,
+      "no_conflict_chunks": 1,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 0,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-03T17:27:13.183837"
+  },
+  "to_adapt_commit": {
+    "sha": "2ce02fea7b350de9ddfbcf542ba4dd59a8ab255b",
+    "patch_url": "https://sourceforge.net/p/sox/code/ci/2ce02fea7b350de9ddfbcf542ba4dd59a8ab255b/",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/chunk_patches/chunk_001_20250603_172713.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "sox-14.4.2",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "Patch format detection failed.\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/patches/upstream_2ce02f.patch",
+      "timestamp": "2025-06-03T17:27:13.157627"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/patches/upstream_2ce02f.patch",
+      "total_chunks": 1,
+      "applied_chunks": 1,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/chunk_patches/chunk_001_20250603_172713.patch"
+      ],
+      "remaining_patch": null,
+      "timestamp": "2025-06-03T17:27:13.170622",
+      "success": true
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/2ce02f/chunk_patches/chunk_001_20250603_172713.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-03T17:26:51.596689",
+    "end_time": "2025-06-03T17:27:13.180646",
+    "total_seconds": 21.583957,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "patch_content": "commit 2ce02fea7b350de9ddfbcf542ba4dd59a8ab255b\nAuthor: Mans Rullgard <mans@mansr.com>\nDate:   Wed Apr 24 15:08:51 2019 +0100\n\n    fix possible null pointer deref in lsx_make_lpf() (CVE-2019-8357)\n    \n    If the buffer allocation fails, return NULL.\n\ndiff --git a/src/effects_i_dsp.c b/src/effects_i_dsp.c\nindex e32dfa05..88b1b390 100644\n--- a/src/effects_i_dsp.c\n+++ b/src/effects_i_dsp.c\n@@ -362,6 +362,9 @@ double * lsx_make_lpf(int num_taps, double Fc, double beta, double rho,\n   assert(Fc >= 0 && Fc <= 1);\n   lsx_debug(\"make_lpf(n=%i Fc=%.7g \u03b2=%g \u03c1=%g dc-norm=%i scale=%g)\", num_taps, Fc, beta, rho, dc_norm, scale);\n \n+  if (!h)\n+    return NULL;\n+\n   for (i = 0; i <= m / 2; ++i) {\n     double z = i - .5 * m, x = z * M_PI, y = z * mult1;\n     h[i] = x? sin(Fc * x) / x : Fc;\n",
+    "llm_output": null,
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "sox-14.4.2",
+      "commit_sha": "2ce02fea7b350de9ddfbcf542ba4dd59a8ab255b",
+      "timestamp": "2025-06-03T17:27:13.183858",
+      "execution_path": "chunk_analyzer (all chunks)"
+    }
+  }
+}

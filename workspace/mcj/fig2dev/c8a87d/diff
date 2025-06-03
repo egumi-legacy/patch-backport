@@ -1,0 +1,165 @@
+modified file: fig2dev/object.h
+--- workspace/mcj/fig2dev/c8a87d/newer/fig2dev/object.h
++++ workspace/mcj/fig2dev/c8a87d/3.2.8b/fig2dev/object.h
+@@ -3,7 +3,7 @@
+   * Copyright (c) 1991 by Micah Beck
+   * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+   * Parts Copyright (c) 1989-2015 by Brian V. Smith
+ - * Parts Copyright (c) 2015-2023 by Thomas Loimer
+ + * Parts Copyright (c) 2015-2020 by Thomas Loimer
+   *
+   * Any party obtaining a copy of these files is granted, free of charge, a
+   * full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+@@ -57,13 +57,12 @@
+  	struct f_comment	*next;
+  } F_comment;
+  
+ -#define	STYLE_VAL_MAX	6400.0	/* dash length 80 inches, that is enough */
+  #define COMMON_PROPERTIES(o)						\
+  	o->style < SOLID_LINE || o->style > DASH_3_DOTS_LINE ||		\
+  	o->thickness < 0 || o->depth < 0 || o->depth > 999 ||		\
+  	o->fill_style < UNFILLED ||					\
+  	o->fill_style >= NUMSHADES + NUMTINTS + NUMPATTERNS ||		\
+ -	o->style_val < 0.0 || o->style_val > STYLE_VAL_MAX
+ +	o->style_val < 0.0
+  
+  typedef struct f_ellipse {
+  	int			type;
+@@ -115,16 +114,12 @@
+  	int			cap_style;
+ -	float 			angle;		/* for elliptical arcs, new for V4.0 */
+  	int			direction;
+  	struct {double x, y;}	center;
+  	struct f_pos		point[3];
+  	struct f_comment	*comments;
+  	struct f_arc		*next;
+  } F_arc;
+ -
+ -#define CIRCARC       9
+ -#define CIRCULARARC   > 8
+  
+  #define INVALID_ARC(a)	\
+  	a->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||		\
+@@ -156,7 +151,6 @@
+  	      for ARC, LINE and SPLINE (LINE has join_style following cap_style */
+  	int			join_style;
+  	int			radius;	/* for T_ARC_BOX */
+ -	int			num_points;
+  	struct f_pos		last[2]; /* last and penultimate point */
+  	struct f_pic		*pic;
+  	struct f_comment	*comments;
+
+""""""
+modified file: fig2dev/tests/read.at
+--- workspace/mcj/fig2dev/c8a87d/newer/fig2dev/tests/read.at
++++ workspace/mcj/fig2dev/c8a87d/3.2.8b/fig2dev/tests/read.at
+@@ -2,7 +2,7 @@
+  dnl Copyright (c) 1991 by Micah Beck
+  dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+  dnl Parts Copyright (c) 1989-2015 by Brian V. Smith
+ -dnl Parts Copyright (c) 2015-2024 by Thomas Loimer
+ +dnl Parts Copyright (c) 2015-2021 by Thomas Loimer
+  dnl
+  dnl Any party obtaining a copy of these files is granted, free of charge, a
+  dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+@@ -14,7 +14,7 @@
+  dnl and this permission notice remain intact.
+  
+  dnl read.at
+ -dnl Author: Thomas Loimer, 2017-2024
+ +dnl Author: Thomas Loimer, 2017-2020
+  
+  
+  AT_BANNER([Sanitize and harden input.])
+@@ -96,41 +96,6 @@
+  	 0 600
+  EOF
+  ],0,ignore,[A rectangle with 1 points at line 11 - convert to a polyline.
+ -])
+ -AT_CLEANUP
+ -
+ -AT_SETUP([convert box with two points to a polyline, #142])
+ -AT_KEYWORDS(read.c gbx)
+ -AT_CHECK([fig2dev -L gbx <<EOF
+ -FIG_FILE_TOP
+ -2 2 0 1 -1 -1 50 -1 -1 0.0 1 0 -1 0 0 2
+ -	 0 0 0 600
+ -EOF
+ -],0,ignore,[An open rectangle at line 11 - close it.
+ -A rectangle with 3 points at line 11 - convert to a polyline.
+ -])
+ -AT_CLEANUP
+ -
+ -AT_SETUP([convert box with three points to polygon, #152])
+ -AT_KEYWORDS(read.c gbx)
+ -AT_CHECK([fig2dev -L gbx <<EOF
+ -FIG_FILE_TOP
+ -2 2 0 1 -1 -1 50 -1 -1 0.0 1 0 -1 0 0 3
+ -	 0 0 0 600 600 0
+ -EOF
+ -],0,ignore,[An open rectangle at line 11 - close it.
+ -A rectangle with 3 corners at line 11 - convert to a polygon.
+ -])
+ -AT_CLEANUP
+ -
+ -AT_SETUP([convert an arc-box with zero radius to a box])
+ -AT_KEYWORDS(read.c arc-box)
+ -AT_CHECK([fig2dev -L pict2e <<EOF
+ -FIG_FILE_TOP
+ -2 4 1 1 0 0 50 -1 -1 4.0 0 0 0 0 0 5
+ -	0 0 300 0 300 300 0 300 0 0
+ -EOF
+ -],0,ignore,[A rectangle with rounded corners, but zero corner radius at line 11 - convert to a rectangle.
+  ])
+  AT_CLEANUP
+  
+@@ -202,7 +167,7 @@
+  	10000000000000 0 1 60 120
+  0 0 600 0
+  EOF
+ -], 0, ignore, [Invalid arrow at line 11.
+ +], 1, ignore, [Invalid forward arrow at line 11.
+  ])
+  AT_CLEANUP
+  
+@@ -420,19 +385,6 @@
+  ])
+  AT_CLEANUP
+  
+ -AT_SETUP([Ignore splines with only co-incident points])
+ -AT_KEYWORDS([read.c])
+ -AT_CHECK([fig2dev -L box <<EOF
+ -FIG_FILE_TOP
+ -# some comment
+ -3 4 0 1 0 0 0 0 -1 0.0 0 0 0 4
+ -  1200 600 1200 600 1200 600 1200 600
+ - 0 1 1 0
+ -EOF
+ -], 1, ignore, [Invalid spline with only co-incident points at or before line 13.
+ -])
+ -AT_CLEANUP
+ -
+  AT_SETUP([accept closed splines with three points])
+  AT_KEYWORDS([read.c])
+  AT_CHECK([fig2dev -L box <<EOF
+@@ -598,18 +550,6 @@
+  ])
+  AT_CLEANUP
+  
+ -AT_SETUP([Allow text with leading spaces, ticket #181])
+ -AT_KEYWORDS([read.c])
+ -AT_CHECK([fig2dev -L eps <<EOF | $SED -n '70,$ s/.*\((.*spaces)\).*/\1/p'
+ -FIG_FILE_TOP
+ -4 0 0 50 -1 4 20 0 4 330 1665 0 600 no spaces\001
+ -4 0 0 50 -1 4 20 0 4 330 1590 0 0     spaces\001
+ -EOF
+ -], 0, [(no spaces)
+ -(    spaces)
+ -])
+ -AT_CLEANUP
+ -
+  AT_BANNER([Dynamically allocate picture file name.])
+  
+  AT_SETUP([prepend fig file path to picture file name])
+
+""""""

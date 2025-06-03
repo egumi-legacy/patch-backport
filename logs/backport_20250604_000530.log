@@ -1,0 +1,52 @@
+2025-06-04 00:05:30.044 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250604_000530.log
+2025-06-04 00:05:30.044 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-04 00:05:30.045 | INFO     | __main__:_process_mode1:349 - 处理补丁: https://sourceforge.net/p/mcj/fig2dev/ci/da8992f44b84a337b4edaa67fc8b36b55eaef696/
+2025-06-04 00:05:30.045 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-04 00:05:30.045 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-04 00:05:30.047 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-04 00:05:30.048 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-04 00:05:30.048 | INFO     | __main__:_process_mode1:356 - 目标版本: ['3.2.8b']
+2025-06-04 00:05:30.048 | INFO     | __main__:_process_mode1:363 - 开始处理版本: 3.2.8b
+2025-06-04 00:05:30.049 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: da8992f44b84a337b4edaa67fc8b36b55eaef696
+2025-06-04 00:05:30.049 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-04 00:05:30.049 | INFO     | modules.direct_apply:_download_patch:245 - 上游补丁文件不存在，下载补丁
+2025-06-04 00:05:30.050 | INFO     | patch_utils:_download_sourceforge_patch:305 - 解析SourceForge URL: 项目(Project)=mcj, 仓库(Repo)=fig2dev, 提交(Commit)=da8992f44b84a337b4edaa67fc8b36b55eaef696
+2025-06-04 00:05:30.050 | INFO     | patch_utils:_download_sourceforge_patch:306 - 基础Commit URL (Base Commit URL): https://sourceforge.net/p/mcj/fig2dev/ci/da8992f44b84a337b4edaa67fc8b36b55eaef696
+2025-06-04 00:05:30.051 | INFO     | patch_utils:_download_sourceforge_patch:311 - 尝试从以下URL下载diff (Attempting to download diff from): https://sourceforge.net/p/mcj/fig2dev/ci/da8992f44b84a337b4edaa67fc8b36b55eaef696/diff/?diff_format=u
+2025-06-04 00:05:30.638 | ERROR    | patch_utils:_download_sourceforge_patch:336 - 下载SourceForge补丁时发生HTTP错误 (HTTP error while downloading SourceForge patch): 404 Not Found from https://sourceforge.net/p/mcj/fig2dev/ci/da8992f44b84a337b4edaa67fc8b36b55eaef696/diff/?diff_format=u
+2025-06-04 00:05:30.639 | WARNING  | modules.direct_apply:_download_patch:258 - 补丁下载出错: 404 Client Error: Not Found for url: https://sourceforge.net/p/mcj/fig2dev/ci/da8992f44b84a337b4edaa67fc8b36b55eaef696/diff/?diff_format=u
+2025-06-04 00:05:30.641 | INFO     | modules.direct_apply:_download_patch:261 - 尝试从本地仓库生成补丁
+2025-06-04 00:05:30.643 | INFO     | patch_utils:generate_patch_from_git:428 - 尝试从本地仓库生成补丁: da8992f44b84a337b4edaa67fc8b36b55eaef696
+2025-06-04 00:05:30.649 | INFO     | patch_utils:generate_patch_from_git:456 - 成功从本地仓库生成补丁: workspace/mcj/fig2dev/da8992/patches/upstream_da8992.patch
+2025-06-04 00:05:30.650 | INFO     | modules.direct_apply:_download_patch:269 - 成功从本地仓库生成补丁: workspace/mcj/fig2dev/da8992/patches/upstream_da8992.patch
+2025-06-04 00:05:30.650 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-04 00:05:30.650 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/da8992/patches/upstream_da8992.patch
+2025-06-04 00:05:30.667 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_3.2.8b
+2025-06-04 00:05:30.699 | INFO     | modules.direct_apply:_apply_patch:311 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/da8992/patches/upstream_da8992.patch
+2025-06-04 00:05:30.704 | INFO     | modules.direct_apply:_move_to_cache:131 - 源目录: workspace/mcj/fig2dev/da8992
+2025-06-04 00:05:30.705 | INFO     | modules.direct_apply:_move_to_cache:139 - 目标目录: workspace/mcj/fig2dev_cache
+2025-06-04 00:05:30.706 | INFO     | modules.direct_apply:_move_to_cache:150 - 已将成功的commit文件夹移动到缓存: workspace/mcj/fig2dev_cache
+2025-06-04 00:05:30.718 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_3.2.8b
+2025-06-04 00:05:30.719 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/mcj/fig2dev/da8992/evaluations/direct_apply/metrics_da8992_20250604_000530.json
+2025-06-04 00:05:30.720 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: ChunkAnalyzerModule
+2025-06-04 00:05:30.720 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-06-04 00:05:30.720 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-06-04 00:05:30.720 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 0.67秒
+2025-06-04 00:05:30.720 | INFO     | __main__:_merge_patches:1064 - 开始合并补丁...
+2025-06-04 00:05:30.721 | WARNING  | __main__:_merge_patches:1072 - 没有找到任何可合并的补丁结果
+2025-06-04 00:05:30.722 | ERROR    | __main__:_save_results:745 - 复制补丁文件时出错: [Errno 2] No such file or directory: '/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/da8992/patches/upstream_da8992.patch'
+2025-06-04 00:05:30.723 | INFO     | __main__:_save_results:876 - 结果已保存到: results/fig2dev_3.2.8b_da8992_20250604_000530/result.json
+2025-06-04 00:05:30.723 | INFO     | __main__:_print_summary:918 - context.patch_adapter_result: []
+2025-06-04 00:05:30.723 | INFO     | __main__:_print_summary:941 - ==================================================
+2025-06-04 00:05:30.724 | INFO     | __main__:_print_summary:942 - 处理摘要 - 提交: da8992
+2025-06-04 00:05:30.724 | INFO     | __main__:_print_summary:943 - 适配状态: 无需适配 (直接应用成功) (方法: direct_apply)
+2025-06-04 00:05:30.725 | INFO     | __main__:_print_summary:948 - 块分析统计:
+2025-06-04 00:05:30.725 | INFO     | __main__:_print_summary:949 - - 总块数: 0
+2025-06-04 00:05:30.725 | INFO     | __main__:_print_summary:950 - - 无冲突块数: 0
+2025-06-04 00:05:30.726 | INFO     | __main__:_print_summary:951 - - 成功适配块数: 0
+2025-06-04 00:05:30.726 | INFO     | __main__:_print_summary:952 - - 适配失败块数: 0
+2025-06-04 00:05:30.726 | INFO     | __main__:_print_summary:953 - - 编译失败块数: 0
+2025-06-04 00:05:30.727 | INFO     | __main__:_print_summary:957 - 总执行时间: 0.67秒
+2025-06-04 00:05:30.727 | INFO     | __main__:_print_summary:962 - ==================================================
+2025-06-04 00:05:30.728 | INFO     | __main__:run:338 - 处理完成
+2025-06-04 00:05:30.732 | INFO     | __main__:clean_config:1874 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

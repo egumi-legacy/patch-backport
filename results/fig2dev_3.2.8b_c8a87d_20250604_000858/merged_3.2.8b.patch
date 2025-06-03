@@ -1,0 +1,56 @@
+From 9f806620db9e2033bbe2954ab8bbd8b3306b63c0 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Wed, 4 Jun 2025 00:08:58 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A2?=
+ =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ fig2dev/object.h      |  6 +++---
+ fig2dev/tests/read.at | 10 ++++++++++
+ 2 files changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/fig2dev/object.h b/fig2dev/object.h
+index 5a2f6e4..a9ec529 100644
+--- a/fig2dev/object.h
++++ b/fig2dev/object.h
+@@ -91,10 +91,10 @@ typedef struct f_ellipse {
+ 	struct f_ellipse	*next;
+ } F_ellipse;
+ 
+-#define INVALID_ELLIPSE(e)	\
++#define INVALID_ELLIPSE(e)						\
+ 	e->type < T_ELLIPSE_BY_RAD || e->type > T_CIRCLE_BY_DIA ||	\
+-	COMMON_PROPERTIES(e) || (e->direction != 1 && e->direction != 0) || \
+-	e->radiuses.x == 0 || e->radiuses.y == 0 || \
++	COMMON_PROPERTIES(e) || (e->direction != 1 && e->direction != 0) ||  \
++	e->radiuses.x == 0 || e->radiuses.y == 0 ||			\
+ 	e->angle < -7. || e->angle > 7.
+ 
+ typedef struct f_arc {
+diff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at
+index 5dd5b50..af14a64 100644
+--- a/fig2dev/tests/read.at
++++ b/fig2dev/tests/read.at
+@@ -213,6 +213,16 @@ EOF
+ ])
+ AT_CLEANUP
+ 
++AT_SETUP([reject arcs with coincident points, ticket #186])
++AT_KEYWORDS(read.c arc)
++AT_CHECK([fig2dev -L pict2e <<EOF
++FIG_FILE_TOP
++5 1 0 15 0 7 50 0 -1 0.0 1 0 0 0 0.0 0.0 1 1 1 1 2 0
++EOF
++], 1, ignore, [Invalid arc object at line 10.
++])
++AT_CLEANUP
++
+ AT_SETUP([survive debian bugs #881143, #881144])
+ AT_KEYWORDS([font pic tikz])
+ AT_CHECK([fig2dev -L pic <<EOF
+-- 
+2.25.1
+

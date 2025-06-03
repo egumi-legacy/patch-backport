@@ -1,0 +1,30 @@
+2025-06-03 23:38:57.885 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250603_233857.log
+2025-06-03 23:38:57.886 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-03 23:38:57.886 | INFO     | __main__:_process_mode1:349 - 处理补丁: https://sourceforge.net/p/mcj/fig2dev/ci/da8992f44b84a337b4edaa67fc8b36b55eaef696/
+2025-06-03 23:38:57.886 | ERROR    | core.adaptation_pipeline:_load_modules:67 - 加载模块 direct_apply 失败: repo_path is required
+2025-06-03 23:38:57.886 | ERROR    | __main__:run:341 - 执行过程发生错误: name 'traceback' is not defined
+2025-06-03 23:38:57.891 | ERROR    | __main__:run:342 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/core/adaptation_pipeline.py", line 62, in _load_modules
+    module_instance = module_class(module_config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 22, in __init__
+    raise ValueError("repo_path is required")
+ValueError: repo_path is required
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 334, in run
+    self._process_mode1()
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 352, in _process_mode1
+    pipeline = AdaptationPipeline(self.config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/core/adaptation_pipeline.py", line 19, in __init__
+    self.modules = self._load_modules()
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/core/adaptation_pipeline.py", line 68, in _load_modules
+    logger.error(f"错误堆栈: {traceback.format_exc()}")
+                              ^^^^^^^^^
+NameError: name 'traceback' is not defined. Did you forget to import 'traceback'
+
+2025-06-03 23:38:57.894 | INFO     | __main__:clean_config:1876 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml
