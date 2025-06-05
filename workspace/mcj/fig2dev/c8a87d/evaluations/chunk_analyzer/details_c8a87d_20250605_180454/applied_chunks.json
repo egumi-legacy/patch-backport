@@ -1,0 +1,18 @@
+[
+  {
+    "索引": 1,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_002_20250605_180454.patch",
+    "实际补丁": null,
+    "修改文件": "fig2dev/object.h",
+    "修改位置": "92-92",
+    "内容": "From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001\nFrom: Thomas Loimer <thomas.loimer@tuwien.ac.at>\nDate: Wed, 22 Jan 2025 23:27:43 +0100\nSubject: [PATCH] Reject arcs with co-incident points, ticket #186\n\n\ndiff --git a/fig2dev/object.h b/fig2dev/object.h\nindex 7f83939..50afbf0 100644\n--- a/fig2dev/object.h\n+++ b/fig2dev/object.h\n@@ -92,10 +92,10 @@ typedef struct f_ellipse {\n \tstruct f_ellipse\t*next;\n } F_ellipse;\n \n-#define INVALID_ELLIPSE(e)\t\\\n+#define INVALID_ELLIPSE(e)\t\t\t\t\t\t\\\n \te->type < T_ELLIPSE_BY_RAD || e->type > T_CIRCLE_BY_DIA ||\t\\\n-\tCOMMON_PROPERTIES(e) || (e->direction != 1 && e->direction != 0) || \\\n-\te->radiuses.x == 0 || e->radiuses.y == 0 || \\\n+\tCOMMON_PROPERTIES(e) || (e->direction != 1 && e->direction != 0) ||  \\\n+\te->radiuses.x == 0 || e->radiuses.y == 0 ||\t\t\t\\\n \te->angle < -7. || e->angle > 7.\n \n typedef struct f_arc {\n"
+  },
+  {
+    "索引": 2,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_006_20250605_180454.patch",
+    "实际补丁": null,
+    "修改文件": "fig2dev/tests/read.at",
+    "修改位置": "248-248",
+    "内容": "From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001\nFrom: Thomas Loimer <thomas.loimer@tuwien.ac.at>\nDate: Wed, 22 Jan 2025 23:27:43 +0100\nSubject: [PATCH] Reject arcs with co-incident points, ticket #186\n\n\ndiff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at\nindex 1b4baea..da9ea3e 100644\n--- a/fig2dev/tests/read.at\n+++ b/fig2dev/tests/read.at\n@@ -248,6 +248,16 @@ EOF\n ])\n AT_CLEANUP\n \n+AT_SETUP([reject arcs with coincident points, ticket #186])\n+AT_KEYWORDS(read.c arc)\n+AT_CHECK([fig2dev -L pict2e <<EOF\n+FIG_FILE_TOP\n+5 1 0 15 0 7 50 0 -1 0.0 1 0 0 0 0.0 0.0 1 1 1 1 2 0\n+EOF\n+], 1, ignore, [Invalid arc object at line 10.\n+])\n+AT_CLEANUP\n+\n AT_SETUP([survive debian bugs #881143, #881144])\n AT_KEYWORDS([font pic tikz])\n AT_CHECK([fig2dev -L pic <<EOF\n-- \n2.25.1\n\n"
+  }
+]

@@ -1,0 +1,50 @@
+From 8ef69a03b36aeac5f364c01eb20f821860e47f14 Mon Sep 17 00:00:00 2001
+From: Dag Haavi Finstad <daghf@varnish-software.com>
+Date: Fri, 10 Jan 2025 13:07:54 +0100
+Subject: [PATCH] req_fsm: Close the connection on a malformed request
+
+---
+ bin/varnishd/cache/cache_req_fsm.c | 2 ++
+ bin/varnishtest/tests/b00037.vtc   | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/bin/varnishd/cache/cache_req_fsm.c b/bin/varnishd/cache/cache_req_fsm.c
+index 1004cbc5f47..803810210ef 100644
+--- a/bin/varnishd/cache/cache_req_fsm.c
++++ b/bin/varnishd/cache/cache_req_fsm.c
+@@ -962,6 +962,7 @@ cnt_recv(struct worker *wrk, struct req *req)
+ 	if (http_CountHdr(req->http0, H_Host) > 1) {
+ 		VSLb(req->vsl, SLT_BogoHeader, "Multiple Host: headers");
+ 		wrk->stats->client_req_400++;
++		req->doclose = SC_RX_BAD;
+ 		(void)req->transport->minimal_response(req, 400);
+ 		return (REQ_FSM_DONE);
+ 	}
+@@ -969,6 +970,7 @@ cnt_recv(struct worker *wrk, struct req *req)
+ 	if (http_CountHdr(req->http0, H_Content_Length) > 1) {
+ 		VSLb(req->vsl, SLT_BogoHeader, "Multiple Content-Length: headers");
+ 		wrk->stats->client_req_400++;
++		req->doclose = SC_RX_BAD;
+ 		(void)req->transport->minimal_response(req, 400);
+ 		return (REQ_FSM_DONE);
+ 	}
+diff --git a/bin/varnishtest/tests/b00037.vtc b/bin/varnishtest/tests/b00037.vtc
+index ce0e841123e..e6185bd0764 100644
+--- a/bin/varnishtest/tests/b00037.vtc
++++ b/bin/varnishtest/tests/b00037.vtc
+@@ -11,6 +11,7 @@ client c1 {
+ 
+ varnish v1 -vsl_catchup
+ varnish v1 -expect client_req_400 == 1
++varnish v1 -expect sc_rx_bad == 1
+ 
+ client c1 {
+ 	txreq -method POST -hdr "Content-Length: 12" -hdr "Content-Length: 12" -bodylen 12
+@@ -20,6 +21,7 @@ client c1 {
+ 
+ varnish v1 -vsl_catchup
+ varnish v1 -expect client_req_400 == 2
++varnish v1 -expect sc_rx_bad == 2
+ 
+ varnish v1 -cliok "param.set feature +http2"
+ 

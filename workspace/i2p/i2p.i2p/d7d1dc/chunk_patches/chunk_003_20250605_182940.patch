@@ -1,0 +1,22 @@
+From d7d1dcb5399c61cf2916ccc45aa25b0209c88712 Mon Sep 17 00:00:00 2001
+From: zzz <zzz@mail.i2p>
+Date: Tue, 12 Mar 2019 12:55:58 +0000
+Subject: [PATCH] Crypto: Ed25519 check for S < L as in RFC 8032
+
+---
+ core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java | 2 +-
+ core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java   | 7 +++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java b/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
+index d58e9ec902..c55626a24b 100644
+--- a/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
++++ b/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
+@@ -18,6 +19,7 @@
+ import net.i2p.crypto.eddsa.math.Curve;
+ import net.i2p.crypto.eddsa.math.GroupElement;
+ import net.i2p.crypto.eddsa.math.ScalarOps;
++import net.i2p.crypto.eddsa.math.bigint.BigIntegerLittleEndianEncoding;
+ 
+ /**
+  * Signing and verification for EdDSA.

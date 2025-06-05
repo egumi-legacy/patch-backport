@@ -1,66 +1,28 @@
 A. Commit message:
-Allow an arc-box with zero radius, ticket #184
+Fix handling of arc-boxes with zero corner radius
 
 B. Change summary:
-The newer version of the patch introduces functionality to convert rectangles with rounded corners and zero corner-radius into regular rectangles. The older version has some differences in function signatures and structure that need to be accounted for during backporting.
-
-Key changes made:
-1. Adjusted `sanitize_lineobject` function signature to match the older version's expected parameters.
-2. Modified the `make_arrow` function call to accommodate the older version's parameter list.
-3. Ensured compatibility by using API calls and constructs present in the older version.
-4. Preserved the original functionality while adapting to structural differences in the older codebase.
+The patch ensures that rectangles with rounded corners and a zero corner-radius are converted into regular rectangles to prevent crashes in the pict2e output. This change aligns with the newer version's behavior, ensuring compatibility and stability.
 
 C. Compatibility Risk:
-Medium - The changes involve modifying existing logic and adding new conditions. Care was taken to ensure no new dependencies or incompatible API calls were introduced.
+Low
 
 D. Fixed Code:
-```diff
 diff --git a/fig2dev/read.c b/fig2dev/read.c
 index 387527b..f643f7e 100644
 --- a/fig2dev/read.c
 +++ b/fig2dev/read.c
 @@ -1159,6 +1159,14 @@ sanitize_lineobject(
- 					obj_name[l->type-2], line_no);
- 			return -1;
- 		}
-+		if (l->type == T_ARC_BOX && l->radius == 0) {
-+			put_msg("A %s, but zero corner radius "
-+					"at line %d - convert "
-+					"to a rectangle.",
-+					obj_name[l->type - 2],
-+					line_no);
-+			l->type = T_BOX;
-+		}
- 	} /* l->type == any box or polygon */
- 
- 	/* above, a closed line might have been converted to a polyline */
-@@ -1414,7 +1422,7 @@ read_lineobject(FILE *fp, char **restrict line, size_t *line_len, int *line_no
- 	F_point		*p, *q, *o = NULL;
- 	F_control	*cp, *cq;
- 	int		c, n, x, y, fa, ba;
--	int		npts;
-+	int		npts = 0;
- 
- 	Line_malloc(l);
- 	l->points = NULL;
-@@ -1457,7 +1465,7 @@ read_lineobject(FILE *fp, char **restrict line, size_t *line_len, int *line_no
- 
- 	if (fa) {
- 		if (get_line(fp, line, line_len, line_no) < 0 ||
--				sscanf(*line, "%d%d%lf%lf%lf", &type, &style,
-+			    sscanf(*line, "%d%d%lf%lf%lf", &type, &style,
- 					&thickness, &wid, &ht) != 5) {
- 			put_msg(Err_incomp, "line", *line_no);
- 			free(l);
-@@ -1467,7 +1475,7 @@ read_lineobject(FILE *fp, char **restrict line, size_t *line_len, int *line_no
- 	}
- 	if (ba) {
- 		if (get_line(fp, line, line_len, line_no) < 0 ||
--				sscanf(*line, "%d%d%lf%lf%lf", &type, &style,
-+			    sscanf(*line, "%d%d%lf%lf%lf", &type, &style,
- 					&thickness, &wid, &ht) != 5) {
- 			put_msg(Err_incomp, "line", *line_no);
- 			free_linestorage(l);
-``` 
-
-This backported patch ensures compatibility with the older version while preserving the intended functionality from the newer version.
+ 						l->type - 2,
+ 						line_no);
+ 				return -1;
++			}
++			if (l->type == T_ARC_BOX && l->radius == 0) {
++				put_msg("A %s, but zero corner radius "
++						"at line %d - convert "
++						"to a rectangle.",
++						obj_name[l->type - 2],
++						line_no);
++				l->type = T_BOX;
+ 			}
+ 		} else { /* T_BOX || T_POLYGON */

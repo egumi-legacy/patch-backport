@@ -1,0 +1,28 @@
+From f8587e2d50dad72d40453ac1191c539ee9e50381 Mon Sep 17 00:00:00 2001
+From: Mans Rullgard <mans@mansr.com>
+Date: Wed, 24 Apr 2019 17:39:45 +0100
+Subject: [PATCH] fix possible overflow in lsx_(re)valloc() size calculation
+ (CVE-2019-8355)
+
+
+diff --git a/src/xmalloc.c b/src/xmalloc.c
+index 56fe6944..72c9ea4d 100644
+--- a/src/xmalloc.c
++++ b/src/xmalloc.c
+@@ -57,6 +57,16 @@ void *lsx_calloc(size_t n, size_t size)
+   return lsx_checkptr(calloc(n + !n, size + !size));
+ }
+ 
++void *lsx_realloc_array(void *p, size_t n, size_t size)
++{
++  if (n > (size_t)-1 / size) {
++    lsx_fail("malloc size overflow");
++    exit(2);
++  }
++
++  return lsx_realloc(p, n * size);
++}
++
+ char *lsx_strdup(const char *s)
+ {
+   return lsx_checkptr(strdup(s));

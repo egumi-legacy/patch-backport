@@ -1,0 +1,54 @@
+diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+index b3c8411dc05c..5bace40bafd7 100644
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -1295,14 +1295,14 @@ static int uvc_gpio_parse(struct uvc_device *dev)
+ 	struct gpio_desc *gpio_privacy;
+ 	int irq;
+ 
+-	gpio_privacy = devm_gpiod_get_optional(&dev->udev->dev, "privacy",
++	gpio_privacy = devm_gpiod_get_optional(&dev->intf->dev, "privacy",
+ 					       GPIOD_IN);
+ 	if (IS_ERR_OR_NULL(gpio_privacy))
+ 		return PTR_ERR_OR_ZERO(gpio_privacy);
+ 
+ 	irq = gpiod_to_irq(gpio_privacy);
+ 	if (irq < 0)
+-		return dev_err_probe(&dev->udev->dev, irq,
++		return dev_err_probe(&dev->intf->dev, irq,
+ 				     "No IRQ for privacy GPIO\n");
+ 
+ 	unit = uvc_alloc_entity(UVC_EXT_GPIO_UNIT, UVC_EXT_GPIO_UNIT_ID,
+@@ -1934,6 +1946,8 @@ static void uvc_unregister_video(struct uvc_device *dev)
+ {
+ 	struct uvc_streaming *stream;
+ 
++	uvc_gpio_deinit(dev);
++
+ 	list_for_each_entry(stream, &dev->streams, list) {
+ 		if (!video_is_registered(&stream->vdev))
+ 			continue;
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+index 7e1f2a3..d4b6c7a 100644
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -563,6 +563,8 @@
+ 
+ 	const struct uvc_device_info *info;
+ 
++	struct mutex lock;		/* Protects users */
++	unsigned int users;
+ 	atomic_t nmappings;
+ 
+@@ -752,10 +752,8 @@
+ int uvc_status_init(struct uvc_device *dev);
+ void uvc_status_unregister(struct uvc_device *dev);
+ void uvc_status_cleanup(struct uvc_device *dev);
+-int uvc_status_resume(struct uvc_device *dev);
+-void uvc_status_suspend(struct uvc_device *dev);
+-int uvc_status_get(struct uvc_device *dev);
+-void uvc_status_put(struct uvc_device *dev);
++int uvc_status_start(struct uvc_device *dev, gfp_t flags);
++void uvc_status_stop(struct uvc_device *dev);
+ 
+ extern const struct v4l2_subscribed_event_ops uvc_ctrl_sub_ev_ops;

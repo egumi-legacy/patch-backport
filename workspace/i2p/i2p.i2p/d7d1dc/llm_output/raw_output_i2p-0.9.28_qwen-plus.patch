@@ -1,0 +1,22 @@
+A. Commit message:
+Crypto: Ed25519 check for S < L as in RFC 8032
+
+B. Change summary:
+The patch modifies the `EdDSABlinding` class by changing the visibility of the `ORDER` constant from `private static final` to `public static final`. This allows other classes, such as `EdDSAEngine`, to access this value directly.
+
+C. Compatibility Risk:
+Medium
+
+D. Fixed Code:
+diff --git a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java
+index 0835ca4a15..754ef5ec02 100644
+--- a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java
++++ b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java
+@@ -21,7 +21,7 @@ public final class EdDSABlinding {
+ 
+     private static final byte[] ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
+     private static final Field FIELD = EdDSANamedCurveTable.getByName("Ed25519").getCurve().getField();
+-    private static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));
++    public static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));
+ 
+     private EdDSABlinding() {}

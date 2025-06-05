@@ -1,0 +1,30 @@
+From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001
+From: Thomas Loimer <thomas.loimer@tuwien.ac.at>
+Date: Wed, 22 Jan 2025 23:27:43 +0100
+Subject: [PATCH] Reject arcs with co-incident points, ticket #186
+
+
+diff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at
+index 1b4baea..da9ea3e 100644
+--- a/fig2dev/tests/read.at
++++ b/fig2dev/tests/read.at
+@@ -248,6 +248,16 @@ EOF
+ ])
+ AT_CLEANUP
+ 
++AT_SETUP([reject arcs with coincident points, ticket #186])
++AT_KEYWORDS(read.c arc)
++AT_CHECK([fig2dev -L pict2e <<EOF
++FIG_FILE_TOP
++5 1 0 15 0 7 50 0 -1 0.0 1 0 0 0 0.0 0.0 1 1 1 1 2 0
++EOF
++], 1, ignore, [Invalid arc object at line 10.
++])
++AT_CLEANUP
++
+ AT_SETUP([survive debian bugs #881143, #881144])
+ AT_KEYWORDS([font pic tikz])
+ AT_CHECK([fig2dev -L pic <<EOF
+-- 
+2.25.1
+

@@ -1,0 +1,24 @@
+From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001
+From: Thomas Loimer <thomas.loimer@tuwien.ac.at>
+Date: Wed, 22 Jan 2025 23:27:43 +0100
+Subject: [PATCH] Reject arcs with co-incident points, ticket #186
+
+
+diff --git a/fig2dev/object.h b/fig2dev/object.h
+index 7f83939..50afbf0 100644
+--- a/fig2dev/object.h
++++ b/fig2dev/object.h
+@@ -92,10 +92,10 @@ typedef struct f_ellipse {
+ 	struct f_ellipse	*next;
+ } F_ellipse;
+ 
+-#define INVALID_ELLIPSE(e)	\
++#define INVALID_ELLIPSE(e)						\
+ 	e->type < T_ELLIPSE_BY_RAD || e->type > T_CIRCLE_BY_DIA ||	\
+-	COMMON_PROPERTIES(e) || (e->direction != 1 && e->direction != 0) || \
+-	e->radiuses.x == 0 || e->radiuses.y == 0 || \
++	COMMON_PROPERTIES(e) || (e->direction != 1 && e->direction != 0) ||  \
++	e->radiuses.x == 0 || e->radiuses.y == 0 ||			\
+ 	e->angle < -7. || e->angle > 7.
+ 
+ typedef struct f_arc {

@@ -1,0 +1,293 @@
+2025-06-05 18:29:32.017 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250605_182931.log
+2025-06-05 18:29:32.018 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-05 18:29:32.019 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/i2p/i2p.i2p/commit/d7d1dcb5399c61cf2916ccc45aa25b0209c88712.patch
+2025-06-05 18:29:32.019 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-05 18:29:32.020 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-05 18:29:32.023 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-05 18:29:32.024 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-05 18:29:32.024 | INFO     | __main__:_process_mode1:358 - 目标版本: ['i2p-0.9.28']
+2025-06-05 18:29:32.025 | INFO     | __main__:_process_mode1:365 - 开始处理版本: i2p-0.9.28
+2025-06-05 18:29:32.026 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: d7d1dcb5399c61cf2916ccc45aa25b0209c88712.patch
+2025-06-05 18:29:32.026 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-05 18:29:32.029 | INFO     | modules.direct_apply:_download_patch:245 - 上游补丁文件不存在，下载补丁
+2025-06-05 18:29:32.030 | INFO     | patch_utils:_download_github_patch:232 - GitHub patch URL parts: ['https:', '', 'github.com', 'i2p', 'i2p.i2p', 'commit', 'd7d1dcb5399c61cf2916ccc45aa25b0209c88712.patch']
+2025-06-05 18:29:32.031 | INFO     | patch_utils:_download_github_patch:240 - 使用GitHub Commit API下载patch: https://api.github.com/repos/i2p/i2p.i2p/commits/d7d1dcb5399c61cf2916ccc45aa25b0209c88712
+2025-06-05 18:29:36.893 | INFO     | patch_utils:_download_github_patch:257 - 下载GitHub补丁成功，补丁已保存到: workspace/i2p/i2p.i2p/d7d1dc/patches/upstream_d7d1dc.patch
+2025-06-05 18:29:36.899 | INFO     | modules.direct_apply:_download_patch:252 - 上游补丁下载成功: workspace/i2p/i2p.i2p/d7d1dc/patches/upstream_d7d1dc.patch
+2025-06-05 18:29:36.900 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-05 18:29:36.901 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/patches/upstream_d7d1dc.patch
+2025-06-05 18:29:39.473 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_i2p-0.9.28
+2025-06-05 18:29:39.954 | ERROR    | modules.direct_apply:_apply_patch:315 - 补丁应用失败: error: core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java: does not exist in index
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-05 18:29:40.195 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_i2p-0.9.28
+2025-06-05 18:29:40.195 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-05 18:29:40.196 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/patches/upstream_d7d1dc.patch
+2025-06-05 18:29:40.196 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/patches/upstream_d7d1dc.patch
+2025-06-05 18:29:40.197 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 55 行内容
+2025-06-05 18:29:40.198 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java
+2025-06-05 18:29:40.199 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java @@ -21,7 +21,7 @@ (modification)
+2025-06-05 18:29:40.199 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
+2025-06-05 18:29:40.200 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java @@ -1,6 +1,7 @@ (modification)
+2025-06-05 18:29:40.200 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java @@ -18,6 +19,7 @@ (modification)
+2025-06-05 18:29:40.201 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java @@ -300,6 +302,11 @@ (modification)
+2025-06-05 18:29:40.201 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 4 个修改块
+2025-06-05 18:29:40.202 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 4 个块
+2025-06-05 18:29:40.202 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/patches/upstream_d7d1dc.patch
+2025-06-05 18:29:40.203 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_001_20250605_182940.patch (修改文件: core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java)
+2025-06-05 18:29:40.204 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_002_20250605_182940.patch (修改文件: core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java)
+2025-06-05 18:29:40.206 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_003_20250605_182940.patch (修改文件: core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java)
+2025-06-05 18:29:40.210 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_004_20250605_182940.patch (修改文件: core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java)
+2025-06-05 18:29:40.211 | INFO     | modules.chunk_analyzer:execute:60 - 已为 4 个块创建单独的补丁文件
+2025-06-05 18:29:40.212 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-05 18:29:40.213 | INFO     | modules.chunk_analyzer:execute:66 - From d7d1dcb5399c61cf2916ccc45aa25b0209c88712 Mon Sep 17 00:00:00 2001
+From: zzz <zzz@mail.i2p>
+Date: Tue, 12 Mar 2019 12:55:58 +0000
+Subject: [PATCH] Crypto: Ed25519 check for S < L as in RFC 8032
+
+---
+ core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java | 2 +-
+ core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java   | 7 +++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java
+index 0835ca4a15..754ef5ec02 100644
+--- a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java
++++ b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java
+@@ -21,7 +21,7 @@ public final class EdDSABlinding {
+ 
+     private static final byte[] ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
+     private static final Field FIELD = EdDSANamedCurveTable.getByName("Ed25519").getCurve().getField();
+-    private static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));
++    public static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));
+ 
+     private EdDSABlinding() {}
+ 
+
+2025-06-05 18:29:40.213 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-05 18:29:40.214 | INFO     | modules.chunk_analyzer:execute:66 - From d7d1dcb5399c61cf2916ccc45aa25b0209c88712 Mon Sep 17 00:00:00 2001
+From: zzz <zzz@mail.i2p>
+Date: Tue, 12 Mar 2019 12:55:58 +0000
+Subject: [PATCH] Crypto: Ed25519 check for S < L as in RFC 8032
+
+---
+ core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java | 2 +-
+ core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java   | 7 +++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java b/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
+index d58e9ec902..c55626a24b 100644
+--- a/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
++++ b/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
+@@ -1,6 +1,7 @@
+ package net.i2p.crypto.eddsa;
+ 
+ import java.io.ByteArrayOutputStream;
++import java.math.BigInteger;
+ import java.nio.ByteBuffer;
+ import java.security.InvalidAlgorithmParameterException;
+ import java.security.InvalidKeyException;
+
+2025-06-05 18:29:40.214 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-05 18:29:40.215 | INFO     | modules.chunk_analyzer:execute:66 - From d7d1dcb5399c61cf2916ccc45aa25b0209c88712 Mon Sep 17 00:00:00 2001
+From: zzz <zzz@mail.i2p>
+Date: Tue, 12 Mar 2019 12:55:58 +0000
+Subject: [PATCH] Crypto: Ed25519 check for S < L as in RFC 8032
+
+---
+ core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java | 2 +-
+ core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java   | 7 +++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java b/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
+index d58e9ec902..c55626a24b 100644
+--- a/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
++++ b/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
+@@ -18,6 +19,7 @@
+ import net.i2p.crypto.eddsa.math.Curve;
+ import net.i2p.crypto.eddsa.math.GroupElement;
+ import net.i2p.crypto.eddsa.math.ScalarOps;
++import net.i2p.crypto.eddsa.math.bigint.BigIntegerLittleEndianEncoding;
+ 
+ /**
+  * Signing and verification for EdDSA.
+
+2025-06-05 18:29:40.215 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-06-05 18:29:40.215 | INFO     | modules.chunk_analyzer:execute:66 - From d7d1dcb5399c61cf2916ccc45aa25b0209c88712 Mon Sep 17 00:00:00 2001
+From: zzz <zzz@mail.i2p>
+Date: Tue, 12 Mar 2019 12:55:58 +0000
+Subject: [PATCH] Crypto: Ed25519 check for S < L as in RFC 8032
+
+---
+ core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java | 2 +-
+ core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java   | 7 +++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java b/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
+index d58e9ec902..c55626a24b 100644
+--- a/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
++++ b/core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java
+@@ -300,6 +302,11 @@ private boolean x_engineVerify(byte[] sigBytes) throws SignatureException {
+         h = key.getParams().getScalarOps().reduce(h);
+ 
+         byte[] Sbyte = Arrays.copyOfRange(sigBytes, b/8, b/4);
++        // RFC 8032
++        BigInteger Sbigint = (new BigIntegerLittleEndianEncoding()).toBigInteger(Sbyte);
++        if (Sbigint.compareTo(EdDSABlinding.ORDER) >= 0)
++            return false;
++
+         // R = SB - H(Rbar,Abar,M)A
+         GroupElement R = key.getParams().getB().doubleScalarMultiplyVariableTime(
+                 ((EdDSAPublicKey) key).getNegativeA(), h, Sbyte);
+
+2025-06-05 18:29:40.216 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/4 个块补丁: chunk_001_20250605_182940.patch
+2025-06-05 18:29:40.228 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_001_20250605_182940.patch 应用失败: error: core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java: No such file or directory
+
+2025-06-05 18:29:40.228 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/4 个块补丁: chunk_002_20250605_182940.patch
+2025-06-05 18:29:40.234 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_002_20250605_182940.patch
+2025-06-05 18:29:40.235 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/4 个块补丁: chunk_003_20250605_182940.patch
+2025-06-05 18:29:40.241 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_003_20250605_182940.patch
+2025-06-05 18:29:40.241 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 4/4 个块补丁: chunk_004_20250605_182940.patch
+2025-06-05 18:29:40.248 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_004_20250605_182940.patch
+2025-06-05 18:29:40.248 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-06-05 18:29:40.248 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 4
+2025-06-05 18:29:40.249 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 3
+2025-06-05 18:29:40.249 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 1
+2025-06-05 18:29:40.250 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 3 个块补丁，总共 4 个
+2025-06-05 18:29:40.251 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/remaining_chunks_20250605_182940.patch
+2025-06-05 18:29:40.251 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/remaining_chunks_20250605_182940.patch
+2025-06-05 18:29:40.252 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/remaining_chunks_20250605_182940.patch
+2025-06-05 18:29:40.253 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.06秒
+2025-06-05 18:29:40.254 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/metrics_d7d1dc_20250605_182940.json
+2025-06-05 18:29:40.256 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940
+2025-06-05 18:29:40.256 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940
+2025-06-05 18:29:40.257 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940/patches
+2025-06-05 18:29:40.257 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940/patches
+2025-06-05 18:29:40.258 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940/patches/original_patch.txt
+2025-06-05 18:29:40.259 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940
+2025-06-05 18:29:40.260 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940/patches/applied_chunk_1.txt
+2025-06-05 18:29:40.261 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940/patches/applied_chunk_2.txt
+2025-06-05 18:29:40.262 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940/patches/applied_chunk_3.txt
+2025-06-05 18:29:40.263 | INFO     | modules.chunk_analyzer:_get_patch_content:1282 - 已将合并的补丁块内容保存到: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940/patches/all_applied_chunks.txt
+2025-06-05 18:29:40.263 | INFO     | modules.chunk_analyzer:_get_patch_content:1286 - 从context获取应用成功的补丁内容
+2025-06-05 18:29:40.263 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940
+2025-06-05 18:29:40.265 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940/patches/remaining_patch.txt
+2025-06-05 18:29:40.265 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/remaining_chunks_20250605_182940.patch
+2025-06-05 18:29:40.267 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/i2p/i2p.i2p/d7d1dc/evaluations/chunk_analyzer/details_d7d1dc_20250605_182940
+2025-06-05 18:29:40.275 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-05 18:29:40.276 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/patches/upstream_d7d1dc.patch
+2025-06-05 18:29:40.276 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/patches/upstream_d7d1dc.patch
+2025-06-05 18:29:40.277 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-05 18:29:40.338 | ERROR    | modules.llm_adapter:_get_context_diff:885 - 获取上下文差异失败: stdout and stderr arguments may not be used with capture_output.
+2025-06-05 18:29:40.344 | ERROR    | modules.llm_adapter:_get_context_diff:886 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 836, in _get_context_diff
+    subprocess.run(['git', 'apply', '--ignore-whitespace', patch_path],
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'apply', '--ignore-whitespace', '/home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_002_20250605_182940.patch']' returned non-zero exit status 1.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 859, in _get_context_diff
+    subprocess.run(['git', 'branch', '-D', temp_branch], cwd=repo_path,
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 543, in run
+    raise ValueError('stdout and stderr arguments may not be used '
+ValueError: stdout and stderr arguments may not be used with capture_output.
+
+2025-06-05 18:29:40.344 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-05 18:29:40.546 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-05 18:30:10.818 | INFO     | llm_assistant:run:298 - ---responses in run: [{'prompt': [{'role': 'system', 'content': 'You are a senior software engineer who is best in the world at fixing vulnerabilities and patch porting between versions.\nUsers will give you 1. a patch based on a newer version 2. the diff info between the newer version and and older version. \nAnd you will generate a fix patch to the older version in the form of git diff based on the provided INSTRUCTION.\nINSTRUCTION:\nOnly reterun the final result after patch and diff information are entered. When all the information is entered, it will be identified with \u200d\u200d```===end===\u200d\u200d```\nOnly respond with the patch info, do not add any comments or change the indentation.\nThe patch should have no errors, it should compile and user should be able to use the fixed code as a direct replacement of the vulnerable code. The code should not introduce any new dependencies or use API calls that are not present in the code.\nIf you can generate a backport patch for the patch, do a brief change impact analysis to assess how these modifications might affect the overall system, considering both immediate and potential long-term compatibility issues.\nLow: Code diff will be applied to the code base and automatically merged without review.\nMedium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.\nHigh: Code diff will be offered as a suggestion to the developer to review and then apply to the code base. There are likely other changes that need to be done by the developer before the change can be implemented.\nPlease provide a response only in the following format:\n\nA. Commit message:\n<brief summary of the diff>\n\nB. Change summary:\n<description of the changes made in the diff>\n\nC. Compatibility Risk:\n<Low, Medium, High>\n\nD. Fixed Code:\n<original patch info with now backported>\n\n'}, {'role': 'system', 'content': '1. a patch based on a newer version: \nFrom d7d1dcb5399c61cf2916ccc45aa25b0209c88712 Mon Sep 17 00:00:00 2001\nFrom: zzz <zzz@mail.i2p>\nDate: Tue, 12 Mar 2019 12:55:58 +0000\nSubject: [PATCH] Crypto: Ed25519 check for S < L as in RFC 8032\n\n---\n core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java | 2 +-\n core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java   | 7 +++++++\n 2 files changed, 8 insertions(+), 1 deletion(-)\n\ndiff --git a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java\nindex 0835ca4a15..754ef5ec02 100644\n--- a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java\n+++ b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java\n@@ -21,7 +21,7 @@ public final class EdDSABlinding {\n \n     private static final byte[] ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");\n     private static final Field FIELD = EdDSANamedCurveTable.getByName("Ed25519").getCurve().getField();\n-    private static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));\n+    public static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));\n \n     private EdDSABlinding() {}\n \n'}, {'role': 'system', 'content': '2. the diff info between the newer version and and older version: \nFrom d7d1dcb5399c61cf2916ccc45aa25b0209c88712 Mon Sep 17 00:00:00 2001\nFrom: zzz <zzz@mail.i2p>\nDate: Tue, 12 Mar 2019 12:55:58 +0000\nSubject: [PATCH] Crypto: Ed25519 check for S < L as in RFC 8032\n\n---\n core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java | 2 +-\n core/java/src/net/i2p/crypto/eddsa/EdDSAEngine.java   | 7 +++++++\n 2 files changed, 8 insertions(+), 1 deletion(-)\n\ndiff --git a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java\nindex 0835ca4a15..754ef5ec02 100644\n--- a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java\n+++ b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java\n@@ -21,7 +21,7 @@ public final class EdDSABlinding {\n \n     private static final byte[] ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");\n     private static final Field FIELD = EdDSANamedCurveTable.getByName("Ed25519").getCurve().getField();\n-    private static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));\n+    public static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));\n \n     private EdDSABlinding() {}\n \n\n===end==='}, {'role': 'user', 'content': 'Please return the final result.'}], 'response': 'A. Commit message:\nCrypto: Ed25519 check for S < L as in RFC 8032\n\nB. Change summary:\nThe patch modifies the `EdDSABlinding` class by changing the visibility of the `ORDER` constant from `private static final` to `public static final`. This allows other classes, such as `EdDSAEngine`, to access this value directly.\n\nC. Compatibility Risk:\nMedium\n\nD. Fixed Code:\ndiff --git a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java\nindex 0835ca4a15..754ef5ec02 100644\n--- a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java\n+++ b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java\n@@ -21,7 +21,7 @@ public final class EdDSABlinding {\n \n     private static final byte[] ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");\n     private static final Field FIELD = EdDSANamedCurveTable.getByName("Ed25519").getCurve().getField();\n-    private static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));\n+    public static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));\n \n     private EdDSABlinding() {}\n', 'request_token': 0, 'response_token': 0}]
+2025-06-05 18:30:10.820 | INFO     | modules.llm_adapter:_call_llm:973 - llm.run() result:{'openai_responses': ['A. Commit message:\nCrypto: Ed25519 check for S < L as in RFC 8032\n\nB. Change summary:\nThe patch modifies the `EdDSABlinding` class by changing the visibility of the `ORDER` constant from `private static final` to `public static final`. This allows other classes, such as `EdDSAEngine`, to access this value directly.\n\nC. Compatibility Risk:\nMedium\n\nD. Fixed Code:\ndiff --git a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java\nindex 0835ca4a15..754ef5ec02 100644\n--- a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java\n+++ b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java\n@@ -21,7 +21,7 @@ public final class EdDSABlinding {\n \n     private static final byte[] ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");\n     private static final Field FIELD = EdDSANamedCurveTable.getByName("Ed25519").getCurve().getField();\n-    private static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));\n+    public static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));\n \n     private EdDSABlinding() {}\n'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-06-05 18:30:10.821 | INFO     | modules.llm_adapter:_parse_llm_response:1055 - 原始LLM响应(前100字符): A. Commit message:
+Crypto: Ed25519 check for S < L as in RFC 8032
+
+B. Change summary:
+The patch modi...
+2025-06-05 18:30:10.822 | INFO     | modules.llm_adapter:_parse_llm_response:1089 - 找到diff --git格式，内容前100字符: diff --git a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java b/core/java/src/net/i2p/crypto/ed...
+2025-06-05 18:30:10.823 | INFO     | modules.llm_adapter:_save_llm_response:1224 - LLM响应已保存到: workspace/i2p/i2p.i2p/d7d1dc/llm_output/output_i2p-0.9.28_qwen-plus.patch
+2025-06-05 18:30:10.824 | INFO     | modules.llm_adapter:_save_llm_response:1225 - 原始LLM响应已保存到: workspace/i2p/i2p.i2p/d7d1dc/llm_output/raw_output_i2p-0.9.28_qwen-plus.patch
+2025-06-05 18:30:10.824 | INFO     | modules.llm_adapter:execute:97 - ==================================================
+2025-06-05 18:30:10.824 | INFO     | modules.llm_adapter:execute:98 - LLM适配器执行完成 - 摘要
+2025-06-05 18:30:10.825 | INFO     | modules.llm_adapter:execute:99 - 提示模式: 标准模式
+2025-06-05 18:30:10.825 | INFO     | modules.llm_adapter:execute:100 - 提示类型: 标准上下文差异
+2025-06-05 18:30:10.825 | INFO     | modules.llm_adapter:execute:101 - 函数上下文统计: 总尝试: 0, 成功: 0, 回退: 0
+2025-06-05 18:30:10.826 | INFO     | modules.llm_adapter:execute:105 - 执行时间: 30.55 秒
+2025-06-05 18:30:10.826 | INFO     | modules.llm_adapter:execute:106 - 生成的补丁保存到: workspace/i2p/i2p.i2p/d7d1dc/llm_output/output_i2p-0.9.28_qwen-plus.patch
+2025-06-05 18:30:10.826 | INFO     | modules.llm_adapter:execute:107 - ==================================================
+2025-06-05 18:30:10.827 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/i2p/i2p.i2p/d7d1dc/evaluations/llm_adapter/metrics_d7d1dc_20250605_183010.json
+2025-06-05 18:30:10.827 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-05 18:30:10.828 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/i2p/i2p.i2p/d7d1dc/llm_output/output_i2p-0.9.28_qwen-plus.patch
+2025-06-05 18:30:10.828 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_i2p-0.9.28_20250605_183010
+2025-06-05 18:30:10.886 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java
+index 0835ca4a15..754ef5ec02 100644
+--- a/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java
++++ b/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java
+@@ -21,7 +21,7 @@ public final class EdDSABlinding {
+ 
+     private static final byte[] ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
+     private static final Field FIELD = EdDSANamedCurveTable.getByName("Ed25519").getCurve().getField();
+-    private static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));
++    public static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));
+ 
+     private EdDSABlinding() {}
+
+2025-06-05 18:30:10.887 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -21,7 +21,7 @@ public final class EdDSABlinding {
+ 
+     private static final byte[] ONE = Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000");
+     private static final Field FIELD = EdDSANamedCurveTable.getByName("Ed25519").getCurve().getField();
+-    private static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));
++    public static final BigInteger ORDER = new BigInteger("2").pow(252).add(new BigInteger("27742317777372353535851937790883648493"));
+ 
+     private EdDSABlinding() {}
+2025-06-05 18:30:10.888 | ERROR    | patch_adapter_utils:generate_adapted_file:873 - 源文件不存在: workspace/i2p/i2p.i2p/d7d1dc/i2p-0.9.28/core/java/src/net/i2p/crypto/eddsa/EdDSABlinding.java, 已跳过
+2025-06-05 18:30:10.888 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-06-05 18:30:10.889 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_i2p-0.9.28_20250605_183010
+2025-06-05 18:30:10.914 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-06-05 18:30:10.915 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-06-05 18:30:10.916 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/i2p/i2p.i2p/d7d1dc/metrics/patch_adapter_metrics.json
+2025-06-05 18:30:10.916 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 38.89秒
+2025-06-05 18:30:10.916 | INFO     | __main__:_merge_patches:1087 - 开始合并补丁...
+2025-06-05 18:30:10.917 | INFO     | __main__:_merge_patches:1122 - chunk_results2:
+2025-06-05 18:30:10.918 | INFO     | __main__:_merge_patches:1124 - chunk_patches: [PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_002_20250605_182940.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_003_20250605_182940.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_004_20250605_182940.patch')]
+2025-06-05 18:30:10.918 | INFO     | __main__:_merge_patches:1126 - Chunk分析器应用了 3/4 个chunks
+2025-06-05 18:30:10.919 | INFO     | __main__:_combine_patch_files:1255 - 创建临时测试分支: patch_merge_1340db04
+2025-06-05 18:30:10.982 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_002_20250605_182940.patch
+2025-06-05 18:30:10.982 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_002_20250605_182940.patch
+2025-06-05 18:30:10.989 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_002_20250605_182940.patch
+2025-06-05 18:30:10.989 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_003_20250605_182940.patch
+2025-06-05 18:30:10.990 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_003_20250605_182940.patch
+2025-06-05 18:30:10.995 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_003_20250605_182940.patch
+2025-06-05 18:30:10.995 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_004_20250605_182940.patch
+2025-06-05 18:30:10.996 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_004_20250605_182940.patch
+2025-06-05 18:30:11.001 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/i2p/i2p.i2p/d7d1dc/chunk_patches/chunk_004_20250605_182940.patch
+2025-06-05 18:30:11.058 | INFO     | __main__:_combine_patch_files:1368 - 执行命令: git format-patch -1 HEAD --stdout > temp_patch_merge/merged.patch
+2025-06-05 18:30:11.066 | INFO     | __main__:_combine_patch_files:1410 - 成功生成合并补丁: temp_patch_merge/merged.patch (大小: 1882 字节)
+2025-06-05 18:30:11.066 | INFO     | __main__:_combine_patch_files:1425 - 清理临时分支: patch_merge_1340db04
+2025-06-05 18:30:11.086 | INFO     | __main__:_merge_patches:1208 - 只合并chunk补丁到: workspace/i2p/i2p.i2p/d7d1dc/patches/merged_i2p-0.9.28.patch
+2025-06-05 18:30:11.086 | INFO     | __main__:_process_mode1:392 - 成功合并补丁到: workspace/i2p/i2p.i2p/d7d1dc/patches/merged_i2p-0.9.28.patch
+2025-06-05 18:30:11.088 | INFO     | __main__:_save_results:751 - 已复制最终补丁到结果目录: results/i2p.i2p_i2p-0.9.28_d7d1dc_20250605_183011/merged_i2p-0.9.28.patch
+2025-06-05 18:30:11.090 | INFO     | __main__:_save_results:889 - 结果已保存到: results/i2p.i2p_i2p-0.9.28_d7d1dc_20250605_183011/result.json
+2025-06-05 18:30:11.091 | INFO     | __main__:_print_summary:931 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-06-05 18:30:11.092 | INFO     | __main__:_print_summary:954 - ==================================================
+2025-06-05 18:30:11.092 | INFO     | __main__:_print_summary:955 - 处理摘要 - 提交: d7d1dc
+2025-06-05 18:30:11.092 | INFO     | __main__:_print_summary:956 - 适配状态: 适配失败 (方法: failed)
+2025-06-05 18:30:11.093 | INFO     | __main__:_print_summary:971 - 块分析统计:
+2025-06-05 18:30:11.093 | INFO     | __main__:_print_summary:972 - - 总块数: 4
+2025-06-05 18:30:11.093 | INFO     | __main__:_print_summary:973 - - 冲突块数: 1
+2025-06-05 18:30:11.093 | INFO     | __main__:_print_summary:974 - - 成功适配块数: 0
+2025-06-05 18:30:11.094 | INFO     | __main__:_print_summary:975 - - 适配失败块数: 1
+2025-06-05 18:30:11.094 | INFO     | __main__:_print_summary:976 - - 编译失败块数: 0
+2025-06-05 18:30:11.094 | INFO     | __main__:_print_summary:980 - 总执行时间: 38.89秒
+2025-06-05 18:30:11.095 | INFO     | __main__:_print_summary:985 - ==================================================
+2025-06-05 18:30:11.095 | INFO     | __main__:run:335 - 处理完成
+2025-06-05 18:30:11.095 | INFO     | __main__:process_single_commit:2145 - ============================================================
+2025-06-05 18:30:11.096 | INFO     | __main__:process_single_commit:2146 - 单个commit处理完成: d7d1dcb5399c61cf2916ccc45aa25b0209c88712
+2025-06-05 18:30:11.096 | INFO     | __main__:process_single_commit:2147 - ============================================================
+2025-06-05 18:30:11.100 | INFO     | __main__:clean_config:2107 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

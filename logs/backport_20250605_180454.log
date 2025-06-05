@@ -1,0 +1,496 @@
+2025-06-05 18:04:54.379 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250605_180454.log
+2025-06-05 18:04:54.379 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-05 18:04:54.379 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://sourceforge.net/p/mcj/fig2dev/ci/c8a87d22036e62bac0c6f7836078d8103caa6457/
+2025-06-05 18:04:54.380 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-05 18:04:54.380 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-05 18:04:54.381 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-05 18:04:54.382 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-05 18:04:54.382 | INFO     | __main__:_process_mode1:358 - 目标版本: ['3.2.8b']
+2025-06-05 18:04:54.382 | INFO     | __main__:_process_mode1:365 - 开始处理版本: 3.2.8b
+2025-06-05 18:04:54.383 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: c8a87d22036e62bac0c6f7836078d8103caa6457
+2025-06-05 18:04:54.383 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-05 18:04:54.383 | INFO     | modules.direct_apply:_download_patch:240 - 上游补丁文件已存在: workspace/mcj/fig2dev/c8a87d/patches/upstream_c8a87d.patch
+2025-06-05 18:04:54.384 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-05 18:04:54.384 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/upstream_c8a87d.patch
+2025-06-05 18:04:54.395 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_3.2.8b
+2025-06-05 18:04:54.412 | ERROR    | modules.direct_apply:_apply_patch:315 - 补丁应用失败: error: patch failed: fig2dev/object.h:3
+error: fig2dev/object.h: patch does not apply
+error: patch failed: fig2dev/tests/read.at:2
+error: fig2dev/tests/read.at: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-05 18:04:54.429 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_3.2.8b
+2025-06-05 18:04:54.430 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-05 18:04:54.430 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/upstream_c8a87d.patch
+2025-06-05 18:04:54.430 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/upstream_c8a87d.patch
+2025-06-05 18:04:54.430 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 94 行内容
+2025-06-05 18:04:54.431 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: fig2dev/object.h
+2025-06-05 18:04:54.431 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: fig2dev/object.h @@ -3,7 +3,7 @@ (modification)
+2025-06-05 18:04:54.431 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: fig2dev/object.h @@ -92,10 +92,10 @@ (modification)
+2025-06-05 18:04:54.431 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: fig2dev/object.h @@ -126,12 +126,16 @@ (modification)
+2025-06-05 18:04:54.432 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: fig2dev/tests/read.at
+2025-06-05 18:04:54.432 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: fig2dev/tests/read.at @@ -2,7 +2,7 @@ (modification)
+2025-06-05 18:04:54.432 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: fig2dev/tests/read.at @@ -14,7 +14,7 @@ (modification)
+2025-06-05 18:04:54.432 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: fig2dev/tests/read.at @@ -248,6 +248,16 @@ (modification)
+2025-06-05 18:04:54.433 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 6 个修改块
+2025-06-05 18:04:54.433 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 6 个块
+2025-06-05 18:04:54.433 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/upstream_c8a87d.patch
+2025-06-05 18:04:54.433 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_001_20250605_180454.patch (修改文件: fig2dev/object.h)
+2025-06-05 18:04:54.434 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_002_20250605_180454.patch (修改文件: fig2dev/object.h)
+2025-06-05 18:04:54.434 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_003_20250605_180454.patch (修改文件: fig2dev/object.h)
+2025-06-05 18:04:54.435 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_004_20250605_180454.patch (修改文件: fig2dev/tests/read.at)
+2025-06-05 18:04:54.435 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_005_20250605_180454.patch (修改文件: fig2dev/tests/read.at)
+2025-06-05 18:04:54.435 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_006_20250605_180454.patch (修改文件: fig2dev/tests/read.at)
+2025-06-05 18:04:54.436 | INFO     | modules.chunk_analyzer:execute:60 - 已为 6 个块创建单独的补丁文件
+2025-06-05 18:04:54.436 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-05 18:04:54.436 | INFO     | modules.chunk_analyzer:execute:66 - From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001
+From: Thomas Loimer <thomas.loimer@tuwien.ac.at>
+Date: Wed, 22 Jan 2025 23:27:43 +0100
+Subject: [PATCH] Reject arcs with co-incident points, ticket #186
+
+
+diff --git a/fig2dev/object.h b/fig2dev/object.h
+index 7f83939..50afbf0 100644
+--- a/fig2dev/object.h
++++ b/fig2dev/object.h
+@@ -3,7 +3,7 @@
+  * Copyright (c) 1991 by Micah Beck
+  * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+  * Parts Copyright (c) 1989-2015 by Brian V. Smith
+- * Parts Copyright (c) 2015-2023 by Thomas Loimer
++ * Parts Copyright (c) 2015-2025 by Thomas Loimer
+  *
+  * Any party obtaining a copy of these files is granted, free of charge, a
+  * full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+
+2025-06-05 18:04:54.436 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-05 18:04:54.437 | INFO     | modules.chunk_analyzer:execute:66 - From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001
+From: Thomas Loimer <thomas.loimer@tuwien.ac.at>
+Date: Wed, 22 Jan 2025 23:27:43 +0100
+Subject: [PATCH] Reject arcs with co-incident points, ticket #186
+
+
+diff --git a/fig2dev/object.h b/fig2dev/object.h
+index 7f83939..50afbf0 100644
+--- a/fig2dev/object.h
++++ b/fig2dev/object.h
+@@ -92,10 +92,10 @@ typedef struct f_ellipse {
+ 	struct f_ellipse	*next;
+ } F_ellipse;
+ 
+-#define INVALID_ELLIPSE(e)	\
++#define INVALID_ELLIPSE(e)						\
+ 	e->type < T_ELLIPSE_BY_RAD || e->type > T_CIRCLE_BY_DIA ||	\
+-	COMMON_PROPERTIES(e) || (e->direction != 1 && e->direction != 0) || \
+-	e->radiuses.x == 0 || e->radiuses.y == 0 || \
++	COMMON_PROPERTIES(e) || (e->direction != 1 && e->direction != 0) ||  \
++	e->radiuses.x == 0 || e->radiuses.y == 0 ||			\
+ 	e->angle < -7. || e->angle > 7.
+ 
+ typedef struct f_arc {
+
+2025-06-05 18:04:54.437 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-05 18:04:54.438 | INFO     | modules.chunk_analyzer:execute:66 - From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001
+From: Thomas Loimer <thomas.loimer@tuwien.ac.at>
+Date: Wed, 22 Jan 2025 23:27:43 +0100
+Subject: [PATCH] Reject arcs with co-incident points, ticket #186
+
+
+diff --git a/fig2dev/object.h b/fig2dev/object.h
+index 7f83939..50afbf0 100644
+--- a/fig2dev/object.h
++++ b/fig2dev/object.h
+@@ -126,12 +126,16 @@ typedef struct f_arc {
+ #define CIRCARC       9
+ #define CIRCULARARC   > 8
+ 
+-#define INVALID_ARC(a)	\
++#define COINCIDENT(a, b)	(a.x == b.x && a.y == b.y)
++#define INVALID_ARC(a)							\
+ 	a->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||		\
+ 	COMMON_PROPERTIES(a) || a->cap_style < 0 || a->cap_style > 2 ||	\
+ 	a->center.x < COORD_MIN || a->center.x > COORD_MAX ||		\
+ 	a->center.y < COORD_MIN || a->center.y > COORD_MAX ||		\
+-	(a->direction != 0 && a->direction != 1)
++	(a->direction != 0 && a->direction != 1) ||			\
++	COINCIDENT(a->point[0], a->point[1]) ||				\
++	COINCIDENT(a->point[0], a->point[2]) ||				\
++	COINCIDENT(a->point[1], a->point[2])
+ 
+ typedef struct f_line {
+ 	int			type;
+
+2025-06-05 18:04:54.438 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-06-05 18:04:54.439 | INFO     | modules.chunk_analyzer:execute:66 - From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001
+From: Thomas Loimer <thomas.loimer@tuwien.ac.at>
+Date: Wed, 22 Jan 2025 23:27:43 +0100
+Subject: [PATCH] Reject arcs with co-incident points, ticket #186
+
+
+diff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at
+index 1b4baea..da9ea3e 100644
+--- a/fig2dev/tests/read.at
++++ b/fig2dev/tests/read.at
+@@ -2,7 +2,7 @@ dnl Fig2dev: Translate Fig code to various Devices
+ dnl Copyright (c) 1991 by Micah Beck
+ dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+ dnl Parts Copyright (c) 1989-2015 by Brian V. Smith
+-dnl Parts Copyright (c) 2015-2024 by Thomas Loimer
++dnl Parts Copyright (c) 2015-2025 by Thomas Loimer
+ dnl
+ dnl Any party obtaining a copy of these files is granted, free of charge, a
+ dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+
+2025-06-05 18:04:54.439 | INFO     | modules.chunk_analyzer:execute:62 - 第 5 个补丁文件为：
+2025-06-05 18:04:54.440 | INFO     | modules.chunk_analyzer:execute:66 - From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001
+From: Thomas Loimer <thomas.loimer@tuwien.ac.at>
+Date: Wed, 22 Jan 2025 23:27:43 +0100
+Subject: [PATCH] Reject arcs with co-incident points, ticket #186
+
+
+diff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at
+index 1b4baea..da9ea3e 100644
+--- a/fig2dev/tests/read.at
++++ b/fig2dev/tests/read.at
+@@ -14,7 +14,7 @@ dnl party to do so, with the only requirement being that the above copyright
+ dnl and this permission notice remain intact.
+ 
+ dnl read.at
+-dnl Author: Thomas Loimer, 2017-2024
++dnl Author: Thomas Loimer, 2017-2025
+ 
+ 
+ AT_BANNER([Sanitize and harden input.])
+
+2025-06-05 18:04:54.440 | INFO     | modules.chunk_analyzer:execute:62 - 第 6 个补丁文件为：
+2025-06-05 18:04:54.440 | INFO     | modules.chunk_analyzer:execute:66 - From c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001
+From: Thomas Loimer <thomas.loimer@tuwien.ac.at>
+Date: Wed, 22 Jan 2025 23:27:43 +0100
+Subject: [PATCH] Reject arcs with co-incident points, ticket #186
+
+
+diff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at
+index 1b4baea..da9ea3e 100644
+--- a/fig2dev/tests/read.at
++++ b/fig2dev/tests/read.at
+@@ -248,6 +248,16 @@ EOF
+ ])
+ AT_CLEANUP
+ 
++AT_SETUP([reject arcs with coincident points, ticket #186])
++AT_KEYWORDS(read.c arc)
++AT_CHECK([fig2dev -L pict2e <<EOF
++FIG_FILE_TOP
++5 1 0 15 0 7 50 0 -1 0.0 1 0 0 0 0.0 0.0 1 1 1 1 2 0
++EOF
++], 1, ignore, [Invalid arc object at line 10.
++])
++AT_CLEANUP
++
+ AT_SETUP([survive debian bugs #881143, #881144])
+ AT_KEYWORDS([font pic tikz])
+ AT_CHECK([fig2dev -L pic <<EOF
+-- 
+2.25.1
+
+
+2025-06-05 18:04:54.441 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/6 个块补丁: chunk_001_20250605_180454.patch
+2025-06-05 18:04:54.448 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_001_20250605_180454.patch 应用失败: error: patch failed: fig2dev/object.h:3
+error: fig2dev/object.h: patch does not apply
+
+2025-06-05 18:04:54.448 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/6 个块补丁: chunk_002_20250605_180454.patch
+2025-06-05 18:04:54.452 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_002_20250605_180454.patch
+2025-06-05 18:04:54.452 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/6 个块补丁: chunk_003_20250605_180454.patch
+2025-06-05 18:04:54.462 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_003_20250605_180454.patch 应用失败: error: patch failed: fig2dev/object.h:126
+error: fig2dev/object.h: patch does not apply
+
+2025-06-05 18:04:54.462 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 4/6 个块补丁: chunk_004_20250605_180454.patch
+2025-06-05 18:04:54.468 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_004_20250605_180454.patch 应用失败: error: patch failed: fig2dev/tests/read.at:2
+error: fig2dev/tests/read.at: patch does not apply
+
+2025-06-05 18:04:54.468 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 5/6 个块补丁: chunk_005_20250605_180454.patch
+2025-06-05 18:04:54.476 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_005_20250605_180454.patch 应用失败: error: patch failed: fig2dev/tests/read.at:14
+error: fig2dev/tests/read.at: patch does not apply
+
+2025-06-05 18:04:54.476 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 6/6 个块补丁: chunk_006_20250605_180454.patch
+2025-06-05 18:04:54.480 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_006_20250605_180454.patch
+2025-06-05 18:04:54.480 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-06-05 18:04:54.480 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 6
+2025-06-05 18:04:54.481 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 2
+2025-06-05 18:04:54.481 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 4
+2025-06-05 18:04:54.481 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 2 个块补丁，总共 6 个
+2025-06-05 18:04:54.482 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/remaining_chunks_20250605_180454.patch
+2025-06-05 18:04:54.482 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 4 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/remaining_chunks_20250605_180454.patch
+2025-06-05 18:04:54.483 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/remaining_chunks_20250605_180454.patch
+2025-06-05 18:04:54.483 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.05秒
+2025-06-05 18:04:54.484 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/metrics_c8a87d_20250605_180454.json
+2025-06-05 18:04:54.485 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/details_c8a87d_20250605_180454
+2025-06-05 18:04:54.486 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/details_c8a87d_20250605_180454
+2025-06-05 18:04:54.486 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/details_c8a87d_20250605_180454/patches
+2025-06-05 18:04:54.487 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/details_c8a87d_20250605_180454/patches
+2025-06-05 18:04:54.487 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/details_c8a87d_20250605_180454/patches/original_patch.txt
+2025-06-05 18:04:54.488 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/details_c8a87d_20250605_180454
+2025-06-05 18:04:54.489 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/details_c8a87d_20250605_180454/patches/applied_chunk_1.txt
+2025-06-05 18:04:54.489 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/details_c8a87d_20250605_180454/patches/applied_chunk_2.txt
+2025-06-05 18:04:54.490 | INFO     | modules.chunk_analyzer:_get_patch_content:1282 - 已将合并的补丁块内容保存到: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/details_c8a87d_20250605_180454/patches/all_applied_chunks.txt
+2025-06-05 18:04:54.490 | INFO     | modules.chunk_analyzer:_get_patch_content:1286 - 从context获取应用成功的补丁内容
+2025-06-05 18:04:54.490 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/details_c8a87d_20250605_180454
+2025-06-05 18:04:54.491 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/details_c8a87d_20250605_180454/patches/remaining_patch.txt
+2025-06-05 18:04:54.491 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/remaining_chunks_20250605_180454.patch
+2025-06-05 18:04:54.492 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/mcj/fig2dev/c8a87d/evaluations/chunk_analyzer/details_c8a87d_20250605_180454
+2025-06-05 18:04:54.494 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-05 18:04:54.494 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/upstream_c8a87d.patch
+2025-06-05 18:04:54.495 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/upstream_c8a87d.patch
+2025-06-05 18:04:54.495 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-05 18:04:54.495 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-05 18:04:54.583 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-05 18:05:40.672 | INFO     | llm_assistant:run:298 - ---responses in run: [{'prompt': [{'role': 'system', 'content': 'You are a senior software engineer who is best in the world at fixing vulnerabilities and patch porting between versions.\nUsers will give you 1. a patch based on a newer version 2. the diff info between the newer version and and older version. \nAnd you will generate a fix patch to the older version in the form of git diff based on the provided INSTRUCTION.\nINSTRUCTION:\nOnly reterun the final result after patch and diff information are entered. When all the information is entered, it will be identified with \u200d\u200d```===end===\u200d\u200d```\nOnly respond with the patch info, do not add any comments or change the indentation.\nThe patch should have no errors, it should compile and user should be able to use the fixed code as a direct replacement of the vulnerable code. The code should not introduce any new dependencies or use API calls that are not present in the code.\nIf you can generate a backport patch for the patch, do a brief change impact analysis to assess how these modifications might affect the overall system, considering both immediate and potential long-term compatibility issues.\nLow: Code diff will be applied to the code base and automatically merged without review.\nMedium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.\nHigh: Code diff will be offered as a suggestion to the developer to review and then apply to the code base. There are likely other changes that need to be done by the developer before the change can be implemented.\nPlease provide a response only in the following format:\n\nA. Commit message:\n<brief summary of the diff>\n\nB. Change summary:\n<description of the changes made in the diff>\n\nC. Compatibility Risk:\n<Low, Medium, High>\n\nD. Fixed Code:\n<original patch info with now backported>\n\n'}, {'role': 'system', 'content': '1. a patch based on a newer version: \nFrom c8a87d22036e62bac0c6f7836078d8103caa6457 Mon Sep 17 00:00:00 2001\nFrom: Thomas Loimer <thomas.loimer@tuwien.ac.at>\nDate: Wed, 22 Jan 2025 23:27:43 +0100\nSubject: [PATCH] Reject arcs with co-incident points, ticket #186\n\n\ndiff --git a/fig2dev/object.h b/fig2dev/object.h\nindex 7f83939..50afbf0 100644\n--- a/fig2dev/object.h\n+++ b/fig2dev/object.h\n@@ -3,7 +3,7 @@\n  * Copyright (c) 1991 by Micah Beck\n  * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul\n  * Parts Copyright (c) 1989-2015 by Brian V. Smith\n- * Parts Copyright (c) 2015-2023 by Thomas Loimer\n+ * Parts Copyright (c) 2015-2025 by Thomas Loimer\n  *\n  * Any party obtaining a copy of these files is granted, free of charge, a\n  * full and unrestricted irrevocable, world-wide, paid up, royalty-free,\n@@ -126,12 +126,16 @@ typedef struct f_arc {\n #define CIRCARC       9\n #define CIRCULARARC   > 8\n \n-#define INVALID_ARC(a)\t\\\n+#define COINCIDENT(a, b)\t(a.x == b.x && a.y == b.y)\n+#define INVALID_ARC(a)\t\t\t\t\t\t\t\\\n \ta->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||\t\t\\\n \tCOMMON_PROPERTIES(a) || a->cap_style < 0 || a->cap_style > 2 ||\t\\\n \ta->center.x < COORD_MIN || a->center.x > COORD_MAX ||\t\t\\\n \ta->center.y < COORD_MIN || a->center.y > COORD_MAX ||\t\t\\\n-\t(a->direction != 0 && a->direction != 1)\n+\t(a->direction != 0 && a->direction != 1) ||\t\t\t\\\n+\tCOINCIDENT(a->point[0], a->point[1]) ||\t\t\t\t\\\n+\tCOINCIDENT(a->point[0], a->point[2]) ||\t\t\t\t\\\n+\tCOINCIDENT(a->point[1], a->point[2])\n \n typedef struct f_line {\n \tint\t\t\ttype;\ndiff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at\nindex 1b4baea..da9ea3e 100644\n--- a/fig2dev/tests/read.at\n+++ b/fig2dev/tests/read.at\n@@ -2,7 +2,7 @@ dnl Fig2dev: Translate Fig code to various Devices\n dnl Copyright (c) 1991 by Micah Beck\n dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul\n dnl Parts Copyright (c) 1989-2015 by Brian V. Smith\n-dnl Parts Copyright (c) 2015-2024 by Thomas Loimer\n+dnl Parts Copyright (c) 2015-2025 by Thomas Loimer\n dnl\n dnl Any party obtaining a copy of these files is granted, free of charge, a\n dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,\n@@ -14,7 +14,7 @@ dnl party to do so, with the only requirement being that the above copyright\n dnl and this permission notice remain intact.\n \n dnl read.at\n-dnl Author: Thomas Loimer, 2017-2024\n+dnl Author: Thomas Loimer, 2017-2025\n \n \n AT_BANNER([Sanitize and harden input.])\n'}, {'role': 'system', 'content': '2. the diff info between the newer version and and older version: \nmodified file: fig2dev/object.h\n--- workspace/mcj/fig2dev/c8a87d/newer/fig2dev/object.h\n+++ workspace/mcj/fig2dev/c8a87d/3.2.8b/fig2dev/object.h\n@@ -3,7 +3,7 @@\n   * Copyright (c) 1991 by Micah Beck\n   * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul\n   * Parts Copyright (c) 1989-2015 by Brian V. Smith\n - * Parts Copyright (c) 2015-2023 by Thomas Loimer\n + * Parts Copyright (c) 2015-2020 by Thomas Loimer\n   *\n   * Any party obtaining a copy of these files is granted, free of charge, a\n   * full and unrestricted irrevocable, world-wide, paid up, royalty-free,\n@@ -57,13 +57,12 @@\n  \tstruct f_comment\t*next;\n  } F_comment;\n  \n -#define\tSTYLE_VAL_MAX\t6400.0\t/* dash length 80 inches, that is enough */\n  #define COMMON_PROPERTIES(o)\t\t\t\t\t\t\\\n  \to->style < SOLID_LINE || o->style > DASH_3_DOTS_LINE ||\t\t\\\n  \to->thickness < 0 || o->depth < 0 || o->depth > 999 ||\t\t\\\n  \to->fill_style < UNFILLED ||\t\t\t\t\t\\\n  \to->fill_style >= NUMSHADES + NUMTINTS + NUMPATTERNS ||\t\t\\\n -\to->style_val < 0.0 || o->style_val > STYLE_VAL_MAX\n +\to->style_val < 0.0\n  \n  typedef struct f_ellipse {\n  \tint\t\t\ttype;\n@@ -115,16 +114,12 @@\n  \tint\t\t\tcap_style;\n -\tfloat \t\t\tangle;\t\t/* for elliptical arcs, new for V4.0 */\n  \tint\t\t\tdirection;\n  \tstruct {double x, y;}\tcenter;\n  \tstruct f_pos\t\tpoint[3];\n  \tstruct f_comment\t*comments;\n  \tstruct f_arc\t\t*next;\n  } F_arc;\n -\n -#define CIRCARC       9\n -#define CIRCULARARC   > 8\n  \n  #define INVALID_ARC(a)\t\\\n  \ta->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||\t\t\\\n@@ -156,7 +151,6 @@\n  \t      for ARC, LINE and SPLINE (LINE has join_style following cap_style */\n  \tint\t\t\tjoin_style;\n  \tint\t\t\tradius;\t/* for T_ARC_BOX */\n -\tint\t\t\tnum_points;\n  \tstruct f_pos\t\tlast[2]; /* last and penultimate point */\n  \tstruct f_pic\t\t*pic;\n  \tstruct f_comment\t*comments;\n\n""""""\nmodified file: fig2dev/tests/read.at\n--- workspace/mcj/fig2dev/c8a87d/newer/fig2dev/tests/read.at\n+++ workspace/mcj/fig2dev/c8a87d/3.2.8b/fig2dev/tests/read.at\n@@ -2,7 +2,7 @@\n  dnl Copyright (c) 1991 by Micah Beck\n  dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul\n  dnl Parts Copyright (c) 1989-2015 by Brian V. Smith\n -dnl Parts Copyright (c) 2015-2024 by Thomas Loimer\n +dnl Parts Copyright (c) 2015-2021 by Thomas Loimer\n  dnl\n  dnl Any party obtaining a copy of these files is granted, free of charge, a\n  dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,\n@@ -14,7 +14,7 @@\n  dnl and this permission notice remain intact.\n  \n  dnl read.at\n -dnl Author: Thomas Loimer, 2017-2024\n +dnl Author: Thomas Loimer, 2017-2020\n  \n  \n  AT_BANNER([Sanitize and harden input.])\n@@ -96,41 +96,6 @@\n  \t 0 600\n  EOF\n  ],0,ignore,[A rectangle with 1 points at line 11 - convert to a polyline.\n -])\n -AT_CLEANUP\n -\n -AT_SETUP([convert box with two points to a polyline, #142])\n -AT_KEYWORDS(read.c gbx)\n -AT_CHECK([fig2dev -L gbx <<EOF\n -FIG_FILE_TOP\n -2 2 0 1 -1 -1 50 -1 -1 0.0 1 0 -1 0 0 2\n -\t 0 0 0 600\n -EOF\n -],0,ignore,[An open rectangle at line 11 - close it.\n -A rectangle with 3 points at line 11 - convert to a polyline.\n -])\n -AT_CLEANUP\n -\n -AT_SETUP([convert box with three points to polygon, #152])\n -AT_KEYWORDS(read.c gbx)\n -AT_CHECK([fig2dev -L gbx <<EOF\n -FIG_FILE_TOP\n -2 2 0 1 -1 -1 50 -1 -1 0.0 1 0 -1 0 0 3\n -\t 0 0 0 600 600 0\n -EOF\n -],0,ignore,[An open rectangle at line 11 - close it.\n -A rectangle with 3 corners at line 11 - convert to a polygon.\n -])\n -AT_CLEANUP\n -\n -AT_SETUP([convert an arc-box with zero radius to a box])\n -AT_KEYWORDS(read.c arc-box)\n -AT_CHECK([fig2dev -L pict2e <<EOF\n -FIG_FILE_TOP\n -2 4 1 1 0 0 50 -1 -1 4.0 0 0 0 0 0 5\n -\t0 0 300 0 300 300 0 300 0 0\n -EOF\n -],0,ignore,[A rectangle with rounded corners, but zero corner radius at line 11 - convert to a rectangle.\n  ])\n  AT_CLEANUP\n  \n@@ -202,7 +167,7 @@\n  \t10000000000000 0 1 60 120\n  0 0 600 0\n  EOF\n -], 0, ignore, [Invalid arrow at line 11.\n +], 1, ignore, [Invalid forward arrow at line 11.\n  ])\n  AT_CLEANUP\n  \n@@ -420,19 +385,6 @@\n  ])\n  AT_CLEANUP\n  \n -AT_SETUP([Ignore splines with only co-incident points])\n -AT_KEYWORDS([read.c])\n -AT_CHECK([fig2dev -L box <<EOF\n -FIG_FILE_TOP\n -# some comment\n -3 4 0 1 0 0 0 0 -1 0.0 0 0 0 4\n -  1200 600 1200 600 1200 600 1200 600\n - 0 1 1 0\n -EOF\n -], 1, ignore, [Invalid spline with only co-incident points at or before line 13.\n -])\n -AT_CLEANUP\n -\n  AT_SETUP([accept closed splines with three points])\n  AT_KEYWORDS([read.c])\n  AT_CHECK([fig2dev -L box <<EOF\n@@ -598,18 +550,6 @@\n  ])\n  AT_CLEANUP\n  \n -AT_SETUP([Allow text with leading spaces, ticket #181])\n -AT_KEYWORDS([read.c])\n -AT_CHECK([fig2dev -L eps <<EOF | $SED -n \'70,$ s/.*\\((.*spaces)\\).*/\\1/p\'\n -FIG_FILE_TOP\n -4 0 0 50 -1 4 20 0 4 330 1665 0 600 no spaces\\001\n -4 0 0 50 -1 4 20 0 4 330 1590 0 0     spaces\\001\n -EOF\n -], 0, [(no spaces)\n -(    spaces)\n -])\n -AT_CLEANUP\n -\n  AT_BANNER([Dynamically allocate picture file name.])\n  \n  AT_SETUP([prepend fig file path to picture file name])\n\n""""""\n\n===end==='}, {'role': 'user', 'content': 'Please return the final result.'}], 'response': 'A. Commit message:\nReject arcs with co-incident points, ticket #186\n\nB. Change summary:\nAdded a macro COINCIDENT to check if two points are the same. Updated the INVALID_ARC macro to include checks for co-incident points in arcs.\n\nC. Compatibility Risk:\nLow\n\nD. Fixed Code:\ndiff --git a/fig2dev/object.h b/fig2dev/object.h\nindex 7f83939..e4a5c8d 100644\n--- a/fig2dev/object.h\n+++ b/fig2dev/object.h\n@@ -3,7 +3,7 @@\n  * Copyright (c) 1991 by Micah Beck\n  * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul\n  * Parts Copyright (c) 1989-2015 by Brian V. Smith\n- * Parts Copyright (c) 2015-2020 by Thomas Loimer\n+ * Parts Copyright (c) 2015-2025 by Thomas Loimer\n  *\n  * Any party obtaining a copy of these files is granted, free of charge, a\n  * full and unrestricted irrevocable, world-wide, paid up, royalty-free,\n@@ -126,12 +126,16 @@ typedef struct f_arc {\n #define COMMON_PROPERTIES(o)\t\t\t\t\t\t\\\n \to->style < SOLID_LINE || o->style > DASH_3_DOTS_LINE ||\t\t\\\n \to->thickness < 0 || o->depth < 0 || o->depth > 999 ||\t\t\\\n-\to->style_val < 0.0\n+\to->style_val < 0.0\n \n+#define COINCIDENT(a, b)\t(a.x == b.x && a.y == b.y)\n #define INVALID_ARC(a)\t\t\t\t\t\t\t\\\n \ta->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||\t\t\\\n \tCOMMON_PROPERTIES(a) || a->cap_style < 0 || a->cap_style > 2 ||\t\\\n-\ta->center.x < COORD_MIN || a->center.x > COORD_MAX ||\t\t\\\n+\ta->center.x < COORD_MIN || a->center.x > COORD_MAX ||\t\t\\\n+\ta->center.y < COORD_MIN || a->center.y > COORD_MAX ||\t\t\\\n+\t(a->direction != 0 && a->direction != 1) ||\t\t\t\\\n+\tCOINCIDENT(a->point[0], a->point[1]) ||\t\t\t\t\\\n+\tCOINCIDENT(a->point[0], a->point[2]) ||\t\t\t\t\\\n+\tCOINCIDENT(a->point[1], a->point[2])\n \n typedef struct f_line {\n \tint\t\t\ttype;\ndiff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at\nindex 1b4baea..da9ea3e 100644\n--- a/fig2dev/tests/read.at\n+++ b/fig2dev/tests/read.at\n@@ -2,7 +2,7 @@\n dnl Fig2dev: Translate Fig code to various Devices\n dnl Copyright (c) 1991 by Micah Beck\n dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul\n dnl Parts Copyright (c) 1989-2015 by Brian V. Smith\n-dnl Parts Copyright (c) 2015-2021 by Thomas Loimer\n+dnl Parts Copyright (c) 2015-2025 by Thomas Loimer\n dnl\n dnl Any party obtaining a copy of these files is granted, free of charge, a\n dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,\n@@ -14,7 +14,7 @@ dnl party to do so, with the only requirement being that the above copyright\n dnl and this permission notice remain intact.\n \n dnl read.at\n-dnl Author: Thomas Loimer, 2017-2020\n+dnl Author: Thomas Loimer, 2017-2025\n \n \n AT_BANNER([Sanitize and harden input.])', 'request_token': 0, 'response_token': 0}]
+2025-06-05 18:05:40.676 | INFO     | modules.llm_adapter:_call_llm:973 - llm.run() result:{'openai_responses': ['A. Commit message:\nReject arcs with co-incident points, ticket #186\n\nB. Change summary:\nAdded a macro COINCIDENT to check if two points are the same. Updated the INVALID_ARC macro to include checks for co-incident points in arcs.\n\nC. Compatibility Risk:\nLow\n\nD. Fixed Code:\ndiff --git a/fig2dev/object.h b/fig2dev/object.h\nindex 7f83939..e4a5c8d 100644\n--- a/fig2dev/object.h\n+++ b/fig2dev/object.h\n@@ -3,7 +3,7 @@\n  * Copyright (c) 1991 by Micah Beck\n  * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul\n  * Parts Copyright (c) 1989-2015 by Brian V. Smith\n- * Parts Copyright (c) 2015-2020 by Thomas Loimer\n+ * Parts Copyright (c) 2015-2025 by Thomas Loimer\n  *\n  * Any party obtaining a copy of these files is granted, free of charge, a\n  * full and unrestricted irrevocable, world-wide, paid up, royalty-free,\n@@ -126,12 +126,16 @@ typedef struct f_arc {\n #define COMMON_PROPERTIES(o)\t\t\t\t\t\t\\\n \to->style < SOLID_LINE || o->style > DASH_3_DOTS_LINE ||\t\t\\\n \to->thickness < 0 || o->depth < 0 || o->depth > 999 ||\t\t\\\n-\to->style_val < 0.0\n+\to->style_val < 0.0\n \n+#define COINCIDENT(a, b)\t(a.x == b.x && a.y == b.y)\n #define INVALID_ARC(a)\t\t\t\t\t\t\t\\\n \ta->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||\t\t\\\n \tCOMMON_PROPERTIES(a) || a->cap_style < 0 || a->cap_style > 2 ||\t\\\n-\ta->center.x < COORD_MIN || a->center.x > COORD_MAX ||\t\t\\\n+\ta->center.x < COORD_MIN || a->center.x > COORD_MAX ||\t\t\\\n+\ta->center.y < COORD_MIN || a->center.y > COORD_MAX ||\t\t\\\n+\t(a->direction != 0 && a->direction != 1) ||\t\t\t\\\n+\tCOINCIDENT(a->point[0], a->point[1]) ||\t\t\t\t\\\n+\tCOINCIDENT(a->point[0], a->point[2]) ||\t\t\t\t\\\n+\tCOINCIDENT(a->point[1], a->point[2])\n \n typedef struct f_line {\n \tint\t\t\ttype;\ndiff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at\nindex 1b4baea..da9ea3e 100644\n--- a/fig2dev/tests/read.at\n+++ b/fig2dev/tests/read.at\n@@ -2,7 +2,7 @@\n dnl Fig2dev: Translate Fig code to various Devices\n dnl Copyright (c) 1991 by Micah Beck\n dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul\n dnl Parts Copyright (c) 1989-2015 by Brian V. Smith\n-dnl Parts Copyright (c) 2015-2021 by Thomas Loimer\n+dnl Parts Copyright (c) 2015-2025 by Thomas Loimer\n dnl\n dnl Any party obtaining a copy of these files is granted, free of charge, a\n dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,\n@@ -14,7 +14,7 @@ dnl party to do so, with the only requirement being that the above copyright\n dnl and this permission notice remain intact.\n \n dnl read.at\n-dnl Author: Thomas Loimer, 2017-2020\n+dnl Author: Thomas Loimer, 2017-2025\n \n \n AT_BANNER([Sanitize and harden input.])'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-06-05 18:05:40.677 | INFO     | modules.llm_adapter:_parse_llm_response:1055 - 原始LLM响应(前100字符): A. Commit message:
+Reject arcs with co-incident points, ticket #186
+
+B. Change summary:
+Added a macr...
+2025-06-05 18:05:40.679 | INFO     | modules.llm_adapter:_parse_llm_response:1089 - 找到diff --git格式，内容前100字符: diff --git a/fig2dev/object.h b/fig2dev/object.h
+index 7f83939..e4a5c8d 100644
+--- a/fig2dev/object....
+2025-06-05 18:05:40.681 | INFO     | modules.llm_adapter:_save_llm_response:1224 - LLM响应已保存到: workspace/mcj/fig2dev/c8a87d/llm_output/output_3.2.8b_qwen-plus.patch
+2025-06-05 18:05:40.682 | INFO     | modules.llm_adapter:_save_llm_response:1225 - 原始LLM响应已保存到: workspace/mcj/fig2dev/c8a87d/llm_output/raw_output_3.2.8b_qwen-plus.patch
+2025-06-05 18:05:40.683 | INFO     | modules.llm_adapter:execute:97 - ==================================================
+2025-06-05 18:05:40.683 | INFO     | modules.llm_adapter:execute:98 - LLM适配器执行完成 - 摘要
+2025-06-05 18:05:40.684 | INFO     | modules.llm_adapter:execute:99 - 提示模式: 标准模式
+2025-06-05 18:05:40.685 | INFO     | modules.llm_adapter:execute:100 - 提示类型: 标准上下文差异
+2025-06-05 18:05:40.685 | INFO     | modules.llm_adapter:execute:101 - 函数上下文统计: 总尝试: 0, 成功: 0, 回退: 0
+2025-06-05 18:05:40.685 | INFO     | modules.llm_adapter:execute:105 - 执行时间: 46.19 秒
+2025-06-05 18:05:40.686 | INFO     | modules.llm_adapter:execute:106 - 生成的补丁保存到: workspace/mcj/fig2dev/c8a87d/llm_output/output_3.2.8b_qwen-plus.patch
+2025-06-05 18:05:40.686 | INFO     | modules.llm_adapter:execute:107 - ==================================================
+2025-06-05 18:05:40.687 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/mcj/fig2dev/c8a87d/evaluations/llm_adapter/metrics_c8a87d_20250605_180540.json
+2025-06-05 18:05:40.687 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-05 18:05:40.688 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/mcj/fig2dev/c8a87d/llm_output/output_3.2.8b_qwen-plus.patch
+2025-06-05 18:05:40.689 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_3.2.8b_20250605_180540
+2025-06-05 18:05:40.707 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/fig2dev/object.h b/fig2dev/object.h
+index 7f83939..e4a5c8d 100644
+--- a/fig2dev/object.h
++++ b/fig2dev/object.h
+@@ -3,7 +3,7 @@
+  * Copyright (c) 1991 by Micah Beck
+  * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+  * Parts Copyright (c) 1989-2015 by Brian V. Smith
+- * Parts Copyright (c) 2015-2020 by Thomas Loimer
++ * Parts Copyright (c) 2015-2025 by Thomas Loimer
+  *
+  * Any party obtaining a copy of these files is granted, free of charge, a
+  * full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+@@ -126,12 +126,16 @@ typedef struct f_arc {
+ #define COMMON_PROPERTIES(o)						\
+ 	o->style < SOLID_LINE || o->style > DASH_3_DOTS_LINE ||		\
+ 	o->thickness < 0 || o->depth < 0 || o->depth > 999 ||		\
+-	o->style_val < 0.0
++	o->style_val < 0.0
+ 
++#define COINCIDENT(a, b)	(a.x == b.x && a.y == b.y)
+ #define INVALID_ARC(a)							\
+ 	a->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||		\
+ 	COMMON_PROPERTIES(a) || a->cap_style < 0 || a->cap_style > 2 ||	\
+-	a->center.x < COORD_MIN || a->center.x > COORD_MAX ||		\
++	a->center.x < COORD_MIN || a->center.x > COORD_MAX ||		\
++	a->center.y < COORD_MIN || a->center.y > COORD_MAX ||		\
++	(a->direction != 0 && a->direction != 1) ||			\
++	COINCIDENT(a->point[0], a->point[1]) ||				\
++	COINCIDENT(a->point[0], a->point[2]) ||				\
++	COINCIDENT(a->point[1], a->point[2])
+ 
+ typedef struct f_line {
+ 	int			type;
+diff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at
+index 1b4baea..da9ea3e 100644
+--- a/fig2dev/tests/read.at
++++ b/fig2dev/tests/read.at
+@@ -2,7 +2,7 @@
+ dnl Fig2dev: Translate Fig code to various Devices
+ dnl Copyright (c) 1991 by Micah Beck
+ dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+ dnl Parts Copyright (c) 1989-2015 by Brian V. Smith
+-dnl Parts Copyright (c) 2015-2021 by Thomas Loimer
++dnl Parts Copyright (c) 2015-2025 by Thomas Loimer
+ dnl
+ dnl Any party obtaining a copy of these files is granted, free of charge, a
+ dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+@@ -14,7 +14,7 @@ dnl party to do so, with the only requirement being that the above copyright
+ dnl and this permission notice remain intact.
+ 
+ dnl read.at
+-dnl Author: Thomas Loimer, 2017-2020
++dnl Author: Thomas Loimer, 2017-2025
+ 
+ 
+ AT_BANNER([Sanitize and harden input.])
+2025-06-05 18:05:40.708 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -3,7 +3,7 @@
+  * Copyright (c) 1991 by Micah Beck
+  * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+  * Parts Copyright (c) 1989-2015 by Brian V. Smith
+- * Parts Copyright (c) 2015-2020 by Thomas Loimer
++ * Parts Copyright (c) 2015-2025 by Thomas Loimer
+  *
+  * Any party obtaining a copy of these files is granted, free of charge, a
+  * full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+@@ -126,12 +126,16 @@ typedef struct f_arc {
+ #define COMMON_PROPERTIES(o)						\
+ 	o->style < SOLID_LINE || o->style > DASH_3_DOTS_LINE ||		\
+ 	o->thickness < 0 || o->depth < 0 || o->depth > 999 ||		\
+-	o->style_val < 0.0
++	o->style_val < 0.0
+ 
++#define COINCIDENT(a, b)	(a.x == b.x && a.y == b.y)
+ #define INVALID_ARC(a)							\
+ 	a->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||		\
+ 	COMMON_PROPERTIES(a) || a->cap_style < 0 || a->cap_style > 2 ||	\
+-	a->center.x < COORD_MIN || a->center.x > COORD_MAX ||		\
++	a->center.x < COORD_MIN || a->center.x > COORD_MAX ||		\
++	a->center.y < COORD_MIN || a->center.y > COORD_MAX ||		\
++	(a->direction != 0 && a->direction != 1) ||			\
++	COINCIDENT(a->point[0], a->point[1]) ||				\
++	COINCIDENT(a->point[0], a->point[2]) ||				\
++	COINCIDENT(a->point[1], a->point[2])
+ 
+ typedef struct f_line {
+ 	int			type;
+2025-06-05 18:05:40.708 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -3,7 +3,7 @@
+  * Copyright (c) 1991 by Micah Beck
+  * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+  * Parts Copyright (c) 1989-2015 by Brian V. Smith
+- * Parts Copyright (c) 2015-2020 by Thomas Loimer
++ * Parts Copyright (c) 2015-2025 by Thomas Loimer
+  *
+  * Any party obtaining a copy of these files is granted, free of charge, a
+  * full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+
+2025-06-05 18:05:40.709 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 3, 'old_count': 7, 'new_start': 3, 'new_count': 7}, 'lines': [('context', ' * Copyright (c) 1991 by Micah Beck'), ('context', ' * Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul'), ('context', ' * Parts Copyright (c) 1989-2015 by Brian V. Smith'), ('remove', ' * Parts Copyright (c) 2015-2020 by Thomas Loimer'), ('add', ' * Parts Copyright (c) 2015-2025 by Thomas Loimer'), ('context', ' *'), ('context', ' * Any party obtaining a copy of these files is granted, free of charge, a'), ('context', ' * full and unrestricted irrevocable, world-wide, paid up, royalty-free,')]}
+2025-06-05 18:05:40.710 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 2
+2025-06-05 18:05:40.710 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -126,12 +126,16 @@ typedef struct f_arc {
+ #define COMMON_PROPERTIES(o)						\
+ 	o->style < SOLID_LINE || o->style > DASH_3_DOTS_LINE ||		\
+ 	o->thickness < 0 || o->depth < 0 || o->depth > 999 ||		\
+-	o->style_val < 0.0
++	o->style_val < 0.0
+ 
++#define COINCIDENT(a, b)	(a.x == b.x && a.y == b.y)
+ #define INVALID_ARC(a)							\
+ 	a->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||		\
+ 	COMMON_PROPERTIES(a) || a->cap_style < 0 || a->cap_style > 2 ||	\
+-	a->center.x < COORD_MIN || a->center.x > COORD_MAX ||		\
++	a->center.x < COORD_MIN || a->center.x > COORD_MAX ||		\
++	a->center.y < COORD_MIN || a->center.y > COORD_MAX ||		\
++	(a->direction != 0 && a->direction != 1) ||			\
++	COINCIDENT(a->point[0], a->point[1]) ||				\
++	COINCIDENT(a->point[0], a->point[2]) ||				\
++	COINCIDENT(a->point[1], a->point[2])
+ 
+ typedef struct f_line {
+ 	int			type;
+2025-06-05 18:05:40.710 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 126, 'old_count': 12, 'new_start': 126, 'new_count': 16}, 'lines': [('context', '#define COMMON_PROPERTIES(o)\t\t\t\t\t\t\\'), ('context', '\to->style < SOLID_LINE || o->style > DASH_3_DOTS_LINE ||\t\t\\'), ('context', '\to->thickness < 0 || o->depth < 0 || o->depth > 999 ||\t\t\\'), ('remove', '\to->style_val < 0.0'), ('add', '\to->style_val < 0.0'), ('context', ''), ('add', '#define COINCIDENT(a, b)\t(a.x == b.x && a.y == b.y)'), ('context', '#define INVALID_ARC(a)\t\t\t\t\t\t\t\\'), ('context', '\ta->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||\t\t\\'), ('context', '\tCOMMON_PROPERTIES(a) || a->cap_style < 0 || a->cap_style > 2 ||\t\\'), ('remove', '\ta->center.x < COORD_MIN || a->center.x > COORD_MAX ||\t\t\\'), ('add', '\ta->center.x < COORD_MIN || a->center.x > COORD_MAX ||\t\t\\'), ('add', '\ta->center.y < COORD_MIN || a->center.y > COORD_MAX ||\t\t\\'), ('add', '\t(a->direction != 0 && a->direction != 1) ||\t\t\t\\'), ('add', '\tCOINCIDENT(a->point[0], a->point[1]) ||\t\t\t\t\\'), ('add', '\tCOINCIDENT(a->point[0], a->point[2]) ||\t\t\t\t\\'), ('add', '\tCOINCIDENT(a->point[1], a->point[2])'), ('context', ''), ('context', 'typedef struct f_line {'), ('context', '\tint\t\t\ttype;')]}
+2025-06-05 18:05:40.711 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-06-05 18:05:40.712 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 126, 'old_count': 12, 'new_start': 126, 'new_count': 16}, 'lines': [('context', '#define COMMON_PROPERTIES(o)\t\t\t\t\t\t\\'), ('context', '\to->style < SOLID_LINE || o->style > DASH_3_DOTS_LINE ||\t\t\\'), ('context', '\to->thickness < 0 || o->depth < 0 || o->depth > 999 ||\t\t\\'), ('remove', '\to->style_val < 0.0'), ('add', '\to->style_val < 0.0'), ('context', ''), ('add', '#define COINCIDENT(a, b)\t(a.x == b.x && a.y == b.y)'), ('context', '#define INVALID_ARC(a)\t\t\t\t\t\t\t\\'), ('context', '\ta->type < T_OPEN_ARC || a->type > T_PIE_WEDGE_ARC ||\t\t\\'), ('context', '\tCOMMON_PROPERTIES(a) || a->cap_style < 0 || a->cap_style > 2 ||\t\\'), ('remove', '\ta->center.x < COORD_MIN || a->center.x > COORD_MAX ||\t\t\\'), ('add', '\ta->center.x < COORD_MIN || a->center.x > COORD_MAX ||\t\t\\'), ('add', '\ta->center.y < COORD_MIN || a->center.y > COORD_MAX ||\t\t\\'), ('add', '\t(a->direction != 0 && a->direction != 1) ||\t\t\t\\'), ('add', '\tCOINCIDENT(a->point[0], a->point[1]) ||\t\t\t\t\\'), ('add', '\tCOINCIDENT(a->point[0], a->point[2]) ||\t\t\t\t\\'), ('add', '\tCOINCIDENT(a->point[1], a->point[2])'), ('context', ''), ('context', 'typedef struct f_line {'), ('context', '\tint\t\t\ttype;')]}
+2025-06-05 18:05:40.712 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: fig2dev/object.h
+2025-06-05 18:05:40.712 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -2,7 +2,7 @@
+ dnl Fig2dev: Translate Fig code to various Devices
+ dnl Copyright (c) 1991 by Micah Beck
+ dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+ dnl Parts Copyright (c) 1989-2015 by Brian V. Smith
+-dnl Parts Copyright (c) 2015-2021 by Thomas Loimer
++dnl Parts Copyright (c) 2015-2025 by Thomas Loimer
+ dnl
+ dnl Any party obtaining a copy of these files is granted, free of charge, a
+ dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+@@ -14,7 +14,7 @@ dnl party to do so, with the only requirement being that the above copyright
+ dnl and this permission notice remain intact.
+ 
+ dnl read.at
+-dnl Author: Thomas Loimer, 2017-2020
++dnl Author: Thomas Loimer, 2017-2025
+ 
+ 
+ AT_BANNER([Sanitize and harden input.])
+2025-06-05 18:05:40.713 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -2,7 +2,7 @@
+ dnl Fig2dev: Translate Fig code to various Devices
+ dnl Copyright (c) 1991 by Micah Beck
+ dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
+ dnl Parts Copyright (c) 1989-2015 by Brian V. Smith
+-dnl Parts Copyright (c) 2015-2021 by Thomas Loimer
++dnl Parts Copyright (c) 2015-2025 by Thomas Loimer
+ dnl
+ dnl Any party obtaining a copy of these files is granted, free of charge, a
+ dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,
+
+2025-06-05 18:05:40.713 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 2, 'old_count': 7, 'new_start': 2, 'new_count': 7}, 'lines': [('context', 'dnl Fig2dev: Translate Fig code to various Devices'), ('context', 'dnl Copyright (c) 1991 by Micah Beck'), ('context', 'dnl Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul'), ('context', 'dnl Parts Copyright (c) 1989-2015 by Brian V. Smith'), ('remove', 'dnl Parts Copyright (c) 2015-2021 by Thomas Loimer'), ('add', 'dnl Parts Copyright (c) 2015-2025 by Thomas Loimer'), ('context', 'dnl'), ('context', 'dnl Any party obtaining a copy of these files is granted, free of charge, a'), ('context', 'dnl full and unrestricted irrevocable, world-wide, paid up, royalty-free,')]}
+2025-06-05 18:05:40.715 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 0
+2025-06-05 18:05:40.715 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -14,7 +14,7 @@ dnl party to do so, with the only requirement being that the above copyright
+ dnl and this permission notice remain intact.
+ 
+ dnl read.at
+-dnl Author: Thomas Loimer, 2017-2020
++dnl Author: Thomas Loimer, 2017-2025
+ 
+ 
+ AT_BANNER([Sanitize and harden input.])
+2025-06-05 18:05:40.716 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 14, 'old_count': 7, 'new_start': 14, 'new_count': 7}, 'lines': [('context', 'dnl and this permission notice remain intact.'), ('context', ''), ('context', 'dnl read.at'), ('remove', 'dnl Author: Thomas Loimer, 2017-2020'), ('add', 'dnl Author: Thomas Loimer, 2017-2025'), ('context', ''), ('context', ''), ('context', 'AT_BANNER([Sanitize and harden input.])')]}
+2025-06-05 18:05:40.717 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 13
+2025-06-05 18:05:40.717 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: fig2dev/tests/read.at
+2025-06-05 18:05:40.718 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/mcj_fig2dev/fig2dev/object.h
+2025-06-05 18:05:40.718 | INFO     | modules.patch_adapter:_generate_adapted_patch:264 - 文件内容变化，执行复制: fig2dev/object.h
+2025-06-05 18:05:40.719 | INFO     | modules.patch_adapter:_generate_adapted_patch:267 - 将文件从/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/adapted_3.2.8b/fig2dev/object.h复制到/home/elpsy/.cache/port-patch/mcj_fig2dev/fig2dev/object.h
+2025-06-05 18:05:40.719 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/mcj_fig2dev/fig2dev/tests/read.at
+2025-06-05 18:05:40.720 | INFO     | modules.patch_adapter:_generate_adapted_patch:264 - 文件内容变化，执行复制: fig2dev/tests/read.at
+2025-06-05 18:05:40.720 | INFO     | modules.patch_adapter:_generate_adapted_patch:267 - 将文件从/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/adapted_3.2.8b/fig2dev/tests/read.at复制到/home/elpsy/.cache/port-patch/mcj_fig2dev/fig2dev/tests/read.at
+2025-06-05 18:05:40.739 | INFO     | modules.patch_adapter:_generate_adapted_patch:322 - 生成补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/0001-Applied-adapted-patch-for-3.2.8b.patch
+
+2025-06-05 18:05:40.739 | INFO     | modules.patch_adapter:_generate_adapted_patch:324 - patch_dir所含文件: ['upstream_c8a87d.patch', '0001-Applied-adapted-patch-for-3.2.8b.patch', 'merged_3.2.8b.patch']
+2025-06-05 18:05:40.740 | INFO     | modules.patch_adapter:_generate_adapted_patch:335 - 已重命名补丁文件: 从 /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/0001-Applied-adapted-patch-for-3.2.8b.patch 到 /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/adapted_3.2.8b.patch
+2025-06-05 18:05:40.740 | INFO     | modules.patch_adapter:_generate_adapted_patch:345 - 已生成适配后的补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/adapted_3.2.8b.patch
+2025-06-05 18:05:40.740 | INFO     | modules.patch_adapter:execute:73 - 生成适配补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/adapted_3.2.8b.patch
+2025-06-05 18:05:40.755 | INFO     | modules.patch_adapter:_test_apply_patch:478 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/adapted_3.2.8b.patch
+2025-06-05 18:05:40.768 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_3.2.8b_20250605_180540
+2025-06-05 18:05:40.775 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/mcj/fig2dev/c8a87d/metrics/patch_adapter_metrics.json
+2025-06-05 18:05:40.776 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 46.39秒
+2025-06-05 18:05:40.776 | INFO     | __main__:_merge_patches:1087 - 开始合并补丁...
+2025-06-05 18:05:40.776 | INFO     | __main__:_merge_patches:1122 - chunk_results2:
+2025-06-05 18:05:40.777 | INFO     | __main__:_merge_patches:1124 - chunk_patches: [PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_002_20250605_180454.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_006_20250605_180454.patch')]
+2025-06-05 18:05:40.777 | INFO     | __main__:_merge_patches:1126 - Chunk分析器应用了 2/6 个chunks
+2025-06-05 18:05:40.777 | INFO     | __main__:_merge_patches:1161 - 找到patch_adapter成功的补丁: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/adapted_3.2.8b.patch
+2025-06-05 18:05:40.778 | INFO     | __main__:_merge_patches:1172 - 合并 2 个chunk补丁和patch_adapter补丁
+2025-06-05 18:05:40.778 | INFO     | __main__:_combine_patch_files:1255 - 创建临时测试分支: patch_merge_75d921bf
+2025-06-05 18:05:40.793 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_002_20250605_180454.patch
+2025-06-05 18:05:40.794 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_002_20250605_180454.patch
+2025-06-05 18:05:40.797 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_002_20250605_180454.patch
+2025-06-05 18:05:40.798 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_006_20250605_180454.patch
+2025-06-05 18:05:40.798 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_006_20250605_180454.patch
+2025-06-05 18:05:40.802 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/chunk_patches/chunk_006_20250605_180454.patch
+2025-06-05 18:05:40.802 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/adapted_3.2.8b.patch
+2025-06-05 18:05:40.802 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/adapted_3.2.8b.patch
+2025-06-05 18:05:40.806 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/adapted_3.2.8b.patch
+2025-06-05 18:05:40.825 | INFO     | __main__:_combine_patch_files:1368 - 执行命令: git format-patch -1 HEAD --stdout > temp_patch_merge/merged.patch
+2025-06-05 18:05:40.830 | INFO     | __main__:_combine_patch_files:1410 - 成功生成合并补丁: temp_patch_merge/merged.patch (大小: 2900 字节)
+2025-06-05 18:05:40.830 | INFO     | __main__:_combine_patch_files:1425 - 清理临时分支: patch_merge_75d921bf
+2025-06-05 18:05:40.840 | INFO     | __main__:_merge_patches:1190 - 成功合并chunk补丁和patch_adapter补丁到: workspace/mcj/fig2dev/c8a87d/patches/merged_3.2.8b.patch
+2025-06-05 18:05:40.841 | INFO     | __main__:_process_mode1:392 - 成功合并补丁到: workspace/mcj/fig2dev/c8a87d/patches/merged_3.2.8b.patch
+2025-06-05 18:05:40.842 | INFO     | __main__:_save_results:751 - 已复制最终补丁到结果目录: results/fig2dev_3.2.8b_c8a87d_20250605_180540/merged_3.2.8b.patch
+2025-06-05 18:05:40.843 | INFO     | __main__:_save_results:889 - 结果已保存到: results/fig2dev_3.2.8b_c8a87d_20250605_180540/result.json
+2025-06-05 18:05:40.843 | INFO     | __main__:_print_summary:931 - context.patch_adapter_result: {'success': True, 'adapted_patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/c8a87d/patches/adapted_3.2.8b.patch', 'apply_result': {'success': True, 'error': None, 'error_type': None, 'output': 'Applying: Applied adapted patch for 3.2.8b\n'}}
+2025-06-05 18:05:40.843 | INFO     | __main__:_print_summary:954 - ==================================================
+2025-06-05 18:05:40.844 | INFO     | __main__:_print_summary:955 - 处理摘要 - 提交: c8a87d
+2025-06-05 18:05:40.844 | INFO     | __main__:_print_summary:956 - 适配状态: 适配成功 (方法: patch_adapter)
+2025-06-05 18:05:40.844 | INFO     | __main__:_print_summary:971 - 块分析统计:
+2025-06-05 18:05:40.844 | INFO     | __main__:_print_summary:972 - - 总块数: 6
+2025-06-05 18:05:40.845 | INFO     | __main__:_print_summary:973 - - 冲突块数: 4
+2025-06-05 18:05:40.845 | INFO     | __main__:_print_summary:974 - - 成功适配块数: 4
+2025-06-05 18:05:40.845 | INFO     | __main__:_print_summary:975 - - 适配失败块数: 0
+2025-06-05 18:05:40.845 | INFO     | __main__:_print_summary:976 - - 编译失败块数: 0
+2025-06-05 18:05:40.846 | INFO     | __main__:_print_summary:980 - 总执行时间: 46.39秒
+2025-06-05 18:05:40.846 | INFO     | __main__:_print_summary:985 - ==================================================
+2025-06-05 18:05:40.846 | INFO     | __main__:run:335 - 处理完成
+2025-06-05 18:05:40.847 | INFO     | __main__:process_multiple_commits:1842 - 处理第 3/3 个commit: ff9aba206a30288f456dfc91584a52ba9927b438
+2025-06-05 18:05:40.852 | INFO     | __main__:extract_commit_info:1990 - Commit ff9aba206a30288f456dfc91584a52ba9927b438 存在于仓库中

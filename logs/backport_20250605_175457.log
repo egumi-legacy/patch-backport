@@ -1,0 +1,401 @@
+2025-06-05 17:54:57.719 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250605_175457.log
+2025-06-05 17:54:57.719 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-05 17:54:57.719 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://sourceforge.net/p/sox/code/ci/f8587e2d50dad72d40453ac1191c539ee9e50381/
+2025-06-05 17:54:57.720 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-05 17:54:57.720 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-05 17:54:57.721 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-05 17:54:57.721 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-05 17:54:57.722 | INFO     | __main__:_process_mode1:358 - 目标版本: ['sox-14.4.2']
+2025-06-05 17:54:57.722 | INFO     | __main__:_process_mode1:365 - 开始处理版本: sox-14.4.2
+2025-06-05 17:54:57.722 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: f8587e2d50dad72d40453ac1191c539ee9e50381
+2025-06-05 17:54:57.722 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-05 17:54:57.723 | INFO     | modules.direct_apply:_download_patch:245 - 上游补丁文件不存在，下载补丁
+2025-06-05 17:54:57.724 | INFO     | patch_utils:_download_sourceforge_patch:329 - 解析SourceForge URL: 项目(Project)=sox, 仓库(Repo)=code, 提交(Commit)=f8587e2d50dad72d40453ac1191c539ee9e50381
+2025-06-05 17:54:57.724 | INFO     | patch_utils:_download_sourceforge_patch:330 - 基础Commit URL (Base Commit URL): https://sourceforge.net/p/sox/code/ci/f8587e2d50dad72d40453ac1191c539ee9e50381
+2025-06-05 17:54:57.724 | INFO     | patch_utils:_download_sourceforge_patch:335 - 尝试从以下URL下载diff (Attempting to download diff from): https://sourceforge.net/p/sox/code/ci/f8587e2d50dad72d40453ac1191c539ee9e50381/diff/?diff_format=u
+2025-06-05 17:55:01.785 | ERROR    | patch_utils:_download_sourceforge_patch:360 - 下载SourceForge补丁时发生HTTP错误 (HTTP error while downloading SourceForge patch): 404 Not Found from https://sourceforge.net/p/sox/code/ci/f8587e2d50dad72d40453ac1191c539ee9e50381/diff/?diff_format=u
+2025-06-05 17:55:01.786 | WARNING  | modules.direct_apply:_download_patch:258 - 补丁下载出错: 404 Client Error: Not Found for url: https://sourceforge.net/p/sox/code/ci/f8587e2d50dad72d40453ac1191c539ee9e50381/diff/?diff_format=u
+2025-06-05 17:55:01.789 | INFO     | modules.direct_apply:_download_patch:261 - 尝试从本地仓库生成补丁
+2025-06-05 17:55:01.791 | INFO     | patch_utils:generate_patch_from_git:452 - 尝试从本地仓库生成补丁: f8587e2d50dad72d40453ac1191c539ee9e50381
+2025-06-05 17:55:01.800 | INFO     | patch_utils:generate_patch_from_git:483 - 成功从本地仓库生成补丁: workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-05 17:55:01.801 | INFO     | modules.direct_apply:_download_patch:269 - 成功从本地仓库生成补丁: workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-05 17:55:01.801 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-05 17:55:01.802 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-05 17:55:01.816 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_sox-14.4.2
+2025-06-05 17:55:01.833 | ERROR    | modules.direct_apply:_apply_patch:315 - 补丁应用失败: error: patch failed: src/Makefile.am:95
+error: src/Makefile.am: patch does not apply
+error: patch failed: src/xmalloc.c:57
+error: src/xmalloc.c: patch does not apply
+error: patch failed: src/xmalloc.h:25
+error: src/xmalloc.h: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-05 17:55:01.848 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_sox-14.4.2
+2025-06-05 17:55:01.848 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-05 17:55:01.849 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-05 17:55:01.849 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-05 17:55:01.849 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 63 行内容
+2025-06-05 17:55:01.850 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/Makefile.am
+2025-06-05 17:55:01.850 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/Makefile.am @@ -95,7 +95,7 @@ (modification)
+2025-06-05 17:55:01.850 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/xmalloc.c
+2025-06-05 17:55:01.850 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/xmalloc.c @@ -57,6 +57,16 @@ (modification)
+2025-06-05 17:55:01.851 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: src/xmalloc.h
+2025-06-05 17:55:01.851 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: src/xmalloc.h @@ -25,11 +25,12 @@ (modification)
+2025-06-05 17:55:01.851 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 3 个修改块
+2025-06-05 17:55:01.851 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 3 个块
+2025-06-05 17:55:01.852 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-05 17:55:01.852 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/chunk_001_20250605_175501.patch (修改文件: src/Makefile.am)
+2025-06-05 17:55:01.853 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/chunk_002_20250605_175501.patch (修改文件: src/xmalloc.c)
+2025-06-05 17:55:01.853 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/chunk_003_20250605_175501.patch (修改文件: src/xmalloc.h)
+2025-06-05 17:55:01.853 | INFO     | modules.chunk_analyzer:execute:60 - 已为 3 个块创建单独的补丁文件
+2025-06-05 17:55:01.853 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-05 17:55:01.854 | INFO     | modules.chunk_analyzer:execute:66 - From f8587e2d50dad72d40453ac1191c539ee9e50381 Mon Sep 17 00:00:00 2001
+From: Mans Rullgard <mans@mansr.com>
+Date: Wed, 24 Apr 2019 17:39:45 +0100
+Subject: [PATCH] fix possible overflow in lsx_(re)valloc() size calculation
+ (CVE-2019-8355)
+
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 42573ec5..d5f6d125 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -95,7 +95,7 @@ libsox_la_LIBADD += @GOMP_LIBS@
+ 
+ libsox_la_CFLAGS = @WARN_CFLAGS@
+ libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \
+-  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'
++  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'
+ 
+ if HAVE_WIN32_LTDL
+   libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h
+
+2025-06-05 17:55:01.854 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-05 17:55:01.854 | INFO     | modules.chunk_analyzer:execute:66 - From f8587e2d50dad72d40453ac1191c539ee9e50381 Mon Sep 17 00:00:00 2001
+From: Mans Rullgard <mans@mansr.com>
+Date: Wed, 24 Apr 2019 17:39:45 +0100
+Subject: [PATCH] fix possible overflow in lsx_(re)valloc() size calculation
+ (CVE-2019-8355)
+
+
+diff --git a/src/xmalloc.c b/src/xmalloc.c
+index 56fe6944..72c9ea4d 100644
+--- a/src/xmalloc.c
++++ b/src/xmalloc.c
+@@ -57,6 +57,16 @@ void *lsx_calloc(size_t n, size_t size)
+   return lsx_checkptr(calloc(n + !n, size + !size));
+ }
+ 
++void *lsx_realloc_array(void *p, size_t n, size_t size)
++{
++  if (n > (size_t)-1 / size) {
++    lsx_fail("malloc size overflow");
++    exit(2);
++  }
++
++  return lsx_realloc(p, n * size);
++}
++
+ char *lsx_strdup(const char *s)
+ {
+   return lsx_checkptr(strdup(s));
+
+2025-06-05 17:55:01.855 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-05 17:55:01.855 | INFO     | modules.chunk_analyzer:execute:66 - From f8587e2d50dad72d40453ac1191c539ee9e50381 Mon Sep 17 00:00:00 2001
+From: Mans Rullgard <mans@mansr.com>
+Date: Wed, 24 Apr 2019 17:39:45 +0100
+Subject: [PATCH] fix possible overflow in lsx_(re)valloc() size calculation
+ (CVE-2019-8355)
+
+
+diff --git a/src/xmalloc.h b/src/xmalloc.h
+index 92ac64d9..21ff6630 100644
+--- a/src/xmalloc.h
++++ b/src/xmalloc.h
+@@ -25,11 +25,12 @@
+ 
+ LSX_RETURN_VALID void *lsx_malloc(size_t size);
+ LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);
++LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);
+ LSX_RETURN_VALID char *lsx_strdup(const char *s);
+ 
+ #define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))
+ #define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)
+-#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))
+-#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))
++#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))
++#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))
+ 
+ #endif
+-- 
+2.25.1
+
+
+2025-06-05 17:55:01.855 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/3 个块补丁: chunk_001_20250605_175501.patch
+2025-06-05 17:55:01.862 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_001_20250605_175501.patch 应用失败: error: patch failed: src/Makefile.am:95
+error: src/Makefile.am: patch does not apply
+
+2025-06-05 17:55:01.862 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/3 个块补丁: chunk_002_20250605_175501.patch
+2025-06-05 17:55:01.871 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_002_20250605_175501.patch 应用失败: error: patch failed: src/xmalloc.c:57
+error: src/xmalloc.c: patch does not apply
+
+2025-06-05 17:55:01.872 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/3 个块补丁: chunk_003_20250605_175501.patch
+2025-06-05 17:55:01.879 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_003_20250605_175501.patch 应用失败: error: patch failed: src/xmalloc.h:25
+error: src/xmalloc.h: patch does not apply
+
+2025-06-05 17:55:01.879 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-06-05 17:55:01.879 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 3
+2025-06-05 17:55:01.879 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 0
+2025-06-05 17:55:01.879 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 3
+2025-06-05 17:55:01.880 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 0 个块补丁，总共 3 个
+2025-06-05 17:55:01.881 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/remaining_chunks_20250605_175501.patch
+2025-06-05 17:55:01.881 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 3 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/remaining_chunks_20250605_175501.patch
+2025-06-05 17:55:01.882 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/remaining_chunks_20250605_175501.patch
+2025-06-05 17:55:01.883 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.03秒
+2025-06-05 17:55:01.884 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/sox/code/f8587e/evaluations/chunk_analyzer/metrics_f8587e_20250605_175501.json
+2025-06-05 17:55:01.885 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250605_175501
+2025-06-05 17:55:01.885 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250605_175501
+2025-06-05 17:55:01.885 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250605_175501/patches
+2025-06-05 17:55:01.886 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250605_175501/patches
+2025-06-05 17:55:01.886 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250605_175501/patches/original_patch.txt
+2025-06-05 17:55:01.886 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250605_175501
+2025-06-05 17:55:01.887 | WARNING  | modules.chunk_analyzer:_get_patch_content:1289 - 未找到任何应用成功的补丁文件
+2025-06-05 17:55:01.887 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250605_175501
+2025-06-05 17:55:01.888 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250605_175501/patches/remaining_patch.txt
+2025-06-05 17:55:01.888 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/chunk_patches/remaining_chunks_20250605_175501.patch
+2025-06-05 17:55:01.888 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/sox/code/f8587e/evaluations/chunk_analyzer/details_f8587e_20250605_175501
+2025-06-05 17:55:01.890 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-05 17:55:01.890 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-05 17:55:01.890 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/upstream_f8587e.patch
+2025-06-05 17:55:01.890 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-05 17:55:02.942 | WARNING  | git_operations:get_commit_content:143 - GitHub API获取提交内容失败: 404, {"message":"Not Found","documentation_url":"https://docs.github.com/rest/commits/commits#get-a-commit","status":"404"}
+2025-06-05 17:55:02.942 | INFO     | git_operations:get_commit_content:144 - 尝试使用本地Git仓库获取提交内容...
+2025-06-05 17:55:02.970 | INFO     | git_operations:_get_commit_content_local:234 - 成功从本地Git仓库获取提交 f8587e2d50dad72d40453ac1191c539ee9e50381 的内容，包含 3 个文件
+2025-06-05 17:55:04.846 | WARNING  | git_operations:get_commit_content:143 - GitHub API获取提交内容失败: 404, {"message":"Not Found","documentation_url":"https://docs.github.com/rest/commits/commits#get-a-commit","status":"404"}
+2025-06-05 17:55:04.847 | INFO     | git_operations:get_commit_content:144 - 尝试使用本地Git仓库获取提交内容...
+2025-06-05 17:55:04.870 | INFO     | git_operations:_get_commit_content_local:234 - 成功从本地Git仓库获取提交 f8587e2d50dad72d40453ac1191c539ee9e50381 的内容，包含 3 个文件
+2025-06-05 17:55:04.872 | INFO     | git_operations:get_file_contents_from_ref:264 - 获取内容中：['src/Makefile.am', 'src/xmalloc.c', 'src/xmalloc.h']
+2025-06-05 17:55:04.872 | INFO     | git_operations:_get_file_contents_local:280 - 正在从本地仓库获取文件 src/Makefile.am 在 f70911261a84333b077c29908e1242f69d7439eb 的内容
+2025-06-05 17:55:04.877 | INFO     | git_operations:_get_file_contents_local:280 - 正在从本地仓库获取文件 src/xmalloc.c 在 f70911261a84333b077c29908e1242f69d7439eb 的内容
+2025-06-05 17:55:04.880 | INFO     | git_operations:_get_file_contents_local:280 - 正在从本地仓库获取文件 src/xmalloc.h 在 f70911261a84333b077c29908e1242f69d7439eb 的内容
+2025-06-05 17:55:04.884 | INFO     | git_operations:_get_file_contents_local:300 - 本地获取文件内容为: [{'filename': 'src/Makefile.am', 'content': '## Process this file with automake to produce Makefile.in\n\nRM = rm -f \n\nAM_CPPFLAGS = -DLADSPA_PATH="\\"@LADSPA_PATH@\\""\nAM_CFLAGS = @WARN_CFLAGS@ #-Werror\n\nif HAVE_LIBLTDL\n# This is being used as a short cut to turn off versioning of ALL dynamic\n# fmt libraries.  If any fmt ever needs to add a specific LDFLAGS\n# then it will need to also add -avoid-version because AM_LDFLAGS\n# is ignored when you specify a more specific one.\n# We want to version libsox and we are OK because they\n# have a more specific LDFLAGS that includes -version-info.\nAM_LDFLAGS = -avoid-version -module\nAM_CPPFLAGS += -DPKGLIBDIR="\\"$(pkglibdir)\\""\nendif\nif HAVE_WIN32_LTDL\n# Must match line above.\nAM_LDFLAGS = -avoid-version -module\nAM_CPPFLAGS += -DPKGLIBDIR="\\"$(pkglibdir)\\""\nendif\n\n# Pass flags from --enable-silent-libtool\nLIBTOOL = @LIBTOOL@ @LIBTOOLFLAGS@\n\nif HAVE_DISTRO\nAM_CPPFLAGS += -DDISTRO="\\"@DISTRO@\\""\nendif\n\n\n\n#########################\n# SoX - the application #\n#########################\n\nbin_PROGRAMS = sox\nEXTRA_PROGRAMS = example0 example1 example2 example3 example4 example5 example6 sox_sample_test\nlib_LTLIBRARIES = libsox.la\ninclude_HEADERS = sox.h\nsox_SOURCES = sox.c\nif HAVE_WIN32_GLOB\nsox_SOURCES += win32-glob.c win32-glob.h\nendif\nsox_LDADD = libsox.la\nexample0_SOURCES = example0.c\nexample1_SOURCES = example1.c\nexample2_SOURCES = example2.c\nexample3_SOURCES = example3.c\nexample4_SOURCES = example4.c\nexample5_SOURCES = example5.c\nexample6_SOURCES = example6.c\nsox_sample_test_SOURCES = sox_sample_test.c sox_sample_test.h\n\n\n\n######################################################\n# libsox - file format, effects, and utility library #\n######################################################\n\n# Format handlers and utils source\nlibsox_la_SOURCES = adpcms.c adpcms.h aiff.c aiff.h cvsd.c cvsd.h cvsdfilt.h \\\n\t  g711.c g711.h g721.c g723_24.c g723_40.c g72x.c g72x.h vox.c vox.h \\\n\t  raw.c raw.h formats.c formats.h formats_i.c sox_i.h skelform.c \\\n\t  xmalloc.c xmalloc.h getopt.c \\\n\t  util.c util.h libsox.c libsox_i.c sox-fmt.c soxomp.h\n\n# Effects source\nlibsox_la_SOURCES += \\\n\tband.h bend.c biquad.c biquad.h biquads.c chorus.c compand.c \\\n\tcompandt.c compandt.h contrast.c dcshift.c delay.c dft_filter.c \\\n\tdft_filter.h dither.c dither.h divide.c downsample.c earwax.c \\\n\techo.c echos.c effects.c effects.h effects_i.c effects_i_dsp.c \\\n\tfade.c fft4g.c fft4g.h fifo.h fir.c firfit.c flanger.c gain.c \\\n\thilbert.c input.c ladspa.h ladspa.c loudness.c mcompand.c \\\n\tmcompand_xover.h noiseprof.c noisered.c \\\n\tnoisered.h output.c overdrive.c pad.c phaser.c rate.c \\\n\trate_filters.h rate_half_fir.h rate_poly_fir0.h rate_poly_fir.h \\\n\tremix.c repeat.c reverb.c reverse.c silence.c sinc.c skeleff.c \\\n\tspeed.c splice.c stat.c stats.c stretch.c swap.c \\\n\tsynth.c tempo.c tremolo.c trim.c upsample.c vad.c vol.c \\\n\tignore-warning.h\nif HAVE_PNG\n    libsox_la_SOURCES += spectrogram.c\nendif\n\n# Libraries required by libsox for file handlers, effects, or utils;\n# regardless if libltdl is used or not.\nlibsox_la_LIBADD = @PNG_LIBS@\nif HAVE_MAGIC\nlibsox_la_LIBADD += @MAGIC_LIBS@\nendif\n\nlibsox_la_LIBADD += @GOMP_LIBS@\n\nlibsox_la_CFLAGS = @WARN_CFLAGS@\nlibsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \\\n  -export-symbols-regex \'^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$\'\n\nif HAVE_WIN32_LTDL\n  libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h\nendif\n\nif HAVE_LIBLTDL\n  libsox_la_CFLAGS += $(LTDLINCL) \n  libsox_la_LDFLAGS += $(LIBLTDL) \nendif\n\n\n\n#########################\n# libsox - File Formats #\n#########################\n\n# Uncomment for bit-rot detection on linux\n#libsox_la_SOURCES += coreaudio.c sndio.c sunaudio.c\n#libsox_la_CFLAGS += -Ibit-rot\n\nlibsox_la_SOURCES += raw-fmt.c s1-fmt.c s2-fmt.c s3-fmt.c \\\n  s4-fmt.c u1-fmt.c u2-fmt.c u3-fmt.c u4-fmt.c al-fmt.c la-fmt.c ul-fmt.c \\\n  lu-fmt.c 8svx.c aiff-fmt.c aifc-fmt.c au.c avr.c cdr.c cvsd-fmt.c \\\n  dvms-fmt.c dat.c hcom.c htk.c maud.c prc.c sf.c smp.c \\\n  sounder.c soundtool.c sphere.c tx16w.c voc.c vox-fmt.c ima-fmt.c adpcm.c adpcm.h \\\n  ima_rw.c ima_rw.h wav.c wve.c xa.c nulfile.c f4-fmt.c f8-fmt.c gsrt.c\n\nlibsox_la_LIBADD += @GSM_LIBS@ @LIBGSM_LIBADD@\nlibsox_la_LIBADD += @LPC10_LIBS@ @LIBLPC10_LIBADD@\n\npkglib_LTLIBRARIES =\n\ninclude optional-fmts.am\n\n\n\n# example programs will need same link options as sox does.\nexample0_LDADD = ${sox_LDADD}\nexample1_LDADD = ${sox_LDADD}\nexample2_LDADD = ${sox_LDADD}\nexample3_LDADD = ${sox_LDADD}\nexample4_LDADD = ${sox_LDADD}\nexample5_LDADD = ${sox_LDADD}\nexample6_LDADD = ${sox_LDADD}\n\nEXTRA_DIST = monkey.wav optional-fmts.am \\\n\t     CMakeLists.txt soxconfig.h.cmake \\\n\t     tests.sh testall.sh tests.bat testall.bat test-comments\n\nall: sox$(EXEEXT) play$(EXEEXT) rec$(EXEEXT) soxi$(EXEEXT) sox_sample_test$(EXEEXT) example0$(EXEEXT) example1$(EXEEXT) example2$(EXEEXT) example3$(EXEEXT) example4$(EXEEXT) example5$(EXEEXT) example6$(EXEEXT)\n\nplay$(EXEEXT) rec$(EXEEXT) soxi$(EXEEXT): sox$(EXEEXT)\n\tif test "$(PLAYRECLINKS)" = "yes"; then\t\\\n\t\ttest -f sox$(EXEEXT) && ( $(RM) $@ && $(LN_S) sox$(EXEEXT) $@ ) || $(LN_S) sox $@; \\\n\tfi\n\ninstall-exec-hook:\n\tif test "$(PLAYRECLINKS)" = "yes"; then\t\\\n\t\tcd $(DESTDIR)$(bindir); $(RM) play$(EXEEXT) rec$(EXEEXT); $(LN_S) sox$(EXEEXT) play$(EXEEXT); $(LN_S) sox$(EXEEXT) rec$(EXEEXT); \\\n\tfi\n\tif test "$(SYMLINKS)" = "yes"; then\t\\\n\t\tcd $(DESTDIR)$(bindir); $(RM) soxi$(EXEEXT); $(LN_S) sox$(EXEEXT) soxi$(EXEEXT); \\\n\tfi\n\nuninstall-hook:\n\tif test "$(PLAYRECLINKS)" = "yes"; then\t\\\n\t\tcd $(DESTDIR)$(bindir); $(RM) play$(EXTEXT) rec$(EXEEXT); \\\n\tfi\n\tif test "$(SYMLINKS)" = "yes"; then\t\\\n\t\tcd $(DESTDIR)$(bindir); $(RM) soxi$(EXEEXT); \\\n\tfi\n\nclean-local:\n\t$(RM) play$(EXEEXT) rec$(EXEEXT) soxi$(EXEEXT)\n\t$(RM) sox_sample_test$(EXEEXT)\n\t$(RM) example0$(EXEEXT) example1$(EXEEXT) example2$(EXEEXT) example3$(EXEEXT) example4$(EXEEXT) example5$(EXEEXT) example6$(EXEEXT)\n\ndistclean-local:\n\nloc:\n\tsloccount \\\n\t$(include_HEADERS) \\\n\t$(sox_SOURCES) \\\n\t$(example0_SOURCES) \\\n\t$(example1_SOURCES) \\\n\t$(example2_SOURCES) \\\n\t$(example3_SOURCES) \\\n\t$(example4_SOURCES) \\\n\t$(example5_SOURCES) \\\n\t$(example6_SOURCES) \\\n\t$(sox_sample_test_SOURCES) \\\n\t$(libsox_la_SOURCES)\n\n\n# Ideally we would use the "check" target so that "make distcheck"\n# would run the test suite, but an uninstalled libltdl build cannot\n# currently load its formats and effects, so the checks would fail.\ninstallcheck:\n\t$(srcdir)/tests.sh --bindir=$(DESTDIR)${bindir} --builddir=${builddir} --srcdir=${srcdir}\n\t$(srcdir)/testall.sh --bindir=$(DESTDIR)${bindir} --srcdir=${srcdir}\n\n', 'sha': None}, {'filename': 'src/xmalloc.c', 'content': '/* SoX Memory allocation functions\n *\n * Copyright (c) 2005-2006 Reuben Thomas.  All rights reserved.\n *\n * This library is free software; you can redistribute it and/or modify it\n * under the terms of the GNU Lesser General Public License as published by\n * the Free Software Foundation; either version 2.1 of the License, or (at\n * your option) any later version.\n *\n * This library is distributed in the hope that it will be useful, but\n * WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser\n * General Public License for more details.\n *\n * You should have received a copy of the GNU Lesser General Public License\n * along with this library; if not, write to the Free Software Foundation,\n * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA\n */\n\n#include "sox_i.h"\n#include <stdlib.h>\n\nstatic void *lsx_checkptr(void *ptr)\n{\n  if (!ptr) {\n    lsx_fail("out of memory");\n    exit(2);\n  }\n\n  return ptr;\n}\n\n/* Resize an allocated memory area; abort if not possible.\n *\n * For malloc, `If the size of the space requested is zero, the behavior is\n * implementation defined: either a null pointer is returned, or the\n * behavior is as if the size were some nonzero value, except that the\n * returned pointer shall not be used to access an object\'\n */\nvoid *lsx_realloc(void *ptr, size_t newsize)\n{\n  if (ptr && newsize == 0) {\n    free(ptr);\n    return NULL;\n  }\n\n  return lsx_checkptr(realloc(ptr, newsize));\n}\n\nvoid *lsx_malloc(size_t size)\n{\n  return lsx_checkptr(malloc(size + !size));\n}\n\nvoid *lsx_calloc(size_t n, size_t size)\n{\n  return lsx_checkptr(calloc(n + !n, size + !size));\n}\n\nchar *lsx_strdup(const char *s)\n{\n  return lsx_checkptr(strdup(s));\n}\n', 'sha': None}, {'filename': 'src/xmalloc.h', 'content': '/* libSoX Memory allocation functions\n *\n * Copyright (c) 2005-2006 Reuben Thomas.  All rights reserved.\n *\n * This library is free software; you can redistribute it and/or modify it\n * under the terms of the GNU Lesser General Public License as published by\n * the Free Software Foundation; either version 2.1 of the License, or (at\n * your option) any later version.\n *\n * This library is distributed in the hope that it will be useful, but\n * WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser\n * General Public License for more details.\n *\n * You should have received a copy of the GNU Lesser General Public License\n * along with this library; if not, write to the Free Software Foundation,\n * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA\n */\n\n#ifndef LSX_MALLOC_H\n#define LSX_MALLOC_H\n\n#include <stddef.h>\n#include <string.h>\n\nLSX_RETURN_VALID void *lsx_malloc(size_t size);\nLSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);\nLSX_RETURN_VALID char *lsx_strdup(const char *s);\n\n#define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))\n#define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)\n#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))\n#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))\n\n#endif\n', 'sha': None}]
+2025-06-05 17:55:04.885 | INFO     | git_operations:get_file_contents_from_ref:264 - 获取内容中：['src/Makefile.am', 'src/xmalloc.c', 'src/xmalloc.h']
+2025-06-05 17:55:04.885 | INFO     | git_operations:_get_file_contents_local:280 - 正在从本地仓库获取文件 src/Makefile.am 在 sox-14.4.2 的内容
+2025-06-05 17:55:04.889 | INFO     | git_operations:_get_file_contents_local:280 - 正在从本地仓库获取文件 src/xmalloc.c 在 sox-14.4.2 的内容
+2025-06-05 17:55:04.892 | INFO     | git_operations:_get_file_contents_local:280 - 正在从本地仓库获取文件 src/xmalloc.h 在 sox-14.4.2 的内容
+2025-06-05 17:55:04.896 | INFO     | git_operations:_get_file_contents_local:300 - 本地获取文件内容为: [{'filename': 'src/Makefile.am', 'content': '## Process this file with automake to produce Makefile.in\n\nRM = rm -f \n\nAM_CPPFLAGS = -DLADSPA_PATH="\\"@LADSPA_PATH@\\""\nAM_CFLAGS = @WARN_CFLAGS@ #-Werror\n\nif HAVE_LIBLTDL\n# This is being used as a short cut to turn off versioning of ALL dynamic\n# fmt libraries.  If any fmt ever needs to add a specific LDFLAGS\n# then it will need to also add -avoid-version because AM_LDFLAGS\n# is ignored when you specify a more specific one.\n# We want to version libsox and we are OK because they\n# have a more specific LDFLAGS that includes -version-info.\nAM_LDFLAGS = -avoid-version -module\nAM_CPPFLAGS += -DPKGLIBDIR="\\"$(pkglibdir)\\""\nendif\nif HAVE_WIN32_LTDL\n# Must match line above.\nAM_LDFLAGS = -avoid-version -module\nAM_CPPFLAGS += -DPKGLIBDIR="\\"$(pkglibdir)\\""\nendif\n\n# Pass flags from --enable-silent-libtool\nLIBTOOL = @LIBTOOL@ @LIBTOOLFLAGS@\n\nif HAVE_DISTRO\nAM_CPPFLAGS += -DDISTRO="\\"@DISTRO@\\""\nendif\n\n\n\n#########################\n# SoX - the application #\n#########################\n\nbin_PROGRAMS = sox\nEXTRA_PROGRAMS = example0 example1 example2 example3 example4 example5 example6 sox_sample_test\nlib_LTLIBRARIES = libsox.la\ninclude_HEADERS = sox.h\nsox_SOURCES = sox.c\nif HAVE_WIN32_GLOB\nsox_SOURCES += win32-glob.c win32-glob.h\nendif\nsox_LDADD = libsox.la\nexample0_SOURCES = example0.c\nexample1_SOURCES = example1.c\nexample2_SOURCES = example2.c\nexample3_SOURCES = example3.c\nexample4_SOURCES = example4.c\nexample5_SOURCES = example5.c\nexample6_SOURCES = example6.c\nsox_sample_test_SOURCES = sox_sample_test.c sox_sample_test.h\n\n\n\n######################################################\n# libsox - file format, effects, and utility library #\n######################################################\n\n# Format handlers and utils source\nlibsox_la_SOURCES = adpcms.c adpcms.h aiff.c aiff.h cvsd.c cvsd.h cvsdfilt.h \\\n\t  g711.c g711.h g721.c g723_24.c g723_40.c g72x.c g72x.h vox.c vox.h \\\n\t  raw.c raw.h formats.c formats.h formats_i.c sox_i.h skelform.c \\\n\t  xmalloc.c xmalloc.h getopt.c \\\n\t  util.c util.h libsox.c libsox_i.c sox-fmt.c soxomp.h\n\n# Effects source\nlibsox_la_SOURCES += \\\n\tband.h bend.c biquad.c biquad.h biquads.c chorus.c compand.c \\\n\tcompandt.c compandt.h contrast.c dcshift.c delay.c dft_filter.c \\\n\tdft_filter.h dither.c dither.h divide.c downsample.c earwax.c \\\n\techo.c echos.c effects.c effects.h effects_i.c effects_i_dsp.c \\\n\tfade.c fft4g.c fft4g.h fifo.h fir.c firfit.c flanger.c gain.c \\\n\thilbert.c input.c ladspa.h ladspa.c loudness.c mcompand.c \\\n\tmcompand_xover.h noiseprof.c noisered.c \\\n\tnoisered.h output.c overdrive.c pad.c phaser.c rate.c \\\n\trate_filters.h rate_half_fir.h rate_poly_fir0.h rate_poly_fir.h \\\n\tremix.c repeat.c reverb.c reverse.c silence.c sinc.c skeleff.c \\\n\tspeed.c splice.c stat.c stats.c stretch.c swap.c \\\n\tsynth.c tempo.c tremolo.c trim.c upsample.c vad.c vol.c \\\n\tignore-warning.h\nif HAVE_PNG\n    libsox_la_SOURCES += spectrogram.c\nendif\n\n# Libraries required by libsox for file handlers, effects, or utils;\n# regardless if libltdl is used or not.\nlibsox_la_LIBADD = @PNG_LIBS@\nif HAVE_MAGIC\nlibsox_la_LIBADD += @MAGIC_LIBS@\nendif\n\nlibsox_la_LIBADD += @GOMP_LIBS@\n\nlibsox_la_CFLAGS = @WARN_CFLAGS@\nlibsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \\\n  -export-symbols-regex \'^(sox_.*|lsx_(check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|fail_errno|filelength|find_(enum_(text|value)|file_extension)|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|realloc|rewind|seeki|sigfigs3p?|strcasecmp|tell|unreadb|write(b|_b_buf|buf|s)))$$\'\n\nif HAVE_WIN32_LTDL\n  libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h\nendif\n\nif HAVE_LIBLTDL\n  libsox_la_CFLAGS += $(LTDLINCL) \n  libsox_la_LDFLAGS += $(LIBLTDL) \nendif\n\n\n\n#########################\n# libsox - File Formats #\n#########################\n\n# Uncomment for bit-rot detection on linux\n#libsox_la_SOURCES += coreaudio.c sndio.c sunaudio.c\n#libsox_la_CFLAGS += -Ibit-rot\n\nlibsox_la_SOURCES += raw-fmt.c s1-fmt.c s2-fmt.c s3-fmt.c \\\n  s4-fmt.c u1-fmt.c u2-fmt.c u3-fmt.c u4-fmt.c al-fmt.c la-fmt.c ul-fmt.c \\\n  lu-fmt.c 8svx.c aiff-fmt.c aifc-fmt.c au.c avr.c cdr.c cvsd-fmt.c \\\n  dvms-fmt.c dat.c hcom.c htk.c maud.c prc.c sf.c smp.c \\\n  sounder.c soundtool.c sphere.c tx16w.c voc.c vox-fmt.c ima-fmt.c adpcm.c adpcm.h \\\n  ima_rw.c ima_rw.h wav.c wve.c xa.c nulfile.c f4-fmt.c f8-fmt.c gsrt.c\n\nlibsox_la_LIBADD += @GSM_LIBS@ @LIBGSM_LIBADD@\nlibsox_la_LIBADD += @LPC10_LIBS@ @LIBLPC10_LIBADD@\n\npkglib_LTLIBRARIES =\n\ninclude optional-fmts.am\n\n\n\n# example programs will need same link options as sox does.\nexample0_LDADD = ${sox_LDADD}\nexample1_LDADD = ${sox_LDADD}\nexample2_LDADD = ${sox_LDADD}\nexample3_LDADD = ${sox_LDADD}\nexample4_LDADD = ${sox_LDADD}\nexample5_LDADD = ${sox_LDADD}\nexample6_LDADD = ${sox_LDADD}\n\nEXTRA_DIST = monkey.wav optional-fmts.am \\\n\t     CMakeLists.txt soxconfig.h.cmake \\\n\t     tests.sh testall.sh tests.bat testall.bat test-comments\n\nall: sox$(EXEEXT) play$(EXEEXT) rec$(EXEEXT) soxi$(EXEEXT) sox_sample_test$(EXEEXT) example0$(EXEEXT) example1$(EXEEXT) example2$(EXEEXT) example3$(EXEEXT) example4$(EXEEXT) example5$(EXEEXT) example6$(EXEEXT)\n\nplay$(EXEEXT) rec$(EXEEXT) soxi$(EXEEXT): sox$(EXEEXT)\n\tif test "$(PLAYRECLINKS)" = "yes"; then\t\\\n\t\ttest -f sox$(EXEEXT) && ( $(RM) $@ && $(LN_S) sox$(EXEEXT) $@ ) || $(LN_S) sox $@; \\\n\tfi\n\ninstall-exec-hook:\n\tif test "$(PLAYRECLINKS)" = "yes"; then\t\\\n\t\tcd $(DESTDIR)$(bindir); $(RM) play$(EXEEXT) rec$(EXEEXT); $(LN_S) sox$(EXEEXT) play$(EXEEXT); $(LN_S) sox$(EXEEXT) rec$(EXEEXT); \\\n\tfi\n\tif test "$(SYMLINKS)" = "yes"; then\t\\\n\t\tcd $(DESTDIR)$(bindir); $(RM) soxi$(EXEEXT); $(LN_S) sox$(EXEEXT) soxi$(EXEEXT); \\\n\tfi\n\nuninstall-hook:\n\tif test "$(PLAYRECLINKS)" = "yes"; then\t\\\n\t\tcd $(DESTDIR)$(bindir); $(RM) play$(EXTEXT) rec$(EXEEXT); \\\n\tfi\n\tif test "$(SYMLINKS)" = "yes"; then\t\\\n\t\tcd $(DESTDIR)$(bindir); $(RM) soxi$(EXEEXT); \\\n\tfi\n\nclean-local:\n\t$(RM) play$(EXEEXT) rec$(EXEEXT) soxi$(EXEEXT)\n\t$(RM) sox_sample_test$(EXEEXT)\n\t$(RM) example0$(EXEEXT) example1$(EXEEXT) example2$(EXEEXT) example3$(EXEEXT) example4$(EXEEXT) example5$(EXEEXT) example6$(EXEEXT)\n\ndistclean-local:\n\nloc:\n\tsloccount \\\n\t$(include_HEADERS) \\\n\t$(sox_SOURCES) \\\n\t$(example0_SOURCES) \\\n\t$(example1_SOURCES) \\\n\t$(example2_SOURCES) \\\n\t$(example3_SOURCES) \\\n\t$(example4_SOURCES) \\\n\t$(example5_SOURCES) \\\n\t$(example6_SOURCES) \\\n\t$(sox_sample_test_SOURCES) \\\n\t$(libsox_la_SOURCES)\n\n\n# Ideally we would use the "check" target so that "make distcheck"\n# would run the test suite, but an uninstalled libltdl build cannot\n# currently load its formats and effects, so the checks would fail.\ninstallcheck:\n\t$(srcdir)/tests.sh --bindir=${bindir} --builddir=${builddir} --srcdir=${srcdir}\n\t$(srcdir)/testall.sh --bindir=${bindir} --srcdir=${srcdir}\n\n', 'sha': None}, {'filename': 'src/xmalloc.c', 'content': '/* SoX Memory allocation functions\n *\n * Copyright (c) 2005-2006 Reuben Thomas.  All rights reserved.\n *\n * This library is free software; you can redistribute it and/or modify it\n * under the terms of the GNU Lesser General Public License as published by\n * the Free Software Foundation; either version 2.1 of the License, or (at\n * your option) any later version.\n *\n * This library is distributed in the hope that it will be useful, but\n * WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser\n * General Public License for more details.\n *\n * You should have received a copy of the GNU Lesser General Public License\n * along with this library; if not, write to the Free Software Foundation,\n * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA\n */\n\n#include "sox_i.h"\n#include <stdlib.h>\n\n/* Resize an allocated memory area; abort if not possible.\n *\n * For malloc, `If the size of the space requested is zero, the behavior is\n * implementation defined: either a null pointer is returned, or the\n * behavior is as if the size were some nonzero value, except that the\n * returned pointer shall not be used to access an object\'\n */\nvoid *lsx_realloc(void *ptr, size_t newsize)\n{\n  if (ptr && newsize == 0) {\n    free(ptr);\n    return NULL;\n  }\n\n  if ((ptr = realloc(ptr, newsize)) == NULL) {\n    lsx_fail("out of memory");\n    exit(2);\n  }\n\n  return ptr;\n}\n', 'sha': None}, {'filename': 'src/xmalloc.h', 'content': '/* libSoX Memory allocation functions\n *\n * Copyright (c) 2005-2006 Reuben Thomas.  All rights reserved.\n *\n * This library is free software; you can redistribute it and/or modify it\n * under the terms of the GNU Lesser General Public License as published by\n * the Free Software Foundation; either version 2.1 of the License, or (at\n * your option) any later version.\n *\n * This library is distributed in the hope that it will be useful, but\n * WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser\n * General Public License for more details.\n *\n * You should have received a copy of the GNU Lesser General Public License\n * along with this library; if not, write to the Free Software Foundation,\n * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA\n */\n\n#ifndef LSX_MALLOC_H\n#define LSX_MALLOC_H\n\n#include <stddef.h>\n#include <string.h>\n\n#define lsx_malloc(size) lsx_realloc(NULL, (size))\n#define lsx_calloc(n,s) (((n)*(s))? memset(lsx_malloc((n)*(s)),0,(n)*(s)) : NULL)\n#define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))\n#define lsx_strdup(p) ((p)? strcpy((char *)lsx_malloc(strlen(p) + 1), p) : NULL)\n#define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)\n#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))\n#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))\n\n#endif\n', 'sha': None}]
+2025-06-05 17:55:04.901 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-05 17:55:04.989 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-05 17:55:49.925 | INFO     | llm_assistant:run:298 - ---responses in run: [{'prompt': [{'role': 'system', 'content': 'You are a senior software engineer who is best in the world at fixing vulnerabilities and patch porting between versions.\nUsers will give you 1. a patch based on a newer version 2. the diff info between the newer version and and older version. \nAnd you will generate a fix patch to the older version in the form of git diff based on the provided INSTRUCTION.\nINSTRUCTION:\nOnly reterun the final result after patch and diff information are entered. When all the information is entered, it will be identified with \u200d\u200d```===end===\u200d\u200d```\nOnly respond with the patch info, do not add any comments or change the indentation.\nThe patch should have no errors, it should compile and user should be able to use the fixed code as a direct replacement of the vulnerable code. The code should not introduce any new dependencies or use API calls that are not present in the code.\nIf you can generate a backport patch for the patch, do a brief change impact analysis to assess how these modifications might affect the overall system, considering both immediate and potential long-term compatibility issues.\nLow: Code diff will be applied to the code base and automatically merged without review.\nMedium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.\nHigh: Code diff will be offered as a suggestion to the developer to review and then apply to the code base. There are likely other changes that need to be done by the developer before the change can be implemented.\nPlease provide a response only in the following format:\n\nA. Commit message:\n<brief summary of the diff>\n\nB. Change summary:\n<description of the changes made in the diff>\n\nC. Compatibility Risk:\n<Low, Medium, High>\n\nD. Fixed Code:\n<original patch info with now backported>\n\n'}, {'role': 'system', 'content': '1. a patch based on a newer version: \nFrom f8587e2d50dad72d40453ac1191c539ee9e50381 Mon Sep 17 00:00:00 2001\nFrom: Mans Rullgard <mans@mansr.com>\nDate: Wed, 24 Apr 2019 17:39:45 +0100\nSubject: [PATCH] fix possible overflow in lsx_(re)valloc() size calculation\n (CVE-2019-8355)\n\n\ndiff --git a/src/Makefile.am b/src/Makefile.am\nindex 42573ec5..d5f6d125 100644\n--- a/src/Makefile.am\n+++ b/src/Makefile.am\n@@ -95,7 +95,7 @@ libsox_la_LIBADD += @GOMP_LIBS@\n \n libsox_la_CFLAGS = @WARN_CFLAGS@\n libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \\\n-  -export-symbols-regex \'^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$\'\n+  -export-symbols-regex \'^(sox_.*|lsx_(([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$\'\n \n if HAVE_WIN32_LTDL\n   libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h\ndiff --git a/src/xmalloc.c b/src/xmalloc.c\nindex 56fe6944..72c9ea4d 100644\n--- a/src/xmalloc.c\n+++ b/src/xmalloc.c\n@@ -57,6 +57,16 @@ void *lsx_calloc(size_t n, size_t size)\n   return lsx_checkptr(calloc(n + !n, size + !size));\n }\n \n+void *lsx_realloc_array(void *p, size_t n, size_t size)\n+{\n+  if (n > (size_t)-1 / size) {\n+    lsx_fail("malloc size overflow");\n+    exit(2);\n+  }\n+\n+  return lsx_realloc(p, n * size);\n+}\n+\n char *lsx_strdup(const char *s)\n {\n   return lsx_checkptr(strdup(s));\ndiff --git a/src/xmalloc.h b/src/xmalloc.h\nindex 92ac64d9..21ff6630 100644\n--- a/src/xmalloc.h\n+++ b/src/xmalloc.h\n@@ -25,11 +25,12 @@\n \n LSX_RETURN_VALID void *lsx_malloc(size_t size);\n LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);\n+LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);\n LSX_RETURN_VALID char *lsx_strdup(const char *s);\n \n #define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))\n #define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)\n-#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))\n-#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))\n+#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))\n+#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))\n \n #endif\n-- \n2.25.1\n\n'}, {'role': 'system', 'content': '2. the diff info between the newer version and and older version: \nFrom f8587e2d50dad72d40453ac1191c539ee9e50381 Mon Sep 17 00:00:00 2001\nFrom: Mans Rullgard <mans@mansr.com>\nDate: Wed, 24 Apr 2019 17:39:45 +0100\nSubject: [PATCH] fix possible overflow in lsx_(re)valloc() size calculation\n (CVE-2019-8355)\n\n\ndiff --git a/src/Makefile.am b/src/Makefile.am\nindex 42573ec5..d5f6d125 100644\n--- a/src/Makefile.am\n+++ b/src/Makefile.am\n@@ -95,7 +95,7 @@ libsox_la_LIBADD += @GOMP_LIBS@\n \n libsox_la_CFLAGS = @WARN_CFLAGS@\n libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \\\n-  -export-symbols-regex \'^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$\'\n+  -export-symbols-regex \'^(sox_.*|lsx_(([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$\'\n \n if HAVE_WIN32_LTDL\n   libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h\ndiff --git a/src/xmalloc.c b/src/xmalloc.c\nindex 56fe6944..72c9ea4d 100644\n--- a/src/xmalloc.c\n+++ b/src/xmalloc.c\n@@ -57,6 +57,16 @@ void *lsx_calloc(size_t n, size_t size)\n   return lsx_checkptr(calloc(n + !n, size + !size));\n }\n \n+void *lsx_realloc_array(void *p, size_t n, size_t size)\n+{\n+  if (n > (size_t)-1 / size) {\n+    lsx_fail("malloc size overflow");\n+    exit(2);\n+  }\n+\n+  return lsx_realloc(p, n * size);\n+}\n+\n char *lsx_strdup(const char *s)\n {\n   return lsx_checkptr(strdup(s));\ndiff --git a/src/xmalloc.h b/src/xmalloc.h\nindex 92ac64d9..21ff6630 100644\n--- a/src/xmalloc.h\n+++ b/src/xmalloc.h\n@@ -25,11 +25,12 @@\n \n LSX_RETURN_VALID void *lsx_malloc(size_t size);\n LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);\n+LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);\n LSX_RETURN_VALID char *lsx_strdup(const char *s);\n \n #define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))\n #define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)\n-#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))\n-#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))\n+#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))\n+#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))\n \n #endif\n-- \n2.25.1\n\n\n===end==='}, {'role': 'user', 'content': 'Please return the final result.'}], 'response': 'A. Commit message:\nFix possible overflow in lsx_(re)valloc() size calculation (CVE-2019-8355)\n\nB. Change summary:\nAdded a new function `lsx_realloc_array` to prevent possible overflow when calculating the size for reallocation. Updated macros `lsx_valloc` and `lsx_revalloc` to use this new function instead of directly multiplying n and size.\n\nC. Compatibility Risk:\nLow\n\nD. Fixed Code:\ndiff --git a/src/Makefile.am b/src/Makefile.am\nindex 42573ec5..d5f6d125 100644\n--- a/src/Makefile.am\n+++ b/src/Makefile.am\n@@ -95,7 +95,7 @@ libsox_la_LIBADD += @GOMP_LIBS@\n \n libsox_la_CFLAGS = @WARN_CFLAGS@\n libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \\\n-  -export-symbols-regex \'^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$\'\n+  -export-symbols-regex \'^(sox_.*|lsx_(([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$\'\n \n if HAVE_WIN32_LTDL\n   libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h\ndiff --git a/src/xmalloc.c b/src/xmalloc.c\nindex 56fe6944..72c9ea4d 100644\n--- a/src/xmalloc.c\n+++ b/src/xmalloc.c\n@@ -57,6 +57,16 @@ void *lsx_calloc(size_t n, size_t size)\n   return lsx_checkptr(calloc(n + !n, size + !size));\n }\n \n+void *lsx_realloc_array(void *p, size_t n, size_t size)\n+{\n+  if (n > (size_t)-1 / size) {\n+    lsx_fail("malloc size overflow");\n+    exit(2);\n+  }\n+\n+  return lsx_realloc(p, n * size);\n+}\n+\n char *lsx_strdup(const char *s)\n {\n   return lsx_checkptr(strdup(s));\ndiff --git a/src/xmalloc.h b/src/xmalloc.h\nindex 92ac64d9..21ff6630 100644\n--- a/src/xmalloc.h\n+++ b/src/xmalloc.h\n@@ -25,11 +25,12 @@\n \n LSX_RETURN_VALID void *lsx_malloc(size_t size);\n LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);\n+LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);\n LSX_RETURN_VALID char *lsx_strdup(const char *s);\n \n #define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))\n #define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)\n-#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))\n-#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))\n+#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))\n+#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))\n \n #endif', 'request_token': 0, 'response_token': 0}]
+2025-06-05 17:55:49.926 | INFO     | modules.llm_adapter:_call_llm:973 - llm.run() result:{'openai_responses': ['A. Commit message:\nFix possible overflow in lsx_(re)valloc() size calculation (CVE-2019-8355)\n\nB. Change summary:\nAdded a new function `lsx_realloc_array` to prevent possible overflow when calculating the size for reallocation. Updated macros `lsx_valloc` and `lsx_revalloc` to use this new function instead of directly multiplying n and size.\n\nC. Compatibility Risk:\nLow\n\nD. Fixed Code:\ndiff --git a/src/Makefile.am b/src/Makefile.am\nindex 42573ec5..d5f6d125 100644\n--- a/src/Makefile.am\n+++ b/src/Makefile.am\n@@ -95,7 +95,7 @@ libsox_la_LIBADD += @GOMP_LIBS@\n \n libsox_la_CFLAGS = @WARN_CFLAGS@\n libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \\\n-  -export-symbols-regex \'^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$\'\n+  -export-symbols-regex \'^(sox_.*|lsx_(([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$\'\n \n if HAVE_WIN32_LTDL\n   libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h\ndiff --git a/src/xmalloc.c b/src/xmalloc.c\nindex 56fe6944..72c9ea4d 100644\n--- a/src/xmalloc.c\n+++ b/src/xmalloc.c\n@@ -57,6 +57,16 @@ void *lsx_calloc(size_t n, size_t size)\n   return lsx_checkptr(calloc(n + !n, size + !size));\n }\n \n+void *lsx_realloc_array(void *p, size_t n, size_t size)\n+{\n+  if (n > (size_t)-1 / size) {\n+    lsx_fail("malloc size overflow");\n+    exit(2);\n+  }\n+\n+  return lsx_realloc(p, n * size);\n+}\n+\n char *lsx_strdup(const char *s)\n {\n   return lsx_checkptr(strdup(s));\ndiff --git a/src/xmalloc.h b/src/xmalloc.h\nindex 92ac64d9..21ff6630 100644\n--- a/src/xmalloc.h\n+++ b/src/xmalloc.h\n@@ -25,11 +25,12 @@\n \n LSX_RETURN_VALID void *lsx_malloc(size_t size);\n LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);\n+LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);\n LSX_RETURN_VALID char *lsx_strdup(const char *s);\n \n #define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))\n #define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)\n-#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))\n-#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))\n+#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))\n+#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))\n \n #endif'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-06-05 17:55:49.927 | INFO     | modules.llm_adapter:_parse_llm_response:1055 - 原始LLM响应(前100字符): A. Commit message:
+Fix possible overflow in lsx_(re)valloc() size calculation (CVE-2019-8355)
+
+B. Ch...
+2025-06-05 17:55:49.928 | INFO     | modules.llm_adapter:_parse_llm_response:1089 - 找到diff --git格式，内容前100字符: diff --git a/src/Makefile.am b/src/Makefile.am
+index 42573ec5..d5f6d125 100644
+--- a/src/Makefile.am...
+2025-06-05 17:55:49.929 | INFO     | modules.llm_adapter:_save_llm_response:1224 - LLM响应已保存到: workspace/sox/code/f8587e/llm_output/output_sox-14.4.2_qwen-plus.patch
+2025-06-05 17:55:49.929 | INFO     | modules.llm_adapter:_save_llm_response:1225 - 原始LLM响应已保存到: workspace/sox/code/f8587e/llm_output/raw_output_sox-14.4.2_qwen-plus.patch
+2025-06-05 17:55:49.929 | INFO     | modules.llm_adapter:execute:97 - ==================================================
+2025-06-05 17:55:49.929 | INFO     | modules.llm_adapter:execute:98 - LLM适配器执行完成 - 摘要
+2025-06-05 17:55:49.930 | INFO     | modules.llm_adapter:execute:99 - 提示模式: 标准模式
+2025-06-05 17:55:49.930 | INFO     | modules.llm_adapter:execute:100 - 提示类型: 标准上下文差异
+2025-06-05 17:55:49.930 | INFO     | modules.llm_adapter:execute:101 - 函数上下文统计: 总尝试: 0, 成功: 0, 回退: 0
+2025-06-05 17:55:49.931 | INFO     | modules.llm_adapter:execute:105 - 执行时间: 48.04 秒
+2025-06-05 17:55:49.931 | INFO     | modules.llm_adapter:execute:106 - 生成的补丁保存到: workspace/sox/code/f8587e/llm_output/output_sox-14.4.2_qwen-plus.patch
+2025-06-05 17:55:49.931 | INFO     | modules.llm_adapter:execute:107 - ==================================================
+2025-06-05 17:55:49.932 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/sox/code/f8587e/evaluations/llm_adapter/metrics_f8587e_20250605_175549.json
+2025-06-05 17:55:49.932 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-05 17:55:49.932 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/sox/code/f8587e/llm_output/output_sox-14.4.2_qwen-plus.patch
+2025-06-05 17:55:49.933 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_sox-14.4.2_20250605_175549
+2025-06-05 17:55:49.952 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 42573ec5..d5f6d125 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -95,7 +95,7 @@ libsox_la_LIBADD += @GOMP_LIBS@
+ 
+ libsox_la_CFLAGS = @WARN_CFLAGS@
+ libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \
+-  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'
++  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'
+ 
+ if HAVE_WIN32_LTDL
+   libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h
+diff --git a/src/xmalloc.c b/src/xmalloc.c
+index 56fe6944..72c9ea4d 100644
+--- a/src/xmalloc.c
++++ b/src/xmalloc.c
+@@ -57,6 +57,16 @@ void *lsx_calloc(size_t n, size_t size)
+   return lsx_checkptr(calloc(n + !n, size + !size));
+ }
+ 
++void *lsx_realloc_array(void *p, size_t n, size_t size)
++{
++  if (n > (size_t)-1 / size) {
++    lsx_fail("malloc size overflow");
++    exit(2);
++  }
++
++  return lsx_realloc(p, n * size);
++}
++
+ char *lsx_strdup(const char *s)
+ {
+   return lsx_checkptr(strdup(s));
+diff --git a/src/xmalloc.h b/src/xmalloc.h
+index 92ac64d9..21ff6630 100644
+--- a/src/xmalloc.h
++++ b/src/xmalloc.h
+@@ -25,11 +25,12 @@
+ 
+ LSX_RETURN_VALID void *lsx_malloc(size_t size);
+ LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);
++LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);
+ LSX_RETURN_VALID char *lsx_strdup(const char *s);
+ 
+ #define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))
+ #define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)
+-#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))
+-#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))
++#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))
++#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))
+ 
+ #endif
+2025-06-05 17:55:49.953 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -95,7 +95,7 @@ libsox_la_LIBADD += @GOMP_LIBS@
+ 
+ libsox_la_CFLAGS = @WARN_CFLAGS@
+ libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \
+-  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'
++  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'
+ 
+ if HAVE_WIN32_LTDL
+   libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h
+2025-06-05 17:55:49.953 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -95,7 +95,7 @@ libsox_la_LIBADD += @GOMP_LIBS@
+ 
+ libsox_la_CFLAGS = @WARN_CFLAGS@
+ libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \
+-  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'
++  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'
+ 
+ if HAVE_WIN32_LTDL
+   libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h
+2025-06-05 17:55:49.954 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 95, 'old_count': 7, 'new_start': 95, 'new_count': 7}, 'lines': [('context', ''), ('context', 'libsox_la_CFLAGS = @WARN_CFLAGS@'), ('context', 'libsox_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \\'), ('remove', "  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'"), ('add', "  -export-symbols-regex '^(sox_.*|lsx_(([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|getopt(_init)?|lpc10_(create_(de|en)coder_state|(de|en)code)|raw(read|write)|read(_b_buf|buf|chars)|rewind|seeki|sigfigs3p?|strcasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'"), ('context', ''), ('context', 'if HAVE_WIN32_LTDL'), ('context', '  libsox_la_SOURCES += win32-ltdl.c win32-ltdl.h')]}
+2025-06-05 17:55:49.954 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 94
+2025-06-05 17:55:49.955 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: src/Makefile.am
+2025-06-05 17:55:49.955 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -57,6 +57,16 @@ void *lsx_calloc(size_t n, size_t size)
+   return lsx_checkptr(calloc(n + !n, size + !size));
+ }
+ 
++void *lsx_realloc_array(void *p, size_t n, size_t size)
++{
++  if (n > (size_t)-1 / size) {
++    lsx_fail("malloc size overflow");
++    exit(2);
++  }
++
++  return lsx_realloc(p, n * size);
++}
++
+ char *lsx_strdup(const char *s)
+ {
+   return lsx_checkptr(strdup(s));
+2025-06-05 17:55:49.955 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -57,6 +57,16 @@ void *lsx_calloc(size_t n, size_t size)
+   return lsx_checkptr(calloc(n + !n, size + !size));
+ }
+ 
++void *lsx_realloc_array(void *p, size_t n, size_t size)
++{
++  if (n > (size_t)-1 / size) {
++    lsx_fail("malloc size overflow");
++    exit(2);
++  }
++
++  return lsx_realloc(p, n * size);
++}
++
+ char *lsx_strdup(const char *s)
+ {
+   return lsx_checkptr(strdup(s));
+2025-06-05 17:55:49.956 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 57, 'old_count': 6, 'new_start': 57, 'new_count': 16}, 'lines': [('context', '  return lsx_checkptr(calloc(n + !n, size + !size));'), ('context', '}'), ('context', ''), ('add', 'void *lsx_realloc_array(void *p, size_t n, size_t size)'), ('add', '{'), ('add', '  if (n > (size_t)-1 / size) {'), ('add', '    lsx_fail("malloc size overflow");'), ('add', '    exit(2);'), ('add', '  }'), ('add', ''), ('add', '  return lsx_realloc(p, n * size);'), ('add', '}'), ('add', ''), ('context', 'char *lsx_strdup(const char *s)'), ('context', '{'), ('context', '  return lsx_checkptr(strdup(s));')]}
+2025-06-05 17:55:49.956 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-06-05 17:55:49.956 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 57, 'old_count': 6, 'new_start': 57, 'new_count': 16}, 'lines': [('context', '  return lsx_checkptr(calloc(n + !n, size + !size));'), ('context', '}'), ('context', ''), ('add', 'void *lsx_realloc_array(void *p, size_t n, size_t size)'), ('add', '{'), ('add', '  if (n > (size_t)-1 / size) {'), ('add', '    lsx_fail("malloc size overflow");'), ('add', '    exit(2);'), ('add', '  }'), ('add', ''), ('add', '  return lsx_realloc(p, n * size);'), ('add', '}'), ('add', ''), ('context', 'char *lsx_strdup(const char *s)'), ('context', '{'), ('context', '  return lsx_checkptr(strdup(s));')]}
+2025-06-05 17:55:49.956 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: src/xmalloc.c
+2025-06-05 17:55:49.957 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -25,11 +25,12 @@
+ 
+ LSX_RETURN_VALID void *lsx_malloc(size_t size);
+ LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);
++LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);
+ LSX_RETURN_VALID char *lsx_strdup(const char *s);
+ 
+ #define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))
+ #define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)
+-#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))
+-#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))
++#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))
++#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))
+ 
+ #endif
+2025-06-05 17:55:49.957 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -25,11 +25,12 @@
+ 
+ LSX_RETURN_VALID void *lsx_malloc(size_t size);
+ LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);
++LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);
+ LSX_RETURN_VALID char *lsx_strdup(const char *s);
+ 
+ #define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))
+ #define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)
+-#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))
+-#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))
++#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))
++#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))
+ 
+ #endif
+2025-06-05 17:55:49.957 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 25, 'old_count': 11, 'new_start': 25, 'new_count': 12}, 'lines': [('context', ''), ('context', 'LSX_RETURN_VALID void *lsx_malloc(size_t size);'), ('context', 'LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);'), ('add', 'LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);'), ('context', 'LSX_RETURN_VALID char *lsx_strdup(const char *s);'), ('context', ''), ('context', '#define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))'), ('context', '#define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)'), ('remove', '#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))'), ('remove', '#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))'), ('add', '#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))'), ('add', '#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))'), ('context', ''), ('context', '#endif')]}
+2025-06-05 17:55:49.958 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-06-05 17:55:49.958 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 25, 'old_count': 11, 'new_start': 25, 'new_count': 12}, 'lines': [('context', ''), ('context', 'LSX_RETURN_VALID void *lsx_malloc(size_t size);'), ('context', 'LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);'), ('add', 'LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);'), ('context', 'LSX_RETURN_VALID char *lsx_strdup(const char *s);'), ('context', ''), ('context', '#define lsx_Calloc(v,n)  v = lsx_calloc(n,sizeof(*(v)))'), ('context', '#define lsx_memdup(p,s) ((p)? memcpy(lsx_malloc(s), p, s) : NULL)'), ('remove', '#define lsx_valloc(v,n)  v = lsx_malloc((n)*sizeof(*(v)))'), ('remove', '#define lsx_revalloc(v,n)  v = lsx_realloc(v, (n)*sizeof(*(v)))'), ('add', '#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, n, sizeof(*(v)))'), ('add', '#define lsx_revalloc(v,n)  v = lsx_realloc_array(v, n, sizeof(*(v)))'), ('context', ''), ('context', '#endif')]}
+2025-06-05 17:55:49.958 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: src/xmalloc.h
+2025-06-05 17:55:49.960 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/sox_code/src/xmalloc.h
+2025-06-05 17:55:49.961 | INFO     | modules.patch_adapter:_generate_adapted_patch:271 - 文件未修改: src/xmalloc.h
+2025-06-05 17:55:49.961 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/sox_code/src/xmalloc.c
+2025-06-05 17:55:49.962 | INFO     | modules.patch_adapter:_generate_adapted_patch:271 - 文件未修改: src/xmalloc.c
+2025-06-05 17:55:49.962 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/sox_code/src/Makefile.am
+2025-06-05 17:55:49.962 | INFO     | modules.patch_adapter:_generate_adapted_patch:264 - 文件内容变化，执行复制: src/Makefile.am
+2025-06-05 17:55:49.963 | INFO     | modules.patch_adapter:_generate_adapted_patch:267 - 将文件从/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/adapted_sox-14.4.2/src/Makefile.am复制到/home/elpsy/.cache/port-patch/sox_code/src/Makefile.am
+2025-06-05 17:55:49.984 | INFO     | modules.patch_adapter:_generate_adapted_patch:322 - 生成补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/0001-Applied-adapted-patch-for-sox-14.4.2.patch
+
+2025-06-05 17:55:49.984 | INFO     | modules.patch_adapter:_generate_adapted_patch:324 - patch_dir所含文件: ['0001-Applied-adapted-patch-for-sox-14.4.2.patch', 'upstream_f8587e.patch']
+2025-06-05 17:55:49.985 | INFO     | modules.patch_adapter:_generate_adapted_patch:335 - 已重命名补丁文件: 从 /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/0001-Applied-adapted-patch-for-sox-14.4.2.patch 到 /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/adapted_sox-14.4.2.patch
+2025-06-05 17:55:49.986 | INFO     | modules.patch_adapter:_generate_adapted_patch:345 - 已生成适配后的补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/adapted_sox-14.4.2.patch
+2025-06-05 17:55:49.986 | INFO     | modules.patch_adapter:execute:73 - 生成适配补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/adapted_sox-14.4.2.patch
+2025-06-05 17:55:50.006 | INFO     | modules.patch_adapter:_test_apply_patch:478 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/adapted_sox-14.4.2.patch
+2025-06-05 17:55:50.021 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_sox-14.4.2_20250605_175549
+2025-06-05 17:55:50.031 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/sox/code/f8587e/metrics/patch_adapter_metrics.json
+2025-06-05 17:55:50.032 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 52.31秒
+2025-06-05 17:55:50.032 | INFO     | __main__:_merge_patches:1087 - 开始合并补丁...
+2025-06-05 17:55:50.032 | INFO     | __main__:_merge_patches:1161 - 找到patch_adapter成功的补丁: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/adapted_sox-14.4.2.patch
+2025-06-05 17:55:50.033 | INFO     | __main__:_merge_patches:1196 - 只使用patch_adapter补丁: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/adapted_sox-14.4.2.patch
+2025-06-05 17:55:50.033 | INFO     | __main__:_process_mode1:392 - 成功合并补丁到: /home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/adapted_sox-14.4.2.patch
+2025-06-05 17:55:50.033 | INFO     | __main__:_save_results:751 - 已复制最终补丁到结果目录: results/code_sox-14.4.2_f8587e_20250605_175550/adapted_sox-14.4.2.patch
+2025-06-05 17:55:50.034 | INFO     | __main__:_save_results:889 - 结果已保存到: results/code_sox-14.4.2_f8587e_20250605_175550/result.json
+2025-06-05 17:55:50.034 | INFO     | __main__:_print_summary:931 - context.patch_adapter_result: {'success': True, 'adapted_patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/f8587e/patches/adapted_sox-14.4.2.patch', 'apply_result': {'success': True, 'error': None, 'error_type': None, 'output': 'Applying: Applied adapted patch for sox-14.4.2\n'}}
+2025-06-05 17:55:50.035 | INFO     | __main__:_print_summary:954 - ==================================================
+2025-06-05 17:55:50.035 | INFO     | __main__:_print_summary:955 - 处理摘要 - 提交: f8587e
+2025-06-05 17:55:50.035 | INFO     | __main__:_print_summary:956 - 适配状态: 适配成功 (方法: patch_adapter)
+2025-06-05 17:55:50.035 | INFO     | __main__:_print_summary:971 - 块分析统计:
+2025-06-05 17:55:50.036 | INFO     | __main__:_print_summary:972 - - 总块数: 3
+2025-06-05 17:55:50.036 | INFO     | __main__:_print_summary:973 - - 冲突块数: 3
+2025-06-05 17:55:50.036 | INFO     | __main__:_print_summary:974 - - 成功适配块数: 3
+2025-06-05 17:55:50.037 | INFO     | __main__:_print_summary:975 - - 适配失败块数: 0
+2025-06-05 17:55:50.037 | INFO     | __main__:_print_summary:976 - - 编译失败块数: 0
+2025-06-05 17:55:50.037 | INFO     | __main__:_print_summary:980 - 总执行时间: 52.31秒
+2025-06-05 17:55:50.038 | INFO     | __main__:_print_summary:985 - ==================================================
+2025-06-05 17:55:50.038 | INFO     | __main__:run:335 - 处理完成
+2025-06-05 17:55:50.038 | INFO     | __main__:process_multiple_commits:1842 - 处理第 4/5 个commit: b7883ae1398499daaa926ae6621f088f0f531ed8
+2025-06-05 17:55:50.042 | INFO     | __main__:extract_commit_info:1990 - Commit b7883ae1398499daaa926ae6621f088f0f531ed8 存在于仓库中

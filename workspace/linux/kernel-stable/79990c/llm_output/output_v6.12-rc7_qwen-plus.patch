@@ -1,35 +1,13 @@
 diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
-index 8aabf7749aa5..c0d3e1a2b4c6 100644
+index b83f99c01d91..8aabf7749aa5 100644
 --- a/drivers/net/ethernet/intel/ice/ice_sriov.c
 +++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
-@@ -194,7 +194,6 @@
-  		}
-  
-  		list_del(&vf->mbx_info.list_entry);
+@@ -193,10 +194,6 @@ void ice_free_vfs(struct ice_pf *pf)
+ 			wr32(hw, GLGEN_VFLRSTAT(reg_idx), BIT(bit_idx));
+ 		}
+ 
+-		/* clear malicious info since the VF is getting released */
+-		list_del(&vf->mbx_info.list_entry);
 -
-  		mutex_unlock(&vf->cfg_lock);
-  	}
-  }
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-index e830abcd1234..f0d3e1a2b4c6 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-@@ -975,7 +975,7 @@
-  	ice_eswitch_update_repr(&vf->repr_id, vsi);
-  
--	ice_reset_vf_mbx_cnt(vf);
-+	ice_mbx_clear_malvf(&vf->mbx_info);
-  
-  out_unlock:
-  	if (lag && lag->bonded && lag->primary &&
-@@ -1028,10 +1028,7 @@
-  	ice_vf_fdir_init(vf);
-  
--	if (ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
--		ice_mbx_vf_clear_cnt_e830(&pf->hw, vf->vf_id);
--	else
--		ice_mbx_init_vf_info(&pf->hw, &vf->mbx_info);
-+	ice_mbx_init_vf_info(&pf->hw, &vf->mbx_info);
-  
-  	mutex_init(&vf->cfg_lock);
-  }
+ 		mutex_unlock(&vf->cfg_lock);
+ 	}

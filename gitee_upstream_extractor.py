@@ -8,6 +8,8 @@ import dotenv
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 from loguru import logger
+from datetime import datetime
+import json
 
 def setup_logger():
     """设置日志记录器"""
@@ -239,6 +241,8 @@ def main():
     
     parser.add_argument('-o', '--output', type=str, help="输出文件路径（默认输出到控制台）")
     parser.add_argument('-v', '--verbose', action='store_true', help="显示详细信息")
+    parser.add_argument('-m', '--show-message', action='store_true', help="显示提交信息")
+    parser.add_argument('-j', '--json', action='store_true', help="以JSON格式输出结果")
     
     args = parser.parse_args()
     
@@ -262,36 +266,62 @@ def main():
         sys.exit(1)
     
     # 处理URL
+    start_time = datetime.now()
     results = process_urls(urls, token)
+    processing_time = (datetime.now() - start_time).total_seconds()
     
     # 输出结果
     successful = [r for r in results if r['success']]
     failed = [r for r in results if not r['success']]
     
-    logger.info(f"处理完成: 成功 {len(successful)}/{len(results)}")
+    logger.info(f"处理完成: 成功 {len(successful)}/{len(results)} 耗时: {processing_time:.2f}秒")
     
-    # 准备输出内容
-    output_lines = []
-    
-    # 添加成功的结果
-    for result in successful:
+    # 如果请求JSON格式输出
+    if args.json:
+        output_data = {
+            'timestamp': datetime.now().isoformat(),
+            'total': len(results),
+            'successful': len(successful),
+            'failed': len(failed),
+            'success_rate': (len(successful) / len(results) * 100) if results else 0,
+            'processing_time': processing_time,
+            'results': results
+        }
+        
+        output_content = json.dumps(output_data, indent=2, ensure_ascii=False)
+    else:
+        # 准备输出内容
+        output_lines = []
+        
+        # 添加成功的结果
+        for result in successful:
+            if args.verbose:
+                message_info = f" | {result['commit_message'].split('\n')[0][:50]}..." if args.show_message and 'commit_message' in result else ""
+                output_lines.append(f"{result['commit_hash'][:8]} -> {result['upstream_hash']}{message_info}")
+            else:
+                output_lines.append(result['upstream_hash'])
+        
+        # 添加失败的结果（如果verbose模式）
+        if args.verbose and failed:
+            output_lines.append("\n失败的URL:")
+            for result in failed:
+                output_lines.append(f"{result['url']} - {result.get('error', '未知错误')}")
+        
+        # 添加摘要
         if args.verbose:
-            output_lines.append(f"{result['commit_hash'][:8]} -> {result['upstream_hash']}")
-        else:
-            output_lines.append(result['upstream_hash'])
-    
-    # 添加失败的结果（如果verbose模式）
-    if args.verbose and failed:
-        output_lines.append("\n失败的URL:")
-        for result in failed:
-            output_lines.append(f"{result['url']} - {result.get('error', '未知错误')}")
-    
-    output_content = "\n".join(output_lines)
+            output_lines.append(f"\n总结:")
+            output_lines.append(f"总URL数: {len(results)}")
+            output_lines.append(f"成功数: {len(successful)}")
+            output_lines.append(f"失败数: {len(failed)}")
+            output_lines.append(f"成功率: {(len(successful) / len(results) * 100):.2f}%")
+            output_lines.append(f"处理时间: {processing_time:.2f}秒")
+        
+        output_content = "\n".join(output_lines)
     
     # 输出结果
     if args.output:
         try:
-            with open(args.output, 'w') as f:
+            with open(args.output, 'w', encoding='utf-8') as f:
                 f.write(output_content)
             logger.info(f"结果已保存到 {args.output}")
         except Exception as e:

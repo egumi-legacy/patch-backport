@@ -1,0 +1,31 @@
+From a0c7cd764ed1ecadedc96b647c4cb4a87b6c33c4 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 5 Jun 2025 17:11:46 +0800
+Subject: [PATCH] Applied adapted patch for v6.12-rc7
+
+---
+ fs/libfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/fs/libfs.c b/fs/libfs.c
+index 46966fd8bcf9..c2504e19375d 100644
+--- a/fs/libfs.c
++++ b/fs/libfs.c
+@@ -243,11 +243,14 @@ EXPORT_SYMBOL(simple_dir_inode_operations);
+ 
+ /* 0 is '.', 1 is '..', so always start with offset 2 or more */
+ enum {
++	DIR_OFFSET_FIRST	= 2,		/* Find first real entry */
+ 	DIR_OFFSET_MIN	= 2,
+ };
+ 
+ static void offset_set(struct dentry *dentry, long offset)
+ {
++	if (offset == DIR_OFFSET_FIRST)
++		return;
+ 	dentry->d_fsdata = (void *)offset;
+ }
+ 
+-- 
+2.25.1
+

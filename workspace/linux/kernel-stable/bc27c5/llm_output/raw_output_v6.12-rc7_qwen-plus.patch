@@ -1,0 +1,31 @@
+A. Commit message:
+bpf: backport avoiding freeze_mutex holding during mmap operation
+
+B. Change summary:
+Backported the fix to avoid holding freeze_mutex during mmap operations for writable permissions in BPF maps, which prevents potential deadlocks and unnecessary mutex holding.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 9bec3dce421f..14d6e99459d3 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1076,13 +1081,11 @@ static int bpf_map_mmap(struct file *filp, struct vm_area_struct *vma)
+                vm_flags_clear(vma, VM_MAYWRITE);
+ 
+        err = map->ops->map_mmap(map, vma);
+-       if (err)
+-               goto out;
++       if (err) {
++               if (vma->vm_flags & VM_WRITE)
++                       bpf_map_write_active_dec(map);
++       }
+ 
+-       if (vma->vm_flags & VM_WRITE)
+-               bpf_map_write_active_inc(map);
+-out:
+        mutex_unlock(&map->freeze_mutex);
+        return err;
+ }

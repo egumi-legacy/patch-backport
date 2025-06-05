@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>chunk_analyzer 模块评估报告 - a9ea1a</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+    h1, h2, h3 { color: #2c3e50; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 20px; }
+    .success { color: #27ae60; }
+    .error { color: #e74c3c; }
+    .info { color: #3498db; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    th { background-color: #f8f9fa; }
+    tr:hover { background-color: #f5f5f5; }
+    pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    .progress-container { width: 100%; background-color: #f1f1f1; border-radius: 5px; }
+    .progress-bar { height: 20px; border-radius: 5px; }
+    .success-bg { background-color: #4CAF50; }
+    .pending-bg { background-color: #2196F3; }
+    .error-bg { background-color: #f44336; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+    .tag-success { background-color: #e8f5e9; color: #2e7d32; }
+    .tag-error { background-color: #ffebee; color: #c62828; }
+    .tag-pending { background-color: #e3f2fd; color: #1565c0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>chunk_analyzer 模块评估报告</h1>
+    
+    <div class="card">
+      <h2>基本信息</h2>
+      <table>
+        <tr>
+          <td width="150"><strong>模块名称</strong></td>
+          <td>chunk_analyzer</td>
+        </tr>
+        <tr>
+          <td><strong>模块类型</strong></td>
+          <td>ModuleType.CHUNK_ANALYZER</td>
+        </tr>
+        <tr>
+          <td><strong>提交SHA</strong></td>
+          <td>a9ea1a3d88b7947ce8cadb2afceee7a54872bbc5.patch</td>
+        </tr>
+        <tr>
+          <td><strong>目标版本</strong></td>
+          <td>v6.12-rc7</td>
+        </tr>
+        <tr>
+          <td><strong>执行时间</strong></td>
+          <td>2025-06-05T17:17:19.903070</td>
+        </tr>
+        <tr>
+          <td><strong>状态</strong></td>
+          <td>
+            <span class="tag tag-success">成功</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输入信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>原始补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/a9ea1a/patches/upstream_a9ea1a.patch</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>代码仓库路径</strong></td>
+                  <td>/home/elpsy/.cache/port-patch/linux_kernel-stable</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输出信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>状态</strong></td>
+                  <td>成功</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总尝试次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>执行时间</strong></td>
+                  <td>0.06017</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总块数</strong></td>
+                  <td>4</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功应用块数</strong></td>
+                  <td>2</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功率</strong></td>
+                  <td>50.00%</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>剩余补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/a9ea1a/chunk_patches/remaining_chunks_20250605_171719.patch</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    
+        <div class="card">
+          <h2>补丁块应用统计</h2>
+          
+          <div class="progress-container">
+            <div class="progress-bar success-bg" style="width: 50%"></div>
+          </div>
+          <p>
+            成功应用 <strong class="success">2</strong> 个块，
+            总共 <strong>4</strong> 个块
+            (成功率: <strong>50.0%</strong>)
+          </p>
+        </div>
+        
+        <div class="card">
+          <h2>补丁内容详情</h2>
+          <div class="tabs">
+            <div class="tab-header">
+              <button class="tab-button active" onclick="openTab(event, 'original-patch')">原始补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'applied-patches')">应用成功的补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'remaining-patch')">未应用成功的补丁</button>
+            </div>
+            
+            <div id="original-patch" class="tab-content" style="display:block;">
+              <h3>原始补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From a9ea1a3d88b7947ce8cadb2afceee7a54872bbc5 Mon Sep 17 00:00:00 2001
+From: Ricardo Ribalda &lt;ribalda@chromium.org&gt;
+Date: Wed, 6 Nov 2024 20:36:07 +0000
+Subject: [PATCH] media: uvcvideo: Fix crash during unbind if gpio unit is in
+ use
+
+We used the wrong device for the device managed functions. We used the
+usb device, when we should be using the interface device.
+
+If we unbind the driver from the usb interface, the cleanup functions
+are never called. In our case, the IRQ is never disabled.
+
+If an IRQ is triggered, it will try to access memory sections that are
+already free, causing an OOPS.
+
+We cannot use the function devm_request_threaded_irq here. The devm_*
+clean functions may be called after the main structure is released by
+uvc_delete.
+
+Luckily this bug has small impact, as it is only affected by devices
+with gpio units and the user has to unbind the device, a disconnect will
+not trigger this error.
+
+Cc: stable@vger.kernel.org
+Fixes: 2886477ff987 ("media: uvcvideo: Implement UVC_EXT_GPIO_UNIT")
+Reviewed-by: Sergey Senozhatsky &lt;senozhatsky@chromium.org&gt;
+Signed-off-by: Ricardo Ribalda &lt;ribalda@chromium.org&gt;
+Reviewed-by: Laurent Pinchart &lt;laurent.pinchart@ideasonboard.com&gt;
+Link: https://lore.kernel.org/r/20241106-uvc-crashrmmod-v6-1-fbf9781c6e83@chromium.org
+Signed-off-by: Laurent Pinchart &lt;laurent.pinchart@ideasonboard.com&gt;
+Signed-off-by: Mauro Carvalho Chehab &lt;mchehab+huawei@kernel.org&gt;
+
+diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+index b3c8411dc05c..5bace40bafd7 100644
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -1295,14 +1295,14 @@ static int uvc_gpio_parse(struct uvc_device *dev)
+ 	struct gpio_desc *gpio_privacy;
+ 	int irq;
+ 
+-	gpio_privacy = devm_gpiod_get_optional(&dev-&gt;udev-&gt;dev, "privacy",
++	gpio_privacy = devm_gpiod_get_optional(&dev-&gt;intf-&gt;dev, "privacy",
+ 					       GPIOD_IN);
+ 	if (IS_ERR_OR_NULL(gpio_privacy))
+ 		return PTR_ERR_OR_ZERO(gpio_privacy);
+ 
+ 	irq = gpiod_to_irq(gpio_privacy);
+ 	if (irq &lt; 0)
+-		return dev_err_probe(&dev-&gt;udev-&gt;dev, irq,
++		return dev_err_probe(&dev-&gt;intf-&gt;dev, irq,
+ 				     "No IRQ for privacy GPIO\n");
+ 
+ 	unit = uvc_alloc_new_entity(dev, UVC_EXT_GPIO_UNIT,
+@@ -1329,15 +1329,27 @@ static int uvc_gpio_parse(struct uvc_device *dev)
+ static int uvc_gpio_init_irq(struct uvc_device *dev)
+ {
+ 	struct uvc_entity *unit = dev-&gt;gpio_unit;
++	int ret;
+ 
+ 	if (!unit || unit-&gt;gpio.irq &lt; 0)
+ 		return 0;
+ 
+-	return devm_request_threaded_irq(&dev-&gt;udev-&gt;dev, unit-&gt;gpio.irq, NULL,
+-					 uvc_gpio_irq,
+-					 IRQF_ONESHOT | IRQF_TRIGGER_FALLING |
+-					 IRQF_TRIGGER_RISING,
+-					 "uvc_privacy_gpio", dev);
++	ret = request_threaded_irq(unit-&gt;gpio.irq, NULL, uvc_gpio_irq,
++				   IRQF_ONESHOT | IRQF_TRIGGER_FALLING |
++				   IRQF_TRIGGER_RISING,
++				   "uvc_privacy_gpio", dev);
++
++	unit-&gt;gpio.initialized = !ret;
++
++	return ret;
++}
++
++static void uvc_gpio_deinit(struct uvc_device *dev)
++{
++	if (!dev-&gt;gpio_unit || !dev-&gt;gpio_unit-&gt;gpio.initialized)
++		return;
++
++	free_irq(dev-&gt;gpio_unit-&gt;gpio.irq, dev);
+ }
+ 
+ /* ------------------------------------------------------------------------
+@@ -1934,6 +1946,8 @@ static void uvc_unregister_video(struct uvc_device *dev)
+ {
+ 	struct uvc_streaming *stream;
+ 
++	uvc_gpio_deinit(dev);
++
+ 	list_for_each_entry(stream, &dev-&gt;streams, list) {
+ 		/* Nothing to do here, continue. */
+ 		if (!video_is_registered(&stream-&gt;vdev))
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+index 07f9921d83f2..965a789ed03e 100644
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -234,6 +234,7 @@ struct uvc_entity {
+ 			u8  *bmControls;
+ 			struct gpio_desc *gpio_privacy;
+ 			int irq;
++			bool initialized;
+ 		} gpio;
+ 	};
+ 
+-- 
+2.25.1
+
+</pre>
+              </div>
+            </div>
+            
+            <div id="applied-patches" class="tab-content">
+              <h3>应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">
+
+# ===== 应用成功的补丁块 1 =====
+
+From a9ea1a3d88b7947ce8cadb2afceee7a54872bbc5 Mon Sep 17 00:00:00 2001
+From: Ricardo Ribalda &lt;ribalda@chromium.org&gt;
+Date: Wed, 6 Nov 2024 20:36:07 +0000
+Subject: [PATCH] media: uvcvideo: Fix crash during unbind if gpio unit is in
+ use
+
+We used the wrong device for the device managed functions. We used the
+usb device, when we should be using the interface device.
+
+If we unbind the driver from the usb interface, the cleanup functions
+are never called. In our case, the IRQ is never disabled.
+
+If an IRQ is triggered, it will try to access memory sections that are
+already free, causing an OOPS.
+
+We cannot use the function devm_request_threaded_irq here. The devm_*
+clean functions may be called after the main structure is released by
+uvc_delete.
+
+Luckily this bug has small impact, as it is only affected by devices
+with gpio units and the user has to unbind the device, a disconnect will
+not trigger this error.
+
+Cc: stable@vger.kernel.org
+Fixes: 2886477ff987 ("media: uvcvideo: Implement UVC_EXT_GPIO_UNIT")
+Reviewed-by: Sergey Senozhatsky &lt;senozhatsky@chromium.org&gt;
+Signed-off-by: Ricardo Ribalda &lt;ribalda@chromium.org&gt;
+Reviewed-by: Laurent Pinchart &lt;laurent.pinchart@ideasonboard.com&gt;
+Link: https://lore.kernel.org/r/20241106-uvc-crashrmmod-v6-1-fbf9781c6e83@chromium.org
+Signed-off-by: Laurent Pinchart &lt;laurent.pinchart@ideasonboard.com&gt;
+Signed-off-by: Mauro Carvalho Chehab &lt;mchehab+huawei@kernel.org&gt;
+
+diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+index b3c8411dc05c..5bace40bafd7 100644
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -1329,15 +1329,27 @@ static int uvc_gpio_parse(struct uvc_device *dev)
+ static int uvc_gpio_init_irq(struct uvc_device *dev)
+ {
+ 	struct uvc_entity *unit = dev-&gt;gpio_unit;
++	int ret;
+ 
+ 	if (!unit || unit-&gt;gpio.irq &lt; 0)
+ 		return 0;
+ 
+-	return devm_request_threaded_irq(&dev-&gt;udev-&gt;dev, unit-&gt;gpio.irq, NULL,
+-					 uvc_gpio_irq,
+-					 IRQF_ONESHOT | IRQF_TRIGGER_FALLING |
+-					 IRQF_TRIGGER_RISING,
+-					 "uvc_privacy_gpio", dev);
++	ret = request_threaded_irq(unit-&gt;gpio.irq, NULL, uvc_gpio_irq,
++				   IRQF_ONESHOT | IRQF_TRIGGER_FALLING |
++				   IRQF_TRIGGER_RISING,
++				   "uvc_privacy_gpio", dev);
++
++	unit-&gt;gpio.initialized = !ret;
++
++	return ret;
++}
++
++static void uvc_gpio_deinit(struct uvc_device *dev)
++{
++	if (!dev-&gt;gpio_unit || !dev-&gt;gpio_unit-&gt;gpio.initialized)
++		return;
++
++	free_irq(dev-&gt;gpio_unit-&gt;gpio.irq, dev);
+ }
+ 
+ /* ------------------------------------------------------------------------
+
+
+# ===== 应用成功的补丁块 2 =====
+
+From a9ea1a3d88b7947ce8cadb2afceee7a54872bbc5 Mon Sep 17 00:00:00 2001
+From: Ricardo Ribalda &lt;ribalda@chromium.org&gt;
+Date: Wed, 6 Nov 2024 20:36:07 +0000
+Subject: [PATCH] media: uvcvideo: Fix crash during unbind if gpio unit is in
+ use
+
+We used the wrong device for the device managed functions. We used the
+usb device, when we should be using the interface device.
+
+If we unbind the driver from the usb interface, the cleanup functions
+are never called. In our case, the IRQ is never disabled.
+
+If an IRQ is triggered, it will try to access memory sections that are
+already free, causing an OOPS.
+
+We cannot use the function devm_request_threaded_irq here. The devm_*
+clean functions may be called after the main structure is released by
+uvc_delete.
+
+Luckily this bug has small impact, as it is only affected by devices
+with gpio units and the user has to unbind the device, a disconnect will
+not trigger this error.
+
+Cc: stable@vger.kernel.org
+Fixes: 2886477ff987 ("media: uvcvideo: Implement UVC_EXT_GPIO_UNIT")
+Reviewed-by: Sergey Senozhatsky &lt;senozhatsky@chromium.org&gt;
+Signed-off-by: Ricardo Ribalda &lt;ribalda@chromium.org&gt;
+Reviewed-by: Laurent Pinchart &lt;laurent.pinchart@ideasonboard.com&gt;
+Link: https://lore.kernel.org/r/20241106-uvc-crashrmmod-v6-1-fbf9781c6e83@chromium.org
+Signed-off-by: Laurent Pinchart &lt;laurent.pinchart@ideasonboard.com&gt;
+Signed-off-by: Mauro Carvalho Chehab &lt;mchehab+huawei@kernel.org&gt;
+
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+index 07f9921d83f2..965a789ed03e 100644
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -234,6 +234,7 @@ struct uvc_entity {
+ 			u8  *bmControls;
+ 			struct gpio_desc *gpio_privacy;
+ 			int irq;
++			bool initialized;
+ 		} gpio;
+ 	};
+ 
+-- 
+2.25.1
+
+</pre>
+              </div>
+            </div>
+            
+            <div id="remaining-patch" class="tab-content">
+              <h3>未应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From a9ea1a3d88b7947ce8cadb2afceee7a54872bbc5 Mon Sep 17 00:00:00 2001
+From: Ricardo Ribalda &lt;ribalda@chromium.org&gt;
+Date: Wed, 6 Nov 2024 20:36:07 +0000
+Subject: [PATCH] media: uvcvideo: Fix crash during unbind if gpio unit is in
+ use
+
+We used the wrong device for the device managed functions. We used the
+usb device, when we should be using the interface device.
+
+If we unbind the driver from the usb interface, the cleanup functions
+are never called. In our case, the IRQ is never disabled.
+
+If an IRQ is triggered, it will try to access memory sections that are
+already free, causing an OOPS.
+
+We cannot use the function devm_request_threaded_irq here. The devm_*
+clean functions may be called after the main structure is released by
+uvc_delete.
+
+Luckily this bug has small impact, as it is only affected by devices
+with gpio units and the user has to unbind the device, a disconnect will
+not trigger this error.
+
+Cc: stable@vger.kernel.org
+Fixes: 2886477ff987 ("media: uvcvideo: Implement UVC_EXT_GPIO_UNIT")
+Reviewed-by: Sergey Senozhatsky &lt;senozhatsky@chromium.org&gt;
+Signed-off-by: Ricardo Ribalda &lt;ribalda@chromium.org&gt;
+Reviewed-by: Laurent Pinchart &lt;laurent.pinchart@ideasonboard.com&gt;
+Link: https://lore.kernel.org/r/20241106-uvc-crashrmmod-v6-1-fbf9781c6e83@chromium.org
+Signed-off-by: Laurent Pinchart &lt;laurent.pinchart@ideasonboard.com&gt;
+Signed-off-by: Mauro Carvalho Chehab &lt;mchehab+huawei@kernel.org&gt;
+
+diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+index b3c8411dc05c..5bace40bafd7 100644
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -1295,14 +1295,14 @@ static int uvc_gpio_parse(struct uvc_device *dev)
+ 	struct gpio_desc *gpio_privacy;
+ 	int irq;
+ 
+-	gpio_privacy = devm_gpiod_get_optional(&dev-&gt;udev-&gt;dev, "privacy",
++	gpio_privacy = devm_gpiod_get_optional(&dev-&gt;intf-&gt;dev, "privacy",
+ 					       GPIOD_IN);
+ 	if (IS_ERR_OR_NULL(gpio_privacy))
+ 		return PTR_ERR_OR_ZERO(gpio_privacy);
+ 
+ 	irq = gpiod_to_irq(gpio_privacy);
+ 	if (irq &lt; 0)
+-		return dev_err_probe(&dev-&gt;udev-&gt;dev, irq,
++		return dev_err_probe(&dev-&gt;intf-&gt;dev, irq,
+ 				     "No IRQ for privacy GPIO\n");
+ 
+ 	unit = uvc_alloc_new_entity(dev, UVC_EXT_GPIO_UNIT,
+@@ -1934,6 +1946,8 @@ static void uvc_unregister_video(struct uvc_device *dev)
+ {
+ 	struct uvc_streaming *stream;
+ 
++	uvc_gpio_deinit(dev);
++
+ 	list_for_each_entry(stream, &dev-&gt;streams, list) {
+ 		/* Nothing to do here, continue. */
+ 		if (!video_is_registered(&stream-&gt;vdev))
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+                <div class="card">
+                  <h2>应用成功的补丁块</h2>
+                  <table>
+                    <tr>
+                      <th>块索引</th>
+                      <th>修改文件</th>
+                      <th>修改位置</th>
+                      <th>操作</th>
+                    </tr>
+                    
+                    <tr>
+                      <td>1</td>
+                      <td>drivers/media/usb/uvc/uvc_driver.c</td>
+                      <td>1329-1329</td>
+                      <td><a href="applied_chunk_1.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>2</td>
+                      <td>drivers/media/usb/uvc/uvcvideo.h</td>
+                      <td>234-234</td>
+                      <td><a href="applied_chunk_2.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+                  </table>
+                </div>
+                
+            <div class="card">
+              <h2>剩余补丁</h2>
+              <p>有 <strong class="info">2</strong> 个块未成功应用，已生成剩余补丁:</p>
+              <p><code>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/a9ea1a/chunk_patches/remaining_chunks_20250605_171719.patch</code></p>
+              <p><a href="remaining_patch.diff" target="_blank">查看剩余补丁</a></p>
+            </div>
+            
+        <style>
+        .code-container {
+          max-height: 500px;
+          overflow-y: auto;
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          border: 1px solid #eee;
+        }
+        
+        .code-block {
+          padding: 15px;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: monospace;
+          font-size: 13px;
+          line-height: 1.4;
+        }
+        
+        /* 为补丁内容添加语法高亮 */
+        .code-block .add {
+          background-color: #e6ffed;
+          color: #22863a;
+        }
+        
+        .code-block .remove {
+          background-color: #ffeef0;
+          color: #cb2431;
+        }
+        
+        .code-block .hunk {
+          color: #0366d6;
+          background-color: #f1f8ff;
+        }
+        
+        .code-block .header {
+          color: #6f42c1;
+          font-weight: bold;
+        }
+        </style>
+        
+        <script>
+        // 对补丁内容应用简单的语法高亮
+        document.addEventListener('DOMContentLoaded', function() {
+          const codeBlocks = document.querySelectorAll('.code-block');
+          codeBlocks.forEach(function(block) {
+            let html = block.innerHTML;
+            
+            // 替换添加的行
+            html = html.replace(/^(\+[^+].*)/gm, '<span class="add">$1</span>');
+            
+            // 替换删除的行
+            html = html.replace(/^(-[^-].*)/gm, '<span class="remove">$1</span>');
+            
+            // 替换区块头
+            html = html.replace(/^(@@.*@@)/gm, '<span class="hunk">$1</span>');
+            
+            // 替换diff头 - 修复无效转义序列
+            html = html.replace(/^(diff --git.*|index.*|---.*|\+\+\+.*)/gm, '<span class="header">$1</span>');
+            
+            block.innerHTML = html;
+          });
+        });
+        </script>
+        
+    
+  </div>
+</body>
+</html>

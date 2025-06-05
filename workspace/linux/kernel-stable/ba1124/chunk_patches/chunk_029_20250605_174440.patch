@@ -1,0 +1,66 @@
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt <paul.greenwalt@intel.com>
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)->mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech <milena.olech@intel.com>
+Signed-off-by: Milena Olech <milena.olech@intel.com>
+Co-developed-by: Dan Nowlin <dan.nowlin@intel.com>
+Signed-off-by: Dan Nowlin <dan.nowlin@intel.com>
+Co-developed-by: Scott Taylor <scott.w.taylor@intel.com>
+Signed-off-by: Scott Taylor <scott.w.taylor@intel.com>
+Co-developed-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+Signed-off-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
+Tested-by: Tony Brelinski <tony.brelinski@intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+index daa6a1e894cf..24b23b7ef04a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+@@ -1442,12 +1442,25 @@ static void ice_vf_fdir_dump_info(struct ice_vf *vf)
+ 
+ 	fd_size = rd32(hw, VSIQF_FD_SIZE(vsi_num));
+ 	fd_cnt = rd32(hw, VSIQF_FD_CNT(vsi_num));
+-	dev_dbg(dev, "VF %d: space allocated: guar:0x%x, be:0x%x, space consumed: guar:0x%x, be:0x%x\n",
+-		vf->vf_id,
+-		(fd_size & VSIQF_FD_CNT_FD_GCNT_M) >> VSIQF_FD_CNT_FD_GCNT_S,
+-		(fd_size & VSIQF_FD_CNT_FD_BCNT_M) >> VSIQF_FD_CNT_FD_BCNT_S,
+-		(fd_cnt & VSIQF_FD_CNT_FD_GCNT_M) >> VSIQF_FD_CNT_FD_GCNT_S,
+-		(fd_cnt & VSIQF_FD_CNT_FD_BCNT_M) >> VSIQF_FD_CNT_FD_BCNT_S);
++	switch (hw->mac_type) {
++	case ICE_MAC_E830:
++		fd_size_g = FIELD_GET(E830_VSIQF_FD_CNT_FD_GCNT_M, fd_size);
++		fd_size_b = FIELD_GET(E830_VSIQF_FD_CNT_FD_BCNT_M, fd_size);
++		fd_cnt_g = FIELD_GET(E830_VSIQF_FD_CNT_FD_GCNT_M, fd_cnt);
++		fd_cnt_b = FIELD_GET(E830_VSIQF_FD_CNT_FD_BCNT_M, fd_cnt);
++		break;
++	case ICE_MAC_E810:
++	default:
++		fd_size_g = FIELD_GET(E800_VSIQF_FD_CNT_FD_GCNT_M, fd_size);
++		fd_size_b = FIELD_GET(E800_VSIQF_FD_CNT_FD_BCNT_M, fd_size);
++		fd_cnt_g = FIELD_GET(E800_VSIQF_FD_CNT_FD_GCNT_M, fd_cnt);
++		fd_cnt_b = FIELD_GET(E800_VSIQF_FD_CNT_FD_BCNT_M, fd_cnt);
++	}
++
++	dev_dbg(dev, "VF %d: Size in the FD table: guaranteed:0x%x, best effort:0x%x\n",
++		vf->vf_id, fd_size_g, fd_size_b);
++	dev_dbg(dev, "VF %d: Filter counter in the FD table: guaranteed:0x%x, best effort:0x%x\n",
++		vf->vf_id, fd_cnt_g, fd_cnt_b);
+ }
+ 
+ /**
+-- 
+2.25.1
+

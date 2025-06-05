@@ -24,6 +24,7 @@ from .base_module import BaseModule, ModuleType
 from core.parameter_manager import ModuleContext
 from llm_assistant import LLMAssistant
 from patch_processor import PatchProcessor
+import uuid
 
 class LLMAdapterModule(BaseModule):
     """LLM补丁适配模块"""
@@ -800,72 +801,90 @@ class LLMAdapterModule(BaseModule):
     #     self._function_context_stats['failure_reasons'][reason] = self._function_context_stats['failure_reasons'].get(reason, 0) + 1
     
     def _get_context_diff(self, context: ModuleContext, patch_content: str) -> str:
-        """获取上下文差异"""
+        """获取上下文差异，考虑已应用的chunk"""
         try:
             # 从commit目录中直接读取diff文件
             diff_file = context.commit.base_dir / 'diff'
-            logger.info(f"diff_file: {diff_file.absolute()}")
-            # logger.info(f"absolute diff_file: {diff_file.absolute()}")
             if diff_file.exists():
                 clean_diff_content = html.unescape(diff_file.read_text(encoding='utf-8', errors='replace'))
-                logger.info(f"diff_content: {clean_diff_content}")
                 return clean_diff_content
                 
-            # 如果diff文件不存在，直接使用PatchProcessor的功能来获取差异
+            # 检查是否有已应用的chunk
+            applied_chunks = False
+            if context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks', 0) > 0:
+                applied_chunks = True
+                
+            if applied_chunks:
+                # 创建一个临时分支，应用所有成功的chunk
+                temp_branch = f"temp_llm_diff_{uuid.uuid4().hex[:8]}"
+                repo_path = Path(context.config.repo_path)
+                
+                try:
+                    # 切换到目标版本
+                    target_version = context.config.target_version
+                    if isinstance(target_version, list):
+                        target_version = target_version[0]
+                    
+                    # 创建临时分支
+                    subprocess.run(['git', 'checkout', '-b', temp_branch, target_version], 
+                                   cwd=repo_path, check=True, capture_output=True)
+                    
+                    # 应用所有成功的chunk补丁
+                    if 'applied_chunk_patches' in context.chunk_analyzer_result:
+                        for patch_path in context.chunk_analyzer_result['applied_chunk_patches']:
+                            if patch_path:
+                                subprocess.run(['git', 'apply', '--ignore-whitespace', patch_path], 
+                                              cwd=repo_path, check=True, capture_output=True)
+                    
+                    # 初始化PatchProcessor，使用ModuleContext中的参数
+                    from patch_processor import PatchProcessor
+                    patch_processor = PatchProcessor(context)
+                    
+                    # 修改patch_processor的源分支为我们的临时分支
+                    patch_processor.source_branch = temp_branch
+                    
+                    # 运行生成diff
+                    result = patch_processor.run()
+                    
+                    # 保存diff到文件
+                    if result and 'diff_content' in result:
+                        diff_content = result['diff_content']
+                        diff_file.write_text(diff_content, encoding='utf-8')
+                        return diff_content
+                    
+                finally:
+                    # 清理临时分支
+                    subprocess.run(['git', 'checkout', target_version], cwd=repo_path, 
+                                   capture_output=True)
+                    subprocess.run(['git', 'branch', '-D', temp_branch], cwd=repo_path, 
+                                   capture_output=True, stderr=subprocess.PIPE)
+            
+            # 如果没有应用的chunk或上面的流程失败，回退到原始方法
             from patch_processor import PatchProcessor
             
             # 修复commit_info中可能存在的.patch后缀问题
             if hasattr(context.commit, 'patch_url') and context.commit.patch_url.endswith('.patch'):
-                # 移除.patch后缀
                 context.commit.patch_url = context.commit.patch_url.replace('.patch', '')
-                logger.info(f"修正URL格式，移除.patch后缀: {context.commit.patch_url}")
             
-            # 初始化PatchProcessor，使用ModuleContext中的参数
             patch_processor = PatchProcessor(context)
             
-            # 确保commit_info中的commit_sha不包含.patch后缀
             if hasattr(patch_processor, 'commit_info') and 'commit_sha' in patch_processor.commit_info:
                 if patch_processor.commit_info['commit_sha'].endswith('.patch'):
                     patch_processor.commit_info['commit_sha'] = patch_processor.commit_info['commit_sha'].replace('.patch', '')
-                    logger.info(f"修正commit_sha，移除.patch后缀: {patch_processor.commit_info['commit_sha']}")
             
-            # 运行patch_processor生成diff文件
-            try:
-                result = patch_processor.run()
-                logger.info("="*10)
-                logger.info(f"patch_processor result: {result}")
-                logger.info("="*10)
-                # 读取生成的diff文件
-                if diff_file.exists():
-                    return html.unescape(diff_file.read_text(encoding='utf-8', errors='replace'))
-                elif result and "prompt_values" in result and result["prompt_values"]:
-                    return result["prompt_values"][0]["diffCode"]
-                else:
-                    logger.warning("无法获取diff内容，使用原始补丁作为差异")
-                    return f"无法获取上下文差异，使用原始补丁作为差异：\n{patch_content}"
-            except Exception as inner_e:
-                logger.error(f"执行patch_processor失败: {inner_e}")
-                import traceback
-                logger.error(f"错误堆栈: {traceback.format_exc()}")
-                # 尝试回退到替代方法
-                if hasattr(context.commit, 'patch_path'):
-                    patch_path = context.commit.patch_path
-                    # 确保patch_path是Path对象
-                    if isinstance(patch_path, str):
-                        patch_path = Path(patch_path)
-                    
-                    if patch_path.exists():
-                        logger.info("使用patch文件作为diff内容")
-                        return patch_path.read_text(encoding='utf-8', errors='replace')
-                # 尝试直接使用patch_content作为diff
-                return patch_content
+            result = patch_processor.run()
+            
+            if result and 'diff_content' in result:
+                diff_content = result['diff_content']
+                diff_file.write_text(diff_content, encoding='utf-8')
+                return diff_content
                 
+            return patch_content
+            
         except Exception as e:
             logger.error(f"获取上下文差异失败: {e}")
-            import traceback
-            logger.error(f"错误堆栈: {traceback.format_exc()}")
-            # 在错误情况下，直接使用patch_content作为diff
-            return f"获取上下文差异时出错，使用patch内容作为差异：\n{patch_content}"
+            logger.error(traceback.format_exc())
+            return patch_content
     
     def _extract_affected_files(self, patch_content: str) -> List[str]:
         """从补丁内容中提取受影响的文件"""

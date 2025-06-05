@@ -1,0 +1,50 @@
+2025-06-05 18:12:31.968 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250605_181231.log
+2025-06-05 18:12:31.969 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-05 18:12:31.969 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/varnishcache/varnish-cache/commit/8ef69a03b36aeac5f364c01eb20f821860e47f14.patch
+2025-06-05 18:12:31.969 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-05 18:12:31.970 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-05 18:12:31.971 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-05 18:12:31.972 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-05 18:12:31.973 | INFO     | __main__:_process_mode1:358 - 目标版本: ['varnish-7.4.3']
+2025-06-05 18:12:31.973 | INFO     | __main__:_process_mode1:365 - 开始处理版本: varnish-7.4.3
+2025-06-05 18:12:31.973 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: 8ef69a03b36aeac5f364c01eb20f821860e47f14.patch
+2025-06-05 18:12:31.974 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-05 18:12:31.977 | INFO     | modules.direct_apply:_download_patch:245 - 上游补丁文件不存在，下载补丁
+2025-06-05 18:12:31.978 | INFO     | patch_utils:_download_github_patch:232 - GitHub patch URL parts: ['https:', '', 'github.com', 'varnishcache', 'varnish-cache', 'commit', '8ef69a03b36aeac5f364c01eb20f821860e47f14.patch']
+2025-06-05 18:12:31.978 | INFO     | patch_utils:_download_github_patch:240 - 使用GitHub Commit API下载patch: https://api.github.com/repos/varnishcache/varnish-cache/commits/8ef69a03b36aeac5f364c01eb20f821860e47f14
+2025-06-05 18:12:34.873 | INFO     | patch_utils:_download_github_patch:257 - 下载GitHub补丁成功，补丁已保存到: workspace/varnishcache/varnish-cache/8ef69a/patches/upstream_8ef69a.patch
+2025-06-05 18:12:34.878 | INFO     | modules.direct_apply:_download_patch:252 - 上游补丁下载成功: workspace/varnishcache/varnish-cache/8ef69a/patches/upstream_8ef69a.patch
+2025-06-05 18:12:34.880 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-05 18:12:34.880 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/varnishcache/varnish-cache/8ef69a/patches/upstream_8ef69a.patch
+2025-06-05 18:12:35.017 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_varnish-7.4.3
+2025-06-05 18:12:35.093 | INFO     | modules.direct_apply:_apply_patch:311 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/varnishcache/varnish-cache/8ef69a/patches/upstream_8ef69a.patch
+2025-06-05 18:12:35.099 | INFO     | modules.direct_apply:_move_to_cache:131 - 源目录: workspace/varnishcache/varnish-cache/8ef69a
+2025-06-05 18:12:35.099 | INFO     | modules.direct_apply:_move_to_cache:139 - 目标目录: workspace/varnishcache/varnish-cache_cache
+2025-06-05 18:12:35.100 | INFO     | modules.direct_apply:_move_to_cache:150 - 已将成功的commit文件夹移动到缓存: workspace/varnishcache/varnish-cache_cache
+2025-06-05 18:12:35.115 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_varnish-7.4.3
+2025-06-05 18:12:35.116 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/varnishcache/varnish-cache/8ef69a/evaluations/direct_apply/metrics_8ef69a_20250605_181235.json
+2025-06-05 18:12:35.117 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: ChunkAnalyzerModule
+2025-06-05 18:12:35.117 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-06-05 18:12:35.117 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-06-05 18:12:35.117 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 3.14秒
+2025-06-05 18:12:35.118 | INFO     | __main__:_merge_patches:1087 - 开始合并补丁...
+2025-06-05 18:12:35.118 | WARNING  | __main__:_merge_patches:1095 - 没有找到任何可合并的补丁结果
+2025-06-05 18:12:35.118 | ERROR    | __main__:_save_results:758 - 复制补丁文件时出错: [Errno 2] No such file or directory: '/home/elpsy/workspace/sow/patch-backport/workspace/varnishcache/varnish-cache/8ef69a/patches/upstream_8ef69a.patch'
+2025-06-05 18:12:35.119 | INFO     | __main__:_save_results:889 - 结果已保存到: results/varnish-cache_varnish-7.4.3_8ef69a_20250605_181235/result.json
+2025-06-05 18:12:35.119 | INFO     | __main__:_print_summary:931 - context.patch_adapter_result: []
+2025-06-05 18:12:35.119 | INFO     | __main__:_print_summary:954 - ==================================================
+2025-06-05 18:12:35.119 | INFO     | __main__:_print_summary:955 - 处理摘要 - 提交: 8ef69a
+2025-06-05 18:12:35.119 | INFO     | __main__:_print_summary:956 - 适配状态: 无需适配 (直接应用成功) (方法: direct_apply)
+2025-06-05 18:12:35.120 | INFO     | __main__:_print_summary:971 - 块分析统计:
+2025-06-05 18:12:35.120 | INFO     | __main__:_print_summary:972 - - 总块数: 0
+2025-06-05 18:12:35.120 | INFO     | __main__:_print_summary:973 - - 冲突块数: 0
+2025-06-05 18:12:35.120 | INFO     | __main__:_print_summary:974 - - 成功适配块数: 0
+2025-06-05 18:12:35.121 | INFO     | __main__:_print_summary:975 - - 适配失败块数: 0
+2025-06-05 18:12:35.121 | INFO     | __main__:_print_summary:976 - - 编译失败块数: 0
+2025-06-05 18:12:35.121 | INFO     | __main__:_print_summary:980 - 总执行时间: 3.14秒
+2025-06-05 18:12:35.121 | INFO     | __main__:_print_summary:985 - ==================================================
+2025-06-05 18:12:35.121 | INFO     | __main__:run:335 - 处理完成
+2025-06-05 18:12:35.122 | INFO     | __main__:process_single_commit:2145 - ============================================================
+2025-06-05 18:12:35.122 | INFO     | __main__:process_single_commit:2146 - 单个commit处理完成: 8ef69a03b36aeac5f364c01eb20f821860e47f14
+2025-06-05 18:12:35.122 | INFO     | __main__:process_single_commit:2147 - ============================================================
+2025-06-05 18:12:35.124 | INFO     | __main__:clean_config:2107 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

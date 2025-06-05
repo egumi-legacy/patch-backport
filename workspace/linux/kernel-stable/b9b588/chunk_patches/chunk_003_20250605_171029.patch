@@ -1,0 +1,47 @@
+From b9b588f22a0c049a14885399e27625635ae6ef91 Mon Sep 17 00:00:00 2001
+From: Chuck Lever <chuck.lever@oracle.com>
+Date: Sat, 28 Dec 2024 12:55:21 -0500
+Subject: [PATCH] libfs: Use d_children list to iterate simple_offset
+ directories
+
+The mtree mechanism has been effective at creating directory offsets
+that are stable over multiple opendir instances. However, it has not
+been able to handle the subtleties of renames that are concurrent
+with readdir.
+
+Instead of using the mtree to emit entries in the order of their
+offset values, use it only to map incoming ctx->pos to a starting
+entry. Then use the directory's d_children list, which is already
+maintained properly by the dcache, to find the next child to emit.
+
+One of the sneaky things about this is that when the mtree-allocated
+offset value wraps (which is very rare), looking up ctx->pos++ is
+not going to find the next entry; it will return NULL. Instead, by
+following the d_children list, the offset values can appear in any
+order but all of the entries in the directory will be visited
+eventually.
+
+Note also that the readdir() is guaranteed to reach the tail of this
+list. Entries are added only at the head of d_children, and readdir
+walks from its current position in that list towards its tail.
+
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Link: https://lore.kernel.org/r/20241228175522.1854234-6-cel@kernel.org
+Signed-off-by: Christian Brauner <brauner@kernel.org>
+
+diff --git a/fs/libfs.c b/fs/libfs.c
+index 47399f90511a..279442b1fe96 100644
+--- a/fs/libfs.c
++++ b/fs/libfs.c
+@@ -540,7 +572,7 @@ static int offset_readdir(struct file *file, struct dir_context *ctx)
+ 	if (!dir_emit_dots(file, ctx))
+ 		return 0;
+ 	if (ctx->pos != DIR_OFFSET_EOD)
+-		offset_iterate_dir(d_inode(dir), ctx);
++		offset_iterate_dir(file, ctx);
+ 	return 0;
+ }
+ 
+-- 
+2.25.1
+

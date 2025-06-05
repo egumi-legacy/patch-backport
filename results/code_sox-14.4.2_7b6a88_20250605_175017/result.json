@@ -1,0 +1,82 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "chunks_info": {
+      "total_chunks": 1,
+      "no_conflict_chunks": 1,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 0,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-05T17:50:17.281845"
+  },
+  "to_adapt_commit": {
+    "sha": "7b6a889217d62ed7e28188621403cc7542fd1f7e",
+    "patch_url": "https://sourceforge.net/p/sox/code/ci/7b6a889217d62ed7e28188621403cc7542fd1f7e/",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/7b6a88/chunk_patches/chunk_001_20250605_175017.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "sox-14.4.2",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "Patch format detection failed.\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/7b6a88/patches/upstream_7b6a88.patch",
+      "timestamp": "2025-06-05T17:50:17.242444"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/7b6a88/patches/upstream_7b6a88.patch",
+      "total_chunks": 1,
+      "applied_chunks": 1,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/7b6a88/chunk_patches/chunk_001_20250605_175017.patch"
+      ],
+      "remaining_patch": null,
+      "timestamp": "2025-06-05T17:50:17.264724",
+      "success": true
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/sox/code/7b6a88/chunk_patches/chunk_001_20250605_175017.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-05T17:50:17.113665",
+    "end_time": "2025-06-05T17:50:17.278556",
+    "total_seconds": 0.164891,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "patch_content": "commit 7b6a889217d62ed7e28188621403cc7542fd1f7e\nAuthor: Mans Rullgard <mans@mansr.com>\nDate:   Tue Feb 4 12:55:18 2020 +0000\n\n    sox-fmt: validate comments_bytes before use (CVE-2019-13590) [bug #325]\n    \n    Cap the comments size to 1 GB to avoid overflows in subsequent\n    arithmetic.\n    \n    The missing null check mentioned in the bug report is bogus since\n    lsx_calloc() returns a valid pointer or aborts.\n\ndiff --git a/src/sox-fmt.c b/src/sox-fmt.c\nindex aad965cd..11c88771 100644\n--- a/src/sox-fmt.c\n+++ b/src/sox-fmt.c\n@@ -46,7 +46,9 @@ static int startread(sox_format_t * ft)\n       lsx_readdw(ft, &comments_bytes))\n     return SOX_EOF;\n \n-  if (((headers_bytes + 4) & 7) || headers_bytes < FIXED_HDR + comments_bytes ||\n+  if (((headers_bytes + 4) & 7) ||\n+      comments_bytes > 0x40000000 || /* max 1 GB */\n+      headers_bytes < FIXED_HDR + comments_bytes ||\n       (num_channels > 65535)) /* Reserve top 16 bits */ {\n     lsx_fail_errno(ft, SOX_EHDR, \"invalid sox file format header\");\n     return SOX_EOF;\n",
+    "llm_output": null,
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "sox-14.4.2",
+      "commit_sha": "7b6a889217d62ed7e28188621403cc7542fd1f7e",
+      "timestamp": "2025-06-05T17:50:17.281862",
+      "execution_path": "chunk_analyzer (all chunks)"
+    }
+  }
+}

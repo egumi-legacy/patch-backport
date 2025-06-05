@@ -1516,6 +1516,9 @@ class PatchBackportTool:
         adapt_success_count = 0
         failed_commits = []
         
+        # 收集每个提交的详细信息
+        commit_details = []
+        
         # 分析每个commit的处理结果
         for commit_sha, result in commits_results.items():
             context = result.get('context')
@@ -1528,11 +1531,22 @@ class PatchBackportTool:
             llm_success = bool(context.llm_output and context.llm_output.get('apply_result') and context.llm_output.get('apply_result').get('success'))
             compilation_success = bool(context.compilation_result and context.compilation_result.get('success'))
             
-            # 统计成功数量
+            # 确定成功方法
+            success_method = "none"
             if direct_success:
+                success_method = "direct_apply"
                 direct_success_count += 1
                 successful_commits += 1
-            elif patch_adapter_success or llm_success or compilation_success:
+            elif patch_adapter_success:
+                success_method = "patch_adapter"
+                adapt_success_count += 1
+                successful_commits += 1
+            elif llm_success:
+                success_method = "llm_adapter"
+                adapt_success_count += 1
+                successful_commits += 1
+            elif compilation_success:
+                success_method = "compiler"
                 adapt_success_count += 1
                 successful_commits += 1
             else:
@@ -1540,6 +1554,14 @@ class PatchBackportTool:
                     'sha': commit_sha,
                     'error': context.last_error
                 })
+            
+            # 收集详细信息
+            commit_details.append({
+                'sha': commit_sha,
+                'success': direct_success or patch_adapter_success or llm_success or compilation_success,
+                'method': success_method,
+                'execution_time': context.execution_time if hasattr(context, 'execution_time') else None
+            })
         
         # 计算适配成功率（排除直接应用成功的情况）
         adapt_required = total_commits - direct_success_count
@@ -1558,6 +1580,15 @@ class PatchBackportTool:
         logger.info(f"适配失败数量: {len(failed_commits)}")
         logger.info(f"总体成功率: {overall_success_rate:.2f}%")
         logger.info(f"适配成功率: {adapt_success_rate:.2f}%")
+        
+        # 打印每个提交的详细信息
+        if commit_details:
+            logger.info("\n提交详情:")
+            for detail in commit_details:
+                status = "成功" if detail['success'] else "失败"
+                method = detail['method'] if detail['method'] != "none" else "无"
+                exec_time = f"{detail['execution_time']:.2f}秒" if detail['execution_time'] else "未知"
+                logger.info(f"  - {detail['sha']}: {status} (方法: {method}, 耗时: {exec_time})")
         
         if failed_commits:
             logger.info("\n失败的提交:")
@@ -1592,6 +1623,7 @@ class PatchBackportTool:
             'adaptation_successful': adapt_success_count,
             'overall_success_rate': overall_success_rate,
             'adaptation_success_rate': adapt_success_rate,
+            'commit_details': commit_details,
             'failed_details': failed_commits
         }
         
@@ -1802,16 +1834,33 @@ def process_multiple_commits(commits: list, config_data: dict, repo_path: Path, 
     
     # 收集每个commit的处理结果
     commits_results = {}
+    all_commits_info = {}
+    
+    start_time = datetime.now()
     
     for idx, commit in enumerate(commits, 1):
         logger.info(f"处理第 {idx}/{len(commits)} 个commit: {commit}")
+        commit_start_time = datetime.now()
         
         try:
             # 提取commit信息
             commit_info = extract_commit_info(commit, repo_path, config_data)
             if not commit_info:
                 logger.error(f"无法提取commit信息: {commit}")
+                all_commits_info[commit] = {
+                    'success': False,
+                    'error': '无法提取commit信息',
+                    'processing_time': (datetime.now() - commit_start_time).total_seconds()
+                }
                 continue
+            
+            # 记录commit信息
+            commit_sha = commit_info['commit_sha'][:6]
+            all_commits_info[commit_sha] = {
+                'url': commit,
+                'commit_sha': commit_info['commit_sha'],
+                'processing_time': 0
+            }
             
             # 更新配置
             updated_config = config_data.copy()
@@ -1833,23 +1882,67 @@ def process_multiple_commits(commits: list, config_data: dict, repo_path: Path, 
             version_results = commit_tool.run()
             
             if version_results:
-                # 提取commit_sha作为键
-                commit_sha = commit_info['commit_sha'][:6]
-                
                 # 对于mode1，version_results是一个字典，其中键是target_version
                 # 我们需要提取第一个版本的结果
                 if version_results and isinstance(version_results, dict) and len(version_results) > 0:
                     first_version = list(version_results.keys())[0]
                     first_result = version_results[first_version]
                     commits_results[commit_sha] = first_result
+                    
+                    # 更新处理信息
+                    processing_time = (datetime.now() - commit_start_time).total_seconds()
+                    all_commits_info[commit_sha]['processing_time'] = processing_time
+                    all_commits_info[commit_sha]['success'] = True
+                    
+                    # 如果结果包含上下文，提取成功方法
+                    if 'context' in first_result:
+                        context = first_result['context']
+                        direct_success = bool(context.direct_apply_result and context.direct_apply_result.get('success'))
+                        patch_adapter_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
+                        llm_success = bool(context.llm_output and context.llm_output.get('apply_result') and context.llm_output.get('apply_result').get('success'))
+                        compilation_success = bool(context.compilation_result and context.compilation_result.get('success'))
+                        
+                        if direct_success:
+                            all_commits_info[commit_sha]['method'] = 'direct_apply'
+                        elif patch_adapter_success:
+                            all_commits_info[commit_sha]['method'] = 'patch_adapter'
+                        elif llm_success:
+                            all_commits_info[commit_sha]['method'] = 'llm_adapter'
+                        elif compilation_success:
+                            all_commits_info[commit_sha]['method'] = 'compiler'
+                        else:
+                            all_commits_info[commit_sha]['method'] = 'none'
+                            all_commits_info[commit_sha]['success'] = False
+                            all_commits_info[commit_sha]['error'] = context.last_error or '未知错误'
             
             # 清理临时配置文件
             if Path(updated_config_path).exists():
                 Path(updated_config_path).unlink()
                 
         except Exception as e:
-            logger.error(f"处理commit {commit} 时出错: {e}")
+            error_msg = str(e)
+            logger.error(f"处理commit {commit} 时出错: {error_msg}")
             logger.error(traceback.format_exc())
+            
+            # 更新失败信息
+            if commit_sha in all_commits_info:
+                all_commits_info[commit_sha]['success'] = False
+                all_commits_info[commit_sha]['error'] = error_msg
+                all_commits_info[commit_sha]['processing_time'] = (datetime.now() - commit_start_time).total_seconds()
+    
+    # 计算总处理时间
+    total_time = (datetime.now() - start_time).total_seconds()
+    
+    # 计算成功率
+    successful = [info for info in all_commits_info.values() if info.get('success', False)]
+    success_rate = (len(successful) / len(all_commits_info)) * 100 if all_commits_info else 0
+    
+    # 打印简单汇总
+    logger.info("\n" + "=" * 60)
+    logger.info(f"完成处理 {len(commits)} 个commit")
+    logger.info(f"总耗时: {total_time:.2f}秒")
+    logger.info(f"成功数量: {len(successful)}/{len(all_commits_info)} ({success_rate:.2f}%)")
+    logger.info("=" * 60)
     
     # 打印汇总统计
     if len(commits_results) > 0:
