@@ -39,10 +39,23 @@ import ch.qos.logback.core.status.Status;
 
 public class SaxEventRecorder extends DefaultHandler implements ContextAware {
 
+    // org.xml.sax.ext.LexicalHandler is an optional interface
     final ContextAwareImpl cai;
 
     public SaxEventRecorder(Context context) {
         cai = new ContextAwareImpl(context, this);
+
+        /**
+         * An implementation which disallows external DTDs
+         */
+    }
+
+    @Override
+    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+        cai.addWarn("Document Type Declaration (DOCTYPE) with external file reference is");
+        cai.addWarn("disallowed to prevent Server-Side Request Forgery (SSRF) attacks.");
+        cai.addWarn("returning contents of SYSTEM " +systemId+ " as a white space");
+        return new InputSource(new ByteArrayInputStream(" ".getBytes()));
     }
 
     public List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();
@@ -56,7 +69,12 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
     public List<SaxEvent> recordEvents(InputSource inputSource) throws JoranException {
         SAXParser saxParser = buildSaxParser();
         try {
+            // the following sax property can be set in order to add 'this' as LexicalHandler to the saxParser
+            // However, this is not needed as long as resolveEntity() method is implemented as above
+            // saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", this);
+
             saxParser.parse(inputSource, this);
+
             return saxEventList;
         } catch (IOException ie) {
             handleError("I/O error occurred while parsing xml file", ie);
@@ -78,7 +96,7 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
         try {
             SAXParserFactory spf = SAXParserFactory.newInstance();
             spf.setValidating(false);
-            //spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            // spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
             spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             spf.setNamespaceAware(true);
@@ -102,7 +120,7 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
-
+        // No-op
         String tagName = getTagName(localName, qName);
         globalElementPath.push(tagName);
         ElementPath current = globalElementPath.duplicate();
@@ -204,23 +222,4 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
         return saxEventList;
     }
 
-    /**
-     * An implementation which disallows external DTDs
-     *
-     * @param publicId The public identifier, or null if none is
-     *                 available.
-     * @param systemId The system identifier provided in the XML
-     *                 document.
-     * @return
-     * @throws SAXException
-     * @throws IOException
-     * @since 1.5.13
-     */
-    @Override
-    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-        addWarn("Document Type Declaration (DOCTYPE) with external file reference is");
-        addWarn("disallowed to prevent Server-Side Request Forgery (SSRF) attacks.");
-        addWarn("returning contents of SYSTEM " +systemId+ " as a white space");
-        return new InputSource(new ByteArrayInputStream(" ".getBytes()));
-    }
 }

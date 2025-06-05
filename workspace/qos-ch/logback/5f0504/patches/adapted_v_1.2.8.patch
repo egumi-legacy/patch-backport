@@ -1,49 +1,89 @@
-From 0fffbd18ba16f56dbe09ebdd43342967da2b1ebf Mon Sep 17 00:00:00 2001
+From 3ef7f189352c23822f3b062370233fbd377640f2 Mon Sep 17 00:00:00 2001
 From: elpsy <hewenkuan_work@foxmail.com>
-Date: Thu, 22 May 2025 18:06:40 +0800
+Date: Thu, 5 Jun 2025 14:32:02 +0800
 Subject: [PATCH] Applied adapted patch for v_1.2.8
 
 ---
- .../core/joran/event/SaxEventRecorder.java    | 19 ++++++++++++++++++
- .../joran/event/SaxEventRecorderTest.java     | 20 ++++++++++++++++---
- 2 files changed, 36 insertions(+), 3 deletions(-)
+ .../core/joran/event/SaxEventRecorder.java    | 22 +++++++++++++++++--
+ .../joran/event/SaxEventRecorderTest.java     | 22 ++++++++++++++++---
+ 2 files changed, 39 insertions(+), 5 deletions(-)
  mode change 100755 => 100644 logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
 
 diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
-index 31883bca7..c9452e5bf 100644
+index 31883bca7..e493aac6c 100644
 --- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
 +++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
-@@ -204,4 +204,23 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
-         return saxEventList;
-     }
+@@ -39,10 +39,23 @@ import ch.qos.logback.core.status.Status;
  
-+    /**
-+     * An implementation which disallows external DTDs
-+     *
-+     * @param publicId The public identifier, or null if none is
-+     *                 available.
-+     * @param systemId The system identifier provided in the XML
-+     *                 document.
-+     * @return
-+     * @throws SAXException
-+     * @throws IOException
-+     * @since 1.5.13
-+     */
+ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+ 
++    // org.xml.sax.ext.LexicalHandler is an optional interface
+     final ContextAwareImpl cai;
+ 
+     public SaxEventRecorder(Context context) {
+         cai = new ContextAwareImpl(context, this);
++
++        /**
++         * An implementation which disallows external DTDs
++         */
++    }
++
 +    @Override
 +    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-+        addWarn("Document Type Declaration (DOCTYPE) with external file reference is");
-+        addWarn("disallowed to prevent Server-Side Request Forgery (SSRF) attacks.");
-+        addWarn("returning contents of SYSTEM " +systemId+ " as a white space");
++        cai.addWarn("Document Type Declaration (DOCTYPE) with external file reference is");
++        cai.addWarn("disallowed to prevent Server-Side Request Forgery (SSRF) attacks.");
++        cai.addWarn("returning contents of SYSTEM " +systemId+ " as a white space");
 +        return new InputSource(new ByteArrayInputStream(" ".getBytes()));
-+    }
- }
+     }
+ 
+     public List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();
+@@ -56,7 +69,12 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+     public List<SaxEvent> recordEvents(InputSource inputSource) throws JoranException {
+         SAXParser saxParser = buildSaxParser();
+         try {
++            // the following sax property can be set in order to add 'this' as LexicalHandler to the saxParser
++            // However, this is not needed as long as resolveEntity() method is implemented as above
++            // saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", this);
++
+             saxParser.parse(inputSource, this);
++
+             return saxEventList;
+         } catch (IOException ie) {
+             handleError("I/O error occurred while parsing xml file", ie);
+@@ -78,7 +96,7 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+         try {
+             SAXParserFactory spf = SAXParserFactory.newInstance();
+             spf.setValidating(false);
+-            //spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
++            // spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+             spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+             spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+             spf.setNamespaceAware(true);
+@@ -102,7 +120,7 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+     }
+ 
+     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
+-
++        // No-op
+         String tagName = getTagName(localName, qName);
+         globalElementPath.push(tagName);
+         ElementPath current = globalElementPath.duplicate();
 diff --git a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
 old mode 100755
 new mode 100644
-index 4998f8efe..a48e08a71
+index 4998f8efe..37aea43fa
 --- a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
 +++ b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
-@@ -61,15 +61,29 @@ public class SaxEventRecorderTest {
+@@ -15,6 +15,8 @@ package ch.qos.logback.core.joran.event;
+ 
+ import static org.junit.Assert.*;
+ 
++import static org.junit.Assert.*;
++
+ import java.io.FileInputStream;
+ import java.util.List;
+ 
+@@ -61,15 +63,29 @@ public class SaxEventRecorderTest {
      }
  
      @Test
@@ -57,13 +97,13 @@ index 4998f8efe..a48e08a71
          assertEquals(11, seList.size());
      }
  
-+    @Test()
++    @Test(timeout=500)
 +    public void testEventSSRF() throws Exception {
 +        try {
 +            List<SaxEvent> seList = doTest("event-ssrf.xml");
-+            Assertions.assertTrue(statusChecker.getHighestLevel(0) == Status.WARN);
++            assertTrue(statusChecker.getHighestLevel(0) == Status.WARN);
 +            statusChecker.assertContainsMatch(Status.WARN, "Document Type Declaration");
-+            Assertions.assertEquals(11, seList.size());
++            assertEquals(11, seList.size());
 +        } finally {
 +            StatusPrinter.print(context);
 +        }
@@ -75,7 +115,7 @@ index 4998f8efe..a48e08a71
          List<SaxEvent> seList = doTest("ampEvent.xml");
          StatusManager sm = context.getStatusManager();
          assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
-@@ -81,7 +95,7 @@ public class SaxEventRecorderTest {
+@@ -81,7 +97,7 @@ public class SaxEventRecorderTest {
      }
  
      @Test

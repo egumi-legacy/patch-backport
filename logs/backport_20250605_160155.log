@@ -1,0 +1,107 @@
+2025-06-05 16:01:55.481 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250605_160155.log
+2025-06-05 16:01:55.482 | INFO     | __main__:process_multiple_commits:1807 - 处理第 1/3 个commit: 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c
+2025-06-05 16:01:55.486 | INFO     | __main__:extract_commit_info:1897 - Commit 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c 存在于仓库中
+2025-06-05 16:01:55.505 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250605_160155.log
+2025-06-05 16:01:55.505 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-05 16:01:55.505 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-stable/commit/79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch
+2025-06-05 16:01:55.506 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-05 16:01:55.507 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-05 16:01:55.509 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-05 16:01:55.509 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-05 16:01:55.510 | INFO     | __main__:_process_mode1:358 - 目标版本: ['6.12.y']
+2025-06-05 16:01:55.510 | INFO     | __main__:_process_mode1:365 - 开始处理版本: 6.12.y
+2025-06-05 16:01:55.511 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch
+2025-06-05 16:01:55.511 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-05 16:01:55.513 | INFO     | modules.direct_apply:_download_patch:245 - 上游补丁文件不存在，下载补丁
+2025-06-05 16:01:55.514 | INFO     | patch_utils:_download_github_patch:232 - GitHub patch URL parts: ['https:', '', 'github.com', 'linux', 'kernel-stable', 'commit', '79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch']
+2025-06-05 16:01:55.515 | INFO     | patch_utils:_download_github_patch:240 - 使用GitHub Commit API下载patch: https://api.github.com/repos/linux/kernel-stable/commits/79990cf5e7aded76d0c092c9f5ed31eb1c75e02c
+2025-06-05 16:02:03.422 | ERROR    | patch_utils:_download_github_patch:260 - 使用GitHub API下载patch失败: 404 Client Error: Not Found for url: https://api.github.com/repos/linux/kernel-stable/commits/79990cf5e7aded76d0c092c9f5ed31eb1c75e02c
+2025-06-05 16:02:03.423 | INFO     | patch_utils:_download_direct_patch:396 - 直接下载补丁文件: https://github.com/linux/kernel-stable/commit/79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch
+2025-06-05 16:02:09.613 | ERROR    | patch_utils:_download_direct_patch:427 - 直接下载patch失败: Exceeded 30 redirects.
+2025-06-05 16:02:09.614 | WARNING  | modules.direct_apply:_download_patch:258 - 补丁下载出错: 无法下载补丁: https://github.com/linux/kernel-stable/commit/79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch - Exceeded 30 redirects.
+2025-06-05 16:02:09.616 | INFO     | modules.direct_apply:_download_patch:261 - 尝试从本地仓库生成补丁
+2025-06-05 16:02:09.618 | INFO     | patch_utils:generate_patch_from_git:452 - 尝试从本地仓库生成补丁: 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch
+2025-06-05 16:02:09.623 | ERROR    | patch_utils:generate_patch_from_git:473 - 从本地仓库生成补丁失败: fatal: ambiguous argument '79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch': unknown revision or path not in the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'
+
+2025-06-05 16:02:09.623 | ERROR    | modules.direct_apply:_download_patch:272 - 从本地仓库生成补丁失败
+2025-06-05 16:02:09.624 | ERROR    | modules.direct_apply:execute:103 - 直接应用过程发生错误: 'NoneType' object has no attribute 'exists'
+2025-06-05 16:02:09.625 | ERROR    | modules.direct_apply:execute:105 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 58, in execute
+    if not patch_path.exists():
+           ^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'exists'
+
+2025-06-05 16:02:09.626 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-05 16:02:09.626 | ERROR    | modules.chunk_analyzer:execute:121 - 补丁分析过程发生错误: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-06-05 16:02:09.630 | ERROR    | modules.chunk_analyzer:execute:123 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 46, in execute
+    patch_path = Path(context.commit.patch_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 1162, in __init__
+    super().__init__(*args)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+2025-06-05 16:02:09.631 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/metrics_79990c_20250605_160209.json
+2025-06-05 16:02:09.633 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250605_160209
+2025-06-05 16:02:09.634 | ERROR    | modules.chunk_analyzer:_save_evaluation_info:802 - 保存chunk_analyzer特定评估信息失败: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-06-05 16:02:09.634 | ERROR    | modules.chunk_analyzer:_save_evaluation_info:804 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 585, in _save_evaluation_info
+    if hasattr(context.commit, "patch_path") and Path(context.commit.patch_path).exists():
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 1162, in __init__
+    super().__init__(*args)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+2025-06-05 16:02:09.635 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-05 16:02:09.635 | INFO     | modules.llm_adapter:execute:70 - context.commit.patch_path: None
+2025-06-05 16:02:09.635 | ERROR    | modules.llm_adapter:execute:128 - LLM处理过程发生错误: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-06-05 16:02:09.637 | ERROR    | modules.llm_adapter:execute:129 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 71, in execute
+    patch_path = Path(context.commit.patch_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 1162, in __init__
+    super().__init__(*args)
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+2025-06-05 16:02:09.638 | INFO     | modules.llm_adapter:execute:140 - ==================================================
+2025-06-05 16:02:09.638 | INFO     | modules.llm_adapter:execute:141 - LLM适配器执行失败 - 摘要
+2025-06-05 16:02:09.638 | INFO     | modules.llm_adapter:execute:142 - 错误: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2025-06-05 16:02:09.639 | INFO     | modules.llm_adapter:execute:143 - 执行时间: 0.00 秒
+2025-06-05 16:02:09.639 | INFO     | modules.llm_adapter:execute:144 - ==================================================
+2025-06-05 16:02:09.640 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-stable/79990c/evaluations/llm_adapter/metrics_79990c_20250605_160209.json
+2025-06-05 16:02:09.640 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-05 16:02:09.641 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 找不到LLM响应文件
+2025-06-05 16:02:09.642 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 46, in execute
+    llm_response_path = self._get_llm_response_path(context)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 129, in _get_llm_response_path
+    raise ValueError("找不到LLM响应文件")
+ValueError: 找不到LLM响应文件
+
+2025-06-05 16:02:09.643 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/linux/kernel-stable/79990c/metrics/patch_adapter_metrics.json
+2025-06-05 16:02:09.643 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 14.13秒
+2025-06-05 16:02:09.644 | INFO     | __main__:_merge_patches:1087 - 开始合并补丁...
+2025-06-05 16:02:09.644 | WARNING  | __main__:_merge_patches:1211 - 没有找到可合并的补丁
+2025-06-05 16:02:09.646 | ERROR    | __main__:run:343 - 执行过程发生错误: '>' not supported between instances of 'NoneType' and 'int'
+2025-06-05 16:02:09.647 | ERROR    | __main__:run:344 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 334, in run
+    results = self._process_mode1()
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 396, in _process_mode1
+    result_path = self._save_results(processed_context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 815, in _save_results
+    "chunk_analyzer": bool(context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') > 0),
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: '>' not supported between instances of 'NoneType' and 'int'
+
+2025-06-05 16:02:09.650 | INFO     | __main__:clean_config:2014 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

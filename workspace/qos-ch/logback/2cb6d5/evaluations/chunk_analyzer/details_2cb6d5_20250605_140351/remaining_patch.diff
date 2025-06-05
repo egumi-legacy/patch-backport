@@ -1,0 +1,506 @@
+From 2cb6d520df7592ef1c3a198f1b5df3c10c93e183 Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Wed, 18 Dec 2024 15:59:25 +0100
+Subject: [PATCH] remove JaninoEventEvaluator
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../BlackboxJaninoEventEvaluatorTest.java     | 291 ------------------
+ .../joran/BlackboxJoranConfiguratorTest.java  |   3 +
+ .../src/test/java/module-info.java            |   2 -
+ .../classic/boolex/JaninoEventEvaluator.java  | 157 ----------
+ .../joran/action/ClassicEvaluatorAction.java  |  23 --
+ ...ackClassicDefaultNestedComponentRules.java |   3 -
+ .../classic/joran/EvaluatorJoranTest.java     | 112 -------
+ .../joran/conditional/ifWithExec.xml          |  28 ++
+ .../joran/conditional/IfThenElseTest.java     |  10 +
+ .../core/boolex/JaninoEventEvaluatorBase.java |  96 ------
+ .../net/ssl/SSLParametersConfiguration.java   |   2 -
+ 11 files changed, 41 insertions(+), 686 deletions(-)
+ delete mode 100644 logback-classic-blackbox/src/test/java/ch/qos/logback/classic/blackbox/boolex/BlackboxJaninoEventEvaluatorTest.java
+ delete mode 100644 logback-classic/src/main/java/ch/qos/logback/classic/boolex/JaninoEventEvaluator.java
+ delete mode 100644 logback-classic/src/main/java/ch/qos/logback/classic/joran/action/ClassicEvaluatorAction.java
+ delete mode 100644 logback-classic/src/test/java/ch/qos/logback/classic/joran/EvaluatorJoranTest.java
+ create mode 100644 logback-core-blackbox/src/test/blackboxInput/joran/conditional/ifWithExec.xml
+ delete mode 100644 logback-core/src/main/java/ch/qos/logback/core/boolex/JaninoEventEvaluatorBase.java
+
+diff --git a/logback-classic-blackbox/src/test/java/ch/qos/logback/classic/blackbox/joran/BlackboxJoranConfiguratorTest.java b/logback-classic-blackbox/src/test/java/ch/qos/logback/classic/blackbox/joran/BlackboxJoranConfiguratorTest.java
+index 54e0ed1d4c..2092d224ed 100644
+--- a/logback-classic-blackbox/src/test/java/ch/qos/logback/classic/blackbox/joran/BlackboxJoranConfiguratorTest.java
++++ b/logback-classic-blackbox/src/test/java/ch/qos/logback/classic/blackbox/joran/BlackboxJoranConfiguratorTest.java
+@@ -27,6 +27,7 @@
+ import ch.qos.logback.core.testUtil.RandomUtil;
+ import ch.qos.logback.core.testUtil.StringListAppender;
+ import ch.qos.logback.core.util.StatusPrinter;
++import org.junit.jupiter.api.Disabled;
+ import org.junit.jupiter.api.Test;
+ 
+ import java.io.IOException;
+@@ -71,6 +72,7 @@ public void eval() throws JoranException {
+         assertTrue(str1.contains(" DEBUG - hello world"));
+     }
+ 
++    @Disabled
+     @Test
+     public void testEvaluatorFilter() throws JoranException {
+         configure(BlackboxClassicTestConstants.JORAN_INPUT_PREFIX + "evaluatorFilter.xml");
+@@ -89,6 +91,7 @@ public void testEvaluatorFilter() throws JoranException {
+         assertEquals("hello", back.getMessage());
+     }
+ 
++    @Disabled
+     @Test
+     public void testEvaluatorFilterWithImports() throws JoranException {
+         configure(BlackboxClassicTestConstants.JORAN_INPUT_PREFIX + "evaluatorFilterWithImports.xml");
+diff --git a/logback-classic-blackbox/src/test/java/module-info.java b/logback-classic-blackbox/src/test/java/module-info.java
+index 844afc4caa..08ba57da87 100644
+--- a/logback-classic-blackbox/src/test/java/module-info.java
++++ b/logback-classic-blackbox/src/test/java/module-info.java
+@@ -16,8 +16,6 @@
+ 
+     requires java.logging;
+ 
+-    exports ch.qos.logback.classic.blackbox.boolex;
+-
+     exports ch.qos.logback.classic.blackbox.joran;
+     exports ch.qos.logback.classic.blackbox.joran.conditional;
+     exports ch.qos.logback.classic.blackbox.joran.spi;
+diff --git a/logback-classic/src/main/java/ch/qos/logback/classic/boolex/JaninoEventEvaluator.java b/logback-classic/src/main/java/ch/qos/logback/classic/boolex/JaninoEventEvaluator.java
+deleted file mode 100644
+index d5055c2ebe..0000000000
+--- a/logback-classic/src/main/java/ch/qos/logback/classic/boolex/JaninoEventEvaluator.java
++++ /dev/null
+@@ -1,157 +0,0 @@
+-/**
+- * Logback: the reliable, generic, fast and flexible logging framework.
+- * Copyright (C) 1999-2015, QOS.ch. All rights reserved.
+- *
+- * This program and the accompanying materials are dual-licensed under
+- * either the terms of the Eclipse Public License v1.0 as published by
+- * the Eclipse Foundation
+- *
+- *   or (per the licensee's choosing)
+- *
+- * under the terms of the GNU Lesser General Public License version 2.1
+- * as published by the Free Software Foundation.
+- */
+-package ch.qos.logback.classic.boolex;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-import java.util.Map;
+-
+-import ch.qos.logback.classic.Level;
+-import ch.qos.logback.classic.spi.ILoggingEvent;
+-import ch.qos.logback.classic.spi.IThrowableProxy;
+-import ch.qos.logback.classic.spi.LoggerContextVO;
+-import ch.qos.logback.classic.spi.ThrowableProxy;
+-import ch.qos.logback.core.CoreConstants;
+-import ch.qos.logback.core.boolex.JaninoEventEvaluatorBase;
+-import ch.qos.logback.core.boolex.Matcher;
+-import org.slf4j.Marker;
+-
+-public class JaninoEventEvaluator extends JaninoEventEvaluatorBase<ILoggingEvent> {
+-
+-    public final static String IMPORT_LEVEL = "import ch.qos.logback.classic.Level;\r\n";
+-
+-    public final static List<String> DEFAULT_PARAM_NAME_LIST = new ArrayList<>();
+-    public final static List<Class<?>> DEFAULT_PARAM_TYPE_LIST = new ArrayList<>();
+-
+-    static {
+-        DEFAULT_PARAM_NAME_LIST.add("DEBUG");
+-        DEFAULT_PARAM_NAME_LIST.add("INFO");
+-        DEFAULT_PARAM_NAME_LIST.add("WARN");
+-        DEFAULT_PARAM_NAME_LIST.add("ERROR");
+-
+-        DEFAULT_PARAM_NAME_LIST.add("event");
+-        DEFAULT_PARAM_NAME_LIST.add("message");
+-
+-        DEFAULT_PARAM_NAME_LIST.add("formattedMessage");
+-        DEFAULT_PARAM_NAME_LIST.add("logger");
+-        DEFAULT_PARAM_NAME_LIST.add("loggerContext");
+-        DEFAULT_PARAM_NAME_LIST.add("level");
+-        DEFAULT_PARAM_NAME_LIST.add("timeStamp");
+-        DEFAULT_PARAM_NAME_LIST.add("marker");
+-        DEFAULT_PARAM_NAME_LIST.add("markerList");
+-        DEFAULT_PARAM_NAME_LIST.add("mdc");
+-        DEFAULT_PARAM_NAME_LIST.add("throwableProxy");
+-        DEFAULT_PARAM_NAME_LIST.add("throwable");
+-
+-        DEFAULT_PARAM_TYPE_LIST.add(int.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(int.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(int.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(int.class);
+-
+-        DEFAULT_PARAM_TYPE_LIST.add(ILoggingEvent.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(String.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(String.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(String.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(LoggerContextVO.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(int.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(long.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(Marker.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(MarkerList.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(Map.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(IThrowableProxy.class);
+-        DEFAULT_PARAM_TYPE_LIST.add(Throwable.class);
+-    }
+-
+-    protected String getDecoratedExpression() {
+-        String expression = getExpression();
+-        if (!expression.contains("return")) {
+-            expression = "return " + expression + ";";
+-            addInfo("Adding [return] prefix and a semicolon suffix. Expression becomes [" + expression + "]");
+-            addInfo("See also " + CoreConstants.CODES_URL + "#block");
+-
+-        }
+-        return IMPORT_LEVEL + expression;
+-    }
+-
+-    protected String[] getParameterNames() {
+-        List<String> fullNameList = new ArrayList<String>();
+-        fullNameList.addAll(DEFAULT_PARAM_NAME_LIST);
+-
+-        for (int i = 0; i < matcherList.size(); i++) {
+-            Matcher m = (Matcher) matcherList.get(i);
+-            fullNameList.add(m.getName());
+-        }
+-
+-        return (String[]) fullNameList.toArray(CoreConstants.EMPTY_STRING_ARRAY);
+-    }
+-
+-    protected Class<?>[] getParameterTypes() {
+-        List<Class<?>> fullTypeList = new ArrayList<>();
+-        fullTypeList.addAll(DEFAULT_PARAM_TYPE_LIST);
+-        for (int i = 0; i < matcherList.size(); i++) {
+-            fullTypeList.add(Matcher.class);
+-        }
+-        return (Class[]) fullTypeList.toArray(CoreConstants.EMPTY_CLASS_ARRAY);
+-    }
+-
+-    protected Object[] getParameterValues(ILoggingEvent loggingEvent) {
+-        final int matcherListSize = matcherList.size();
+-
+-        int i = 0;
+-        Object[] values = new Object[DEFAULT_PARAM_NAME_LIST.size() + matcherListSize];
+-
+-        values[i++] = Level.DEBUG_INTEGER;
+-        values[i++] = Level.INFO_INTEGER;
+-        values[i++] = Level.WARN_INTEGER;
+-        values[i++] = Level.ERROR_INTEGER;
+-
+-        values[i++] = loggingEvent;
+-        values[i++] = loggingEvent.getMessage();
+-        values[i++] = loggingEvent.getFormattedMessage();
+-        values[i++] = loggingEvent.getLoggerName();
+-        values[i++] = loggingEvent.getLoggerContextVO();
+-        values[i++] = loggingEvent.getLevel().toInteger();
+-        values[i++] = loggingEvent.getTimeStamp();
+-//        // In order to avoid NullPointerException, we could push a dummy marker if
+-//        // the event's marker is null. However, this would surprise user who
+-//        // expect to see a null marker instead of a dummy one.
+-
+-        MarkerList markerList = new MarkerList(loggingEvent.getMarkerList());
+-        Marker marker = markerList.getFirstMarker();
+-        values[i++] = marker;
+-        values[i++] = markerList;
+-
+-        values[i++] = loggingEvent.getMDCPropertyMap();
+-
+-        IThrowableProxy iThrowableProxy = loggingEvent.getThrowableProxy();
+-
+-        if (iThrowableProxy != null) {
+-            values[i++] = iThrowableProxy;
+-            if (iThrowableProxy instanceof ThrowableProxy) {
+-                values[i++] = ((ThrowableProxy) iThrowableProxy).getThrowable();
+-            } else {
+-                values[i++] = null;
+-            }
+-        } else {
+-            values[i++] = null;
+-            values[i++] = null;
+-        }
+-
+-        for (int j = 0; j < matcherListSize; j++) {
+-            values[i++] = (Matcher) matcherList.get(j);
+-        }
+-
+-        return values;
+-    }
+-}
+diff --git a/logback-classic/src/main/java/ch/qos/logback/classic/model/processor/LogbackClassicDefaultNestedComponentRules.java b/logback-classic/src/main/java/ch/qos/logback/classic/model/processor/LogbackClassicDefaultNestedComponentRules.java
+index 7d7b749201..f9d034e579 100644
+--- a/logback-classic/src/main/java/ch/qos/logback/classic/model/processor/LogbackClassicDefaultNestedComponentRules.java
++++ b/logback-classic/src/main/java/ch/qos/logback/classic/model/processor/LogbackClassicDefaultNestedComponentRules.java
+@@ -17,7 +17,6 @@
+ import java.util.List;
+ 
+ import ch.qos.logback.classic.PatternLayout;
+-import ch.qos.logback.classic.boolex.JaninoEventEvaluator;
+ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+ import ch.qos.logback.core.AppenderBase;
+ import ch.qos.logback.core.UnsynchronizedAppenderBase;
+@@ -50,8 +49,6 @@ static public void addDefaultNestedComponentRegistryRules(DefaultNestedComponent
+         registry.add(AppenderBase.class, "encoder", PatternLayoutEncoder.class);
+         registry.add(UnsynchronizedAppenderBase.class, "encoder", PatternLayoutEncoder.class);
+ 
+-        registry.add(EvaluatorFilter.class, "evaluator", JaninoEventEvaluator.class);
+-
+         SSLNestedComponentRegistryRules.addDefaultNestedComponentRegistryRules(registry);
+     }
+ 
+diff --git a/logback-classic/src/test/java/ch/qos/logback/classic/joran/EvaluatorJoranTest.java b/logback-classic/src/test/java/ch/qos/logback/classic/joran/EvaluatorJoranTest.java
+deleted file mode 100644
+index f5592cf05e..0000000000
+--- a/logback-classic/src/test/java/ch/qos/logback/classic/joran/EvaluatorJoranTest.java
++++ /dev/null
+@@ -1,112 +0,0 @@
+-/**
+- * Logback: the reliable, generic, fast and flexible logging framework.
+- * Copyright (C) 1999-2015, QOS.ch. All rights reserved.
+- *
+- * This program and the accompanying materials are dual-licensed under
+- * either the terms of the Eclipse Public License v1.0 as published by
+- * the Eclipse Foundation
+- *
+- *   or (per the licensee's choosing)
+- *
+- * under the terms of the GNU Lesser General Public License version 2.1
+- * as published by the Free Software Foundation.
+- */
+-package ch.qos.logback.classic.joran;
+-
+-import java.util.Map;
+-
+-import org.junit.jupiter.api.Disabled;
+-import org.junit.jupiter.api.Test;
+-import org.slf4j.Marker;
+-import org.slf4j.MarkerFactory;
+-
+-import ch.qos.logback.classic.ClassicTestConstants;
+-import ch.qos.logback.classic.Level;
+-import ch.qos.logback.classic.Logger;
+-import ch.qos.logback.classic.LoggerContext;
+-import ch.qos.logback.classic.boolex.JaninoEventEvaluator;
+-import ch.qos.logback.classic.spi.ILoggingEvent;
+-import ch.qos.logback.classic.spi.LoggingEvent;
+-import ch.qos.logback.core.CoreConstants;
+-import ch.qos.logback.core.boolex.EvaluationException;
+-import ch.qos.logback.core.boolex.EventEvaluator;
+-import ch.qos.logback.core.joran.spi.JoranException;
+-
+-import static org.junit.jupiter.api.Assertions.assertFalse;
+-import static org.junit.jupiter.api.Assertions.assertNotNull;
+-import static org.junit.jupiter.api.Assertions.assertTrue;
+-
+-@Disabled
+-public class EvaluatorJoranTest {
+-
+-    @Test
+-    public void testSimpleEvaluator() throws NullPointerException, EvaluationException, JoranException {
+-        JoranConfigurator jc = new JoranConfigurator();
+-        LoggerContext loggerContext = new LoggerContext();
+-        jc.setContext(loggerContext);
+-        jc.doConfigure(ClassicTestConstants.JORAN_INPUT_PREFIX + "simpleEvaluator.xml");
+-
+-        @SuppressWarnings("unchecked")
+-        Map<String, EventEvaluator<?>> evalMap = (Map<String, EventEvaluator<?>>) loggerContext
+-                .getObject(CoreConstants.EVALUATOR_MAP);
+-        assertNotNull(evalMap);
+-        JaninoEventEvaluator evaluator = (JaninoEventEvaluator) evalMap.get("msgEval");
+-        assertNotNull(evaluator);
+-
+-        Logger logger = loggerContext.getLogger("xx");
+-        ILoggingEvent event0 = new LoggingEvent("foo", logger, Level.DEBUG, "Hello world", null, null);
+-        assertTrue(evaluator.evaluate(event0));
+-
+-        ILoggingEvent event1 = new LoggingEvent("foo", logger, Level.DEBUG, "random blurb", null, null);
+-        assertFalse(evaluator.evaluate(event1));
+-    }
+-
+-    @Disabled // markers are no longer supported in Janino
+-    @Test
+-    public void testIgnoreMarker() throws NullPointerException, EvaluationException, JoranException {
+-        JoranConfigurator jc = new JoranConfigurator();
+-        LoggerContext loggerContext = new LoggerContext();
+-        jc.setContext(loggerContext);
+-
+-        jc.doConfigure(ClassicTestConstants.JORAN_INPUT_PREFIX + "ignore.xml");
+-        @SuppressWarnings("unchecked")
+-        Map<String, EventEvaluator<?>> evalMap = (Map<String, EventEvaluator<?>>) loggerContext
+-                .getObject(CoreConstants.EVALUATOR_MAP);
+-        assertNotNull(evalMap);
+-
+-        Logger logger = loggerContext.getLogger("xx");
+-
+-        JaninoEventEvaluator evaluator = (JaninoEventEvaluator) evalMap.get("IGNORE_EVAL");
+-        LoggingEvent event = new LoggingEvent("foo", logger, Level.DEBUG, "Hello world", null, null);
+-
+-        Marker ignoreMarker = MarkerFactory.getMarker("IGNORE");
+-        event.addMarker(ignoreMarker);
+-        assertTrue(evaluator.evaluate(event));
+-
+-        logger.debug("hello", new Exception("test"));
+-        logger.debug(ignoreMarker, "hello ignore", new Exception("test"));
+-
+-        // logger.debug("hello", new Exception("test"));
+-
+-        // StatusPrinter.print(loggerContext.getStatusManager());
+-    }
+-
+-    @Test
+-    public void testMultipleConditionsInExpression() throws NullPointerException, EvaluationException {
+-        LoggerContext loggerContext = new LoggerContext();
+-        Logger logger = loggerContext.getLogger("xx");
+-        JaninoEventEvaluator ee = new JaninoEventEvaluator();
+-        ee.setName("testEval");
+-        ee.setContext(loggerContext);
+-        // &#38;&#38;
+-        // &amp;&amp;
+-        ee.setExpression("message.contains(\"stacktrace\") && message.contains(\"logging\")");
+-        ee.start();
+-        // StatusPrinter.print(loggerContext);
+-
+-        String message = "stacktrace bla bla logging";
+-        ILoggingEvent event = new LoggingEvent(this.getClass().getName(), logger, Level.DEBUG, message, null, null);
+-
+-        assertTrue(ee.evaluate(event));
+-    }
+-}
+diff --git a/logback-core-blackbox/src/test/java/ch/qos/logback/core/blackbox/joran/conditional/IfThenElseTest.java b/logback-core-blackbox/src/test/java/ch/qos/logback/core/blackbox/joran/conditional/IfThenElseTest.java
+index 6e987ac1f2..d993418962 100644
+--- a/logback-core-blackbox/src/test/java/ch/qos/logback/core/blackbox/joran/conditional/IfThenElseTest.java
++++ b/logback-core-blackbox/src/test/java/ch/qos/logback/core/blackbox/joran/conditional/IfThenElseTest.java
+@@ -42,6 +42,7 @@
+ import ch.qos.logback.core.model.processor.conditional.ElseModelHandler;
+ import ch.qos.logback.core.model.processor.conditional.IfModelHandler;
+ import ch.qos.logback.core.model.processor.conditional.ThenModelHandler;
++import ch.qos.logback.core.status.Status;
+ import ch.qos.logback.core.status.StatusUtil;
+ import ch.qos.logback.core.testUtil.RandomUtil;
+ import ch.qos.logback.core.util.StatusPrinter;
+@@ -50,6 +51,7 @@
+ import org.junit.jupiter.api.BeforeEach;
+ import org.junit.jupiter.api.Test;
+ 
++import java.io.IOException;
+ import java.util.Arrays;
+ import java.util.HashMap;
+ import java.util.Stack;
+@@ -112,6 +114,14 @@ public void tearDown() throws Exception {
+         System.clearProperty(sysKey);
+     }
+ 
++    @Test
++    public void ifWithExec() throws JoranException {
++        context.putProperty(ki1, val1);
++        simpleConfigurator.doConfigure(CONDITIONAL_DIR_PREFIX + "ifWithExec.xml");
++        checker.containsException(org.codehaus.commons.compiler.CompileException.class);
++        checker.containsMatch(Status.ERROR, "Failed to parse condition");
++    }
++
+     @Test
+     public void whenContextPropertyIsSet_IfThenBranchIsEvaluated() throws JoranException {
+         context.putProperty(ki1, val1);
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/boolex/JaninoEventEvaluatorBase.java b/logback-core/src/main/java/ch/qos/logback/core/boolex/JaninoEventEvaluatorBase.java
+deleted file mode 100644
+index 83ba631954..0000000000
+--- a/logback-core/src/main/java/ch/qos/logback/core/boolex/JaninoEventEvaluatorBase.java
++++ /dev/null
+@@ -1,96 +0,0 @@
+-/**
+- * Logback: the reliable, generic, fast and flexible logging framework.
+- * Copyright (C) 1999-2015, QOS.ch. All rights reserved.
+- *
+- * This program and the accompanying materials are dual-licensed under
+- * either the terms of the Eclipse Public License v1.0 as published by
+- * the Eclipse Foundation
+- *
+- *   or (per the licensee's choosing)
+- *
+- * under the terms of the GNU Lesser General Public License version 2.1
+- * as published by the Free Software Foundation.
+- */
+-package ch.qos.logback.core.boolex;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-import org.codehaus.janino.ScriptEvaluator;
+-
+-/**
+- * Abstract class which sets the groundwork for janino based evaluations.
+- * 
+- * @author Ceki G&uuml;lc&uuml;
+- * 
+- * @param <E> event type
+- */
+-abstract public class JaninoEventEvaluatorBase<E> extends EventEvaluatorBase<E> {
+-
+-    static Class<?> EXPRESSION_TYPE = boolean.class;
+-    static Class<?>[] THROWN_EXCEPTIONS = new Class[1];
+-
+-    static public final int ERROR_THRESHOLD = 4;
+-    static {
+-        THROWN_EXCEPTIONS[0] = EvaluationException.class;
+-    }
+-
+-    private String expression;
+-
+-    ScriptEvaluator scriptEvaluator;
+-    private int errorCount = 0;
+-
+-    abstract protected String getDecoratedExpression();
+-
+-    abstract protected String[] getParameterNames();
+-
+-    abstract protected Class<?>[] getParameterTypes();
+-
+-    abstract protected Object[] getParameterValues(E event);
+-
+-    protected List<Matcher> matcherList = new ArrayList<>();
+-
+-    @Override
+-    public void start() {
+-        try {
+-            assert context != null;
+-            scriptEvaluator = new ScriptEvaluator(getDecoratedExpression(), EXPRESSION_TYPE, getParameterNames(),
+-                    getParameterTypes(), THROWN_EXCEPTIONS);
+-            super.start();
+-        } catch (Exception e) {
+-            addError("Could not start evaluator with expression [" + expression + "]", e);
+-        }
+-    }
+-
+-    public boolean evaluate(E event) throws EvaluationException {
+-        if (!isStarted()) {
+-            throw new IllegalStateException("Evaluator [" + name + "] was called in stopped state");
+-        }
+-        try {
+-            Boolean result = (Boolean) scriptEvaluator.evaluate(getParameterValues(event));
+-            return result;
+-        } catch (Exception ex) {
+-            errorCount++;
+-            if (errorCount >= ERROR_THRESHOLD) {
+-                stop();
+-            }
+-            throw new EvaluationException("Evaluator [" + name + "] caused an exception", ex);
+-        }
+-    }
+-
+-    public String getExpression() {
+-        return expression;
+-    }
+-
+-    public void setExpression(String expression) {
+-        this.expression = expression;
+-    }
+-
+-    public void addMatcher(Matcher matcher) {
+-        matcherList.add(matcher);
+-    }
+-
+-    public List<Matcher> getMatcherList() {
+-        return matcherList;
+-    }
+-}

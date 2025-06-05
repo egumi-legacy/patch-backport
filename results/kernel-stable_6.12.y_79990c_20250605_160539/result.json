@@ -1,0 +1,84 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "chunks_info": {
+      "total_chunks": 4,
+      "no_conflict_chunks": 4,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 0,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-05T16:05:39.913377"
+  },
+  "to_adapt_commit": {
+    "sha": "79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch",
+    "patch_url": "https://github.com/linux/kernel-stable/commit/79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/chunk_001_20250605_160539.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u5904\u7406\u8fc7\u7a0b\u53d1\u751f\u9519\u8bef",
+      "error": "\u51c6\u5907\u6d4b\u8bd5\u5206\u652f\u5931\u8d25",
+      "timestamp": "2025-06-05T16:05:39.763954"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/patches/upstream_79990c.patch",
+      "total_chunks": 4,
+      "applied_chunks": 4,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/chunk_001_20250605_160539.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/chunk_002_20250605_160539.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/chunk_003_20250605_160539.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/chunk_004_20250605_160539.patch"
+      ],
+      "remaining_patch": null,
+      "timestamp": "2025-06-05T16:05:39.817707",
+      "success": true
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/chunk_001_20250605_160539.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-05T16:05:02.384524",
+    "end_time": "2025-06-05T16:05:39.841866",
+    "total_seconds": 37.457342,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "patch_content": "From 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c Mon Sep 17 00:00:00 2001\nFrom: Marcin Szycik <marcin.szycik@linux.intel.com>\nDate: Mon, 24 Feb 2025 11:06:41 -0800\nSubject: [PATCH] ice: Fix deinitializing VF in error path\n\nIf ice_ena_vfs() fails after calling ice_create_vf_entries(), it frees\nall VFs without removing them from snapshot PF-VF mailbox list, leading\nto list corruption.\n\nReproducer:\n  devlink dev eswitch set $PF1_PCI mode switchdev\n  ip l s $PF1 up\n  ip l s $PF1 promisc on\n  sleep 1\n  echo 1 > /sys/class/net/$PF1/device/sriov_numvfs\n  sleep 1\n  echo 1 > /sys/class/net/$PF1/device/sriov_numvfs\n\nTrace (minimized):\n  list_add corruption. next->prev should be prev (ffff8882e241c6f0), but was 0000000000000000. (next=ffff888455da1330).\n  kernel BUG at lib/list_debug.c:29!\n  RIP: 0010:__list_add_valid_or_report+0xa6/0x100\n   ice_mbx_init_vf_info+0xa7/0x180 [ice]\n   ice_initialize_vf_entry+0x1fa/0x250 [ice]\n   ice_sriov_configure+0x8d7/0x1520 [ice]\n   ? __percpu_ref_switch_mode+0x1b1/0x5d0\n   ? __pfx_ice_sriov_configure+0x10/0x10 [ice]\n\nSometimes a KASAN report can be seen instead with a similar stack trace:\n  BUG: KASAN: use-after-free in __list_add_valid_or_report+0xf1/0x100\n\nVFs are added to this list in ice_mbx_init_vf_info(), but only removed\nin ice_free_vfs(). Move the removing to ice_free_vf_entries(), which is\nalso being called in other places where VFs are being removed (including\nice_free_vfs() itself).\n\nFixes: 8cd8a6b17d27 (\"ice: move VF overflow message count into struct ice_mbx_vf_info\")\nReported-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>\nCloses: https://lore.kernel.org/intel-wired-lan/PH0PR11MB50138B635F2E5CEB7075325D961F2@PH0PR11MB5013.namprd11.prod.outlook.com\nReviewed-by: Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@linux.intel.com>\nSigned-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>\nReviewed-by: Simon Horman <horms@kernel.org>\nTested-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>\nSigned-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>\nLink: https://patch.msgid.link/20250224190647.3601930-2-anthony.l.nguyen@intel.com\nSigned-off-by: Jakub Kicinski <kuba@kernel.org>\n\ndiff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c\nindex b83f99c01d91..8aabf7749aa5 100644\n--- a/drivers/net/ethernet/intel/ice/ice_sriov.c\n+++ b/drivers/net/ethernet/intel/ice/ice_sriov.c\n@@ -36,6 +36,7 @@ static void ice_free_vf_entries(struct ice_pf *pf)\n \n \thash_for_each_safe(vfs->table, bkt, tmp, vf, entry) {\n \t\thash_del_rcu(&vf->entry);\n+\t\tice_deinitialize_vf_entry(vf);\n \t\tice_put_vf(vf);\n \t}\n }\n",
+    "llm_output": null,
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "6.12.y",
+      "commit_sha": "79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch",
+      "timestamp": "2025-06-05T16:05:39.913459",
+      "execution_path": "chunk_analyzer (all chunks)"
+    }
+  }
+}

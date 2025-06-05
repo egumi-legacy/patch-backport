@@ -151,6 +151,77 @@ index d5055c2ebe..0000000000
 -        return values;
 -    }
 -}
+diff --git a/logback-classic/src/test/java/ch/qos/logback/classic/joran/EvaluatorJoranTest.java b/logback-classic/src/test/java/ch/qos/logback/classic/joran/EvaluatorJoranTest.java
+index f5592cf05e..f3a7b8c2d1 100644
+--- a/logback-classic/src/test/java/ch/qos/logback/classic/joran/EvaluatorJoranTest.java
++++ b/logback-classic/src/test/java/ch/qos/logback/classic/joran/EvaluatorJoranTest.java
+@@ -13,10 +13,13 @@
+   */
+  package ch.qos.logback.classic.joran;
+  
+ +import static org.junit.Assert.assertFalse;
+ +import static org.junit.Assert.assertNotNull;
+ +import static org.junit.Assert.assertTrue;
+ +
+  import java.util.Map;
+  
+ -import org.junit.jupiter.api.Disabled;
+ -import org.junit.jupiter.api.Test;
+ +import org.junit.Test;
+  import org.slf4j.Marker;
+  import org.slf4j.MarkerFactory;
+  
+@@ -32,11 +35,6 @@
+  import ch.qos.logback.core.boolex.EventEvaluator;
+  import ch.qos.logback.core.joran.spi.JoranException;
+  
+ -import static org.junit.jupiter.api.Assertions.assertFalse;
+ -import static org.junit.jupiter.api.Assertions.assertNotNull;
+ -import static org.junit.jupiter.api.Assertions.assertTrue;
+ -
+ -@Disabled
+  public class EvaluatorJoranTest {
+  
+      @Test
+@@ -47,8 +45,7 @@
+          jc.doConfigure(ClassicTestConstants.JORAN_INPUT_PREFIX + "simpleEvaluator.xml");
+  
+          @SuppressWarnings("unchecked")
+ -        Map<String, EventEvaluator<?>> evalMap = (Map<String, EventEvaluator<?>>) loggerContext
+ -                .getObject(CoreConstants.EVALUATOR_MAP);
+ +        Map<String, EventEvaluator<?>> evalMap = (Map<String, EventEvaluator<?>>) loggerContext.getObject(CoreConstants.EVALUATOR_MAP);
+          assertNotNull(evalMap);
+          JaninoEventEvaluator evaluator = (JaninoEventEvaluator) evalMap.get("msgEval");
+          assertNotNull(evaluator);
+@@ -61,17 +58,15 @@
+          assertFalse(evaluator.evaluate(event1));
+      }
+  
+ -    @Disabled // markers are no longer supported in Janino
+      @Test
+      public void testIgnoreMarker() throws NullPointerException, EvaluationException, JoranException {
+          JoranConfigurator jc = new JoranConfigurator();
+          LoggerContext loggerContext = new LoggerContext();
+          jc.setContext(loggerContext);
+ +        jc.doConfigure(ClassicTestConstants.JORAN_INPUT_PREFIX + "ignore.xml");
+  
+ -        jc.doConfigure(ClassicTestConstants.JORAN_INPUT_PREFIX + "ignore.xml");
+          @SuppressWarnings("unchecked")
+ -        Map<String, EventEvaluator<?>> evalMap = (Map<String, EventEvaluator<?>>) loggerContext
+ -                .getObject(CoreConstants.EVALUATOR_MAP);
+ +        Map<String, EventEvaluator<?>> evalMap = (Map<String, EventEvaluator<?>>) loggerContext.getObject(CoreConstants.EVALUATOR_MAP);
+          assertNotNull(evalMap);
+  
+          Logger logger = loggerContext.getLogger("xx");
+@@ -80,7 +75,7 @@
+          LoggingEvent event = new LoggingEvent("foo", logger, Level.DEBUG, "Hello world", null, null);
+  
+          Marker ignoreMarker = MarkerFactory.getMarker("IGNORE");
+ -        event.addMarker(ignoreMarker);
+ +        event.setMarker(ignoreMarker);
+          assertTrue(evaluator.evaluate(event));
+  
+          logger.debug("hello", new Exception("test"));
 diff --git a/logback-core/src/main/java/ch/qos/logback/core/boolex/JaninoEventEvaluatorBase.java b/logback-core/src/main/java/ch/qos/logback/core/boolex/JaninoEventEvaluatorBase.java
 deleted file mode 100644
 index 83ba631954..0000000000
@@ -252,3 +323,134 @@ index 83ba631954..0000000000
 -        return matcherList;
 -    }
 -}
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/net/ssl/SSLParametersConfiguration.java b/logback-core/src/main/java/ch/qos/logback/core/net/ssl/SSLParametersConfiguration.java
+index 7f7a8d2..2eacf8d 100644
+--- a/logback-core/src/main/java/ch/qos/logback/core/net/ssl/SSLParametersConfiguration.java
++++ b/logback-core/src/main/java/ch/qos/logback/core/net/ssl/SSLParametersConfiguration.java
+@@ -29,7 +29,7 @@
+   * A configuration of SSL parameters for an {@link SSLEngine}.
+   *
+   * @author Carl Harris
+- * @author Bruno Harbulot
++ * @author Bruno Harbulot 
+   */
+  public class SSLParametersConfiguration extends ContextAwareBase {
+  
+@@ -42,51 +42,48 @@
+     private String[] enabledProtocols;
+     private String[] enabledCipherSuites;
+     private Boolean hostnameVerification;
+-
++    
+     public void configure(SSLConfigurable socket) {
+         socket.setEnabledProtocols(enabledProtocols(socket.getSupportedProtocols(), socket.getDefaultProtocols()));
+-        socket.setEnabledCipherSuites(
+-                enabledCipherSuites(socket.getSupportedCipherSuites(), socket.getDefaultCipherSuites()));
++        socket.setEnabledCipherSuites(enabledCipherSuites(socket.getSupportedCipherSuites(), socket.getDefaultCipherSuites()));
+         if (isNeedClientAuth() != null) {
+             socket.setNeedClientAuth(isNeedClientAuth());
+         }
+         if (isWantClientAuth() != null) {
+             socket.setWantClientAuth(isWantClientAuth());
+         }
+-        if (hostnameVerification != null) {
+-            addInfo("hostnameVerification=" + hostnameVerification);
++        if(hostnameVerification != null) {
++        	addInfo("hostnameVerification="+hostnameVerification);
+             socket.setHostnameVerification(hostnameVerification);
+         }
+     }
+  
++    
+     public boolean getHostnameVerification() {
+-        if (hostnameVerification == null)
+-            return false;
+-        return hostnameVerification;
++    	if(hostnameVerification == null)
++    		return false;
++    	return hostnameVerification;
+     }
+  
+     public void setHostnameVerification(boolean hostnameVerification) {
+-        this.hostnameVerification = hostnameVerification;
+-    }
+-
++    	this.hostnameVerification = hostnameVerification;
++    }
++    
+     private String[] enabledProtocols(String[] supportedProtocols, String[] defaultProtocols) {
+         if (enabledProtocols == null) {
+             // we're assuming that the same engine is used for all configurables
+             // so once we determine the enabled set, we won't do it again
+-            if (OptionHelper.isNullOrEmptyOrAllSpaces(getIncludedProtocols())
+-                    && OptionHelper.isNullOrEmptyOrAllSpaces(getExcludedProtocols())) {
++            if (OptionHelper.isEmpty(getIncludedProtocols()) && OptionHelper.isEmpty(getExcludedProtocols())) {
+                 enabledProtocols = Arrays.copyOf(defaultProtocols, defaultProtocols.length);
+             } else {
+                 enabledProtocols = includedStrings(supportedProtocols, getIncludedProtocols(), getExcludedProtocols());
+@@ -100,21 +97,18 @@
+  
+     private String[] enabledCipherSuites(String[] supportedCipherSuites, String[] defaultCipherSuites) {
+         if (enabledCipherSuites == null) {
+             // we're assuming that the same engine is used for all configurables
+             // so once we determine the enabled set, we won't do it again
+-            if (OptionHelper.isNullOrEmptyOrAllSpaces(getIncludedCipherSuites())
+-                    && OptionHelper.isNullOrEmptyOrAllSpaces(getExcludedCipherSuites())) {
++            if (OptionHelper.isEmpty(getIncludedCipherSuites()) && OptionHelper.isEmpty(getExcludedCipherSuites())) {
+                 enabledCipherSuites = Arrays.copyOf(defaultCipherSuites, defaultCipherSuites.length);
+             } else {
+-                enabledCipherSuites = includedStrings(supportedCipherSuites, getIncludedCipherSuites(),
+-                        getExcludedCipherSuites());
++                enabledCipherSuites = includedStrings(supportedCipherSuites, getIncludedCipherSuites(), getExcludedCipherSuites());
+             }
+             for (String cipherSuite : enabledCipherSuites) {
+                 addInfo("enabled cipher suite: " + cipherSuite);
+             }
+         }
+         return enabledCipherSuites;
+     }
+-
+     private String[] includedStrings(String[] defaults, String included, String excluded) {
+         List<String> values = new ArrayList<String>(defaults.length);
+@@ -148,7 +141,6 @@
+  
+@@ -158,9 +150,8 @@
+  
+     public String getIncludedProtocols() {
+         return includedProtocols;
+@@ -168,9 +159,8 @@
+  
+     public void setIncludedProtocols(String protocols) {
+@@ -179,9 +169,8 @@
+  
+     public String getExcludedProtocols() {
+         return excludedProtocols;
+@@ -189,9 +178,8 @@
+  
+     public void setExcludedProtocols(String protocols) {
+@@ -200,9 +188,8 @@
+  
+     public String getIncludedCipherSuites() {
+         return includedCipherSuites;
+@@ -210,9 +197,8 @@
+  
+     public void setIncludedCipherSuites(String cipherSuites) {
+@@ -221,9 +207,8 @@
+  
+     public String getExcludedCipherSuites() {
+         return excludedCipherSuites;
+@@ -231,9 +216,8 @@
+  
+     public void setExcludedCipherSuites(String cipherSuites) {
+@@ -242,7 +226,6 @@
+  
+     public Boolean isNeedClientAuth() {
+@@ -251,7 +234,6 @@
+  
+     public void setNeedClientAuth(Boolean needClientAuth) {
+@@ -260,7 +242,6 @@
+  
+     public Boolean isWantClientAuth() {
+@@ -269,7 +250,6 @@
+  
+     public void setWantClientAuth(Boolean wantClientAuth) {

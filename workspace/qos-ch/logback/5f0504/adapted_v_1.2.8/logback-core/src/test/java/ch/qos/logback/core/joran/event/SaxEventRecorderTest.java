@@ -15,6 +15,8 @@ package ch.qos.logback.core.joran.event;
 
 import static org.junit.Assert.*;
 
+import static org.junit.Assert.*;
+
 import java.io.FileInputStream;
 import java.util.List;
 
@@ -70,13 +72,13 @@ public class SaxEventRecorderTest {
         assertEquals(11, seList.size());
     }
 
-    @Test()
+    @Test(timeout=500)
     public void testEventSSRF() throws Exception {
         try {
             List<SaxEvent> seList = doTest("event-ssrf.xml");
-            Assertions.assertTrue(statusChecker.getHighestLevel(0) == Status.WARN);
+            assertTrue(statusChecker.getHighestLevel(0) == Status.WARN);
             statusChecker.assertContainsMatch(Status.WARN, "Document Type Declaration");
-            Assertions.assertEquals(11, seList.size());
+            assertEquals(11, seList.size());
         } finally {
             StatusPrinter.print(context);
         }

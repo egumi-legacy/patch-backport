@@ -1,0 +1,186 @@
+From 505ef5ce99031a0681c536417b2eba405e6d7bf6 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 5 Jun 2025 14:10:03 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A4?=
+ =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../core/joran/event/SaxEventRecorder.java    | 23 ++++++++++++++--
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 24 ++++++++++++++---
+ 3 files changed, 68 insertions(+), 6 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+ mode change 100755 => 100644 logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+index 31883bca7..8aa5ec0d2 100644
+--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
++++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+@@ -15,6 +15,7 @@ package ch.qos.logback.core.joran.event;
+ 
+ import static ch.qos.logback.core.CoreConstants.XML_PARSING;
+ 
++import java.io.ByteArrayInputStream;
+ import java.io.IOException;
+ import java.io.InputStream;
+ import java.util.ArrayList;
+@@ -39,10 +40,23 @@ import ch.qos.logback.core.status.Status;
+ 
+ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+ 
++    // org.xml.sax.ext.LexicalHandler is an optional interface
+     final ContextAwareImpl cai;
+ 
+     public SaxEventRecorder(Context context) {
+         cai = new ContextAwareImpl(context, this);
++
++        /**
++         * An implementation which disallows external DTDs
++         */
++    }
++
++    @Override
++    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
++        cai.addWarn("Document Type Declaration (DOCTYPE) with external file reference is");
++        cai.addWarn("disallowed to prevent Server-Side Request Forgery (SSRF) attacks.");
++        cai.addWarn("returning contents of SYSTEM " +systemId+ " as a white space");
++        return new InputSource(new ByteArrayInputStream(" ".getBytes()));
+     }
+ 
+     public List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();
+@@ -56,7 +70,12 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+     public List<SaxEvent> recordEvents(InputSource inputSource) throws JoranException {
+         SAXParser saxParser = buildSaxParser();
+         try {
++            // the following sax property can be set in order to add 'this' as LexicalHandler to the saxParser
++            // However, this is not needed as long as resolveEntity() method is implemented as above
++            // saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", this);
++
+             saxParser.parse(inputSource, this);
++
+             return saxEventList;
+         } catch (IOException ie) {
+             handleError("I/O error occurred while parsing xml file", ie);
+@@ -78,7 +97,7 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+         try {
+             SAXParserFactory spf = SAXParserFactory.newInstance();
+             spf.setValidating(false);
+-            //spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
++            // spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+             spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+             spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+             spf.setNamespaceAware(true);
+@@ -102,7 +121,7 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+     }
+ 
+     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
+-
++        // No-op
+         String tagName = getTagName(localName, qName);
+         globalElementPath.push(tagName);
+         ElementPath current = globalElementPath.duplicate();
+diff --git a/logback-core/src/test/input/joran/event-ssrf.xml b/logback-core/src/test/input/joran/event-ssrf.xml
+new file mode 100644
+index 000000000..5b5b57812
+--- /dev/null
++++ b/logback-core/src/test/input/joran/event-ssrf.xml
+@@ -0,0 +1,27 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++<!--
++  ~ Logback: the reliable, generic, fast and flexible logging framework.
++  ~ Copyright (C) 1999-2024, QOS.ch. All rights reserved.
++  ~
++  ~ This program and the accompanying materials are dual-licensed under
++  ~ either the terms of the Eclipse Public License v1.0 as published by
++  ~ the Eclipse Foundation
++  ~
++  ~   or (per the licensee's choosing)
++  ~
++  ~ under the terms of the GNU Lesser General Public License version 2.1
++  ~ as published by the Free Software Foundation.
++  -->
++
++<!DOCTYPE test SYSTEM "http://192.168.1.100/">
++<test>
++
++    <!-- this action throws an exception in the Action.begin method -->
++    <badBegin>
++        <touch/>
++        <touch/>
++    </badBegin>
++
++    <hello name="John Doe">XXX&amp;</hello>
++
++</test>
+\ No newline at end of file
+diff --git a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+old mode 100755
+new mode 100644
+index 4998f8efe..3a1fd8916
+--- a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
++++ b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+@@ -15,6 +15,8 @@ package ch.qos.logback.core.joran.event;
+ 
+ import static org.junit.Assert.*;
+ 
++import static org.junit.Assert.*;
++
+ import java.io.FileInputStream;
+ import java.util.List;
+ 
+@@ -33,7 +35,7 @@ import ch.qos.logback.core.util.CoreTestConstants;
+ 
+ /**
+  * Test whether SaxEventRecorder does a good job.
+- * 
++ *
+  * @author Ceki Gulcu
+  */
+ public class SaxEventRecorderTest {
+@@ -61,15 +63,29 @@ public class SaxEventRecorderTest {
+     }
+ 
+     @Test
+-    public void test1() throws Exception {
++    public void testEvent1() throws Exception {
++        System.out.println("test1");
+         List<SaxEvent> seList = doTest("event1.xml");
++        StatusPrinter.print(context);
+         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+         assertEquals(11, seList.size());
+     }
+ 
++    @Test(timeout=500)
++    public void testEventSSRF() throws Exception {
++        try {
++            List<SaxEvent> seList = doTest("event-ssrf.xml");
++            assertTrue(statusChecker.getHighestLevel(0) == Status.WARN);
++            statusChecker.assertContainsMatch(Status.WARN, "Document Type Declaration");
++            assertEquals(11, seList.size());
++        } finally {
++            StatusPrinter.print(context);
++        }
++    }
++
+     @Test
+-    public void test2() throws Exception {
++    public void testEventAmp() throws Exception {
+         List<SaxEvent> seList = doTest("ampEvent.xml");
+         StatusManager sm = context.getStatusManager();
+         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+@@ -81,7 +97,7 @@ public class SaxEventRecorderTest {
+     }
+ 
+     @Test
+-    public void test3() throws Exception {
++    public void testInc() throws Exception {
+         List<SaxEvent> seList = doTest("inc.xml");
+         StatusManager sm = context.getStatusManager();
+         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+-- 
+2.25.1
+

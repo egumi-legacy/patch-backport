@@ -1,0 +1,38 @@
+From 2cb6d520df7592ef1c3a198f1b5df3c10c93e183 Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Wed, 18 Dec 2024 15:59:25 +0100
+Subject: [PATCH] remove JaninoEventEvaluator
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../BlackboxJaninoEventEvaluatorTest.java     | 291 ------------------
+ .../joran/BlackboxJoranConfiguratorTest.java  |   3 +
+ .../src/test/java/module-info.java            |   2 -
+ .../classic/boolex/JaninoEventEvaluator.java  | 157 ----------
+ .../joran/action/ClassicEvaluatorAction.java  |  23 --
+ ...ackClassicDefaultNestedComponentRules.java |   3 -
+ .../classic/joran/EvaluatorJoranTest.java     | 112 -------
+ .../joran/conditional/ifWithExec.xml          |  28 ++
+ .../joran/conditional/IfThenElseTest.java     |  10 +
+ .../core/boolex/JaninoEventEvaluatorBase.java |  96 ------
+ .../net/ssl/SSLParametersConfiguration.java   |   2 -
+ 11 files changed, 41 insertions(+), 686 deletions(-)
+ delete mode 100644 logback-classic-blackbox/src/test/java/ch/qos/logback/classic/blackbox/boolex/BlackboxJaninoEventEvaluatorTest.java
+ delete mode 100644 logback-classic/src/main/java/ch/qos/logback/classic/boolex/JaninoEventEvaluator.java
+ delete mode 100644 logback-classic/src/main/java/ch/qos/logback/classic/joran/action/ClassicEvaluatorAction.java
+ delete mode 100644 logback-classic/src/test/java/ch/qos/logback/classic/joran/EvaluatorJoranTest.java
+ create mode 100644 logback-core-blackbox/src/test/blackboxInput/joran/conditional/ifWithExec.xml
+ delete mode 100644 logback-core/src/main/java/ch/qos/logback/core/boolex/JaninoEventEvaluatorBase.java
+
+diff --git a/logback-core-blackbox/src/test/java/ch/qos/logback/core/blackbox/joran/conditional/IfThenElseTest.java b/logback-core-blackbox/src/test/java/ch/qos/logback/core/blackbox/joran/conditional/IfThenElseTest.java
+index 6e987ac1f2..d993418962 100644
+--- a/logback-core-blackbox/src/test/java/ch/qos/logback/core/blackbox/joran/conditional/IfThenElseTest.java
++++ b/logback-core-blackbox/src/test/java/ch/qos/logback/core/blackbox/joran/conditional/IfThenElseTest.java
+@@ -42,6 +42,7 @@
+ import ch.qos.logback.core.model.processor.conditional.ElseModelHandler;
+ import ch.qos.logback.core.model.processor.conditional.IfModelHandler;
+ import ch.qos.logback.core.model.processor.conditional.ThenModelHandler;
++import ch.qos.logback.core.status.Status;
+ import ch.qos.logback.core.status.StatusUtil;
+ import ch.qos.logback.core.testUtil.RandomUtil;
+ import ch.qos.logback.core.util.StatusPrinter;

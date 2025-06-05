@@ -1,0 +1,85 @@
+A. Commit message:
+ice: Add E830 device IDs, MAC type and registers
+
+B. Change summary:
+Added support for E830 devices by introducing new device IDs, MAC type, and specific registers. This includes updating the ice_common.c, ice_devids.h, ice_hw_autogen.h, ice_main.c, ice_type.h, and other relevant files to accommodate the E830 family of NICs. Adjusted register macros to use proper register based on the MAC type, ensuring compatibility with existing code.
+
+C. Compatibility Risk:
+Medium
+
+D. Fixed Code:
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 377fae41bbae..683a0d6b5337 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -154,6 +154,12 @@ static int ice_set_mac_type(struct ice_hw *hw)
+ 	case ICE_DEV_ID_E823L_SFP:
+ 		hw->mac_type = ICE_MAC_GENERIC;
+ 		break;
++	case ICE_DEV_ID_E830_BACKPLANE:
++	case ICE_DEV_ID_E830_QSFP56:
++	case ICE_DEV_ID_E830_SFP:
++	case ICE_DEV_ID_E830_SFP_DD:
++		hw->mac_type = ICE_MAC_E830;
++		break;
+ 	default:
+ 		hw->mac_type = ICE_MAC_UNKNOWN;
+ 		break;
+diff --git a/drivers/net/ethernet/intel/ice/ice_devids.h b/drivers/net/ethernet/intel/ice/ice_devids.h
+index 6d560d1c74a4..a2d384dbfc76 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devids.h
++++ b/drivers/net/ethernet/intel/ice/ice_devids.h
+@@ -16,6 +16,14 @@
+ #define ICE_DEV_ID_E823L_1GBE		0x124F
+ /* Intel(R) Ethernet Connection E823-L for QSFP */
+ #define ICE_DEV_ID_E823L_QSFP		0x151D
++/* Intel(R) Ethernet Controller E830-C for backplane */
++#define ICE_DEV_ID_E830_BACKPLANE	0x12D1
++/* Intel(R) Ethernet Controller E830-C for QSFP */
++#define ICE_DEV_ID_E830_QSFP56		0x12D2
++/* Intel(R) Ethernet Controller E830-C for SFP */
++#define ICE_DEV_ID_E830_SFP		0x12D3
++/* Intel(R) Ethernet Controller E830-C for SFP-DD */
++#define ICE_DEV_ID_E830_SFP_DD		0x12D4
+ /* Intel(R) Ethernet Controller E810-C for backplane */
+ #define ICE_DEV_ID_E810C_BACKPLANE	0x1591
+ /* Intel(R) Ethernet Controller E810-C for QSFP */
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -389,6 +404,10 @@
+ #define GLQF_HMASK_SEL(_i)			(0x00410000 + ((_i) * 4))
+ #define GLQF_HMASK_SEL_MAX_INDEX		127
+ #define GLQF_HMASK_SEL_MASK_SEL_S		0
++#define E800_PFQF_FD_CNT_FD_GCNT_M		GENMASK(14, 0)
++#define E830_PFQF_FD_CNT_FD_GCNT_M		GENMASK(15, 0)
++#define E800_PFQF_FD_CNT_FD_BCNT_M		GENMASK(30, 16)
++#define E830_PFQF_FD_CNT_FD_BCNT_M		GENMASK(31, 16)
+ #define PFQF_FD_ENA				0x0043A000
+ #define PFQF_FD_ENA_FD_ENA_M			BIT(0)
+ #define PFQF_FD_SIZE				0x00460100
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index b67c806a5a4d..da10f35d35a8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -1759,7 +1759,7 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
+ 		wr32(hw, GL_MDET_TX_PQM, 0xffffffff);
+ 	}
+ 
+-	reg = rd32(hw, GL_MDET_TX_TCLAN);
++	reg = rd32(hw, GL_MDET_TX_TCLAN_BY_MAC(hw));
+ 	if (reg & GL_MDET_TX_TCLAN_VALID_M) {
+ 		u8 pf_num = (reg & GL_MDET_TX_TCLAN_PF_NUM_M) >>
+ 				GL_MDET_TX_TCLAN_PF_NUM_S;
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index bb5d8b681bc2..f5d36c44abd2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -129,6 +129,7 @@ enum ice_set_fc_aq_failures {
+ enum ice_mac_type {
+ 	ICE_MAC_UNKNOWN = 0,
+ 	ICE_MAC_E810,
++	ICE_MAC_E830,
+ 	ICE_MAC_GENERIC,
+ };

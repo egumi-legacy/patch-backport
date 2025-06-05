@@ -1,0 +1,64 @@
+modified file: drivers/net/ethernet/intel/ice/ice_sriov.c
+--- workspace/linux/kernel-stable/79990c/newer/drivers/net/ethernet/intel/ice/ice_sriov.c
++++ workspace/linux/kernel-stable/79990c/v6.12-rc7/drivers/net/ethernet/intel/ice/ice_sriov.c
+@@ -194,8 +194,7 @@
+  		}
+  
+ -		if (!ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
+ -			list_del(&vf->mbx_info.list_entry);
+ +		list_del(&vf->mbx_info.list_entry);
+  
+  		mutex_unlock(&vf->cfg_lock);
+  	}
+
+""""""
+modified file: drivers/net/ethernet/intel/ice/ice_vf_lib.c
+--- workspace/linux/kernel-stable/79990c/newer/drivers/net/ethernet/intel/ice/ice_vf_lib.c
++++ workspace/linux/kernel-stable/79990c/v6.12-rc7/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+@@ -717,23 +717,6 @@
+  }
+  
+ -static void ice_reset_vf_mbx_cnt(struct ice_vf *vf)
+ -{
+ -	struct ice_pf *pf = vf->pf;
+ -
+ -	if (ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
+ -		ice_mbx_vf_clear_cnt_e830(&pf->hw, vf->vf_id);
+ -	else
+ -		ice_mbx_clear_malvf(&vf->mbx_info);
+ -}
+ -
+ -/**
+   * ice_reset_all_vfs - reset all allocated VFs in one go
+   * @pf: pointer to the PF structure
+   *
+@@ -759,7 +742,7 @@
+  
+  	ice_for_each_vf(pf, bkt, vf)
+ -		ice_reset_vf_mbx_cnt(vf);
+ +		ice_mbx_clear_malvf(&vf->mbx_info);
+  
+  	if (test_and_set_bit(ICE_VF_DIS, pf->state)) {
+@@ -975,7 +958,7 @@
+  	ice_eswitch_update_repr(&vf->repr_id, vsi);
+  
+ -	ice_reset_vf_mbx_cnt(vf);
+ +	ice_mbx_clear_malvf(&vf->mbx_info);
+  
+  out_unlock:
+  	if (lag && lag->bonded && lag->primary &&
+@@ -1028,10 +1011,7 @@
+  	ice_vf_fdir_init(vf);
+  
+ -	if (ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
+ -		ice_mbx_vf_clear_cnt_e830(&pf->hw, vf->vf_id);
+ -	else
+ -		ice_mbx_init_vf_info(&pf->hw, &vf->mbx_info);
+ +	ice_mbx_init_vf_info(&pf->hw, &vf->mbx_info);
+  
+  	mutex_init(&vf->cfg_lock);
+  }
+
+""""""
+
+""""""

@@ -1,0 +1,108 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "chunks_info": {
+      "total_chunks": 15,
+      "no_conflict_chunks": 12,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 3,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-05T16:06:41.309220"
+  },
+  "to_adapt_commit": {
+    "sha": "59f4d59b25aec39a015c0949f4ec235c7a839c44.patch",
+    "patch_url": "https://github.com/linux/kernel-stable/commit/59f4d59b25aec39a015c0949f4ec235c7a839c44",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "workspace/linux/kernel-stable/59f4d5/patches/merged_6.12.y.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "6.12.y",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u5904\u7406\u8fc7\u7a0b\u53d1\u751f\u9519\u8bef",
+      "error": "\u51c6\u5907\u6d4b\u8bd5\u5206\u652f\u5931\u8d25",
+      "timestamp": "2025-06-05T16:05:53.978725"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/patches/upstream_59f4d5.patch",
+      "total_chunks": 15,
+      "applied_chunks": 12,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/chunk_004_20250605_160553.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/chunk_005_20250605_160553.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/chunk_006_20250605_160553.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/chunk_007_20250605_160553.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/chunk_008_20250605_160553.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/chunk_009_20250605_160553.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/chunk_010_20250605_160554.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/chunk_011_20250605_160554.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/chunk_012_20250605_160554.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/chunk_013_20250605_160554.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/chunk_014_20250605_160554.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/chunk_015_20250605_160554.patch"
+      ],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/59f4d5/chunk_patches/remaining_chunks_20250605_160554.patch",
+      "timestamp": "2025-06-05T16:05:54.150008",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h\nindex 558cda577191..2960709f6b62 100644\n--- a/drivers/net/ethernet/intel/ice/ice.h\n+++ b/drivers/net/ethernet/intel/ice/ice.h\n@@ -207,6 +207,7 @@ enum ice_feature {\n \tICE_F_GNSS,\n \tICE_F_ROCE_LAG,\n \tICE_F_SRIOV_LAG,\n+\tICE_F_MBX_LIMIT,\n \tICE_F_MAX\n };\n \ndiff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h\nindex 91cbae1eec89..8d31bfe28cc8 100644\n--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h\n+++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h\n@@ -539,5 +539,8 @@\n #define E830_PRTMAC_CL01_QNT_THR_CL0_M\t\tGENMASK(15, 0)\n #define VFINT_DYN_CTLN(_i)\t\t\t(0x00003800 + ((_i) * 4))\n #define VFINT_DYN_CTLN_CLEARPBA_M\t\tBIT(1)\n+#define E830_MBX_PF_IN_FLIGHT_VF_MSGS_THRESH\t0x00234000\n+#define E830_MBX_VF_DEC_TRIG(_VF)\t\t(0x00233800 + (_VF) * 4)\n+#define E830_MBX_VF_IN_FLIGHT_MSGS_AT_PF_CNT(_VF)\t(0x00233000 + (_VF) * 4)\n \n #endif /* _ICE_HW_AUTOGEN_H_ */\ndiff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c\nindex 06e712cdc3d9..d4e74f96a8ad 100644\n--- a/drivers/net/ethernet/intel/ice/ice_lib.c\n+++ b/drivers/net/ethernet/intel/ice/ice_lib.c\n@@ -3880,6 +3880,9 @@ void ice_init_feature_support(struct ice_pf *pf)\n \tdefault:\n \t\tbreak;\n \t}\n+\n+\tif (pf->hw.mac_type == ICE_MAC_E830)\n+\t\tice_set_feature_support(pf, ICE_F_MBX_LIMIT);\n }",
+      "prompt": {
+        "patch_content": "From 59f4d59b25aec39a015c0949f4ec235c7a839c44 Mon Sep 17 00:00:00 2001\nFrom: Paul Greenwalt <paul.greenwalt@intel.com>\nDate: Tue, 20 Aug 2024 17:26:16 -0400\nSubject: [PATCH] ice: add E830 HW VF mailbox message limit support\n\nE830 adds hardware support to prevent the VF from overflowing the PF\nmailbox with VIRTCHNL messages. E830 will use the hardware feature\n(ICE_F_MBX_LIMIT) instead of the software solution ice_is_malicious_vf().\n\nTo prevent a VF from overflowing the PF, the PF sets the number of\nmessages per VF that can be in the PF's mailbox queue\n(ICE_MBX_OVERFLOW_WATERMARK). When the PF processes a message from a VF,\nthe PF decrements the per VF message count using the E830_MBX_VF_DEC_TRIG\nregister.\n\nSigned-off-by: Paul Greenwalt <paul.greenwalt@intel.com>\nReviewed-by: Alexander Lobakin <aleksander.lobakin@intel.com>\nTested-by: Rafal Romanowski <rafal.romanowski@intel.com>\nSigned-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>\n\ndiff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h\nindex 558cda577191..2960709f6b62 100644\n--- a/drivers/net/ethernet/intel/ice/ice.h\n+++ b/drivers/net/ethernet/intel/ice/ice.h\n@@ -207,6 +207,7 @@ enum ice_feature {\n \tICE_F_GNSS,\n \tICE_F_ROCE_LAG,\n \tICE_F_SRIOV_LAG,\n+\tICE_F_MBX_LIMIT,\n \tICE_F_MAX\n };\n \ndiff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h\nindex 91cbae1eec89..8d31bfe28cc8 100644\n--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h\n+++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h\n@@ -539,5 +539,8 @@\n #define E830_PRTMAC_CL01_QNT_THR_CL0_M\t\tGENMASK(15, 0)\n #define VFINT_DYN_CTLN(_i)\t\t\t(0x00003800 + ((_i) * 4))\n #define VFINT_DYN_CTLN_CLEARPBA_M\t\tBIT(1)\n+#define E830_MBX_PF_IN_FLIGHT_VF_MSGS_THRESH\t0x00234000\n+#define E830_MBX_VF_DEC_TRIG(_VF)\t\t(0x00233800 + (_VF) * 4)\n+#define E830_MBX_VF_IN_FLIGHT_MSGS_AT_PF_CNT(_VF)\t(0x00233000 + (_VF) * 4)\n \n #endif /* _ICE_HW_AUTOGEN_H_ */\ndiff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c\nindex 06e712cdc3d9..d4e74f96a8ad 100644\n--- a/drivers/net/ethernet/intel/ice/ice_lib.c\n+++ b/drivers/net/ethernet/intel/ice/ice_lib.c\n@@ -3880,6 +3880,9 @@ void ice_init_feature_support(struct ice_pf *pf)\n \tdefault:\n \t\tbreak;\n \t}\n+\n+\tif (pf->hw.mac_type == ICE_MAC_E830)\n+\t\tice_set_feature_support(pf, ICE_F_MBX_LIMIT);\n }\n \n /**\n",
+        "target_version": "6.12.y",
+        "context_diff": "# \u65e0\u6cd5\u751f\u6210\u5dee\u5f02\u6587\u4ef6\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/linux/kernel-stable/59f4d5/llm_output/output_6.12.y_qwen-plus.patch",
+      "timestamp": "2025-06-05T16:06:41.234389",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "Command '['git', 'checkout', '6.12.y']' returned non-zero exit status 1."
+    },
+    "final_patch_path": "workspace/linux/kernel-stable/59f4d5/patches/merged_6.12.y.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-05T16:05:39.970967",
+    "end_time": "2025-06-05T16:06:41.264237",
+    "total_seconds": 61.29327,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "patch_content": "",
+    "llm_output": "diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h\nindex 558cda577191..2960709f6b62 100644\n--- a/drivers/net/ethernet/intel/ice/ice.h\n+++ b/drivers/net/ethernet/intel/ice/ice.h\n@@ -207,6 +207,7 @@ enum ice_feature {\n \tICE_F_GNSS,\n \tICE_F_ROCE_LAG,\n \tICE_F_SRIOV_LAG,\n+\tICE_F_MBX_LIMIT,\n \tICE_F_MAX\n };\n \ndiff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h\nindex 91cbae1eec89..8d31bfe28cc8 100644\n--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h\n+++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h\n@@ -539,5 +539,8 @@\n #define E830_PRTMAC_CL01_QNT_THR_CL0_M\t\tGENMASK(15, 0)\n #define VFINT_DYN_CTLN(_i)\t\t\t(0x00003800 + ((_i) * 4))\n #define VFINT_DYN_CTLN_CLEARPBA_M\t\tBIT(1)\n+#define E830_MBX_PF_IN_FLIGHT_VF_MSGS_THRESH\t0x00234000\n+#define E830_MBX_VF_DEC_TRIG(_VF)\t\t(0x00233800 + (_VF) * 4)\n+#define E830_MBX_VF_IN_FLIGHT_MSGS_AT_PF_CNT(_VF)\t(0x00233000 + (_VF) * 4)\n \n #endif /* _ICE_HW_AUTOGEN_H_ */\ndiff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c\nindex 06e712cdc3d9..d4e74f96a8ad 100644\n--- a/drivers/net/ethernet/intel/ice/ice_lib.c\n+++ b/drivers/net/ethernet/intel/ice/ice_lib.c\n@@ -3880,6 +3880,9 @@ void ice_init_feature_support(struct ice_pf *pf)\n \tdefault:\n \t\tbreak;\n \t}\n+\n+\tif (pf->hw.mac_type == ICE_MAC_E830)\n+\t\tice_set_feature_support(pf, ICE_F_MBX_LIMIT);\n }",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "6.12.y",
+      "commit_sha": "59f4d59b25aec39a015c0949f4ec235c7a839c44.patch",
+      "timestamp": "2025-06-05T16:06:41.309240",
+      "execution_path": "chunk_analyzer (12/15 chunks)",
+      "adaptation_method": "unknown"
+    }
+  }
+}

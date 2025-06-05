@@ -1,0 +1,96 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "chunks_info": {
+      "total_chunks": 1,
+      "no_conflict_chunks": 0,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 1,
+      "compilation_failed_chunks": 0
+    },
+    "method": "failed",
+    "timestamp": "2025-06-05T13:07:26.539137"
+  },
+  "to_adapt_commit": {
+    "sha": "e8a6286542924e628e02749c4f5ac4f91fdae71b.patch",
+    "patch_url": "https://github.com/assimp/assimp/commit/e8a6286542924e628e02749c4f5ac4f91fdae71b",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/assimp/assimp/e8a628/patches/upstream_e8a628.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "v5.2.4",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: code/AssetLib/ASE/ASEParser.cpp:1406\nerror: code/AssetLib/ASE/ASEParser.cpp: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/assimp/assimp/e8a628/patches/upstream_e8a628.patch",
+      "timestamp": "2025-06-05T13:07:25.263423"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/assimp/assimp/e8a628/patches/upstream_e8a628.patch",
+      "total_chunks": 1,
+      "applied_chunks": 0,
+      "applied_chunk_patches": [],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/assimp/assimp/e8a628/chunk_patches/remaining_chunks_20250605_130725.patch",
+      "timestamp": "2025-06-05T13:07:25.296668",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/code/AssetLib/ASE/ASEParser.cpp b/code/AssetLib/ASE/ASEParser.cpp\nindex 21675da29c..badfcec76e 100644\n--- a/code/AssetLib/ASE/ASEParser.cpp\n+++ b/code/AssetLib/ASE/ASEParser.cpp\n@@ -1406,8 +1406,8 @@ void Parser::ParseLV4MeshBonesVertices(unsigned int iNumVertices, ASE::Mesh &mes\n             if (TokenMatch(mFilePtr, \"MESH_BONE_VERTEX\", 16)) {\n                 // read the vertex index\n                 unsigned int iIndex = strtoul10(mFilePtr, &mFilePtr);\n-                if (iIndex >= mesh.mPositions.size()) {\n-                    iIndex = (unsigned int)mesh.mPositions.size() - 1;\n+                if (iIndex >= mesh.mBoneVertices.size()) {\n+                    iIndex = (unsigned int)mesh.mBoneVertices.size() - 1;\n                     LogWarning(\"Bone vertex index is out of bounds. Using the largest valid \"\n                                \"bone vertex index instead\");\n                 }",
+      "prompt": {
+        "patch_content": "From e8a6286542924e628e02749c4f5ac4f91fdae71b Mon Sep 17 00:00:00 2001\nFrom: Kim Kulling <kimkulling@users.noreply.github.com>\nDate: Thu, 13 Mar 2025 16:23:36 +0100\nSubject: [PATCH] ASE: Use correct vertex container (#6051)\n\n- closes https://github.com/assimp/assimp/issues/6024\n---\n code/AssetLib/ASE/ASEParser.cpp | 4 ++--\n 1 file changed, 2 insertions(+), 2 deletions(-)\n\ndiff --git a/code/AssetLib/ASE/ASEParser.cpp b/code/AssetLib/ASE/ASEParser.cpp\nindex 21675da29c..badfcec76e 100644\n--- a/code/AssetLib/ASE/ASEParser.cpp\n+++ b/code/AssetLib/ASE/ASEParser.cpp\n@@ -1406,8 +1406,8 @@ void Parser::ParseLV4MeshBonesVertices(unsigned int iNumVertices, ASE::Mesh &mes\n             if (TokenMatch(mFilePtr, \"MESH_BONE_VERTEX\", 16)) {\n                 // read the vertex index\n                 unsigned int iIndex = strtoul10(mFilePtr, &mFilePtr);\n-                if (iIndex >= mesh.mPositions.size()) {\n-                    iIndex = (unsigned int)mesh.mPositions.size() - 1;\n+                if (iIndex >= mesh.mBoneVertices.size()) {\n+                    iIndex = (unsigned int)mesh.mBoneVertices.size() - 1;\n                     LogWarning(\"Bone vertex index is out of bounds. Using the largest valid \"\n                                \"bone vertex index instead\");\n                 }\n",
+        "target_version": "v5.2.4",
+        "context_diff": "",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/assimp/assimp/e8a628/llm_output/output_v5.2.4_qwen-plus.patch",
+      "timestamp": "2025-06-05T13:07:26.474136",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/assimp/assimp/e8a628/patches/upstream_e8a628.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-05T13:07:25.181683",
+    "end_time": "2025-06-05T13:07:26.537622",
+    "total_seconds": 1.355939,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "patch_content": "From e8a6286542924e628e02749c4f5ac4f91fdae71b Mon Sep 17 00:00:00 2001\nFrom: Kim Kulling <kimkulling@users.noreply.github.com>\nDate: Thu, 13 Mar 2025 16:23:36 +0100\nSubject: [PATCH] ASE: Use correct vertex container (#6051)\n\n- closes https://github.com/assimp/assimp/issues/6024\n---\n code/AssetLib/ASE/ASEParser.cpp | 4 ++--\n 1 file changed, 2 insertions(+), 2 deletions(-)\n\ndiff --git a/code/AssetLib/ASE/ASEParser.cpp b/code/AssetLib/ASE/ASEParser.cpp\nindex 21675da29c..badfcec76e 100644\n--- a/code/AssetLib/ASE/ASEParser.cpp\n+++ b/code/AssetLib/ASE/ASEParser.cpp\n@@ -1406,8 +1406,8 @@ void Parser::ParseLV4MeshBonesVertices(unsigned int iNumVertices, ASE::Mesh &mes\n             if (TokenMatch(mFilePtr, \"MESH_BONE_VERTEX\", 16)) {\n                 // read the vertex index\n                 unsigned int iIndex = strtoul10(mFilePtr, &mFilePtr);\n-                if (iIndex >= mesh.mPositions.size()) {\n-                    iIndex = (unsigned int)mesh.mPositions.size() - 1;\n+                if (iIndex >= mesh.mBoneVertices.size()) {\n+                    iIndex = (unsigned int)mesh.mBoneVertices.size() - 1;\n                     LogWarning(\"Bone vertex index is out of bounds. Using the largest valid \"\n                                \"bone vertex index instead\");\n                 }\n",
+    "llm_output": "diff --git a/code/AssetLib/ASE/ASEParser.cpp b/code/AssetLib/ASE/ASEParser.cpp\nindex 21675da29c..badfcec76e 100644\n--- a/code/AssetLib/ASE/ASEParser.cpp\n+++ b/code/AssetLib/ASE/ASEParser.cpp\n@@ -1406,8 +1406,8 @@ void Parser::ParseLV4MeshBonesVertices(unsigned int iNumVertices, ASE::Mesh &mes\n             if (TokenMatch(mFilePtr, \"MESH_BONE_VERTEX\", 16)) {\n                 // read the vertex index\n                 unsigned int iIndex = strtoul10(mFilePtr, &mFilePtr);\n-                if (iIndex >= mesh.mPositions.size()) {\n-                    iIndex = (unsigned int)mesh.mPositions.size() - 1;\n+                if (iIndex >= mesh.mBoneVertices.size()) {\n+                    iIndex = (unsigned int)mesh.mBoneVertices.size() - 1;\n                     LogWarning(\"Bone vertex index is out of bounds. Using the largest valid \"\n                                \"bone vertex index instead\");\n                 }",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": false,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "v5.2.4",
+      "commit_sha": "e8a6286542924e628e02749c4f5ac4f91fdae71b.patch",
+      "timestamp": "2025-06-05T13:07:26.539160",
+      "execution_path": "failed (no successful modules)",
+      "adaptation_method": "unknown"
+    }
+  }
+}

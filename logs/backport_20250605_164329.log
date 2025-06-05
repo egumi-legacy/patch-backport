@@ -1,0 +1,57 @@
+2025-06-05 16:43:29.422 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250605_164329.log
+2025-06-05 16:43:29.423 | INFO     | __main__:process_multiple_commits:1807 - 处理第 1/3 个commit: 07583a0010696a17fb0942e0b499a62785c5fc9f
+2025-06-05 16:43:29.435 | INFO     | __main__:extract_commit_info:1897 - Commit 07583a0010696a17fb0942e0b499a62785c5fc9f 存在于仓库中
+2025-06-05 16:43:29.454 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250605_164329.log
+2025-06-05 16:43:29.455 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-05 16:43:29.455 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-stable/commit/07583a0010696a17fb0942e0b499a62785c5fc9f.patch
+2025-06-05 16:43:29.455 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-05 16:43:29.456 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-05 16:43:29.458 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-05 16:43:29.458 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-05 16:43:29.459 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.12-rc7']
+2025-06-05 16:43:29.459 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.12-rc7
+2025-06-05 16:43:29.459 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: 07583a0010696a17fb0942e0b499a62785c5fc9f.patch
+2025-06-05 16:43:29.459 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-05 16:43:29.461 | INFO     | modules.direct_apply:_download_patch:245 - 上游补丁文件不存在，下载补丁
+2025-06-05 16:43:29.462 | INFO     | patch_utils:_download_github_patch:232 - GitHub patch URL parts: ['https:', '', 'github.com', 'linux', 'kernel-stable', 'commit', '07583a0010696a17fb0942e0b499a62785c5fc9f.patch']
+2025-06-05 16:43:29.462 | INFO     | patch_utils:_download_github_patch:240 - 使用GitHub Commit API下载patch: https://api.github.com/repos/linux/kernel-stable/commits/07583a0010696a17fb0942e0b499a62785c5fc9f
+2025-06-05 16:43:45.045 | ERROR    | patch_utils:_download_github_patch:260 - 使用GitHub API下载patch失败: HTTPSConnectionPool(host='api.github.com', port=443): Max retries exceeded with url: /repos/linux/kernel-stable/commits/07583a0010696a17fb0942e0b499a62785c5fc9f (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')))
+2025-06-05 16:43:45.046 | INFO     | patch_utils:_download_direct_patch:396 - 直接下载补丁文件: https://github.com/linux/kernel-stable/commit/07583a0010696a17fb0942e0b499a62785c5fc9f.patch
+2025-06-05 16:43:51.974 | ERROR    | patch_utils:_download_direct_patch:427 - 直接下载patch失败: Exceeded 30 redirects.
+2025-06-05 16:43:51.977 | WARNING  | modules.direct_apply:_download_patch:258 - 补丁下载出错: 无法下载补丁: https://github.com/linux/kernel-stable/commit/07583a0010696a17fb0942e0b499a62785c5fc9f.patch - Exceeded 30 redirects.
+2025-06-05 16:43:51.977 | INFO     | modules.direct_apply:_download_patch:261 - 尝试从本地仓库生成补丁
+2025-06-05 16:43:51.978 | INFO     | patch_utils:generate_patch_from_git:452 - 尝试从本地仓库生成补丁: 07583a0010696a17fb0942e0b499a62785c5fc9f.patch
+2025-06-05 16:43:52.021 | INFO     | patch_utils:generate_patch_from_git:483 - 成功从本地仓库生成补丁: workspace/linux/kernel-stable/07583a/patches/upstream_07583a.patch
+2025-06-05 16:43:52.021 | INFO     | modules.direct_apply:_download_patch:269 - 成功从本地仓库生成补丁: workspace/linux/kernel-stable/07583a/patches/upstream_07583a.patch
+2025-06-05 16:43:52.022 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-05 16:43:52.023 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/07583a/patches/upstream_07583a.patch
+2025-06-05 16:43:53.779 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_v6.12-rc7
+2025-06-05 16:43:57.082 | INFO     | modules.direct_apply:_apply_patch:311 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/07583a/patches/upstream_07583a.patch
+2025-06-05 16:43:57.150 | INFO     | modules.direct_apply:_move_to_cache:131 - 源目录: workspace/linux/kernel-stable/07583a
+2025-06-05 16:43:57.151 | INFO     | modules.direct_apply:_move_to_cache:139 - 目标目录: workspace/linux/kernel-stable_cache
+2025-06-05 16:43:57.152 | INFO     | modules.direct_apply:_move_to_cache:150 - 已将成功的commit文件夹移动到缓存: workspace/linux/kernel-stable_cache
+2025-06-05 16:43:57.398 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_v6.12-rc7
+2025-06-05 16:43:57.400 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-stable/07583a/evaluations/direct_apply/metrics_07583a_20250605_164357.json
+2025-06-05 16:43:57.400 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: ChunkAnalyzerModule
+2025-06-05 16:43:57.400 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-06-05 16:43:57.401 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-06-05 16:43:57.401 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 27.94秒
+2025-06-05 16:43:57.402 | INFO     | __main__:_merge_patches:1087 - 开始合并补丁...
+2025-06-05 16:43:57.403 | WARNING  | __main__:_merge_patches:1095 - 没有找到任何可合并的补丁结果
+2025-06-05 16:43:57.406 | ERROR    | __main__:_save_results:758 - 复制补丁文件时出错: [Errno 2] No such file or directory: '/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/07583a/patches/upstream_07583a.patch'
+2025-06-05 16:43:57.407 | INFO     | __main__:_save_results:889 - 结果已保存到: results/kernel-stable_v6.12-rc7_07583a_20250605_164357/result.json
+2025-06-05 16:43:57.408 | INFO     | __main__:_print_summary:931 - context.patch_adapter_result: []
+2025-06-05 16:43:57.409 | INFO     | __main__:_print_summary:954 - ==================================================
+2025-06-05 16:43:57.409 | INFO     | __main__:_print_summary:955 - 处理摘要 - 提交: 07583a
+2025-06-05 16:43:57.411 | INFO     | __main__:_print_summary:956 - 适配状态: 无需适配 (直接应用成功) (方法: direct_apply)
+2025-06-05 16:43:57.411 | INFO     | __main__:_print_summary:971 - 块分析统计:
+2025-06-05 16:43:57.413 | INFO     | __main__:_print_summary:972 - - 总块数: 0
+2025-06-05 16:43:57.413 | INFO     | __main__:_print_summary:973 - - 冲突块数: 0
+2025-06-05 16:43:57.414 | INFO     | __main__:_print_summary:974 - - 成功适配块数: 0
+2025-06-05 16:43:57.414 | INFO     | __main__:_print_summary:975 - - 适配失败块数: 0
+2025-06-05 16:43:57.414 | INFO     | __main__:_print_summary:976 - - 编译失败块数: 0
+2025-06-05 16:43:57.415 | INFO     | __main__:_print_summary:980 - 总执行时间: 27.94秒
+2025-06-05 16:43:57.415 | INFO     | __main__:_print_summary:985 - ==================================================
+2025-06-05 16:43:57.416 | INFO     | __main__:run:335 - 处理完成
+2025-06-05 16:43:57.416 | INFO     | __main__:process_multiple_commits:1807 - 处理第 2/3 个commit: 12f65d1203507f7db3ba59930fe29a3b8eee9945
+2025-06-05 16:43:57.422 | INFO     | __main__:extract_commit_info:1897 - Commit 12f65d1203507f7db3ba59930fe29a3b8eee9945 存在于仓库中

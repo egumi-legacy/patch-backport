@@ -1,0 +1,35 @@
+From 21cd74877b4f28bb6831300886e47d72ad2b9008 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 5 Jun 2025 13:16:50 +0800
+Subject: [PATCH] Applied adapted patch for v5.2.4
+
+---
+ code/AssetLib/ASE/ASEParser.cpp | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/code/AssetLib/ASE/ASEParser.cpp b/code/AssetLib/ASE/ASEParser.cpp
+index 0d526147c..6600d556e 100644
+--- a/code/AssetLib/ASE/ASEParser.cpp
++++ b/code/AssetLib/ASE/ASEParser.cpp
+@@ -20,6 +20,7 @@ conditions are met:
+   following disclaimer in the documentation and/or other
+   materials provided with the distribution.
+ 
++  12333
+ * Neither the name of the assimp team, nor the names of its
+   contributors may be used to endorse or promote products
+   derived from this software without specific prior
+@@ -1382,8 +1383,8 @@ void Parser::ParseLV4MeshBonesVertices(unsigned int iNumVertices, ASE::Mesh &mes
+             if (TokenMatch(filePtr, "MESH_BONE_VERTEX", 16)) {
+                 // read the vertex index
+                 unsigned int iIndex = strtoul10(filePtr, &filePtr);
+-                if (iIndex >= mesh.mPositions.size()) {
+-                    iIndex = (unsigned int)mesh.mPositions.size() - 1;
++                if (iIndex >= mesh.mBoneVertices.size()) {
++                    iIndex = (unsigned int)mesh.mBoneVertices.size() - 1;
+                     LogWarning("Bone vertex index is out of bounds. Using the largest valid "
+                                "bone vertex index instead");
+                 }
+-- 
+2.25.1
+

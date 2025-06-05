@@ -1,0 +1,62 @@
+From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+index 1a6df6118f..eb658bd433 100644
+--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
++++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+@@ -40,20 +41,43 @@
+ 
+ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+ 
++    // org.xml.sax.ext.LexicalHandler is an optional interface
+     final ContextAwareImpl contextAwareImpl;
+     final ElementPath elementPath;
+     List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();
+     Locator locator;
+ 
++
+     public SaxEventRecorder(Context context) {
+         this(context, new ElementPath());
+     }
+ 
++
+     public SaxEventRecorder(Context context, ElementPath elementPath) {
+         contextAwareImpl = new ContextAwareImpl(context, this);
+         this.elementPath = elementPath;
+     }
+ 
++    /**
++     * An implementation which disallows external DTDs
++     *
++     * @param publicId The public identifier, or null if none is
++     *                 available.
++     * @param systemId The system identifier provided in the XML
++     *                 document.
++     * @return
++     * @throws SAXException
++     * @throws IOException
++     * @since 1.5.13
++     */
++    @Override
++    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
++        addWarn("Document Type Declaration (DOCTYPE) with external file reference is");
++        addWarn("disallowed to prevent Server-Side Request Forgery (SSRF) attacks.");
++        addWarn("returning contents of SYSTEM " +systemId+ " as a white space");
++        return new InputSource(new ByteArrayInputStream(" ".getBytes()));
++    }
++
+     final public void recordEvents(InputStream inputStream) throws JoranException {
+         recordEvents(new InputSource(inputStream));
+     }

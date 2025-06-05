@@ -331,12 +331,14 @@ class PatchBackportTool:
         try:
             # 根据模式执行对应处理
             if self.config.mode == 1:
-                self._process_mode1()
+                results = self._process_mode1()
+                logger.info("处理完成")
+                return results
             else:
-                self._process_mode2()
+                results = self._process_mode2()
+                logger.info("处理完成")
+                return results
                 
-            logger.info("处理完成")
-            
         except Exception as e:
             logger.error(f"执行过程发生错误: {e}")
             logger.error(f"错误堆栈: {traceback.format_exc()}")
@@ -428,6 +430,9 @@ class PatchBackportTool:
         compiler_success_count = 0
         failed_commits = []
         
+        # 收集处理结果
+        commits_results = {}
+        
         # 处理每个提交
         for idx, commit_info in enumerate(commits_list[start:end], start+1):
             upstream_sha = commit_info['upstream_sha']
@@ -468,16 +473,23 @@ class PatchBackportTool:
                 context.commit.patch_path = final_patch
             
             # 保存结果
-            self._save_results(context)
+            result_path = self._save_results(context)
             
             # 打印摘要
             self._print_summary(context)
+            
+            # 存储此提交的结果
+            commit_sha = upstream_sha[:6]
+            commits_results[commit_sha] = {
+                'context': context,
+                'result_path': result_path
+            }
             
             # 更新统计
             direct_success = bool(context.direct_apply_result and context.direct_apply_result.get('success'))
             if direct_success:
                 direct_success_count += 1
-            llm_success = bool(context.llm_output.get('apply_result') and context.llm_output.get('apply_result').get('success'))
+            llm_success = bool(context.llm_output and context.llm_output.get('apply_result') and context.llm_output.get('apply_result').get('success'))
             patch_adapter_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
             compilation_success = bool(context.compilation_result and context.compilation_result.get('success'))
             
@@ -503,7 +515,8 @@ class PatchBackportTool:
                                      compiler_success_count, 
                                      failed_commits)
         
-
+        return commits_results
+    
     def _print_multi_version_summary(self, version_results):
         """打印多个版本的汇总结果"""
         logger.info("=" * 80)
@@ -914,7 +927,7 @@ class PatchBackportTool:
         
         # 确定处理结果
         direct_success = bool(context.direct_apply_result and context.direct_apply_result.get('success'))
-        llm_success = bool(context.llm_output and context.llm_output.get('success'))
+        llm_success = bool(context.llm_output and context.llm_output.get('apply_result') and context.llm_output.get('apply_result').get('success'))
         logger.info(f"context.patch_adapter_result: {context.patch_adapter_result}")
         patch_adapter_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
         compilation_success = bool(context.compilation_result and context.compilation_result.get('success'))
@@ -945,11 +958,21 @@ class PatchBackportTool:
         # 打印块分析结果（如果有）
         if hasattr(context, 'chunks_detailed_info') and context.chunks_detailed_info:
             chunks_info = context.chunks_detailed_info
+            total_chunks = chunks_info.get('total_chunks', 0)
+            no_conflict_chunks = chunks_info.get('no_conflict_chunks', 0)
+            
+            # 计算冲突块数
+            conflict_chunks = total_chunks - no_conflict_chunks
+            
+            # 根据适配状态调整成功适配块数和适配失败块数
+            adapt_succeeded_chunks = conflict_chunks if patch_adapter_success or llm_success or compilation_success else 0
+            adapt_failed_chunks = 0 if adapt_succeeded_chunks > 0 else conflict_chunks
+            
             logger.info("块分析统计:")
-            logger.info(f"- 总块数: {chunks_info.get('total_chunks', 0)}")
-            logger.info(f"- 无冲突块数: {chunks_info.get('no_conflict_chunks', 0)}")
-            logger.info(f"- 成功适配块数: {chunks_info.get('adapt_succeeded_chunks', 0)}")
-            logger.info(f"- 适配失败块数: {chunks_info.get('adapt_failed_chunks', 0)}")
+            logger.info(f"- 总块数: {total_chunks}")
+            logger.info(f"- 冲突块数: {conflict_chunks}")
+            logger.info(f"- 成功适配块数: {adapt_succeeded_chunks}")
+            logger.info(f"- 适配失败块数: {adapt_failed_chunks}")
             logger.info(f"- 编译失败块数: {chunks_info.get('compilation_failed_chunks', 0)}")
         
         # 打印执行时间
@@ -1480,6 +1503,105 @@ class PatchBackportTool:
             
         return result
 
+    def _print_mode1_statistics(self, commits_results):
+        """
+        打印模式1的统计信息
+        
+        Args:
+            commits_results: 包含每个commit处理结果的字典
+        """
+        total_commits = len(commits_results)
+        successful_commits = 0
+        direct_success_count = 0
+        adapt_success_count = 0
+        failed_commits = []
+        
+        # 分析每个commit的处理结果
+        for commit_sha, result in commits_results.items():
+            context = result.get('context')
+            if not context:
+                continue
+                
+            # 确定处理结果
+            direct_success = bool(context.direct_apply_result and context.direct_apply_result.get('success'))
+            patch_adapter_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
+            llm_success = bool(context.llm_output and context.llm_output.get('apply_result') and context.llm_output.get('apply_result').get('success'))
+            compilation_success = bool(context.compilation_result and context.compilation_result.get('success'))
+            
+            # 统计成功数量
+            if direct_success:
+                direct_success_count += 1
+                successful_commits += 1
+            elif patch_adapter_success or llm_success or compilation_success:
+                adapt_success_count += 1
+                successful_commits += 1
+            else:
+                failed_commits.append({
+                    'sha': commit_sha,
+                    'error': context.last_error
+                })
+        
+        # 计算适配成功率（排除直接应用成功的情况）
+        adapt_required = total_commits - direct_success_count
+        adapt_success_rate = (adapt_success_count / adapt_required) * 100 if adapt_required > 0 else 0
+        overall_success_rate = (successful_commits / total_commits) * 100 if total_commits > 0 else 0
+        
+        # 打印统计信息
+        logger.info("=" * 60)
+        logger.info(f"模式1处理统计 - 多个commit")
+        logger.info("=" * 60)
+        logger.info(f"总提交数: {total_commits}")
+        logger.info(f"成功处理数: {successful_commits}")
+        logger.info(f"直接应用成功: {direct_success_count}")
+        logger.info(f"需要适配数量: {adapt_required}")
+        logger.info(f"适配成功数量: {adapt_success_count}")
+        logger.info(f"适配失败数量: {len(failed_commits)}")
+        logger.info(f"总体成功率: {overall_success_rate:.2f}%")
+        logger.info(f"适配成功率: {adapt_success_rate:.2f}%")
+        
+        if failed_commits:
+            logger.info("\n失败的提交:")
+            for commit in failed_commits:
+                logger.info(f"  - {commit['sha']}: {commit.get('error', '未知错误')}")
+        
+        logger.info("=" * 60)
+        
+        # 保存统计结果到文件
+        stats_dir = Path("statistics")
+        stats_dir.mkdir(exist_ok=True)
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # 尝试从结果中获取仓库名称
+        repo_name = "unknown"
+        for result_data in commits_results.values():
+            if 'context' in result_data and hasattr(result_data['context'].commit, 'repo_name'):
+                repo_name = result_data['context'].commit.repo_name
+                break
+        
+        stats_file = stats_dir / f"{repo_name}_mode1_multi_commits_stats_{timestamp}.json"
+        
+        stats_data = {
+            'timestamp': datetime.now().isoformat(),
+            'repo_name': repo_name,
+            'target_version': self.config.target_version,
+            'total_commits': total_commits,
+            'successful_commits': successful_commits,
+            'direct_apply_success': direct_success_count,
+            'adaptation_required': adapt_required,
+            'adaptation_successful': adapt_success_count,
+            'overall_success_rate': overall_success_rate,
+            'adaptation_success_rate': adapt_success_rate,
+            'failed_details': failed_commits
+        }
+        
+        with open(stats_file, 'w') as f:
+            json.dump(stats_data, f, indent=2)
+        
+        logger.info(f"统计结果已保存到: {stats_file}")
+        
+        return stats_data
+
 
 def get_default_config_path() -> Path:
     """获取默认配置文件路径"""
@@ -1678,6 +1800,9 @@ def process_multiple_commits(commits: list, config_data: dict, repo_path: Path, 
     # 创建工具实例
     tool = PatchBackportTool(config_path=config_path)
     
+    # 收集每个commit的处理结果
+    commits_results = {}
+    
     for idx, commit in enumerate(commits, 1):
         logger.info(f"处理第 {idx}/{len(commits)} 个commit: {commit}")
         
@@ -1705,7 +1830,18 @@ def process_multiple_commits(commits: list, config_data: dict, repo_path: Path, 
             
             # 创建并运行工具
             commit_tool = PatchBackportTool(config_path=updated_config_path)
-            commit_tool.run()
+            version_results = commit_tool.run()
+            
+            if version_results:
+                # 提取commit_sha作为键
+                commit_sha = commit_info['commit_sha'][:6]
+                
+                # 对于mode1，version_results是一个字典，其中键是target_version
+                # 我们需要提取第一个版本的结果
+                if version_results and isinstance(version_results, dict) and len(version_results) > 0:
+                    first_version = list(version_results.keys())[0]
+                    first_result = version_results[first_version]
+                    commits_results[commit_sha] = first_result
             
             # 清理临时配置文件
             if Path(updated_config_path).exists():
@@ -1714,6 +1850,10 @@ def process_multiple_commits(commits: list, config_data: dict, repo_path: Path, 
         except Exception as e:
             logger.error(f"处理commit {commit} 时出错: {e}")
             logger.error(traceback.format_exc())
+    
+    # 打印汇总统计
+    if len(commits_results) > 0:
+        tool._print_mode1_statistics(commits_results)
 
 def extract_commit_info(commit: str, repo_path: Path, config_data: dict) -> Optional[Dict[str, str]]:
     """
@@ -1873,6 +2013,52 @@ def clean_config(config_data: dict, config_path: str):
         yaml.dump(config_data, f)
     logger.info(f"清理配置文件: {config_path}")
 
+def process_single_commit(commit: str, config_data: dict, repo_path: Path, config_path: str) -> None:
+    """
+    处理单个commit
+    
+    Args:
+        commit: commit URL或hash
+        config_data: 配置数据
+        repo_path: 仓库路径
+        config_path: 配置文件路径
+    """
+    logger.info(f"处理单个commit: {commit}")
+    
+    try:
+        # 提取commit信息
+        commit_info = extract_commit_info(commit, repo_path, config_data)
+        if not commit_info:
+            logger.error(f"无法提取commit信息: {commit}")
+            return
+        
+        # 更新配置
+        config_data['mode1']['patch_url'] = commit_info['patch_url']
+        
+        # 如果commit_info中直接提供了patch_path，添加到配置中
+        if 'patch_path' in commit_info:
+            logger.info(f"使用本地生成的补丁文件: {commit_info['patch_path']}")
+            config_data['mode1']['patch_path'] = commit_info['patch_path']
+        
+        # 保存更新后的配置
+        with open(config_path, 'w') as f:
+            yaml.dump(config_data, f)
+        
+        # 创建并运行工具
+        tool = PatchBackportTool(config_path=config_path)
+        results = tool.run()
+        
+        # 打印结果摘要
+        logger.info("=" * 60)
+        logger.info(f"单个commit处理完成: {commit}")
+        logger.info("=" * 60)
+        
+        return results
+        
+    except Exception as e:
+        logger.error(f"处理commit {commit} 时出错: {e}")
+        logger.error(traceback.format_exc())
+
 def main():
     """主函数"""
     # 获取默认配置文件路径
@@ -1987,33 +2173,6 @@ def main():
             config_data['common']['repo_path'] = str(repo_path)
             logger.info(f"使用仓库路径: {repo_path}")
             
-            # # 更新repo_url配置
-            # if args.mode == 1:
-            #     config_data['common']['repo_url'] = repo_url
-            # else:
-            #     config_data['mode2']['repo_url'] = repo_url
-                
-        # if commit_param and args.mode == 1:
-        #     # 如果提供的是commit hash而不是完整URL，需要构建完整URL
-        #     if not commit_param.startswith('http'):
-        #         # 从repo_url解析owner和repo
-        #         from patch_utils import parse_github_url
-        #         info = parse_github_url(args.repo_url)
-        #         if info:
-        #             patch_url = f"https://github.com/{info['owner']}/{info['repo']}/commit/{commit_param}.patch"
-        #             config_data['mode1']['patch_url'] = patch_url
-        #     else:
-        #         # 如果是完整的commit URL，根据是否包含.patch后缀处理
-        #         if commit_param.endswith('.patch'):
-        #             config_data['mode1']['patch_url'] = commit_param
-        #         else:
-        #             config_data['mode1']['patch_url'] = f"{commit_param}.patch"
-        #     # 保存更新后的配置
-        #     with open(config_path, 'w') as f:
-        #         yaml.dump(config_data, f)         
-        # except Exception as e:
-        #     logger.error(f"处理仓库路径时出错: {e}")
-        #     sys.exit(1)
         except Exception as e:
             logger.error(f"处理仓库路径时出错: {e}")
             sys.exit(1)
@@ -2044,25 +2203,11 @@ def main():
                 if isinstance(commits, str):
                     commits = [commits]
                 
-                # 如果只有一个commit，使用普通流程
+                # 如果只有一个commit，使用单个处理流程
                 if len(commits) == 1:
-                    # 提取commit信息
-                    commit_info = extract_commit_info(commits[0], repo_path, config_data)
-                    if commit_info:
-                        config_data['mode1']['patch_url'] = commit_info['patch_url']
-                        
-                        # 保存更新后的配置
-                        with open(config_path, 'w') as f:
-                            yaml.dump(config_data, f)
-                        
-                        # 创建并运行工具
-                        tool = PatchBackportTool(config_path=config_path)
-                        tool.run()
-                    else:
-                        logger.error(f"无法处理commit: {commits[0]}")
-                        sys.exit(1)
+                    process_single_commit(commits[0], config_data, repo_path, config_path)
                 else:
-                    # 处理多个commit
+                    # 处理多个commit并打印统计信息
                     process_multiple_commits(commits, config_data, repo_path, config_path)
             else:
                 # 使用配置文件中的patch_url

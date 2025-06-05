@@ -1,0 +1,85 @@
+From a16c4b6bb0b126047c68dafbdf6311ac1586fc0b Mon Sep 17 00:00:00 2001
+From: Bryan Call <bcall@apache.org>
+Date: Tue, 4 Mar 2025 11:39:44 -0800
+Subject: [PATCH] Fix chunked pipelined requests (#12071)
+
+* Fix pipelined request for chunked bodies
+
+This addresses a variety of bugs concerning pipelined requests. In
+particular, the HttpTunnel logic had fundamentally assumed that it could
+consume all bytes available in the producer's reader. If a request was
+pipelined after a previous request that had a chunked body, this would
+result in the second request being unparsed and either sent along to the
+origin or dropped on the floor, depening on configuration. This adds an
+explicit autest for pipelined requests and addresses these issues.
+
+This patch largely does the following:
+
+1. Updates the copy_partial_post_data data to take the number of bytes
+   it consumes rather than consuming all bytes in the reader. It also
+   now returns the number of bytes it consumes, which the tunnel needs
+   to keep track of the number of bytes it processes.
+2. Previous to this patch, the HttpTunnel assumed that it could consume
+   all bytes in the reader originally passed to it (all bytes in
+   init_bytes_done). This simply will not work for pipelined requests.
+   This addresses this issue by adding a new variable to the tunnel:
+   bytes_consumed. This way the tunnel can keep track of how many bytes
+   it consumed while processing the request body, which allows the
+   HttpSM to later process just the right number of bytes from its
+   reader rather than eating into any pipelined requests that follow it.
+3. The HttpSM must not consume bytes from its client reader that are
+   pipelined requests. It now uses the tunnel's processing
+   bytes_consumed to process bytes from its reader rather than simply
+   consuming all read_available() bytes from it.
+
+* Fix bytes consumed chunk computation
+
+Fix a possible miscalculation of bytes consumed while parsing chunked
+content.
+
+* is_read_closed fix
+
+* Verify expected responses are received.
+
+* Updated formatting
+
+---------
+
+Co-authored-by: Brian Neradt <brian.neradt@gmail.com>
+---
+ proxy/ProxyTransaction.cc                     |   6 +
+ proxy/ProxyTransaction.h                      |   1 +
+ proxy/http/HttpSM.cc                          |  70 ++++--
+ proxy/http/HttpSM.h                           |  14 +-
+ proxy/http/HttpTunnel.cc                      | 171 +++++++++------
+ proxy/http/HttpTunnel.h                       | 151 +++++++++++--
+ proxy/http2/Http2Stream.cc                    |   6 +
+ proxy/http2/Http2Stream.h                     |   1 +
+ src/traffic_server/FetchSM.cc                 |   3 +-
+ tests/gold_tests/pipeline/pipeline.test.py    | 137 ++++++++++++
+ tests/gold_tests/pipeline/pipeline_client.py  | 104 +++++++++
+ tests/gold_tests/pipeline/pipeline_server.py  | 201 ++++++++++++++++++
+ .../gold_tests/redirect/redirect_post.test.py |   1 +
+ .../timeout/inactive_client_timeout.test.py   |   9 +-
+ tests/gold_tests/timeout/slow_server.yaml     |  37 +++-
+ 15 files changed, 796 insertions(+), 116 deletions(-)
+ create mode 100644 tests/gold_tests/pipeline/pipeline.test.py
+ create mode 100644 tests/gold_tests/pipeline/pipeline_client.py
+ create mode 100644 tests/gold_tests/pipeline/pipeline_server.py
+
+diff --git a/proxy/http/HttpSM.cc b/proxy/http/HttpSM.cc
+index 4e09795f036..cdc05461320 100644
+--- a/proxy/http/HttpSM.cc
++++ b/proxy/http/HttpSM.cc
+@@ -973,10 +973,8 @@ HttpSM::wait_for_full_body()
+   // Next order of business if copy the remaining data from the
+   //  header buffer into new buffer
+   int64_t post_bytes = chunked ? INT64_MAX : t_state.hdr_info.request_content_length;
+-  client_request_body_bytes =
+-    post_buffer->write(ua_txn->get_remote_reader(), chunked ? ua_txn->get_remote_reader()->read_avail() : post_bytes);
++  post_buffer->write(ua_txn->get_remote_reader(), chunked ? ua_txn->get_remote_reader()->read_avail() : post_bytes);
+ 
+-  ua_txn->get_remote_reader()->consume(client_request_body_bytes);
+   p = tunnel.add_producer(ua_entry->vc, post_bytes, buf_start, &HttpSM::tunnel_handler_post_ua, HT_BUFFER_READ, "ua post buffer");
+   if (chunked) {
+     bool const drop_chunked_trailers = t_state.http_config_param->oride.http_drop_chunked_trailers == 1;

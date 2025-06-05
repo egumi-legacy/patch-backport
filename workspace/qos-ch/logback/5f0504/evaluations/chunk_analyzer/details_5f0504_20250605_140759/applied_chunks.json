@@ -1,0 +1,26 @@
+[
+  {
+    "索引": 1,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_001_20250605_140759.patch",
+    "实际补丁": null,
+    "修改文件": "logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java",
+    "修改位置": "15-15",
+    "内容": "From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001\nFrom: Ceki Gulcu <ceki@qos.ch>\nDate: Tue, 17 Dec 2024 19:42:28 +0100\nSubject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by\n ignoring external DTD files in DOCTYPE\n\nSigned-off-by: Ceki Gulcu <ceki@qos.ch>\n---\n .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----\n .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++\n .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--\n 3 files changed, 85 insertions(+), 14 deletions(-)\n create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml\n\ndiff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java\nindex 1a6df6118f..eb658bd433 100644\n--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java\n+++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java\n@@ -15,6 +15,7 @@\n \n import static ch.qos.logback.core.CoreConstants.XML_PARSING;\n \n+import java.io.ByteArrayInputStream;\n import java.io.IOException;\n import java.io.InputStream;\n import java.util.ArrayList;\n"
+  },
+  {
+    "索引": 2,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_008_20250605_140759.patch",
+    "实际补丁": null,
+    "修改文件": "logback-core/src/test/input/joran/event-ssrf.xml",
+    "修改位置": "0-1",
+    "内容": "From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001\nFrom: Ceki Gulcu <ceki@qos.ch>\nDate: Tue, 17 Dec 2024 19:42:28 +0100\nSubject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by\n ignoring external DTD files in DOCTYPE\n\nSigned-off-by: Ceki Gulcu <ceki@qos.ch>\n---\n .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----\n .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++\n .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--\n 3 files changed, 85 insertions(+), 14 deletions(-)\n create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml\n\ndiff --git a/logback-core/src/test/input/joran/event-ssrf.xml b/logback-core/src/test/input/joran/event-ssrf.xml\nnew file mode 100644\nindex 0000000000..5b5b57812f\n--- /dev/null\n+++ b/logback-core/src/test/input/joran/event-ssrf.xml\n@@ -0,0 +1,27 @@\n+<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n+<!--\n+  ~ Logback: the reliable, generic, fast and flexible logging framework.\n+  ~ Copyright (C) 1999-2024, QOS.ch. All rights reserved.\n+  ~\n+  ~ This program and the accompanying materials are dual-licensed under\n+  ~ either the terms of the Eclipse Public License v1.0 as published by\n+  ~ the Eclipse Foundation\n+  ~\n+  ~   or (per the licensee's choosing)\n+  ~\n+  ~ under the terms of the GNU Lesser General Public License version 2.1\n+  ~ as published by the Free Software Foundation.\n+  -->\n+\n+<!DOCTYPE test SYSTEM \"http://192.168.1.100/\">\n+<test>\n+\n+    <!-- this action throws an exception in the Action.begin method -->\n+    <badBegin>\n+        <touch/>\n+        <touch/>\n+    </badBegin>\n+\n+    <hello name=\"John Doe\">XXX&amp;</hello>\n+\n+</test>\n\\ No newline at end of file\n"
+  },
+  {
+    "索引": 3,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_010_20250605_140759.patch",
+    "实际补丁": null,
+    "修改文件": "logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java",
+    "修改位置": "31-35",
+    "内容": "From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001\nFrom: Ceki Gulcu <ceki@qos.ch>\nDate: Tue, 17 Dec 2024 19:42:28 +0100\nSubject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by\n ignoring external DTD files in DOCTYPE\n\nSigned-off-by: Ceki Gulcu <ceki@qos.ch>\n---\n .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----\n .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++\n .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--\n 3 files changed, 85 insertions(+), 14 deletions(-)\n create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml\n\ndiff --git a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java\nindex 2dcca24c7d..4dc486be31 100755\n--- a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java\n+++ b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java\n@@ -31,7 +35,7 @@\n \n /**\n  * Test whether SaxEventRecorder does a good job.\n- * \n+ *\n  * @author Ceki Gulcu\n  */\n public class SaxEventRecorderTest {\n"
+  }
+]

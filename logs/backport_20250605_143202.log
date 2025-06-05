@@ -1,0 +1,1426 @@
+2025-06-05 14:32:02.520 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250605_143202.log
+2025-06-05 14:32:02.520 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-05 14:32:02.521 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/qos-ch/logback/commit/5f05041cba4c4ac0a62748c5c527a2da48999f2d.patch
+2025-06-05 14:32:02.521 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-05 14:32:02.521 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-05 14:32:02.522 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-05 14:32:02.522 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-05 14:32:02.523 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v_1.2.8']
+2025-06-05 14:32:02.523 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v_1.2.8
+2025-06-05 14:32:02.524 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: 5f05041cba4c4ac0a62748c5c527a2da48999f2d.patch
+2025-06-05 14:32:02.524 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-05 14:32:02.525 | INFO     | modules.direct_apply:_download_patch:240 - 上游补丁文件已存在: workspace/qos-ch/logback/5f0504/patches/upstream_5f0504.patch
+2025-06-05 14:32:02.525 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-05 14:32:02.525 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/upstream_5f0504.patch
+2025-06-05 14:32:02.541 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_v_1.2.8
+2025-06-05 14:32:02.573 | ERROR    | modules.direct_apply:_apply_patch:315 - 补丁应用失败: error: patch failed: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java:40
+error: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java: patch does not apply
+error: patch failed: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java:15
+error: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-05 14:32:02.603 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_v_1.2.8
+2025-06-05 14:32:02.603 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-05 14:32:02.603 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/upstream_5f0504.patch
+2025-06-05 14:32:02.604 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/upstream_5f0504.patch
+2025-06-05 14:32:02.604 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 244 行内容
+2025-06-05 14:32:02.604 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+2025-06-05 14:32:02.604 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java @@ -15,6 +15,7 @@ (modification)
+2025-06-05 14:32:02.605 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java @@ -40,20 +41,43 @@ (modification)
+2025-06-05 14:32:02.605 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java @@ -61,7 +85,12 @@ (modification)
+2025-06-05 14:32:02.605 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java @@ -83,7 +112,7 @@ (modification)
+2025-06-05 14:32:02.605 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java @@ -93,11 +122,11 @@ (modification)
+2025-06-05 14:32:02.606 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java @@ -116,7 +145,6 @@ (modification)
+2025-06-05 14:32:02.606 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java @@ -169,20 +197,17 @@ (modification)
+2025-06-05 14:32:02.606 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: logback-core/src/test/input/joran/event-ssrf.xml
+2025-06-05 14:32:02.606 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: logback-core/src/test/input/joran/event-ssrf.xml @@ -0,0 +1,27 @@ (addition)
+2025-06-05 14:32:02.606 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+2025-06-05 14:32:02.607 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java @@ -15,12 +15,16 @@ (modification)
+2025-06-05 14:32:02.607 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java @@ -31,7 +35,7 @@ (modification)
+2025-06-05 14:32:02.607 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java @@ -59,15 +63,30 @@ (modification)
+2025-06-05 14:32:02.607 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java @@ -78,7 +97,7 @@ (modification)
+2025-06-05 14:32:02.607 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 12 个修改块
+2025-06-05 14:32:02.608 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 12 个块
+2025-06-05 14:32:02.608 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/upstream_5f0504.patch
+2025-06-05 14:32:02.608 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_001_20250605_143202.patch (修改文件: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java)
+2025-06-05 14:32:02.609 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_002_20250605_143202.patch (修改文件: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java)
+2025-06-05 14:32:02.609 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_003_20250605_143202.patch (修改文件: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java)
+2025-06-05 14:32:02.610 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_004_20250605_143202.patch (修改文件: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java)
+2025-06-05 14:32:02.610 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_005_20250605_143202.patch (修改文件: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java)
+2025-06-05 14:32:02.610 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_006_20250605_143202.patch (修改文件: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java)
+2025-06-05 14:32:02.611 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_007_20250605_143202.patch (修改文件: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java)
+2025-06-05 14:32:02.611 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_008_20250605_143202.patch (修改文件: logback-core/src/test/input/joran/event-ssrf.xml)
+2025-06-05 14:32:02.611 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_009_20250605_143202.patch (修改文件: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java)
+2025-06-05 14:32:02.612 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_010_20250605_143202.patch (修改文件: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java)
+2025-06-05 14:32:02.612 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_011_20250605_143202.patch (修改文件: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java)
+2025-06-05 14:32:02.613 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_012_20250605_143202.patch (修改文件: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java)
+2025-06-05 14:32:02.613 | INFO     | modules.chunk_analyzer:execute:60 - 已为 12 个块创建单独的补丁文件
+2025-06-05 14:32:02.613 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-05 14:32:02.613 | INFO     | modules.chunk_analyzer:execute:66 - From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+index 1a6df6118f..eb658bd433 100644
+--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
++++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+@@ -15,6 +15,7 @@
+ 
+ import static ch.qos.logback.core.CoreConstants.XML_PARSING;
+ 
++import java.io.ByteArrayInputStream;
+ import java.io.IOException;
+ import java.io.InputStream;
+ import java.util.ArrayList;
+
+2025-06-05 14:32:02.613 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-05 14:32:02.614 | INFO     | modules.chunk_analyzer:execute:66 - From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+index 1a6df6118f..eb658bd433 100644
+--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
++++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+@@ -40,20 +41,43 @@
+ 
+ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+ 
++    // org.xml.sax.ext.LexicalHandler is an optional interface
+     final ContextAwareImpl contextAwareImpl;
+     final ElementPath elementPath;
+     List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();
+     Locator locator;
+ 
++
+     public SaxEventRecorder(Context context) {
+         this(context, new ElementPath());
+     }
+ 
++
+     public SaxEventRecorder(Context context, ElementPath elementPath) {
+         contextAwareImpl = new ContextAwareImpl(context, this);
+         this.elementPath = elementPath;
+     }
+ 
++    /**
++     * An implementation which disallows external DTDs
++     *
++     * @param publicId The public identifier, or null if none is
++     *                 available.
++     * @param systemId The system identifier provided in the XML
++     *                 document.
++     * @return
++     * @throws SAXException
++     * @throws IOException
++     * @since 1.5.13
++     */
++    @Override
++    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
++        addWarn("Document Type Declaration (DOCTYPE) with external file reference is");
++        addWarn("disallowed to prevent Server-Side Request Forgery (SSRF) attacks.");
++        addWarn("returning contents of SYSTEM " +systemId+ " as a white space");
++        return new InputSource(new ByteArrayInputStream(" ".getBytes()));
++    }
++
+     final public void recordEvents(InputStream inputStream) throws JoranException {
+         recordEvents(new InputSource(inputStream));
+     }
+
+2025-06-05 14:32:02.614 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-05 14:32:02.614 | INFO     | modules.chunk_analyzer:execute:66 - From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+index 1a6df6118f..eb658bd433 100644
+--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
++++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+@@ -61,7 +85,12 @@ final public void recordEvents(InputStream inputStream) throws JoranException {
+     public void recordEvents(InputSource inputSource) throws JoranException {
+         SAXParser saxParser = buildSaxParser();
+         try {
++            // the following sax property can be set in order to add 'this' as LexicalHandler to the saxParser
++            // However, this is not needed as long as resolveEntity() method is implemented as above
++            // saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", this);
++
+             saxParser.parse(inputSource, this);
++
+             return;
+         } catch (IOException ie) {
+             handleError("I/O error occurred while parsing xml file", ie);
+
+2025-06-05 14:32:02.615 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-06-05 14:32:02.615 | INFO     | modules.chunk_analyzer:execute:66 - From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+index 1a6df6118f..eb658bd433 100644
+--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
++++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+@@ -83,7 +112,7 @@ private SAXParser buildSaxParser() throws JoranException {
+         try {
+             SAXParserFactory spf = SAXParserFactory.newInstance();
+             spf.setValidating(false);
+-            // spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
++            //spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+             // See LOGBACK-1465
+             spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+             spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+
+2025-06-05 14:32:02.615 | INFO     | modules.chunk_analyzer:execute:62 - 第 5 个补丁文件为：
+2025-06-05 14:32:02.616 | INFO     | modules.chunk_analyzer:execute:66 - From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+index 1a6df6118f..eb658bd433 100644
+--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
++++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+@@ -93,11 +122,11 @@ private SAXParser buildSaxParser() throws JoranException {
+             String errMsg = "Error during SAX paser configuration. See https://logback.qos.ch/codes.html#saxParserConfiguration";
+             addError(errMsg, pce);
+             throw new JoranException(errMsg, pce);
+-        }  catch (SAXException pce) {
++        } catch (SAXException pce) {
+             String errMsg = "Error during parser creation or parser configuration";
+             addError(errMsg, pce);
+             throw new JoranException(errMsg, pce);
+-        } 
++        }
+     }
+ 
+     public void startDocument() {
+
+2025-06-05 14:32:02.616 | INFO     | modules.chunk_analyzer:execute:62 - 第 6 个补丁文件为：
+2025-06-05 14:32:02.616 | INFO     | modules.chunk_analyzer:execute:66 - From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+index 1a6df6118f..eb658bd433 100644
+--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
++++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+@@ -116,7 +145,6 @@ protected boolean shouldIgnoreForElementPath(String tagName) {
+     }
+ 
+     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
+-
+         String tagName = getTagName(localName, qName);
+         if (!shouldIgnoreForElementPath(tagName)) {
+             elementPath.push(tagName);
+
+2025-06-05 14:32:02.617 | INFO     | modules.chunk_analyzer:execute:62 - 第 7 个补丁文件为：
+2025-06-05 14:32:02.617 | INFO     | modules.chunk_analyzer:execute:66 - From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+index 1a6df6118f..eb658bd433 100644
+--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
++++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+@@ -169,20 +197,17 @@ String getTagName(String localName, String qName) {
+     }
+ 
+     public void error(SAXParseException spe) throws SAXException {
+-        addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber());
++        addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());
+         addError(spe.toString());
+     }
+ 
+     public void fatalError(SAXParseException spe) throws SAXException {
+-        addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber());
++        addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());
+         addError(spe.toString());
+     }
+ 
+     public void warning(SAXParseException spe) throws SAXException {
+-        addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber(), spe);
++        addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber(), spe);
+     }
+ 
+     public void addError(String msg) {
+
+2025-06-05 14:32:02.617 | INFO     | modules.chunk_analyzer:execute:62 - 第 8 个补丁文件为：
+2025-06-05 14:32:02.618 | INFO     | modules.chunk_analyzer:execute:66 - From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/test/input/joran/event-ssrf.xml b/logback-core/src/test/input/joran/event-ssrf.xml
+new file mode 100644
+index 0000000000..5b5b57812f
+--- /dev/null
++++ b/logback-core/src/test/input/joran/event-ssrf.xml
+@@ -0,0 +1,27 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++<!--
++  ~ Logback: the reliable, generic, fast and flexible logging framework.
++  ~ Copyright (C) 1999-2024, QOS.ch. All rights reserved.
++  ~
++  ~ This program and the accompanying materials are dual-licensed under
++  ~ either the terms of the Eclipse Public License v1.0 as published by
++  ~ the Eclipse Foundation
++  ~
++  ~   or (per the licensee's choosing)
++  ~
++  ~ under the terms of the GNU Lesser General Public License version 2.1
++  ~ as published by the Free Software Foundation.
++  -->
++
++<!DOCTYPE test SYSTEM "http://192.168.1.100/">
++<test>
++
++    <!-- this action throws an exception in the Action.begin method -->
++    <badBegin>
++        <touch/>
++        <touch/>
++    </badBegin>
++
++    <hello name="John Doe">XXX&amp;</hello>
++
++</test>
+\ No newline at end of file
+
+2025-06-05 14:32:02.618 | INFO     | modules.chunk_analyzer:execute:62 - 第 9 个补丁文件为：
+2025-06-05 14:32:02.618 | INFO     | modules.chunk_analyzer:execute:66 - From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+index 2dcca24c7d..4dc486be31 100755
+--- a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
++++ b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+@@ -15,12 +15,16 @@
+ 
+ import java.io.FileInputStream;
+ import java.util.List;
++import java.util.concurrent.TimeUnit;
+ 
+ import javax.xml.parsers.SAXParser;
+ import javax.xml.parsers.SAXParserFactory;
+ 
++import ch.qos.logback.core.util.StatusPrinter;
++import ch.qos.logback.core.util.StatusPrinter2;
+ import org.junit.jupiter.api.Assertions;
+ import org.junit.jupiter.api.Test;
++import org.junit.jupiter.api.Timeout;
+ import org.xml.sax.Attributes;
+ 
+ import ch.qos.logback.core.Context;
+
+2025-06-05 14:32:02.618 | INFO     | modules.chunk_analyzer:execute:62 - 第 10 个补丁文件为：
+2025-06-05 14:32:02.619 | INFO     | modules.chunk_analyzer:execute:66 - From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+index 2dcca24c7d..4dc486be31 100755
+--- a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
++++ b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+@@ -31,7 +35,7 @@
+ 
+ /**
+  * Test whether SaxEventRecorder does a good job.
+- * 
++ *
+  * @author Ceki Gulcu
+  */
+ public class SaxEventRecorderTest {
+
+2025-06-05 14:32:02.619 | INFO     | modules.chunk_analyzer:execute:62 - 第 11 个补丁文件为：
+2025-06-05 14:32:02.619 | INFO     | modules.chunk_analyzer:execute:66 - From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+index 2dcca24c7d..4dc486be31 100755
+--- a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
++++ b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+@@ -59,15 +63,30 @@ public void dump(List<SaxEvent> seList) {
+     }
+ 
+     @Test
+-    public void test1() throws Exception {
++    public void testEvent1() throws Exception {
++        System.out.println("test1");
+         List<SaxEvent> seList = doTest("event1.xml");
++        StatusPrinter.print(context);
+         Assertions.assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+         Assertions.assertEquals(11, seList.size());
+     }
+ 
++    @Test()
++    @Timeout(value = 500, unit = TimeUnit.MILLISECONDS)  // timeout in case attack is not prevented
++    public void testEventSSRF() throws Exception {
++        try {
++            List<SaxEvent> seList = doTest("event-ssrf.xml");
++            Assertions.assertTrue(statusChecker.getHighestLevel(0) == Status.WARN);
++            statusChecker.assertContainsMatch(Status.WARN, "Document Type Declaration");
++            Assertions.assertEquals(11, seList.size());
++        } finally {
++            StatusPrinter.print(context);
++        }
++    }
++
+     @Test
+-    public void test2() throws Exception {
++    public void testEventAmp() throws Exception {
+         List<SaxEvent> seList = doTest("ampEvent.xml");
+         Assertions.assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+
+2025-06-05 14:32:02.619 | INFO     | modules.chunk_analyzer:execute:62 - 第 12 个补丁文件为：
+2025-06-05 14:32:02.620 | INFO     | modules.chunk_analyzer:execute:66 - From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+index 2dcca24c7d..4dc486be31 100755
+--- a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
++++ b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+@@ -78,7 +97,7 @@ public void test2() throws Exception {
+     }
+ 
+     @Test
+-    public void test3() throws Exception {
++    public void testInc() throws Exception {
+         List<SaxEvent> seList = doTest("inc.xml");
+         Assertions.assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+
+2025-06-05 14:32:02.620 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/12 个块补丁: chunk_001_20250605_143202.patch
+2025-06-05 14:32:02.624 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_001_20250605_143202.patch
+2025-06-05 14:32:02.624 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/12 个块补丁: chunk_002_20250605_143202.patch
+2025-06-05 14:32:02.630 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_002_20250605_143202.patch 应用失败: error: patch failed: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java:40
+error: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java: patch does not apply
+
+2025-06-05 14:32:02.630 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/12 个块补丁: chunk_003_20250605_143202.patch
+2025-06-05 14:32:02.637 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_003_20250605_143202.patch 应用失败: error: patch failed: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java:61
+error: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java: patch does not apply
+
+2025-06-05 14:32:02.638 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 4/12 个块补丁: chunk_004_20250605_143202.patch
+2025-06-05 14:32:02.643 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_004_20250605_143202.patch 应用失败: error: patch failed: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java:83
+error: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java: patch does not apply
+
+2025-06-05 14:32:02.644 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 5/12 个块补丁: chunk_005_20250605_143202.patch
+2025-06-05 14:32:02.651 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_005_20250605_143202.patch 应用失败: error: patch failed: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java:93
+error: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java: patch does not apply
+
+2025-06-05 14:32:02.652 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 6/12 个块补丁: chunk_006_20250605_143202.patch
+2025-06-05 14:32:02.658 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_006_20250605_143202.patch 应用失败: error: patch failed: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java:116
+error: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java: patch does not apply
+
+2025-06-05 14:32:02.658 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 7/12 个块补丁: chunk_007_20250605_143202.patch
+2025-06-05 14:32:02.665 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_007_20250605_143202.patch 应用失败: error: patch failed: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java:169
+error: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java: patch does not apply
+
+2025-06-05 14:32:02.665 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 8/12 个块补丁: chunk_008_20250605_143202.patch
+2025-06-05 14:32:02.670 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_008_20250605_143202.patch
+2025-06-05 14:32:02.670 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 9/12 个块补丁: chunk_009_20250605_143202.patch
+2025-06-05 14:32:02.677 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_009_20250605_143202.patch 应用失败: error: patch failed: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java:15
+error: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java: patch does not apply
+
+2025-06-05 14:32:02.677 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 10/12 个块补丁: chunk_010_20250605_143202.patch
+2025-06-05 14:32:02.682 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_010_20250605_143202.patch
+2025-06-05 14:32:02.683 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 11/12 个块补丁: chunk_011_20250605_143202.patch
+2025-06-05 14:32:02.692 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_011_20250605_143202.patch 应用失败: error: patch failed: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java:59
+error: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java: patch does not apply
+
+2025-06-05 14:32:02.693 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 12/12 个块补丁: chunk_012_20250605_143202.patch
+2025-06-05 14:32:02.701 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_012_20250605_143202.patch 应用失败: error: patch failed: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java:78
+error: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java: patch does not apply
+
+2025-06-05 14:32:02.701 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-06-05 14:32:02.701 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 12
+2025-06-05 14:32:02.702 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 3
+2025-06-05 14:32:02.702 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 9
+2025-06-05 14:32:02.702 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 3 个块补丁，总共 12 个
+2025-06-05 14:32:02.704 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/remaining_chunks_20250605_143202.patch
+2025-06-05 14:32:02.704 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 9 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/remaining_chunks_20250605_143202.patch
+2025-06-05 14:32:02.705 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/remaining_chunks_20250605_143202.patch
+2025-06-05 14:32:02.705 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.10秒
+2025-06-05 14:32:02.706 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/metrics_5f0504_20250605_143202.json
+2025-06-05 14:32:02.707 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202
+2025-06-05 14:32:02.708 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202
+2025-06-05 14:32:02.708 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202/patches
+2025-06-05 14:32:02.708 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202/patches
+2025-06-05 14:32:02.709 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202/patches/original_patch.txt
+2025-06-05 14:32:02.709 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202
+2025-06-05 14:32:02.709 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202/patches/applied_chunk_1.txt
+2025-06-05 14:32:02.710 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202/patches/applied_chunk_2.txt
+2025-06-05 14:32:02.711 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202/patches/applied_chunk_3.txt
+2025-06-05 14:32:02.711 | INFO     | modules.chunk_analyzer:_get_patch_content:1282 - 已将合并的补丁块内容保存到: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202/patches/all_applied_chunks.txt
+2025-06-05 14:32:02.711 | INFO     | modules.chunk_analyzer:_get_patch_content:1286 - 从context获取应用成功的补丁内容
+2025-06-05 14:32:02.712 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202
+2025-06-05 14:32:02.712 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202/patches/remaining_patch.txt
+2025-06-05 14:32:02.713 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/remaining_chunks_20250605_143202.patch
+2025-06-05 14:32:02.713 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/qos-ch/logback/5f0504/evaluations/chunk_analyzer/details_5f0504_20250605_143202
+2025-06-05 14:32:02.717 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-05 14:32:02.717 | INFO     | modules.llm_adapter:execute:70 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/upstream_5f0504.patch
+2025-06-05 14:32:02.718 | INFO     | modules.llm_adapter:execute:72 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/upstream_5f0504.patch
+2025-06-05 14:32:02.718 | INFO     | modules.llm_adapter:_prepare_prompt_data:222 - 使用传统上下文差异
+2025-06-05 14:32:02.718 | INFO     | modules.llm_adapter:_get_context_diff:807 - diff_file: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/diff
+2025-06-05 14:32:02.719 | INFO     | modules.llm_adapter:_get_context_diff:811 - diff_content: modified file: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+--- workspace/qos-ch/logback/5f0504/newer/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
++++ workspace/qos-ch/logback/5f0504/v_1.2.8/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+@@ -20,7 +20,6 @@
+  import java.util.ArrayList;
+  import java.util.List;
+  
+ -import javax.xml.parsers.ParserConfigurationException;
+  import javax.xml.parsers.SAXParser;
+  import javax.xml.parsers.SAXParserFactory;
+  
+@@ -40,29 +39,25 @@
+  
+  public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+  
+ -    final ContextAwareImpl contextAwareImpl;
+ -    final ElementPath elementPath;
+ -    List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();
+ +    final ContextAwareImpl cai;
+ +
+ +    public SaxEventRecorder(Context context) {
+ +        cai = new ContextAwareImpl(context, this);
+ +    }
+ +
+ +    public List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();
+      Locator locator;
+ -
+ -    public SaxEventRecorder(Context context) {
+ -        this(context, new ElementPath());
+ -    }
+ -
+ -    public SaxEventRecorder(Context context, ElementPath elementPath) {
+ -        contextAwareImpl = new ContextAwareImpl(context, this);
+ -        this.elementPath = elementPath;
+ -    }
+ +    ElementPath globalElementPath = new ElementPath();
+  
+      final public void recordEvents(InputStream inputStream) throws JoranException {
+          recordEvents(new InputSource(inputStream));
+      }
+  
+ -    public void recordEvents(InputSource inputSource) throws JoranException {
+ +    public List<SaxEvent> recordEvents(InputSource inputSource) throws JoranException {
+          SAXParser saxParser = buildSaxParser();
+          try {
+              saxParser.parse(inputSource, this);
+ -            return;
+ +            return saxEventList;
+          } catch (IOException ie) {
+              handleError("I/O error occurred while parsing xml file", ie);
+          } catch (SAXException se) {
+@@ -83,21 +78,16 @@
+          try {
+              SAXParserFactory spf = SAXParserFactory.newInstance();
+              spf.setValidating(false);
+ -            // spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+ -            // See LOGBACK-1465
+ +            //spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+              spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+              spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+              spf.setNamespaceAware(true);
+              return spf.newSAXParser();
+ -        } catch (ParserConfigurationException pce) {
+ -            String errMsg = "Error during SAX paser configuration. See https://logback.qos.ch/codes.html#saxParserConfiguration";
+ +        } catch (Exception pce) {
+ +            String errMsg = "Parser configuration error occurred";
+              addError(errMsg, pce);
+              throw new JoranException(errMsg, pce);
+ -        }  catch (SAXException pce) {
+ -            String errMsg = "Error during parser creation or parser configuration";
+ -            addError(errMsg, pce);
+ -            throw new JoranException(errMsg, pce);
+ -        } 
+ +        }
+      }
+  
+      public void startDocument() {
+@@ -111,17 +101,11 @@
+          locator = l;
+      }
+  
+ -    protected boolean shouldIgnoreForElementPath(String tagName) {
+ -        return false;
+ -    }
+ -
+      public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
+  
+          String tagName = getTagName(localName, qName);
+ -        if (!shouldIgnoreForElementPath(tagName)) {
+ -            elementPath.push(tagName);
+ -        }
+ -        ElementPath current = elementPath.duplicate();
+ +        globalElementPath.push(tagName);
+ +        ElementPath current = globalElementPath.duplicate();
+          saxEventList.add(new StartEvent(current, namespaceURI, localName, qName, atts, getLocator()));
+      }
+  
+@@ -154,10 +138,7 @@
+  
+      public void endElement(String namespaceURI, String localName, String qName) {
+          saxEventList.add(new EndEvent(namespaceURI, localName, qName, getLocator()));
+ -        String tagName = getTagName(localName, qName);
+ -        if (!shouldIgnoreForElementPath(tagName)) {
+ -            elementPath.pop();
+ -        }
+ +        globalElementPath.pop();
+      }
+  
+      String getTagName(String localName, String qName) {
+@@ -169,56 +150,54 @@
+      }
+  
+      public void error(SAXParseException spe) throws SAXException {
+ -        addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column "
+ -                + spe.getColumnNumber());
+ +        addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());
+          addError(spe.toString());
+ +        
+      }
+  
+      public void fatalError(SAXParseException spe) throws SAXException {
+ -        addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column "
+ -                + spe.getColumnNumber());
+ +        addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());
+          addError(spe.toString());
+      }
+  
+      public void warning(SAXParseException spe) throws SAXException {
+ -        addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column "
+ -                + spe.getColumnNumber(), spe);
+ +        addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber(), spe);
+      }
+  
+      public void addError(String msg) {
+ -        contextAwareImpl.addError(msg);
+ +        cai.addError(msg);
+      }
+  
+      public void addError(String msg, Throwable ex) {
+ -        contextAwareImpl.addError(msg, ex);
+ +        cai.addError(msg, ex);
+      }
+  
+      public void addInfo(String msg) {
+ -        contextAwareImpl.addInfo(msg);
+ +        cai.addInfo(msg);
+      }
+  
+      public void addInfo(String msg, Throwable ex) {
+ -        contextAwareImpl.addInfo(msg, ex);
+ +        cai.addInfo(msg, ex);
+      }
+  
+      public void addStatus(Status status) {
+ -        contextAwareImpl.addStatus(status);
+ +        cai.addStatus(status);
+      }
+  
+      public void addWarn(String msg) {
+ -        contextAwareImpl.addWarn(msg);
+ +        cai.addWarn(msg);
+      }
+  
+      public void addWarn(String msg, Throwable ex) {
+ -        contextAwareImpl.addWarn(msg, ex);
+ +        cai.addWarn(msg, ex);
+      }
+  
+      public Context getContext() {
+ -        return contextAwareImpl.getContext();
+ +        return cai.getContext();
+      }
+  
+      public void setContext(Context context) {
+ -        contextAwareImpl.setContext(context);
+ +        cai.setContext(context);
+      }
+  
+      public List<SaxEvent> getSaxEventList() {
+
+""""""
+modified file: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+--- workspace/qos-ch/logback/5f0504/newer/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
++++ workspace/qos-ch/logback/5f0504/v_1.2.8/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+@@ -13,21 +13,23 @@
+   */
+  package ch.qos.logback.core.joran.event;
+  
+ +import static org.junit.Assert.*;
+ +
+  import java.io.FileInputStream;
+  import java.util.List;
+  
+  import javax.xml.parsers.SAXParser;
+  import javax.xml.parsers.SAXParserFactory;
+  
+ -import org.junit.jupiter.api.Assertions;
+ -import org.junit.jupiter.api.Test;
+ +import ch.qos.logback.core.status.StatusChecker;
+ +import org.junit.Test;
+  import org.xml.sax.Attributes;
+  
+  import ch.qos.logback.core.Context;
+  import ch.qos.logback.core.ContextBase;
+  import ch.qos.logback.core.status.Status;
+ -import ch.qos.logback.core.testUtil.CoreTestConstants;
+ -import ch.qos.logback.core.status.testUtil.StatusChecker;
+ +import ch.qos.logback.core.status.StatusManager;
+ +import ch.qos.logback.core.util.CoreTestConstants;
+  
+
+""""""
+
+2025-06-05 14:32:02.719 | INFO     | modules.llm_adapter:_call_llm:932 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-05 14:32:02.805 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-05 14:32:02.805 | INFO     | llm_assistant:get_cached_response:270 - 成功读取缓存响应: workspace/qos-ch/logback/5f0504/llm_output/output_v_1.2.8_qwen-plus.patch
+2025-06-05 14:32:02.805 | INFO     | llm_assistant:run:283 - 使用缓存的响应
+2025-06-05 14:32:02.806 | INFO     | modules.llm_adapter:_call_llm:954 - llm.run() result:{'openai_responses': ['diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java\nindex 1a6df6118f..eb658bd433 100644\n--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java\n+++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java\n@@ -20,7 +20,6 @@\n import java.util.ArrayList;\n import java.util.List;\n \n-import javax.xml.parsers.ParserConfigurationException;\n import javax.xml.parsers.SAXParser;\n import javax.xml.parsers.SAXParserFactory;\n \n@@ -39,6 +38,7 @@\n \n public class SaxEventRecorder extends DefaultHandler implements ContextAware {\n \n+    // org.xml.sax.ext.LexicalHandler is an optional interface\n     final ContextAwareImpl cai;\n \n     public List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();\n@@ -46,6 +46,20 @@ ElementPath globalElementPath = new ElementPath();\n \n     public SaxEventRecorder(Context context) {\n         cai = new ContextAwareImpl(context, this);\n+\n+        /**\n+         * An implementation which disallows external DTDs\n+         */\n+    }\n+\n+    @Override\n+    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {\n+        cai.addWarn("Document Type Declaration (DOCTYPE) with external file reference is");\n+        cai.addWarn("disallowed to prevent Server-Side Request Forgery (SSRF) attacks.");\n+        cai.addWarn("returning contents of SYSTEM " +systemId+ " as a white space");\n+        return new InputSource(new ByteArrayInputStream(" ".getBytes()));\n     }\n \n     final public void recordEvents(InputStream inputStream) throws JoranException {\n@@ -53,7 +67,12 @@ final public void recordEvents(InputStream inputStream) throws JoranException {\n     public List<SaxEvent> recordEvents(InputSource inputSource) throws JoranException {\n         SAXParser saxParser = buildSaxParser();\n         try {\n+            // the following sax property can be set in order to add \'this\' as LexicalHandler to the saxParser\n+            // However, this is not needed as long as resolveEntity() method is implemented as above\n+            // saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", this);\n+\n             saxParser.parse(inputSource, this);\n+\n             return saxEventList;\n         } catch (IOException ie) {\n             handleError("I/O error occurred while parsing xml file", ie);\n@@ -65,7 +84,7 @@ private SAXParser buildSaxParser() throws JoranException {\n         try {\n             SAXParserFactory spf = SAXParserFactory.newInstance();\n             spf.setValidating(false);\n-            //spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);\n+            // spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);\n             spf.setFeature("http://xml.org/sax/features/external-general-entities", false);\n             spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);\n             spf.setNamespaceAware(true);\n@@ -73,11 +92,11 @@ private SAXParser buildSaxParser() throws JoranException {\n             String errMsg = "Parser configuration error occurred";\n             cai.addError(errMsg, pce);\n             throw new JoranException(errMsg, pce);\n-        } \n+        }\n     }\n \n     public void startDocument() {\n-\n+        // No-op\n     }\n \n     public void setDocumentLocator(Locator l) {\n@@ -85,7 +104,7 @@ public void setDocumentLocator(Locator l) {\n     }\n \n     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {\n-\n+        // No-op\n         String tagName = getTagName(localName, qName);\n         globalElementPath.push(tagName);\n         ElementPath current = globalElementPath.duplicate();\n@@ -118,20 +137,17 @@ String getTagName(String localName, String qName) {\n     }\n \n     public void error(SAXParseException spe) throws SAXException {\n-        cai.addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column "\n-                + spe.getColumnNumber());\n+        cai.addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());\n         cai.addError(spe.toString());\n     }\n \n     public void fatalError(SAXParseException spe) throws SAXException {\n-        cai.addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column "\n-                + spe.getColumnNumber());\n+        cai.addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());\n         cai.addError(spe.toString());\n     }\n \n     public void warning(SAXParseException spe) throws SAXException {\n-        cai.addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column "\n-                + spe.getColumnNumber(), spe);\n+        cai.addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber(), spe);\n     }\n \n     public void addError(String msg) {\ndiff --git a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java\nindex 2dcca24c7d..4dc486be31 100755\n--- a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java\n+++ b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java\n@@ -13,13 +13,15 @@\n  */\n package ch.qos.logback.core.joran.event;\n \n+import static org.junit.Assert.*;\n+\n import java.io.FileInputStream;\n import java.util.List;\n \n import javax.xml.parsers.SAXParser;\n import javax.xml.parsers.SAXParserFactory;\n \n-import org.junit.jupiter.api.Assertions;\n+import ch.qos.logback.core.status.StatusChecker;\n import org.junit.Test;\n import org.xml.sax.Attributes;\n \n@@ -59,15 +61,30 @@ public void dump(List<SaxEvent> seList) {\n     }\n \n     @Test\n-    public void test1() throws Exception {\n+    public void testEvent1() throws Exception {\n+        System.out.println("test1");\n         List<SaxEvent> seList = doTest("event1.xml");\n+        StatusPrinter.print(context);\n         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);\n         // dump(seList);\n         assertEquals(11, seList.size());\n     }\n \n+    @Test(timeout=500)\n+    public void testEventSSRF() throws Exception {\n+        try {\n+            List<SaxEvent> seList = doTest("event-ssrf.xml");\n+            assertTrue(statusChecker.getHighestLevel(0) == Status.WARN);\n+            statusChecker.assertContainsMatch(Status.WARN, "Document Type Declaration");\n+            assertEquals(11, seList.size());\n+        } finally {\n+            StatusPrinter.print(context);\n+        }\n+    }\n+\n     @Test\n-    public void test2() throws Exception {\n+    public void testEventAmp() throws Exception {\n         List<SaxEvent> seList = doTest("ampEvent.xml");\n         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);\n         // dump(seList);\n@@ -78,7 +95,7 @@ public void test2() throws Exception {\n     }\n \n     @Test\n-    public void test3() throws Exception {\n+    public void testInc() throws Exception {\n         List<SaxEvent> seList = doTest("inc.xml");\n         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);\n         // dump(seList);'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-06-05 14:32:02.806 | INFO     | modules.llm_adapter:_parse_llm_response:1036 - 原始LLM响应(前100字符): diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logb...
+2025-06-05 14:32:02.806 | INFO     | modules.llm_adapter:_parse_llm_response:1070 - 找到diff --git格式，内容前100字符: diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logb...
+2025-06-05 14:32:02.807 | INFO     | modules.llm_adapter:_save_llm_response:1205 - LLM响应已保存到: workspace/qos-ch/logback/5f0504/llm_output/output_v_1.2.8_qwen-plus.patch
+2025-06-05 14:32:02.808 | INFO     | modules.llm_adapter:_save_llm_response:1206 - 原始LLM响应已保存到: workspace/qos-ch/logback/5f0504/llm_output/raw_output_v_1.2.8_qwen-plus.patch
+2025-06-05 14:32:02.808 | INFO     | modules.llm_adapter:execute:96 - ==================================================
+2025-06-05 14:32:02.808 | INFO     | modules.llm_adapter:execute:97 - LLM适配器执行完成 - 摘要
+2025-06-05 14:32:02.809 | INFO     | modules.llm_adapter:execute:98 - 提示模式: 标准模式
+2025-06-05 14:32:02.809 | INFO     | modules.llm_adapter:execute:99 - 提示类型: 标准上下文差异
+2025-06-05 14:32:02.809 | INFO     | modules.llm_adapter:execute:100 - 函数上下文统计: 总尝试: 0, 成功: 0, 回退: 0
+2025-06-05 14:32:02.809 | INFO     | modules.llm_adapter:execute:104 - 执行时间: 0.09 秒
+2025-06-05 14:32:02.809 | INFO     | modules.llm_adapter:execute:105 - 生成的补丁保存到: workspace/qos-ch/logback/5f0504/llm_output/output_v_1.2.8_qwen-plus.patch
+2025-06-05 14:32:02.810 | INFO     | modules.llm_adapter:execute:106 - ==================================================
+2025-06-05 14:32:02.810 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/qos-ch/logback/5f0504/evaluations/llm_adapter/metrics_5f0504_20250605_143202.json
+2025-06-05 14:32:02.811 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-05 14:32:02.811 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/qos-ch/logback/5f0504/llm_output/output_v_1.2.8_qwen-plus.patch
+2025-06-05 14:32:02.815 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_v_1.2.8_20250605_143202
+2025-06-05 14:32:02.860 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+index 1a6df6118f..eb658bd433 100644
+--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
++++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+@@ -20,7 +20,6 @@
+ import java.util.ArrayList;
+ import java.util.List;
+ 
+-import javax.xml.parsers.ParserConfigurationException;
+ import javax.xml.parsers.SAXParser;
+ import javax.xml.parsers.SAXParserFactory;
+ 
+@@ -39,6 +38,7 @@
+ 
+ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+ 
++    // org.xml.sax.ext.LexicalHandler is an optional interface
+     final ContextAwareImpl cai;
+ 
+     public List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();
+@@ -46,6 +46,20 @@ ElementPath globalElementPath = new ElementPath();
+ 
+     public SaxEventRecorder(Context context) {
+         cai = new ContextAwareImpl(context, this);
++
++        /**
++         * An implementation which disallows external DTDs
++         */
++    }
++
++    @Override
++    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
++        cai.addWarn("Document Type Declaration (DOCTYPE) with external file reference is");
++        cai.addWarn("disallowed to prevent Server-Side Request Forgery (SSRF) attacks.");
++        cai.addWarn("returning contents of SYSTEM " +systemId+ " as a white space");
++        return new InputSource(new ByteArrayInputStream(" ".getBytes()));
+     }
+ 
+     final public void recordEvents(InputStream inputStream) throws JoranException {
+@@ -53,7 +67,12 @@ final public void recordEvents(InputStream inputStream) throws JoranException {
+     public List<SaxEvent> recordEvents(InputSource inputSource) throws JoranException {
+         SAXParser saxParser = buildSaxParser();
+         try {
++            // the following sax property can be set in order to add 'this' as LexicalHandler to the saxParser
++            // However, this is not needed as long as resolveEntity() method is implemented as above
++            // saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", this);
++
+             saxParser.parse(inputSource, this);
++
+             return saxEventList;
+         } catch (IOException ie) {
+             handleError("I/O error occurred while parsing xml file", ie);
+@@ -65,7 +84,7 @@ private SAXParser buildSaxParser() throws JoranException {
+         try {
+             SAXParserFactory spf = SAXParserFactory.newInstance();
+             spf.setValidating(false);
+-            //spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
++            // spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+             spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+             spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+             spf.setNamespaceAware(true);
+@@ -73,11 +92,11 @@ private SAXParser buildSaxParser() throws JoranException {
+             String errMsg = "Parser configuration error occurred";
+             cai.addError(errMsg, pce);
+             throw new JoranException(errMsg, pce);
+-        } 
++        }
+     }
+ 
+     public void startDocument() {
+-
++        // No-op
+     }
+ 
+     public void setDocumentLocator(Locator l) {
+@@ -85,7 +104,7 @@ public void setDocumentLocator(Locator l) {
+     }
+ 
+     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
+-
++        // No-op
+         String tagName = getTagName(localName, qName);
+         globalElementPath.push(tagName);
+         ElementPath current = globalElementPath.duplicate();
+@@ -118,20 +137,17 @@ String getTagName(String localName, String qName) {
+     }
+ 
+     public void error(SAXParseException spe) throws SAXException {
+-        cai.addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber());
++        cai.addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());
+         cai.addError(spe.toString());
+     }
+ 
+     public void fatalError(SAXParseException spe) throws SAXException {
+-        cai.addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber());
++        cai.addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());
+         cai.addError(spe.toString());
+     }
+ 
+     public void warning(SAXParseException spe) throws SAXException {
+-        cai.addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber(), spe);
++        cai.addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber(), spe);
+     }
+ 
+     public void addError(String msg) {
+diff --git a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+index 2dcca24c7d..4dc486be31 100755
+--- a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
++++ b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+@@ -13,13 +13,15 @@
+  */
+ package ch.qos.logback.core.joran.event;
+ 
++import static org.junit.Assert.*;
++
+ import java.io.FileInputStream;
+ import java.util.List;
+ 
+ import javax.xml.parsers.SAXParser;
+ import javax.xml.parsers.SAXParserFactory;
+ 
+-import org.junit.jupiter.api.Assertions;
++import ch.qos.logback.core.status.StatusChecker;
+ import org.junit.Test;
+ import org.xml.sax.Attributes;
+ 
+@@ -59,15 +61,30 @@ public void dump(List<SaxEvent> seList) {
+     }
+ 
+     @Test
+-    public void test1() throws Exception {
++    public void testEvent1() throws Exception {
++        System.out.println("test1");
+         List<SaxEvent> seList = doTest("event1.xml");
++        StatusPrinter.print(context);
+         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+         assertEquals(11, seList.size());
+     }
+ 
++    @Test(timeout=500)
++    public void testEventSSRF() throws Exception {
++        try {
++            List<SaxEvent> seList = doTest("event-ssrf.xml");
++            assertTrue(statusChecker.getHighestLevel(0) == Status.WARN);
++            statusChecker.assertContainsMatch(Status.WARN, "Document Type Declaration");
++            assertEquals(11, seList.size());
++        } finally {
++            StatusPrinter.print(context);
++        }
++    }
++
+     @Test
+-    public void test2() throws Exception {
++    public void testEventAmp() throws Exception {
+         List<SaxEvent> seList = doTest("ampEvent.xml");
+         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+@@ -78,7 +95,7 @@ public void test2() throws Exception {
+     }
+ 
+     @Test
+-    public void test3() throws Exception {
++    public void testInc() throws Exception {
+         List<SaxEvent> seList = doTest("inc.xml");
+         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+2025-06-05 14:32:02.861 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -20,7 +20,6 @@
+ import java.util.ArrayList;
+ import java.util.List;
+ 
+-import javax.xml.parsers.ParserConfigurationException;
+ import javax.xml.parsers.SAXParser;
+ import javax.xml.parsers.SAXParserFactory;
+ 
+@@ -39,6 +38,7 @@
+ 
+ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+ 
++    // org.xml.sax.ext.LexicalHandler is an optional interface
+     final ContextAwareImpl cai;
+ 
+     public List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();
+@@ -46,6 +46,20 @@ ElementPath globalElementPath = new ElementPath();
+ 
+     public SaxEventRecorder(Context context) {
+         cai = new ContextAwareImpl(context, this);
++
++        /**
++         * An implementation which disallows external DTDs
++         */
++    }
++
++    @Override
++    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
++        cai.addWarn("Document Type Declaration (DOCTYPE) with external file reference is");
++        cai.addWarn("disallowed to prevent Server-Side Request Forgery (SSRF) attacks.");
++        cai.addWarn("returning contents of SYSTEM " +systemId+ " as a white space");
++        return new InputSource(new ByteArrayInputStream(" ".getBytes()));
+     }
+ 
+     final public void recordEvents(InputStream inputStream) throws JoranException {
+@@ -53,7 +67,12 @@ final public void recordEvents(InputStream inputStream) throws JoranException {
+     public List<SaxEvent> recordEvents(InputSource inputSource) throws JoranException {
+         SAXParser saxParser = buildSaxParser();
+         try {
++            // the following sax property can be set in order to add 'this' as LexicalHandler to the saxParser
++            // However, this is not needed as long as resolveEntity() method is implemented as above
++            // saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", this);
++
+             saxParser.parse(inputSource, this);
++
+             return saxEventList;
+         } catch (IOException ie) {
+             handleError("I/O error occurred while parsing xml file", ie);
+@@ -65,7 +84,7 @@ private SAXParser buildSaxParser() throws JoranException {
+         try {
+             SAXParserFactory spf = SAXParserFactory.newInstance();
+             spf.setValidating(false);
+-            //spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
++            // spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+             spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+             spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+             spf.setNamespaceAware(true);
+@@ -73,11 +92,11 @@ private SAXParser buildSaxParser() throws JoranException {
+             String errMsg = "Parser configuration error occurred";
+             cai.addError(errMsg, pce);
+             throw new JoranException(errMsg, pce);
+-        } 
++        }
+     }
+ 
+     public void startDocument() {
+-
++        // No-op
+     }
+ 
+     public void setDocumentLocator(Locator l) {
+@@ -85,7 +104,7 @@ public void setDocumentLocator(Locator l) {
+     }
+ 
+     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
+-
++        // No-op
+         String tagName = getTagName(localName, qName);
+         globalElementPath.push(tagName);
+         ElementPath current = globalElementPath.duplicate();
+@@ -118,20 +137,17 @@ String getTagName(String localName, String qName) {
+     }
+ 
+     public void error(SAXParseException spe) throws SAXException {
+-        cai.addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber());
++        cai.addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());
+         cai.addError(spe.toString());
+     }
+ 
+     public void fatalError(SAXParseException spe) throws SAXException {
+-        cai.addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber());
++        cai.addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());
+         cai.addError(spe.toString());
+     }
+ 
+     public void warning(SAXParseException spe) throws SAXException {
+-        cai.addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber(), spe);
++        cai.addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber(), spe);
+     }
+ 
+     public void addError(String msg) {
+2025-06-05 14:32:02.867 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -20,7 +20,6 @@
+ import java.util.ArrayList;
+ import java.util.List;
+ 
+-import javax.xml.parsers.ParserConfigurationException;
+ import javax.xml.parsers.SAXParser;
+ import javax.xml.parsers.SAXParserFactory;
+ 
+
+2025-06-05 14:32:02.868 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 20, 'old_count': 7, 'new_start': 20, 'new_count': 6}, 'lines': [('context', 'import java.util.ArrayList;'), ('context', 'import java.util.List;'), ('context', ''), ('remove', 'import javax.xml.parsers.ParserConfigurationException;'), ('context', 'import javax.xml.parsers.SAXParser;'), ('context', 'import javax.xml.parsers.SAXParserFactory;'), ('context', '')]}
+2025-06-05 14:32:02.869 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-06-05 14:32:02.869 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 20, 'old_count': 7, 'new_start': 20, 'new_count': 6}, 'lines': [('context', 'import java.util.ArrayList;'), ('context', 'import java.util.List;'), ('context', ''), ('remove', 'import javax.xml.parsers.ParserConfigurationException;'), ('context', 'import javax.xml.parsers.SAXParser;'), ('context', 'import javax.xml.parsers.SAXParserFactory;'), ('context', '')]}
+2025-06-05 14:32:02.869 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -39,6 +38,7 @@
+ 
+ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
+ 
++    // org.xml.sax.ext.LexicalHandler is an optional interface
+     final ContextAwareImpl cai;
+ 
+     public List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();
+
+2025-06-05 14:32:02.870 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 39, 'old_count': 6, 'new_start': 38, 'new_count': 7}, 'lines': [('context', ''), ('context', 'public class SaxEventRecorder extends DefaultHandler implements ContextAware {'), ('context', ''), ('add', '    // org.xml.sax.ext.LexicalHandler is an optional interface'), ('context', '    final ContextAwareImpl cai;'), ('context', ''), ('context', '    public List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();')]}
+2025-06-05 14:32:02.870 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 38
+2025-06-05 14:32:02.871 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -46,6 +46,20 @@ ElementPath globalElementPath = new ElementPath();
+ 
+     public SaxEventRecorder(Context context) {
+         cai = new ContextAwareImpl(context, this);
++
++        /**
++         * An implementation which disallows external DTDs
++         */
++    }
++
++    @Override
++    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
++        cai.addWarn("Document Type Declaration (DOCTYPE) with external file reference is");
++        cai.addWarn("disallowed to prevent Server-Side Request Forgery (SSRF) attacks.");
++        cai.addWarn("returning contents of SYSTEM " +systemId+ " as a white space");
++        return new InputSource(new ByteArrayInputStream(" ".getBytes()));
+     }
+ 
+     final public void recordEvents(InputStream inputStream) throws JoranException {
+
+2025-06-05 14:32:02.871 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 46, 'old_count': 6, 'new_start': 46, 'new_count': 20}, 'lines': [('context', ''), ('context', '    public SaxEventRecorder(Context context) {'), ('context', '        cai = new ContextAwareImpl(context, this);'), ('add', ''), ('add', '        /**'), ('add', '         * An implementation which disallows external DTDs'), ('add', '         */'), ('add', '    }'), ('add', ''), ('add', '    @Override'), ('add', '    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {'), ('add', '        cai.addWarn("Document Type Declaration (DOCTYPE) with external file reference is");'), ('add', '        cai.addWarn("disallowed to prevent Server-Side Request Forgery (SSRF) attacks.");'), ('add', '        cai.addWarn("returning contents of SYSTEM " +systemId+ " as a white space");'), ('add', '        return new InputSource(new ByteArrayInputStream(" ".getBytes()));'), ('context', '    }'), ('context', ''), ('context', '    final public void recordEvents(InputStream inputStream) throws JoranException {')]}
+2025-06-05 14:32:02.872 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 43
+2025-06-05 14:32:02.872 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -53,7 +67,12 @@ final public void recordEvents(InputStream inputStream) throws JoranException {
+     public List<SaxEvent> recordEvents(InputSource inputSource) throws JoranException {
+         SAXParser saxParser = buildSaxParser();
+         try {
++            // the following sax property can be set in order to add 'this' as LexicalHandler to the saxParser
++            // However, this is not needed as long as resolveEntity() method is implemented as above
++            // saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", this);
++
+             saxParser.parse(inputSource, this);
++
+             return saxEventList;
+         } catch (IOException ie) {
+             handleError("I/O error occurred while parsing xml file", ie);
+
+2025-06-05 14:32:02.872 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 53, 'old_count': 7, 'new_start': 67, 'new_count': 12}, 'lines': [('context', '    public List<SaxEvent> recordEvents(InputSource inputSource) throws JoranException {'), ('context', '        SAXParser saxParser = buildSaxParser();'), ('context', '        try {'), ('add', "            // the following sax property can be set in order to add 'this' as LexicalHandler to the saxParser"), ('add', '            // However, this is not needed as long as resolveEntity() method is implemented as above'), ('add', '            // saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", this);'), ('add', ''), ('context', '            saxParser.parse(inputSource, this);'), ('add', ''), ('context', '            return saxEventList;'), ('context', '        } catch (IOException ie) {'), ('context', '            handleError("I/O error occurred while parsing xml file", ie);')]}
+2025-06-05 14:32:02.873 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 68
+2025-06-05 14:32:02.873 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -65,7 +84,7 @@ private SAXParser buildSaxParser() throws JoranException {
+         try {
+             SAXParserFactory spf = SAXParserFactory.newInstance();
+             spf.setValidating(false);
+-            //spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
++            // spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+             spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+             spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+             spf.setNamespaceAware(true);
+
+2025-06-05 14:32:02.873 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 65, 'old_count': 7, 'new_start': 84, 'new_count': 7}, 'lines': [('context', '        try {'), ('context', '            SAXParserFactory spf = SAXParserFactory.newInstance();'), ('context', '            spf.setValidating(false);'), ('remove', '            //spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);'), ('add', '            // spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);'), ('context', '            spf.setFeature("http://xml.org/sax/features/external-general-entities", false);'), ('context', '            spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);'), ('context', '            spf.setNamespaceAware(true);')]}
+2025-06-05 14:32:02.874 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 95
+2025-06-05 14:32:02.874 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -73,11 +92,11 @@ private SAXParser buildSaxParser() throws JoranException {
+             String errMsg = "Parser configuration error occurred";
+             cai.addError(errMsg, pce);
+             throw new JoranException(errMsg, pce);
+-        } 
++        }
+     }
+ 
+     public void startDocument() {
+-
++        // No-op
+     }
+ 
+     public void setDocumentLocator(Locator l) {
+
+2025-06-05 14:32:02.875 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 73, 'old_count': 11, 'new_start': 92, 'new_count': 11}, 'lines': [('context', '            String errMsg = "Parser configuration error occurred";'), ('context', '            cai.addError(errMsg, pce);'), ('context', '            throw new JoranException(errMsg, pce);'), ('remove', '        }'), ('add', '        }'), ('context', '    }'), ('context', ''), ('context', '    public void startDocument() {'), ('remove', ''), ('add', '        // No-op'), ('context', '    }'), ('context', ''), ('context', '    public void setDocumentLocator(Locator l) {')]}
+2025-06-05 14:32:02.876 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-06-05 14:32:02.876 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 73, 'old_count': 11, 'new_start': 92, 'new_count': 11}, 'lines': [('context', '            String errMsg = "Parser configuration error occurred";'), ('context', '            cai.addError(errMsg, pce);'), ('context', '            throw new JoranException(errMsg, pce);'), ('remove', '        }'), ('add', '        }'), ('context', '    }'), ('context', ''), ('context', '    public void startDocument() {'), ('remove', ''), ('add', '        // No-op'), ('context', '    }'), ('context', ''), ('context', '    public void setDocumentLocator(Locator l) {')]}
+2025-06-05 14:32:02.877 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -85,7 +104,7 @@ public void setDocumentLocator(Locator l) {
+     }
+ 
+     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
+-
++        // No-op
+         String tagName = getTagName(localName, qName);
+         globalElementPath.push(tagName);
+         ElementPath current = globalElementPath.duplicate();
+
+2025-06-05 14:32:02.877 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 85, 'old_count': 7, 'new_start': 104, 'new_count': 7}, 'lines': [('context', '    }'), ('context', ''), ('context', '    public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {'), ('remove', ''), ('add', '        // No-op'), ('context', '        String tagName = getTagName(localName, qName);'), ('context', '        globalElementPath.push(tagName);'), ('context', '        ElementPath current = globalElementPath.duplicate();')]}
+2025-06-05 14:32:02.878 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 119
+2025-06-05 14:32:02.878 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -118,20 +137,17 @@ String getTagName(String localName, String qName) {
+     }
+ 
+     public void error(SAXParseException spe) throws SAXException {
+-        cai.addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber());
++        cai.addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());
+         cai.addError(spe.toString());
+     }
+ 
+     public void fatalError(SAXParseException spe) throws SAXException {
+-        cai.addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber());
++        cai.addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());
+         cai.addError(spe.toString());
+     }
+ 
+     public void warning(SAXParseException spe) throws SAXException {
+-        cai.addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber(), spe);
++        cai.addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber(), spe);
+     }
+ 
+     public void addError(String msg) {
+2025-06-05 14:32:02.878 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 118, 'old_count': 20, 'new_start': 137, 'new_count': 17}, 'lines': [('context', '    }'), ('context', ''), ('context', '    public void error(SAXParseException spe) throws SAXException {'), ('remove', '        cai.addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column "'), ('remove', '                + spe.getColumnNumber());'), ('add', '        cai.addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());'), ('context', '        cai.addError(spe.toString());'), ('context', '    }'), ('context', ''), ('context', '    public void fatalError(SAXParseException spe) throws SAXException {'), ('remove', '        cai.addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column "'), ('remove', '                + spe.getColumnNumber());'), ('add', '        cai.addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());'), ('context', '        cai.addError(spe.toString());'), ('context', '    }'), ('context', ''), ('context', '    public void warning(SAXParseException spe) throws SAXException {'), ('remove', '        cai.addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column "'), ('remove', '                + spe.getColumnNumber(), spe);'), ('add', '        cai.addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber(), spe);'), ('context', '    }'), ('context', ''), ('context', '    public void addError(String msg) {')]}
+2025-06-05 14:32:02.879 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-06-05 14:32:02.879 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 118, 'old_count': 20, 'new_start': 137, 'new_count': 17}, 'lines': [('context', '    }'), ('context', ''), ('context', '    public void error(SAXParseException spe) throws SAXException {'), ('remove', '        cai.addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column "'), ('remove', '                + spe.getColumnNumber());'), ('add', '        cai.addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());'), ('context', '        cai.addError(spe.toString());'), ('context', '    }'), ('context', ''), ('context', '    public void fatalError(SAXParseException spe) throws SAXException {'), ('remove', '        cai.addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column "'), ('remove', '                + spe.getColumnNumber());'), ('add', '        cai.addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());'), ('context', '        cai.addError(spe.toString());'), ('context', '    }'), ('context', ''), ('context', '    public void warning(SAXParseException spe) throws SAXException {'), ('remove', '        cai.addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column "'), ('remove', '                + spe.getColumnNumber(), spe);'), ('add', '        cai.addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber(), spe);'), ('context', '    }'), ('context', ''), ('context', '    public void addError(String msg) {')]}
+2025-06-05 14:32:02.880 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+2025-06-05 14:32:02.880 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -13,13 +13,15 @@
+  */
+ package ch.qos.logback.core.joran.event;
+ 
++import static org.junit.Assert.*;
++
+ import java.io.FileInputStream;
+ import java.util.List;
+ 
+ import javax.xml.parsers.SAXParser;
+ import javax.xml.parsers.SAXParserFactory;
+ 
+-import org.junit.jupiter.api.Assertions;
++import ch.qos.logback.core.status.StatusChecker;
+ import org.junit.Test;
+ import org.xml.sax.Attributes;
+ 
+@@ -59,15 +61,30 @@ public void dump(List<SaxEvent> seList) {
+     }
+ 
+     @Test
+-    public void test1() throws Exception {
++    public void testEvent1() throws Exception {
++        System.out.println("test1");
+         List<SaxEvent> seList = doTest("event1.xml");
++        StatusPrinter.print(context);
+         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+         assertEquals(11, seList.size());
+     }
+ 
++    @Test(timeout=500)
++    public void testEventSSRF() throws Exception {
++        try {
++            List<SaxEvent> seList = doTest("event-ssrf.xml");
++            assertTrue(statusChecker.getHighestLevel(0) == Status.WARN);
++            statusChecker.assertContainsMatch(Status.WARN, "Document Type Declaration");
++            assertEquals(11, seList.size());
++        } finally {
++            StatusPrinter.print(context);
++        }
++    }
++
+     @Test
+-    public void test2() throws Exception {
++    public void testEventAmp() throws Exception {
+         List<SaxEvent> seList = doTest("ampEvent.xml");
+         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+@@ -78,7 +95,7 @@ public void test2() throws Exception {
+     }
+ 
+     @Test
+-    public void test3() throws Exception {
++    public void testInc() throws Exception {
+         List<SaxEvent> seList = doTest("inc.xml");
+         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+2025-06-05 14:32:02.882 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -13,13 +13,15 @@
+  */
+ package ch.qos.logback.core.joran.event;
+ 
++import static org.junit.Assert.*;
++
+ import java.io.FileInputStream;
+ import java.util.List;
+ 
+ import javax.xml.parsers.SAXParser;
+ import javax.xml.parsers.SAXParserFactory;
+ 
+-import org.junit.jupiter.api.Assertions;
++import ch.qos.logback.core.status.StatusChecker;
+ import org.junit.Test;
+ import org.xml.sax.Attributes;
+ 
+
+2025-06-05 14:32:02.883 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 13, 'old_count': 13, 'new_start': 13, 'new_count': 15}, 'lines': [('context', ' */'), ('context', 'package ch.qos.logback.core.joran.event;'), ('context', ''), ('add', 'import static org.junit.Assert.*;'), ('add', ''), ('context', 'import java.io.FileInputStream;'), ('context', 'import java.util.List;'), ('context', ''), ('context', 'import javax.xml.parsers.SAXParser;'), ('context', 'import javax.xml.parsers.SAXParserFactory;'), ('context', ''), ('remove', 'import org.junit.jupiter.api.Assertions;'), ('add', 'import ch.qos.logback.core.status.StatusChecker;'), ('context', 'import org.junit.Test;'), ('context', 'import org.xml.sax.Attributes;'), ('context', '')]}
+2025-06-05 14:32:02.884 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 14
+2025-06-05 14:32:02.884 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -59,15 +61,30 @@ public void dump(List<SaxEvent> seList) {
+     }
+ 
+     @Test
+-    public void test1() throws Exception {
++    public void testEvent1() throws Exception {
++        System.out.println("test1");
+         List<SaxEvent> seList = doTest("event1.xml");
++        StatusPrinter.print(context);
+         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+         assertEquals(11, seList.size());
+     }
+ 
++    @Test(timeout=500)
++    public void testEventSSRF() throws Exception {
++        try {
++            List<SaxEvent> seList = doTest("event-ssrf.xml");
++            assertTrue(statusChecker.getHighestLevel(0) == Status.WARN);
++            statusChecker.assertContainsMatch(Status.WARN, "Document Type Declaration");
++            assertEquals(11, seList.size());
++        } finally {
++            StatusPrinter.print(context);
++        }
++    }
++
+     @Test
+-    public void test2() throws Exception {
++    public void testEventAmp() throws Exception {
+         List<SaxEvent> seList = doTest("ampEvent.xml");
+         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+
+2025-06-05 14:32:02.885 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 59, 'old_count': 15, 'new_start': 61, 'new_count': 30}, 'lines': [('context', '    }'), ('context', ''), ('context', '    @Test'), ('remove', '    public void test1() throws Exception {'), ('add', '    public void testEvent1() throws Exception {'), ('add', '        System.out.println("test1");'), ('context', '        List<SaxEvent> seList = doTest("event1.xml");'), ('add', '        StatusPrinter.print(context);'), ('context', '        assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);'), ('context', '        // dump(seList);'), ('context', '        assertEquals(11, seList.size());'), ('context', '    }'), ('context', ''), ('add', '    @Test(timeout=500)'), ('add', '    public void testEventSSRF() throws Exception {'), ('add', '        try {'), ('add', '            List<SaxEvent> seList = doTest("event-ssrf.xml");'), ('add', '            assertTrue(statusChecker.getHighestLevel(0) == Status.WARN);'), ('add', '            statusChecker.assertContainsMatch(Status.WARN, "Document Type Declaration");'), ('add', '            assertEquals(11, seList.size());'), ('add', '        } finally {'), ('add', '            StatusPrinter.print(context);'), ('add', '        }'), ('add', '    }'), ('add', ''), ('context', '    @Test'), ('remove', '    public void test2() throws Exception {'), ('add', '    public void testEventAmp() throws Exception {'), ('context', '        List<SaxEvent> seList = doTest("ampEvent.xml");'), ('context', '        assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);'), ('context', '        // dump(seList);')]}
+2025-06-05 14:32:02.885 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 62
+2025-06-05 14:32:02.885 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -78,7 +95,7 @@ public void test2() throws Exception {
+     }
+ 
+     @Test
+-    public void test3() throws Exception {
++    public void testInc() throws Exception {
+         List<SaxEvent> seList = doTest("inc.xml");
+         assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+2025-06-05 14:32:02.886 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 78, 'old_count': 7, 'new_start': 95, 'new_count': 7}, 'lines': [('context', '    }'), ('context', ''), ('context', '    @Test'), ('remove', '    public void test3() throws Exception {'), ('add', '    public void testInc() throws Exception {'), ('context', '        List<SaxEvent> seList = doTest("inc.xml");'), ('context', '        assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);'), ('context', '        // dump(seList);')]}
+2025-06-05 14:32:02.886 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 96
+2025-06-05 14:32:02.887 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+2025-06-05 14:32:02.888 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/logback/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+2025-06-05 14:32:02.888 | INFO     | modules.patch_adapter:_generate_adapted_patch:264 - 文件内容变化，执行复制: logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+2025-06-05 14:32:02.889 | INFO     | modules.patch_adapter:_generate_adapted_patch:267 - 将文件从/home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/adapted_v_1.2.8/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java复制到/home/elpsy/.cache/port-patch/logback/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+2025-06-05 14:32:02.889 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/logback/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+2025-06-05 14:32:02.890 | INFO     | modules.patch_adapter:_generate_adapted_patch:264 - 文件内容变化，执行复制: logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+2025-06-05 14:32:02.891 | INFO     | modules.patch_adapter:_generate_adapted_patch:267 - 将文件从/home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/adapted_v_1.2.8/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java复制到/home/elpsy/.cache/port-patch/logback/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+2025-06-05 14:32:02.931 | INFO     | modules.patch_adapter:_generate_adapted_patch:322 - 生成补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/0001-Applied-adapted-patch-for-v_1.2.8.patch
+
+2025-06-05 14:32:02.931 | INFO     | modules.patch_adapter:_generate_adapted_patch:324 - patch_dir所含文件: ['upstream_5f0504.patch', 'merged_v_1.2.8.patch', '0001-Applied-adapted-patch-for-v_1.2.8.patch', 'adapted_v_1.2.8.patch']
+2025-06-05 14:32:02.932 | INFO     | modules.patch_adapter:_generate_adapted_patch:335 - 已重命名补丁文件: 从 /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/0001-Applied-adapted-patch-for-v_1.2.8.patch 到 /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/adapted_v_1.2.8.patch
+2025-06-05 14:32:02.933 | INFO     | modules.patch_adapter:_generate_adapted_patch:345 - 已生成适配后的补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/adapted_v_1.2.8.patch
+2025-06-05 14:32:02.933 | INFO     | modules.patch_adapter:execute:73 - 生成适配补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/adapted_v_1.2.8.patch
+2025-06-05 14:32:02.962 | INFO     | modules.patch_adapter:_test_apply_patch:478 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/adapted_v_1.2.8.patch
+2025-06-05 14:32:02.985 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_v_1.2.8_20250605_143202
+2025-06-05 14:32:02.998 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/qos-ch/logback/5f0504/metrics/patch_adapter_metrics.json
+2025-06-05 14:32:02.999 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 0.47秒
+2025-06-05 14:32:02.999 | INFO     | __main__:_merge_patches:1087 - 开始合并补丁...
+2025-06-05 14:32:03.000 | INFO     | __main__:_merge_patches:1122 - chunk_results2:
+2025-06-05 14:32:03.001 | INFO     | __main__:_merge_patches:1124 - chunk_patches: [PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_001_20250605_143202.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_008_20250605_143202.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_010_20250605_143202.patch')]
+2025-06-05 14:32:03.001 | INFO     | __main__:_merge_patches:1126 - Chunk分析器应用了 3/12 个chunks
+2025-06-05 14:32:03.002 | INFO     | __main__:_merge_patches:1161 - 找到patch_adapter成功的补丁: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/adapted_v_1.2.8.patch
+2025-06-05 14:32:03.002 | INFO     | __main__:_merge_patches:1172 - 合并 3 个chunk补丁和patch_adapter补丁
+2025-06-05 14:32:03.002 | INFO     | __main__:_combine_patch_files:1255 - 创建临时测试分支: patch_merge_bf418f53
+2025-06-05 14:32:03.037 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_001_20250605_143202.patch
+2025-06-05 14:32:03.037 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_001_20250605_143202.patch
+2025-06-05 14:32:03.041 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_001_20250605_143202.patch
+2025-06-05 14:32:03.041 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_008_20250605_143202.patch
+2025-06-05 14:32:03.041 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_008_20250605_143202.patch
+2025-06-05 14:32:03.044 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_008_20250605_143202.patch
+2025-06-05 14:32:03.045 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_010_20250605_143202.patch
+2025-06-05 14:32:03.045 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_010_20250605_143202.patch
+2025-06-05 14:32:03.048 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/chunk_patches/chunk_010_20250605_143202.patch
+2025-06-05 14:32:03.049 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/adapted_v_1.2.8.patch
+2025-06-05 14:32:03.050 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/adapted_v_1.2.8.patch
+2025-06-05 14:32:03.054 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/adapted_v_1.2.8.patch
+2025-06-05 14:32:03.093 | INFO     | __main__:_combine_patch_files:1368 - 执行命令: git format-patch -1 HEAD --stdout > temp_patch_merge/merged.patch
+2025-06-05 14:32:03.099 | INFO     | __main__:_combine_patch_files:1410 - 成功生成合并补丁: temp_patch_merge/merged.patch (大小: 7667 字节)
+2025-06-05 14:32:03.100 | INFO     | __main__:_combine_patch_files:1425 - 清理临时分支: patch_merge_bf418f53
+2025-06-05 14:32:03.115 | INFO     | __main__:_merge_patches:1190 - 成功合并chunk补丁和patch_adapter补丁到: workspace/qos-ch/logback/5f0504/patches/merged_v_1.2.8.patch
+2025-06-05 14:32:03.115 | INFO     | __main__:_process_mode1:392 - 成功合并补丁到: workspace/qos-ch/logback/5f0504/patches/merged_v_1.2.8.patch
+2025-06-05 14:32:03.117 | INFO     | __main__:_save_results:751 - 已复制最终补丁到结果目录: results/logback_v_1.2.8_5f0504_20250605_143203/merged_v_1.2.8.patch
+2025-06-05 14:32:03.120 | INFO     | __main__:_save_results:889 - 结果已保存到: results/logback_v_1.2.8_5f0504_20250605_143203/result.json
+2025-06-05 14:32:03.120 | INFO     | __main__:_print_summary:931 - context.patch_adapter_result: {'success': True, 'adapted_patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/qos-ch/logback/5f0504/patches/adapted_v_1.2.8.patch', 'apply_result': {'success': True, 'error': None, 'error_type': None, 'output': 'Applying: Applied adapted patch for v_1.2.8\n'}}
+2025-06-05 14:32:03.120 | INFO     | __main__:_print_summary:954 - ==================================================
+2025-06-05 14:32:03.121 | INFO     | __main__:_print_summary:955 - 处理摘要 - 提交: 5f0504
+2025-06-05 14:32:03.121 | INFO     | __main__:_print_summary:956 - 适配状态: 适配成功 (方法: patch_adapter)
+2025-06-05 14:32:03.121 | INFO     | __main__:_print_summary:971 - 块分析统计:
+2025-06-05 14:32:03.121 | INFO     | __main__:_print_summary:972 - - 总块数: 12
+2025-06-05 14:32:03.122 | INFO     | __main__:_print_summary:973 - - 冲突块数: 9
+2025-06-05 14:32:03.122 | INFO     | __main__:_print_summary:974 - - 成功适配块数: 9
+2025-06-05 14:32:03.122 | INFO     | __main__:_print_summary:975 - - 适配失败块数: 0
+2025-06-05 14:32:03.123 | INFO     | __main__:_print_summary:976 - - 编译失败块数: 0
+2025-06-05 14:32:03.123 | INFO     | __main__:_print_summary:980 - 总执行时间: 0.48秒
+2025-06-05 14:32:03.123 | INFO     | __main__:_print_summary:985 - ==================================================
+2025-06-05 14:32:03.124 | INFO     | __main__:run:335 - 处理完成
+2025-06-05 14:32:03.124 | INFO     | __main__:_print_mode1_statistics:1550 - ============================================================
+2025-06-05 14:32:03.124 | INFO     | __main__:_print_mode1_statistics:1551 - 模式1处理统计 - 多个commit
+2025-06-05 14:32:03.125 | INFO     | __main__:_print_mode1_statistics:1552 - ============================================================
+2025-06-05 14:32:03.125 | INFO     | __main__:_print_mode1_statistics:1553 - 总提交数: 2
+2025-06-05 14:32:03.125 | INFO     | __main__:_print_mode1_statistics:1554 - 成功处理数: 2
+2025-06-05 14:32:03.125 | INFO     | __main__:_print_mode1_statistics:1555 - 直接应用成功: 0
+2025-06-05 14:32:03.125 | INFO     | __main__:_print_mode1_statistics:1556 - 需要适配数量: 2
+2025-06-05 14:32:03.126 | INFO     | __main__:_print_mode1_statistics:1557 - 适配成功数量: 2
+2025-06-05 14:32:03.126 | INFO     | __main__:_print_mode1_statistics:1558 - 适配失败数量: 0
+2025-06-05 14:32:03.126 | INFO     | __main__:_print_mode1_statistics:1559 - 总体成功率: 100.00%
+2025-06-05 14:32:03.126 | INFO     | __main__:_print_mode1_statistics:1560 - 适配成功率: 100.00%
+2025-06-05 14:32:03.127 | INFO     | __main__:_print_mode1_statistics:1567 - ============================================================
+2025-06-05 14:32:03.128 | INFO     | __main__:_print_mode1_statistics:1601 - 统计结果已保存到: statistics/logback_mode1_multi_commits_stats_20250605_143203.json
+2025-06-05 14:32:03.130 | INFO     | __main__:clean_config:2014 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

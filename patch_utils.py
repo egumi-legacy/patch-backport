@@ -35,6 +35,7 @@ def parse_repo_url(url):
     - Gitee: https://gitee.com/owner/repo
     - GitLab: https://gitlab.com/owner/repo
     - SourceForge: https://sourceforge.net/p/project/repo
+    - Kernel.org Git: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=abc123
     
     Args:
         url: 仓库URL
@@ -46,6 +47,27 @@ def parse_repo_url(url):
     
     # 标准化URL
     normalized_url = url.rstrip('/')
+    
+    # Kernel.org commit格式
+    kernel_commit_pattern = r'https://git\.kernel\.org/pub/scm/linux/kernel/git/([^/]+)/([^/]+)\.git/commit/\?id=([a-f0-9]+)'
+    match = re.search(kernel_commit_pattern, normalized_url)
+    if match:
+        maintainer, repo, commit_sha = match.groups()
+        result['owner'] = 'linux'
+        result['name'] = f'kernel-{maintainer}'
+        result['commit_sha'] = commit_sha
+        result['clone_url'] = f"https://git.kernel.org/pub/scm/linux/kernel/git/{maintainer}/{repo}.git"
+        return result
+    
+    # Kernel.org repository格式（无commit ID）
+    kernel_repo_pattern = r'https://git\.kernel\.org/pub/scm/linux/kernel/git/([^/]+)/([^/]+)\.git'
+    match = re.search(kernel_repo_pattern, normalized_url)
+    if match:
+        maintainer, repo = match.groups()
+        result['owner'] = 'linux'
+        result['name'] = f'kernel-{maintainer}'
+        result['clone_url'] = f"https://git.kernel.org/pub/scm/linux/kernel/git/{maintainer}/{repo}.git"
+        return result
     
     # GitHub commit格式
     github_pattern = r'https://github\.com/([^/]+)/([^/]+)/commit/([^/]+)'
@@ -196,6 +218,8 @@ def download_patch(patch_url: str, output_path: Path = None) -> Path:
         else:
             logger.error(f"SourceForge URL必须包含具体的提交路径 (/ci/): {patch_url}")
             raise ValueError(f"SourceForge URL必须包含具体的提交路径 (/ci/): {patch_url}")
+    elif 'git.kernel.org' in patch_url:
+        return _download_kernel_patch(patch_url, output_path, headers)
     else:
         # 默认尝试直接下载
         return _download_direct_patch(patch_url, output_path, headers)
@@ -436,6 +460,9 @@ def generate_patch_from_git(commit_sha: str, repo_path: Path, output_path: Path)
         # --no-stat: 不包含统计信息
         # --no-numbered: 不在文件名中包含序号
         # --keep-subject: 保持原始提交信息
+        if commit_sha.endswith('.patch'):
+            commit_sha = commit_sha.replace('.patch', '')
+
         result = subprocess.run(
             ['git', 'format-patch', '-1', '--stdout', '--no-stat', commit_sha],
             cwd=repo_path,
@@ -458,3 +485,73 @@ def generate_patch_from_git(commit_sha: str, repo_path: Path, output_path: Path)
     except Exception as e:
         logger.error(f"从本地仓库生成补丁时出错: {e}")
         return None
+
+def _download_kernel_patch(patch_url: str, output_path: Path, headers: dict) -> Path:
+    """
+    下载Linux内核仓库的补丁
+    
+    Args:
+        patch_url: kernel.org的提交URL，例如：
+                  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=abc123
+        output_path: 输出路径
+        headers: HTTP请求头
+        
+    Returns:
+        保存的补丁文件路径
+    """
+    try:
+        # 提取commit SHA
+        commit_sha_match = re.search(r'id=([a-f0-9]+)', patch_url)
+        if not commit_sha_match:
+            logger.error(f"无法从kernel.org URL中提取commit SHA: {patch_url}")
+            raise ValueError(f"无效的kernel.org提交URL格式: {patch_url}")
+        
+        commit_sha = commit_sha_match.group(1)
+        logger.info(f"从kernel.org URL提取到commit SHA: {commit_sha}")
+        
+        # 构建patch URL (kernel.org的补丁下载链接格式)
+        patch_download_url = patch_url.replace("/commit/?id=", "/patch/") + ".patch"
+        logger.info(f"使用kernel.org patch URL: {patch_download_url}")
+        
+        # 发送请求下载补丁
+        session = requests.Session()
+        retries = Retry(total=3, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
+        session.mount('https://', HTTPAdapter(max_retries=retries))
+        
+        response = session.get(patch_download_url, headers=headers)
+        
+        # 如果直接使用patch URL失败，尝试使用alternative方式
+        if response.status_code != 200:
+            logger.warning(f"直接下载kernel.org补丁失败 ({response.status_code})，尝试替代方法")
+            
+            # 提取仓库URL和维护者信息
+            repo_parts = re.search(r'(https://git\.kernel\.org/pub/scm/linux/kernel/git/[^/]+/[^/]+\.git)', patch_url)
+            if not repo_parts:
+                logger.error(f"无法从URL中提取仓库信息: {patch_url}")
+                raise ValueError(f"无效的kernel.org URL格式: {patch_url}")
+                
+            repo_url = repo_parts.group(1)
+            
+            # 尝试直接通过patch命令获取
+            alternative_url = f"{repo_url}/patch/?id={commit_sha}"
+            logger.info(f"尝试替代URL: {alternative_url}")
+            
+            response = session.get(alternative_url, headers=headers)
+            if response.status_code != 200:
+                logger.error(f"通过替代URL下载kernel.org补丁失败: {response.status_code}")
+                raise ValueError(f"无法下载kernel.org补丁: {alternative_url}")
+        
+        # 保存补丁内容
+        with open(output_path, 'wb') as f:
+            f.write(response.content)
+            
+        if output_path.exists():
+            logger.info(f"成功下载kernel.org补丁: {output_path}")
+            return output_path
+        else:
+            logger.error("保存kernel.org补丁失败")
+            raise ValueError("保存kernel.org补丁失败")
+            
+    except Exception as e:
+        logger.error(f"下载kernel.org补丁失败: {e}")
+        raise ValueError(f"下载kernel.org补丁失败: {str(e)}")

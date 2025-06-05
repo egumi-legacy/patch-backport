@@ -1,0 +1,51 @@
+From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+index 2dcca24c7d..4dc486be31 100755
+--- a/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
++++ b/logback-core/src/test/java/ch/qos/logback/core/joran/event/SaxEventRecorderTest.java
+@@ -59,15 +63,30 @@ public void dump(List<SaxEvent> seList) {
+     }
+ 
+     @Test
+-    public void test1() throws Exception {
++    public void testEvent1() throws Exception {
++        System.out.println("test1");
+         List<SaxEvent> seList = doTest("event1.xml");
++        StatusPrinter.print(context);
+         Assertions.assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);
+         Assertions.assertEquals(11, seList.size());
+     }
+ 
++    @Test()
++    @Timeout(value = 500, unit = TimeUnit.MILLISECONDS)  // timeout in case attack is not prevented
++    public void testEventSSRF() throws Exception {
++        try {
++            List<SaxEvent> seList = doTest("event-ssrf.xml");
++            Assertions.assertTrue(statusChecker.getHighestLevel(0) == Status.WARN);
++            statusChecker.assertContainsMatch(Status.WARN, "Document Type Declaration");
++            Assertions.assertEquals(11, seList.size());
++        } finally {
++            StatusPrinter.print(context);
++        }
++    }
++
+     @Test
+-    public void test2() throws Exception {
++    public void testEventAmp() throws Exception {
+         List<SaxEvent> seList = doTest("ampEvent.xml");
+         Assertions.assertTrue(statusChecker.getHighestLevel(0) == Status.INFO);
+         // dump(seList);

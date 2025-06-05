@@ -1,0 +1,63 @@
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt <paul.greenwalt@intel.com>
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)->mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech <milena.olech@intel.com>
+Signed-off-by: Milena Olech <milena.olech@intel.com>
+Co-developed-by: Dan Nowlin <dan.nowlin@intel.com>
+Signed-off-by: Dan Nowlin <dan.nowlin@intel.com>
+Co-developed-by: Scott Taylor <scott.w.taylor@intel.com>
+Signed-off-by: Scott Taylor <scott.w.taylor@intel.com>
+Co-developed-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+Signed-off-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
+Tested-by: Tony Brelinski <tony.brelinski@intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
+index 8c6e13f87b7d..d151e5bacfec 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
+@@ -540,16 +540,24 @@ static int ice_fdir_num_avail_fltr(struct ice_hw *hw, struct ice_vsi *vsi)
+ 	/* total guaranteed filters assigned to this VSI */
+ 	num_guar = vsi->num_gfltr;
+ 
+-	/* minus the guaranteed filters programed by this VSI */
+-	num_guar -= (rd32(hw, VSIQF_FD_CNT(vsi_num)) &
+-		     VSIQF_FD_CNT_FD_GCNT_M) >> VSIQF_FD_CNT_FD_GCNT_S;
+-
+ 	/* total global best effort filters */
+ 	num_be = hw->func_caps.fd_fltr_best_effort;
+ 
+-	/* minus the global best effort filters programmed */
+-	num_be -= (rd32(hw, GLQF_FD_CNT) & GLQF_FD_CNT_FD_BCNT_M) >>
+-		   GLQF_FD_CNT_FD_BCNT_S;
++	/* Subtract the number of programmed filters from the global values */
++	switch (hw->mac_type) {
++	case ICE_MAC_E830:
++		num_guar -= FIELD_GET(E830_VSIQF_FD_CNT_FD_GCNT_M,
++				      rd32(hw, VSIQF_FD_CNT(vsi_num)));
++		num_be -= FIELD_GET(E830_GLQF_FD_CNT_FD_BCNT_M,
++				    rd32(hw, GLQF_FD_CNT));
++		break;
++	case ICE_MAC_E810:
++	default:
++		num_guar -= FIELD_GET(E800_VSIQF_FD_CNT_FD_GCNT_M,
++				      rd32(hw, VSIQF_FD_CNT(vsi_num)));
++		num_be -= FIELD_GET(E800_GLQF_FD_CNT_FD_BCNT_M,
++				    rd32(hw, GLQF_FD_CNT));
++	}
+ 
+ 	return num_guar + num_be;
+ }

@@ -1,0 +1,42 @@
+From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+index 1a6df6118f..eb658bd433 100644
+--- a/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
++++ b/logback-core/src/main/java/ch/qos/logback/core/joran/event/SaxEventRecorder.java
+@@ -169,20 +197,17 @@ String getTagName(String localName, String qName) {
+     }
+ 
+     public void error(SAXParseException spe) throws SAXException {
+-        addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber());
++        addError(XML_PARSING + " - Parsing error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());
+         addError(spe.toString());
+     }
+ 
+     public void fatalError(SAXParseException spe) throws SAXException {
+-        addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber());
++        addError(XML_PARSING + " - Parsing fatal error on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber());
+         addError(spe.toString());
+     }
+ 
+     public void warning(SAXParseException spe) throws SAXException {
+-        addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column "
+-                + spe.getColumnNumber(), spe);
++        addWarn(XML_PARSING + " - Parsing warning on line " + spe.getLineNumber() + " and column " + spe.getColumnNumber(), spe);
+     }
+ 
+     public void addError(String msg) {

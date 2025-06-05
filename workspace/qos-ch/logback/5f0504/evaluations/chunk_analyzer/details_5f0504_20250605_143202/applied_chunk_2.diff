@@ -1,0 +1,48 @@
+From 5f05041cba4c4ac0a62748c5c527a2da48999f2d Mon Sep 17 00:00:00 2001
+From: Ceki Gulcu <ceki@qos.ch>
+Date: Tue, 17 Dec 2024 19:42:28 +0100
+Subject: [PATCH] prevent Server-Side Request Forgery (SSRF) attacks by
+ ignoring external DTD files in DOCTYPE
+
+Signed-off-by: Ceki Gulcu <ceki@qos.ch>
+---
+ .../core/joran/event/SaxEventRecorder.java    | 45 ++++++++++++++-----
+ .../src/test/input/joran/event-ssrf.xml       | 27 +++++++++++
+ .../joran/event/SaxEventRecorderTest.java     | 27 +++++++++--
+ 3 files changed, 85 insertions(+), 14 deletions(-)
+ create mode 100644 logback-core/src/test/input/joran/event-ssrf.xml
+
+diff --git a/logback-core/src/test/input/joran/event-ssrf.xml b/logback-core/src/test/input/joran/event-ssrf.xml
+new file mode 100644
+index 0000000000..5b5b57812f
+--- /dev/null
++++ b/logback-core/src/test/input/joran/event-ssrf.xml
+@@ -0,0 +1,27 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++<!--
++  ~ Logback: the reliable, generic, fast and flexible logging framework.
++  ~ Copyright (C) 1999-2024, QOS.ch. All rights reserved.
++  ~
++  ~ This program and the accompanying materials are dual-licensed under
++  ~ either the terms of the Eclipse Public License v1.0 as published by
++  ~ the Eclipse Foundation
++  ~
++  ~   or (per the licensee's choosing)
++  ~
++  ~ under the terms of the GNU Lesser General Public License version 2.1
++  ~ as published by the Free Software Foundation.
++  -->
++
++<!DOCTYPE test SYSTEM "http://192.168.1.100/">
++<test>
++
++    <!-- this action throws an exception in the Action.begin method -->
++    <badBegin>
++        <touch/>
++        <touch/>
++    </badBegin>
++
++    <hello name="John Doe">XXX&amp;</hello>
++
++</test>
+\ No newline at end of file
