@@ -1,0 +1,30 @@
+From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Message-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -960,7 +960,7 @@ static void hvfb_release_phymem(struct hv_device *hdev,
+ 	if (order <= MAX_PAGE_ORDER)
+ 		__free_pages(pfn_to_page(paddr >> PAGE_SHIFT), order);
+ 	else
+-		dma_free_coherent(&hdev->device,
++		dma_free_coherent(device,
+ 				  round_up(size, PAGE_SIZE),
+ 				  phys_to_virt(paddr),
+ 				  paddr);

@@ -1,0 +1,1338 @@
+commit ba1124f58afd37d9ff155d4ab7c9f209346aaed9
+Author: Paul Greenwalt <paul.greenwalt@intel.com>
+Date:   Wed Oct 25 14:41:52 2023 -0700
+
+    ice: Add E830 device IDs, MAC type and registers
+    
+    E830 is the 200G NIC family which uses the ice driver.
+    
+    Add specific E830 registers. Embed macros to use proper register based on
+    (hw)->mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+    only available on one of the macs will need to be explicitly referred to
+    as E800_NAME instead of just NAME. PTP is not yet supported.
+    
+    Co-developed-by: Milena Olech <milena.olech@intel.com>
+    Signed-off-by: Milena Olech <milena.olech@intel.com>
+    Co-developed-by: Dan Nowlin <dan.nowlin@intel.com>
+    Signed-off-by: Dan Nowlin <dan.nowlin@intel.com>
+    Co-developed-by: Scott Taylor <scott.w.taylor@intel.com>
+    Signed-off-by: Scott Taylor <scott.w.taylor@intel.com>
+    Co-developed-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+    Signed-off-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+    Reviewed-by: Simon Horman <horms@kernel.org>
+    Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
+    Tested-by: Tony Brelinski <tony.brelinski@intel.com>
+    Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+    Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+    Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 377fae41bbae..683a0d6b5337 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -1,11 +1,11 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ #include "ice_common.h"
+ #include "ice_sched.h"
+ #include "ice_adminq_cmd.h"
+ #include "ice_flow.h"
+ #include "ice_ptp_hw.h"
+ 
+ #define ICE_PF_RESET_WAIT_COUNT	300
+ #define ICE_MAX_NETLIST_SIZE	10
+@@ -115,57 +115,63 @@ ice_dump_phy_type(struct ice_hw *hw, u64 low, u64 high, const char *prefix)
+ /**
+  * ice_set_mac_type - Sets MAC type
+  * @hw: pointer to the HW structure
+  *
+  * This function sets the MAC type of the adapter based on the
+  * vendor ID and device ID stored in the HW structure.
+  */
+ static int ice_set_mac_type(struct ice_hw *hw)
+ {
+ 	if (hw->vendor_id != PCI_VENDOR_ID_INTEL)
+ 		return -ENODEV;
+ 
+ 	switch (hw->device_id) {
+ 	case ICE_DEV_ID_E810C_BACKPLANE:
+ 	case ICE_DEV_ID_E810C_QSFP:
+ 	case ICE_DEV_ID_E810C_SFP:
+ 	case ICE_DEV_ID_E810_XXV_BACKPLANE:
+ 	case ICE_DEV_ID_E810_XXV_QSFP:
+ 	case ICE_DEV_ID_E810_XXV_SFP:
+ 		hw->mac_type = ICE_MAC_E810;
+ 		break;
+ 	case ICE_DEV_ID_E823C_10G_BASE_T:
+ 	case ICE_DEV_ID_E823C_BACKPLANE:
+ 	case ICE_DEV_ID_E823C_QSFP:
+ 	case ICE_DEV_ID_E823C_SFP:
+ 	case ICE_DEV_ID_E823C_SGMII:
+ 	case ICE_DEV_ID_E822C_10G_BASE_T:
+ 	case ICE_DEV_ID_E822C_BACKPLANE:
+ 	case ICE_DEV_ID_E822C_QSFP:
+ 	case ICE_DEV_ID_E822C_SFP:
+ 	case ICE_DEV_ID_E822C_SGMII:
+ 	case ICE_DEV_ID_E822L_10G_BASE_T:
+ 	case ICE_DEV_ID_E822L_BACKPLANE:
+ 	case ICE_DEV_ID_E822L_SFP:
+ 	case ICE_DEV_ID_E822L_SGMII:
+ 	case ICE_DEV_ID_E823L_10G_BASE_T:
+ 	case ICE_DEV_ID_E823L_1GBE:
+ 	case ICE_DEV_ID_E823L_BACKPLANE:
+ 	case ICE_DEV_ID_E823L_QSFP:
+ 	case ICE_DEV_ID_E823L_SFP:
+ 		hw->mac_type = ICE_MAC_GENERIC;
+ 		break;
++	case ICE_DEV_ID_E830_BACKPLANE:
++	case ICE_DEV_ID_E830_QSFP56:
++	case ICE_DEV_ID_E830_SFP:
++	case ICE_DEV_ID_E830_SFP_DD:
++		hw->mac_type = ICE_MAC_E830;
++		break;
+ 	default:
+ 		hw->mac_type = ICE_MAC_UNKNOWN;
+ 		break;
+ 	}
+ 
+ 	ice_debug(hw, ICE_DBG_INIT, "mac_type: %d\n", hw->mac_type);
+ 	return 0;
+ }
+ 
+ /**
+  * ice_is_e810
+  * @hw: pointer to the hardware structure
+  *
+  * returns true if the device is E810 based, false if not.
+  */
+@@ -759,36 +765,48 @@ static void
+ ice_fill_tx_timer_and_fc_thresh(struct ice_hw *hw,
+ 				struct ice_aqc_set_mac_cfg *cmd)
+ {
+-	u16 fc_thres_val, tx_timer_val;
+-	u32 val;
++	u32 val, fc_thres_m;
+ 
+ 	/* We read back the transmit timer and FC threshold value of
+ 	 * LFC. Thus, we will use index =
+ 	 * PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_MAX_INDEX.
+ 	 *
+ 	 * Also, because we are operating on transmit timer and FC
+ 	 * threshold of LFC, we don't turn on any bit in tx_tmr_priority
+ 	 */
+-#define IDX_OF_LFC PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_MAX_INDEX
+-
+-	/* Retrieve the transmit timer */
+-	val = rd32(hw, PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA(IDX_OF_LFC));
+-	tx_timer_val = val &
+-		PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_HSEC_CTL_TX_PAUSE_QUANTA_M;
+-	cmd->tx_tmr_value = cpu_to_le16(tx_timer_val);
+-
+-	/* Retrieve the FC threshold */
+-	val = rd32(hw, PRTMAC_HSEC_CTL_TX_PAUSE_REFRESH_TIMER(IDX_OF_LFC));
+-	fc_thres_val = val & PRTMAC_HSEC_CTL_TX_PAUSE_REFRESH_TIMER_M;
+-
+-	cmd->fc_refresh_threshold = cpu_to_le16(fc_thres_val);
++#define E800_IDX_OF_LFC E800_PRTMAC_HSEC_CTL_TX_PS_QNT_MAX
++#define E800_REFRESH_TMR E800_PRTMAC_HSEC_CTL_TX_PS_RFSH_TMR
++
++	if (hw->mac_type == ICE_MAC_E830) {
++		/* Retrieve the transmit timer */
++		val = rd32(hw, E830_PRTMAC_CL01_PS_QNT);
++		cmd->tx_tmr_value =
++			le16_encode_bits(val, E830_PRTMAC_CL01_PS_QNT_CL0_M);
++
++		/* Retrieve the fc threshold */
++		val = rd32(hw, E830_PRTMAC_CL01_QNT_THR);
++		fc_thres_m = E830_PRTMAC_CL01_QNT_THR_CL0_M;
++	} else {
++		/* Retrieve the transmit timer */
++		val = rd32(hw,
++			   E800_PRTMAC_HSEC_CTL_TX_PS_QNT(E800_IDX_OF_LFC));
++		cmd->tx_tmr_value =
++			le16_encode_bits(val,
++					 E800_PRTMAC_HSEC_CTL_TX_PS_QNT_M);
++
++		/* Retrieve the fc threshold */
++		val = rd32(hw,
++			   E800_REFRESH_TMR(E800_IDX_OF_LFC));
++		fc_thres_m = E800_PRTMAC_HSEC_CTL_TX_PS_RFSH_TMR_M;
++	}
++	cmd->fc_refresh_threshold = le16_encode_bits(val, fc_thres_m);
+ }
+ 
+ /**
+  * ice_aq_set_mac_cfg
+  * @hw: pointer to the HW struct
+  * @max_frame_size: Maximum Frame Size to be supported
+  * @cd: pointer to command details structure or NULL
+  *
+  * Set MAC configuration (0x0603)
+  */
+@@ -2464,34 +2482,39 @@ ice_parse_1588_func_caps(struct ice_hw *hw, struct ice_hw_func_caps *func_p,
+ static void
+ ice_parse_fdir_func_caps(struct ice_hw *hw, struct ice_hw_func_caps *func_p)
+ {
+-	u32 reg_val, val;
++	u32 reg_val, gsize, bsize;
+ 
+ 	reg_val = rd32(hw, GLQF_FD_SIZE);
+-	val = (reg_val & GLQF_FD_SIZE_FD_GSIZE_M) >>
+-		GLQF_FD_SIZE_FD_GSIZE_S;
+-	func_p->fd_fltr_guar =
+-		ice_get_num_per_func(hw, val);
+-	val = (reg_val & GLQF_FD_SIZE_FD_BSIZE_M) >>
+-		GLQF_FD_SIZE_FD_BSIZE_S;
+-	func_p->fd_fltr_best_effort = val;
++	switch (hw->mac_type) {
++	case ICE_MAC_E830:
++		gsize = FIELD_GET(E830_GLQF_FD_SIZE_FD_GSIZE_M, reg_val);
++		bsize = FIELD_GET(E830_GLQF_FD_SIZE_FD_BSIZE_M, reg_val);
++		break;
++	case ICE_MAC_E810:
++	default:
++		gsize = FIELD_GET(E800_GLQF_FD_SIZE_FD_GSIZE_M, reg_val);
++		bsize = FIELD_GET(E800_GLQF_FD_SIZE_FD_BSIZE_M, reg_val);
++	}
++	func_p->fd_fltr_guar = ice_get_num_per_func(hw, gsize);
++	func_p->fd_fltr_best_effort = bsize;
+ 
+ 	ice_debug(hw, ICE_DBG_INIT, "func caps: fd_fltr_guar = %d\n",
+ 		  func_p->fd_fltr_guar);
+ 	ice_debug(hw, ICE_DBG_INIT, "func caps: fd_fltr_best_effort = %d\n",
+ 		  func_p->fd_fltr_best_effort);
+ }
+ 
+ /**
+  * ice_parse_func_caps - Parse function capabilities
+  * @hw: pointer to the HW struct
+  * @func_p: pointer to function capabilities structure
+  * @buf: buffer containing the function capability records
+  * @cap_count: the number of capabilities
+  *
+  * Helper function to parse function (0x000A) capabilities list. For
+  * capabilities shared between device and function, this relies on
+  * ice_parse_common_caps.
+  *
+  * Loop through the list of provided capabilities and extract the relevant
+  * data into the function capabilities structured.
+  */
+diff --git a/drivers/net/ethernet/intel/ice/ice_devids.h b/drivers/net/ethernet/intel/ice/ice_devids.h
+index 6d560d1c74a4..a2d384dbfc76 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devids.h
++++ b/drivers/net/ethernet/intel/ice/ice_devids.h
+@@ -1,67 +1,75 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ #ifndef _ICE_DEVIDS_H_
+ #define _ICE_DEVIDS_H_
+ 
+ /* Device IDs */
+ #define ICE_DEV_ID_E822_SI_DFLT         0x1888
+ /* Intel(R) Ethernet Connection E823-L for backplane */
+ #define ICE_DEV_ID_E823L_BACKPLANE	0x124C
+ /* Intel(R) Ethernet Connection E823-L for SFP */
+ #define ICE_DEV_ID_E823L_SFP		0x124D
+ /* Intel(R) Ethernet Connection E823-L/X557-AT 10GBASE-T */
+ #define ICE_DEV_ID_E823L_10G_BASE_T	0x124E
+ /* Intel(R) Ethernet Connection E823-L 1GbE */
+ #define ICE_DEV_ID_E823L_1GBE		0x124F
+ /* Intel(R) Ethernet Connection E823-L for QSFP */
+ #define ICE_DEV_ID_E823L_QSFP		0x151D
++/* Intel(R) Ethernet Controller E830-C for backplane */
++#define ICE_DEV_ID_E830_BACKPLANE	0x12D1
++/* Intel(R) Ethernet Controller E830-C for QSFP */
++#define ICE_DEV_ID_E830_QSFP56		0x12D2
++/* Intel(R) Ethernet Controller E830-C for SFP */
++#define ICE_DEV_ID_E830_SFP		0x12D3
++/* Intel(R) Ethernet Controller E830-C for SFP-DD */
++#define ICE_DEV_ID_E830_SFP_DD		0x12D4
+ /* Intel(R) Ethernet Controller E810-C for backplane */
+ #define ICE_DEV_ID_E810C_BACKPLANE	0x1591
+ /* Intel(R) Ethernet Controller E810-C for QSFP */
+ #define ICE_DEV_ID_E810C_QSFP		0x1592
+ /* Intel(R) Ethernet Controller E810-C for SFP */
+ #define ICE_DEV_ID_E810C_SFP		0x1593
+ #define ICE_SUBDEV_ID_E810T		0x000E
+ #define ICE_SUBDEV_ID_E810T2		0x000F
+ #define ICE_SUBDEV_ID_E810T3		0x0010
+ #define ICE_SUBDEV_ID_E810T4		0x0011
+ #define ICE_SUBDEV_ID_E810T5		0x0012
+ #define ICE_SUBDEV_ID_E810T6		0x02E9
+ #define ICE_SUBDEV_ID_E810T7		0x02EA
+ /* Intel(R) Ethernet Controller E810-XXV for backplane */
+ #define ICE_DEV_ID_E810_XXV_BACKPLANE	0x1599
+ /* Intel(R) Ethernet Controller E810-XXV for QSFP */
+ #define ICE_DEV_ID_E810_XXV_QSFP	0x159A
+ /* Intel(R) Ethernet Controller E810-XXV for SFP */
+ #define ICE_DEV_ID_E810_XXV_SFP		0x159B
+ /* Intel(R) Ethernet Connection E823-C for backplane */
+ #define ICE_DEV_ID_E823C_BACKPLANE	0x188A
+ /* Intel(R) Ethernet Connection E823-C for QSFP */
+ #define ICE_DEV_ID_E823C_QSFP		0x188B
+ /* Intel(R) Ethernet Connection E823-C for SFP */
+ #define ICE_DEV_ID_E823C_SFP		0x188C
+ /* Intel(R) Ethernet Connection E823-C/X557-AT 10GBASE-T */
+ #define ICE_DEV_ID_E823C_10G_BASE_T	0x188D
+ /* Intel(R) Ethernet Connection E823-C 1GbE */
+ #define ICE_DEV_ID_E823C_SGMII		0x188E
+ /* Intel(R) Ethernet Connection E822-C for backplane */
+ #define ICE_DEV_ID_E822C_BACKPLANE	0x1890
+ /* Intel(R) Ethernet Connection E822-C for QSFP */
+ #define ICE_DEV_ID_E822C_QSFP		0x1891
+ /* Intel(R) Ethernet Connection E822-C for SFP */
+ #define ICE_DEV_ID_E822C_SFP		0x1892
+ /* Intel(R) Ethernet Connection E822-C/X557-AT 10GBASE-T */
+ #define ICE_DEV_ID_E822C_10G_BASE_T	0x1893
+ /* Intel(R) Ethernet Connection E822-C 1GbE */
+ #define ICE_DEV_ID_E822C_SGMII		0x1894
+ /* Intel(R) Ethernet Connection E822-L for backplane */
+ #define ICE_DEV_ID_E822L_BACKPLANE	0x1897
+ /* Intel(R) Ethernet Connection E822-L for SFP */
+ #define ICE_DEV_ID_E822L_SFP		0x1898
+ /* Intel(R) Ethernet Connection E822-L/X557-AT 10GBASE-T */
+ #define ICE_DEV_ID_E822L_10G_BASE_T	0x1899
+ /* Intel(R) Ethernet Connection E822-L 1GbE */
+ #define ICE_DEV_ID_E822L_SGMII		0x189A
+ 
+ #endif /* _ICE_DEVIDS_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
+index 8c6e13f87b7d..d151e5bacfec 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
+@@ -1,9 +1,9 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (C) 2018-2020, Intel Corporation. */
++/* Copyright (C) 2018-2023, Intel Corporation. */
+ 
+ /* flow director ethtool support for ice */
+ 
+ #include "ice.h"
+ #include "ice_lib.h"
+ #include "ice_fdir.h"
+ #include "ice_flow.h"
+@@ -520,45 +520,53 @@ ice_parse_rx_flow_user_data(struct ethtool_rx_flow_spec *fsp,
+ /**
+  * ice_fdir_num_avail_fltr - return the number of unused flow director filters
+  * @hw: pointer to hardware structure
+  * @vsi: software VSI structure
+  *
+  * There are 2 filter pools: guaranteed and best effort(shared). Each VSI can
+  * use filters from either pool. The guaranteed pool is divided between VSIs.
+  * The best effort filter pool is common to all VSIs and is a device shared
+  * resource pool. The number of filters available to this VSI is the sum of
+  * the VSIs guaranteed filter pool and the global available best effort
+  * filter pool.
+  *
+  * Returns the number of available flow director filters to this VSI
+  */
+ static int ice_fdir_num_avail_fltr(struct ice_hw *hw, struct ice_vsi *vsi)
+ {
+ 	u16 vsi_num = ice_get_hw_vsi_num(hw, vsi->idx);
+ 	u16 num_guar;
+ 	u16 num_be;
+ 
+ 	/* total guaranteed filters assigned to this VSI */
+ 	num_guar = vsi->num_gfltr;
+ 
+-	/* minus the guaranteed filters programed by this VSI */
+-	num_guar -= (rd32(hw, VSIQF_FD_CNT(vsi_num)) &
+-		     VSIQF_FD_CNT_FD_GCNT_M) >> VSIQF_FD_CNT_FD_GCNT_S;
+-
+ 	/* total global best effort filters */
+ 	num_be = hw->func_caps.fd_fltr_best_effort;
+ 
+-	/* minus the global best effort filters programmed */
+-	num_be -= (rd32(hw, GLQF_FD_CNT) & GLQF_FD_CNT_FD_BCNT_M) >>
+-		   GLQF_FD_CNT_FD_BCNT_S;
++	/* Subtract the number of programmed filters from the global values */
++	switch (hw->mac_type) {
++	case ICE_MAC_E830:
++		num_guar -= FIELD_GET(E830_VSIQF_FD_CNT_FD_GCNT_M,
++				      rd32(hw, VSIQF_FD_CNT(vsi_num)));
++		num_be -= FIELD_GET(E830_GLQF_FD_CNT_FD_BCNT_M,
++				    rd32(hw, GLQF_FD_CNT));
++		break;
++	case ICE_MAC_E810:
++	default:
++		num_guar -= FIELD_GET(E800_VSIQF_FD_CNT_FD_GCNT_M,
++				      rd32(hw, VSIQF_FD_CNT(vsi_num)));
++		num_be -= FIELD_GET(E800_GLQF_FD_CNT_FD_BCNT_M,
++				    rd32(hw, GLQF_FD_CNT));
++	}
+ 
+ 	return num_guar + num_be;
+ }
+ 
+ /**
+  * ice_fdir_alloc_flow_prof - allocate FDir flow profile structure(s)
+  * @hw: HW structure containing the FDir flow profile structure(s)
+  * @flow: flow type to allocate the flow profile for
+  *
+  * Allocate the fdir_prof and fdir_prof[flow] if not already created. Return 0
+  * on success and negative on error.
+  */
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -1,507 +1,533 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ /* Machine-generated file */
+ 
+ #ifndef _ICE_HW_AUTOGEN_H_
+ #define _ICE_HW_AUTOGEN_H_
+ 
+ #define QTX_COMM_DBELL(_DBQM)			(0x002C0000 + ((_DBQM) * 4))
+ #define QTX_COMM_HEAD(_DBQM)			(0x000E0000 + ((_DBQM) * 4))
+ #define QTX_COMM_HEAD_HEAD_S			0
+ #define QTX_COMM_HEAD_HEAD_M			ICE_M(0x1FFF, 0)
+ #define PF_FW_ARQBAH				0x00080180
+ #define PF_FW_ARQBAL				0x00080080
+ #define PF_FW_ARQH				0x00080380
+ #define PF_FW_ARQH_ARQH_M			ICE_M(0x3FF, 0)
+ #define PF_FW_ARQLEN				0x00080280
+ #define PF_FW_ARQLEN_ARQLEN_M			ICE_M(0x3FF, 0)
+ #define PF_FW_ARQLEN_ARQVFE_M			BIT(28)
+ #define PF_FW_ARQLEN_ARQOVFL_M			BIT(29)
+ #define PF_FW_ARQLEN_ARQCRIT_M			BIT(30)
+ #define PF_FW_ARQLEN_ARQENABLE_M		BIT(31)
+ #define PF_FW_ARQT				0x00080480
+ #define PF_FW_ATQBAH				0x00080100
+ #define PF_FW_ATQBAL				0x00080000
+ #define PF_FW_ATQH				0x00080300
+ #define PF_FW_ATQH_ATQH_M			ICE_M(0x3FF, 0)
+ #define PF_FW_ATQLEN				0x00080200
+ #define PF_FW_ATQLEN_ATQLEN_M			ICE_M(0x3FF, 0)
+ #define PF_FW_ATQLEN_ATQVFE_M			BIT(28)
+ #define PF_FW_ATQLEN_ATQOVFL_M			BIT(29)
+ #define PF_FW_ATQLEN_ATQCRIT_M			BIT(30)
+ #define VF_MBX_ARQLEN(_VF)			(0x0022BC00 + ((_VF) * 4))
+ #define VF_MBX_ATQLEN(_VF)			(0x0022A800 + ((_VF) * 4))
+ #define PF_FW_ATQLEN_ATQENABLE_M		BIT(31)
+ #define PF_FW_ATQT				0x00080400
+ #define PF_MBX_ARQBAH				0x0022E400
+ #define PF_MBX_ARQBAL				0x0022E380
+ #define PF_MBX_ARQH				0x0022E500
+ #define PF_MBX_ARQH_ARQH_M			ICE_M(0x3FF, 0)
+ #define PF_MBX_ARQLEN				0x0022E480
+ #define PF_MBX_ARQLEN_ARQLEN_M			ICE_M(0x3FF, 0)
+ #define PF_MBX_ARQLEN_ARQCRIT_M			BIT(30)
+ #define PF_MBX_ARQLEN_ARQENABLE_M		BIT(31)
+ #define PF_MBX_ARQT				0x0022E580
+ #define PF_MBX_ATQBAH				0x0022E180
+ #define PF_MBX_ATQBAL				0x0022E100
+ #define PF_MBX_ATQH				0x0022E280
+ #define PF_MBX_ATQH_ATQH_M			ICE_M(0x3FF, 0)
+ #define PF_MBX_ATQLEN				0x0022E200
+ #define PF_MBX_ATQLEN_ATQLEN_M			ICE_M(0x3FF, 0)
+ #define PF_MBX_ATQLEN_ATQCRIT_M			BIT(30)
+ #define PF_MBX_ATQLEN_ATQENABLE_M		BIT(31)
+ #define PF_MBX_ATQT				0x0022E300
+ #define PF_SB_ARQBAH				0x0022FF00
+ #define PF_SB_ARQBAH_ARQBAH_S			0
+ #define PF_SB_ARQBAH_ARQBAH_M			ICE_M(0xFFFFFFFF, 0)
+ #define PF_SB_ARQBAL				0x0022FE80
+ #define PF_SB_ARQBAL_ARQBAL_LSB_S		0
+ #define PF_SB_ARQBAL_ARQBAL_LSB_M		ICE_M(0x3F, 0)
+ #define PF_SB_ARQBAL_ARQBAL_S			6
+ #define PF_SB_ARQBAL_ARQBAL_M			ICE_M(0x3FFFFFF, 6)
+ #define PF_SB_ARQH				0x00230000
+ #define PF_SB_ARQH_ARQH_S			0
+ #define PF_SB_ARQH_ARQH_M			ICE_M(0x3FF, 0)
+ #define PF_SB_ARQLEN				0x0022FF80
+ #define PF_SB_ARQLEN_ARQLEN_S			0
+ #define PF_SB_ARQLEN_ARQLEN_M			ICE_M(0x3FF, 0)
+ #define PF_SB_ARQLEN_ARQVFE_S			28
+ #define PF_SB_ARQLEN_ARQVFE_M			BIT(28)
+ #define PF_SB_ARQLEN_ARQOVFL_S			29
+ #define PF_SB_ARQLEN_ARQOVFL_M			BIT(29)
+ #define PF_SB_ARQLEN_ARQCRIT_S			30
+ #define PF_SB_ARQLEN_ARQCRIT_M			BIT(30)
+ #define PF_SB_ARQLEN_ARQENABLE_S		31
+ #define PF_SB_ARQLEN_ARQENABLE_M		BIT(31)
+ #define PF_SB_ARQT				0x00230080
+ #define PF_SB_ARQT_ARQT_S			0
+ #define PF_SB_ARQT_ARQT_M			ICE_M(0x3FF, 0)
+ #define PF_SB_ATQBAH				0x0022FC80
+ #define PF_SB_ATQBAH_ATQBAH_S			0
+ #define PF_SB_ATQBAH_ATQBAH_M			ICE_M(0xFFFFFFFF, 0)
+ #define PF_SB_ATQBAL				0x0022FC00
+ #define PF_SB_ATQBAL_ATQBAL_S			6
+ #define PF_SB_ATQBAL_ATQBAL_M			ICE_M(0x3FFFFFF, 6)
+ #define PF_SB_ATQH				0x0022FD80
+ #define PF_SB_ATQH_ATQH_S			0
+ #define PF_SB_ATQH_ATQH_M			ICE_M(0x3FF, 0)
+ #define PF_SB_ATQLEN				0x0022FD00
+ #define PF_SB_ATQLEN_ATQLEN_S			0
+ #define PF_SB_ATQLEN_ATQLEN_M			ICE_M(0x3FF, 0)
+ #define PF_SB_ATQLEN_ATQVFE_S			28
+ #define PF_SB_ATQLEN_ATQVFE_M			BIT(28)
+ #define PF_SB_ATQLEN_ATQOVFL_S			29
+ #define PF_SB_ATQLEN_ATQOVFL_M			BIT(29)
+ #define PF_SB_ATQLEN_ATQCRIT_S			30
+ #define PF_SB_ATQLEN_ATQCRIT_M			BIT(30)
+ #define PF_SB_ATQLEN_ATQENABLE_S		31
+ #define PF_SB_ATQLEN_ATQENABLE_M		BIT(31)
+ #define PF_SB_ATQT				0x0022FE00
+ #define PF_SB_ATQT_ATQT_S			0
+ #define PF_SB_ATQT_ATQT_M			ICE_M(0x3FF, 0)
+ #define PF_SB_REM_DEV_CTL			0x002300F0
+ #define PRTDCB_GENC				0x00083000
+ #define PRTDCB_GENC_PFCLDA_S			16
+ #define PRTDCB_GENC_PFCLDA_M			ICE_M(0xFFFF, 16)
+ #define PRTDCB_GENS				0x00083020
+ #define PRTDCB_GENS_DCBX_STATUS_S		0
+ #define PRTDCB_GENS_DCBX_STATUS_M		ICE_M(0x7, 0)
+ #define PRTDCB_TUP2TC				0x001D26C0
+ #define GL_PREEXT_L2_PMASK0(_i)			(0x0020F0FC + ((_i) * 4))
+ #define GL_PREEXT_L2_PMASK1(_i)			(0x0020F108 + ((_i) * 4))
+ #define GLFLXP_RXDID_FLAGS(_i, _j)              (0x0045D000 + ((_i) * 4 + (_j) * 256))
+ #define GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_S       0
+ #define GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_M       ICE_M(0x3F, 0)
+ #define GLFLXP_RXDID_FLX_WRD_0(_i)		(0x0045c800 + ((_i) * 4))
+ #define GLFLXP_RXDID_FLX_WRD_0_PROT_MDID_S	0
+ #define GLFLXP_RXDID_FLX_WRD_0_PROT_MDID_M	ICE_M(0xFF, 0)
+ #define GLFLXP_RXDID_FLX_WRD_0_RXDID_OPCODE_S	30
+ #define GLFLXP_RXDID_FLX_WRD_0_RXDID_OPCODE_M	ICE_M(0x3, 30)
+ #define GLFLXP_RXDID_FLX_WRD_1(_i)		(0x0045c900 + ((_i) * 4))
+ #define GLFLXP_RXDID_FLX_WRD_1_PROT_MDID_S	0
+ #define GLFLXP_RXDID_FLX_WRD_1_PROT_MDID_M	ICE_M(0xFF, 0)
+ #define GLFLXP_RXDID_FLX_WRD_1_RXDID_OPCODE_S	30
+ #define GLFLXP_RXDID_FLX_WRD_1_RXDID_OPCODE_M	ICE_M(0x3, 30)
+ #define GLFLXP_RXDID_FLX_WRD_2(_i)		(0x0045ca00 + ((_i) * 4))
+ #define GLFLXP_RXDID_FLX_WRD_2_PROT_MDID_S	0
+ #define GLFLXP_RXDID_FLX_WRD_2_PROT_MDID_M	ICE_M(0xFF, 0)
+ #define GLFLXP_RXDID_FLX_WRD_2_RXDID_OPCODE_S	30
+ #define GLFLXP_RXDID_FLX_WRD_2_RXDID_OPCODE_M	ICE_M(0x3, 30)
+ #define GLFLXP_RXDID_FLX_WRD_3(_i)		(0x0045cb00 + ((_i) * 4))
+ #define GLFLXP_RXDID_FLX_WRD_3_PROT_MDID_S	0
+ #define GLFLXP_RXDID_FLX_WRD_3_PROT_MDID_M	ICE_M(0xFF, 0)
+ #define GLFLXP_RXDID_FLX_WRD_3_RXDID_OPCODE_S	30
+ #define GLFLXP_RXDID_FLX_WRD_3_RXDID_OPCODE_M	ICE_M(0x3, 30)
+ #define QRXFLXP_CNTXT(_QRX)			(0x00480000 + ((_QRX) * 4))
+ #define QRXFLXP_CNTXT_RXDID_IDX_S		0
+ #define QRXFLXP_CNTXT_RXDID_IDX_M		ICE_M(0x3F, 0)
+ #define QRXFLXP_CNTXT_RXDID_PRIO_S		8
+ #define QRXFLXP_CNTXT_RXDID_PRIO_M		ICE_M(0x7, 8)
+ #define QRXFLXP_CNTXT_TS_M			BIT(11)
+ #define GLGEN_CLKSTAT_SRC_PSM_CLK_SRC_S		4
+ #define GLGEN_CLKSTAT_SRC_PSM_CLK_SRC_M		ICE_M(0x3, 4)
+ #define GLGEN_CLKSTAT_SRC			0x000B826C
+ #define GLGEN_GPIO_CTL(_i)			(0x000880C8 + ((_i) * 4))
+ #define GLGEN_GPIO_CTL_PIN_DIR_M		BIT(4)
+ #define GLGEN_GPIO_CTL_PIN_FUNC_S		8
+ #define GLGEN_GPIO_CTL_PIN_FUNC_M		ICE_M(0xF, 8)
+ #define GLGEN_RSTAT				0x000B8188
+ #define GLGEN_RSTAT_DEVSTATE_M			ICE_M(0x3, 0)
+ #define GLGEN_RSTCTL				0x000B8180
+ #define GLGEN_RSTCTL_GRSTDEL_S			0
+ #define GLGEN_RSTCTL_GRSTDEL_M			ICE_M(0x3F, GLGEN_RSTCTL_GRSTDEL_S)
+ #define GLGEN_RSTAT_RESET_TYPE_S		2
+ #define GLGEN_RSTAT_RESET_TYPE_M		ICE_M(0x3, 2)
+ #define GLGEN_RTRIG				0x000B8190
+ #define GLGEN_RTRIG_CORER_M			BIT(0)
+ #define GLGEN_RTRIG_GLOBR_M			BIT(1)
+ #define GLGEN_STAT				0x000B612C
+ #define GLGEN_VFLRSTAT(_i)			(0x00093A04 + ((_i) * 4))
+ #define PFGEN_CTRL				0x00091000
+ #define PFGEN_CTRL_PFSWR_M			BIT(0)
+ #define PFGEN_STATE				0x00088000
+ #define PRTGEN_STATUS				0x000B8100
+ #define VFGEN_RSTAT(_VF)			(0x00074000 + ((_VF) * 4))
+ #define VPGEN_VFRSTAT(_VF)			(0x00090800 + ((_VF) * 4))
+ #define VPGEN_VFRSTAT_VFRD_M			BIT(0)
+ #define VPGEN_VFRTRIG(_VF)			(0x00090000 + ((_VF) * 4))
+ #define VPGEN_VFRTRIG_VFSWR_M			BIT(0)
+ #define GLINT_CTL				0x0016CC54
+ #define GLINT_CTL_DIS_AUTOMASK_M		BIT(0)
+ #define GLINT_CTL_ITR_GRAN_200_S		16
+ #define GLINT_CTL_ITR_GRAN_200_M		ICE_M(0xF, 16)
+ #define GLINT_CTL_ITR_GRAN_100_S		20
+ #define GLINT_CTL_ITR_GRAN_100_M		ICE_M(0xF, 20)
+ #define GLINT_CTL_ITR_GRAN_50_S			24
+ #define GLINT_CTL_ITR_GRAN_50_M			ICE_M(0xF, 24)
+ #define GLINT_CTL_ITR_GRAN_25_S			28
+ #define GLINT_CTL_ITR_GRAN_25_M			ICE_M(0xF, 28)
+ #define GLINT_DYN_CTL(_INT)			(0x00160000 + ((_INT) * 4))
+ #define GLINT_DYN_CTL_INTENA_M			BIT(0)
+ #define GLINT_DYN_CTL_CLEARPBA_M		BIT(1)
+ #define GLINT_DYN_CTL_SWINT_TRIG_M		BIT(2)
+ #define GLINT_DYN_CTL_ITR_INDX_S		3
+ #define GLINT_DYN_CTL_ITR_INDX_M		ICE_M(0x3, 3)
+ #define GLINT_DYN_CTL_INTERVAL_S		5
+ #define GLINT_DYN_CTL_INTERVAL_M		ICE_M(0xFFF, 5)
+ #define GLINT_DYN_CTL_SW_ITR_INDX_ENA_M		BIT(24)
+ #define GLINT_DYN_CTL_SW_ITR_INDX_S		25
+ #define GLINT_DYN_CTL_SW_ITR_INDX_M		ICE_M(0x3, 25)
+ #define GLINT_DYN_CTL_WB_ON_ITR_M		BIT(30)
+ #define GLINT_DYN_CTL_INTENA_MSK_M		BIT(31)
+ #define GLINT_ITR(_i, _INT)			(0x00154000 + ((_i) * 8192 + (_INT) * 4))
+ #define GLINT_RATE(_INT)			(0x0015A000 + ((_INT) * 4))
+ #define GLINT_RATE_INTRL_ENA_M			BIT(6)
+ #define GLINT_VECT2FUNC(_INT)			(0x00162000 + ((_INT) * 4))
+ #define GLINT_VECT2FUNC_VF_NUM_S		0
+ #define GLINT_VECT2FUNC_VF_NUM_M		ICE_M(0xFF, 0)
+ #define GLINT_VECT2FUNC_PF_NUM_S		12
+ #define GLINT_VECT2FUNC_PF_NUM_M		ICE_M(0x7, 12)
+ #define GLINT_VECT2FUNC_IS_PF_S			16
+ #define GLINT_VECT2FUNC_IS_PF_M			BIT(16)
+ #define PFINT_FW_CTL				0x0016C800
+ #define PFINT_FW_CTL_MSIX_INDX_M		ICE_M(0x7FF, 0)
+ #define PFINT_FW_CTL_ITR_INDX_S			11
+ #define PFINT_FW_CTL_ITR_INDX_M			ICE_M(0x3, 11)
+ #define PFINT_FW_CTL_CAUSE_ENA_M		BIT(30)
+ #define PFINT_MBX_CTL				0x0016B280
+ #define PFINT_MBX_CTL_MSIX_INDX_M		ICE_M(0x7FF, 0)
+ #define PFINT_MBX_CTL_ITR_INDX_S		11
+ #define PFINT_MBX_CTL_ITR_INDX_M		ICE_M(0x3, 11)
+ #define PFINT_MBX_CTL_CAUSE_ENA_M		BIT(30)
+ #define PFINT_OICR				0x0016CA00
+ #define PFINT_OICR_TSYN_TX_M			BIT(11)
+ #define PFINT_OICR_TSYN_EVNT_M			BIT(12)
+ #define PFINT_OICR_ECC_ERR_M			BIT(16)
+ #define PFINT_OICR_MAL_DETECT_M			BIT(19)
+ #define PFINT_OICR_GRST_M			BIT(20)
+ #define PFINT_OICR_PCI_EXCEPTION_M		BIT(21)
+ #define PFINT_OICR_HMC_ERR_M			BIT(26)
+ #define PFINT_OICR_PE_PUSH_M			BIT(27)
+ #define PFINT_OICR_PE_CRITERR_M			BIT(28)
+ #define PFINT_OICR_VFLR_M			BIT(29)
+ #define PFINT_OICR_SWINT_M			BIT(31)
+ #define PFINT_OICR_CTL				0x0016CA80
+ #define PFINT_OICR_CTL_MSIX_INDX_M		ICE_M(0x7FF, 0)
+ #define PFINT_OICR_CTL_ITR_INDX_S		11
+ #define PFINT_OICR_CTL_ITR_INDX_M		ICE_M(0x3, 11)
+ #define PFINT_OICR_CTL_CAUSE_ENA_M		BIT(30)
+ #define PFINT_OICR_ENA				0x0016C900
+ #define PFINT_SB_CTL				0x0016B600
+ #define PFINT_SB_CTL_MSIX_INDX_M		ICE_M(0x7FF, 0)
+ #define PFINT_SB_CTL_CAUSE_ENA_M		BIT(30)
+ #define PFINT_TSYN_MSK				0x0016C980
+ #define QINT_RQCTL(_QRX)			(0x00150000 + ((_QRX) * 4))
+ #define QINT_RQCTL_MSIX_INDX_S			0
+ #define QINT_RQCTL_MSIX_INDX_M			ICE_M(0x7FF, 0)
+ #define QINT_RQCTL_ITR_INDX_S			11
+ #define QINT_RQCTL_ITR_INDX_M			ICE_M(0x3, 11)
+ #define QINT_RQCTL_CAUSE_ENA_M			BIT(30)
+ #define QINT_TQCTL(_DBQM)			(0x00140000 + ((_DBQM) * 4))
+ #define QINT_TQCTL_MSIX_INDX_S			0
+ #define QINT_TQCTL_MSIX_INDX_M			ICE_M(0x7FF, 0)
+ #define QINT_TQCTL_ITR_INDX_S			11
+ #define QINT_TQCTL_ITR_INDX_M			ICE_M(0x3, 11)
+ #define QINT_TQCTL_CAUSE_ENA_M			BIT(30)
+ #define VPINT_ALLOC(_VF)			(0x001D1000 + ((_VF) * 4))
+ #define VPINT_ALLOC_FIRST_S			0
+ #define VPINT_ALLOC_FIRST_M			ICE_M(0x7FF, 0)
+ #define VPINT_ALLOC_LAST_S			12
+ #define VPINT_ALLOC_LAST_M			ICE_M(0x7FF, 12)
+ #define VPINT_ALLOC_VALID_M			BIT(31)
+ #define VPINT_ALLOC_PCI(_VF)			(0x0009D000 + ((_VF) * 4))
+ #define VPINT_ALLOC_PCI_FIRST_S			0
+ #define VPINT_ALLOC_PCI_FIRST_M			ICE_M(0x7FF, 0)
+ #define VPINT_ALLOC_PCI_LAST_S			12
+ #define VPINT_ALLOC_PCI_LAST_M			ICE_M(0x7FF, 12)
+ #define VPINT_ALLOC_PCI_VALID_M			BIT(31)
+ #define VPINT_MBX_CTL(_VSI)			(0x0016A000 + ((_VSI) * 4))
+ #define VPINT_MBX_CTL_CAUSE_ENA_M		BIT(30)
+ #define GLLAN_RCTL_0				0x002941F8
+ #define QRX_CONTEXT(_i, _QRX)			(0x00280000 + ((_i) * 8192 + (_QRX) * 4))
+ #define QRX_CTRL(_QRX)				(0x00120000 + ((_QRX) * 4))
+ #define QRX_CTRL_MAX_INDEX			2047
+ #define QRX_CTRL_QENA_REQ_S			0
+ #define QRX_CTRL_QENA_REQ_M			BIT(0)
+ #define QRX_CTRL_QENA_STAT_S			2
+ #define QRX_CTRL_QENA_STAT_M			BIT(2)
+ #define QRX_ITR(_QRX)				(0x00292000 + ((_QRX) * 4))
+ #define QRX_TAIL(_QRX)				(0x00290000 + ((_QRX) * 4))
+ #define QRX_TAIL_MAX_INDEX			2047
+ #define QRX_TAIL_TAIL_S				0
+ #define QRX_TAIL_TAIL_M				ICE_M(0x1FFF, 0)
+ #define VPLAN_RX_QBASE(_VF)			(0x00072000 + ((_VF) * 4))
+ #define VPLAN_RX_QBASE_VFFIRSTQ_S		0
+ #define VPLAN_RX_QBASE_VFFIRSTQ_M		ICE_M(0x7FF, 0)
+ #define VPLAN_RX_QBASE_VFNUMQ_S			16
+ #define VPLAN_RX_QBASE_VFNUMQ_M			ICE_M(0xFF, 16)
+ #define VPLAN_RXQ_MAPENA(_VF)			(0x00073000 + ((_VF) * 4))
+ #define VPLAN_RXQ_MAPENA_RX_ENA_M		BIT(0)
+ #define VPLAN_TX_QBASE(_VF)			(0x001D1800 + ((_VF) * 4))
+ #define VPLAN_TX_QBASE_VFFIRSTQ_S		0
+ #define VPLAN_TX_QBASE_VFFIRSTQ_M		ICE_M(0x3FFF, 0)
+ #define VPLAN_TX_QBASE_VFNUMQ_S			16
+ #define VPLAN_TX_QBASE_VFNUMQ_M			ICE_M(0xFF, 16)
+ #define VPLAN_TXQ_MAPENA(_VF)			(0x00073800 + ((_VF) * 4))
+ #define VPLAN_TXQ_MAPENA_TX_ENA_M		BIT(0)
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA(_i)	(0x001E36E0 + ((_i) * 32))
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_MAX_INDEX 8
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_HSEC_CTL_TX_PAUSE_QUANTA_M ICE_M(0xFFFF, 0)
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_REFRESH_TIMER(_i) (0x001E3800 + ((_i) * 32))
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_REFRESH_TIMER_M ICE_M(0xFFFF, 0)
++#define E800_PRTMAC_HSEC_CTL_TX_PS_QNT(_i)	(0x001E36E0 + ((_i) * 32))
++#define E800_PRTMAC_HSEC_CTL_TX_PS_QNT_MAX	8
++#define E800_PRTMAC_HSEC_CTL_TX_PS_QNT_M	GENMASK(15, 0)
++#define E800_PRTMAC_HSEC_CTL_TX_PS_RFSH_TMR(_i)	(0x001E3800 + ((_i) * 32))
++#define E800_PRTMAC_HSEC_CTL_TX_PS_RFSH_TMR_M	GENMASK(15, 0)
+ #define GL_MDCK_TX_TDPU				0x00049348
+ #define GL_MDCK_TX_TDPU_RCU_ANTISPOOF_ITR_DIS_M BIT(1)
+ #define GL_MDET_RX				0x00294C00
+ #define GL_MDET_RX_QNUM_S			0
+ #define GL_MDET_RX_QNUM_M			ICE_M(0x7FFF, 0)
+ #define GL_MDET_RX_VF_NUM_S			15
+ #define GL_MDET_RX_VF_NUM_M			ICE_M(0xFF, 15)
+ #define GL_MDET_RX_PF_NUM_S			23
+ #define GL_MDET_RX_PF_NUM_M			ICE_M(0x7, 23)
+ #define GL_MDET_RX_MAL_TYPE_S			26
+ #define GL_MDET_RX_MAL_TYPE_M			ICE_M(0x1F, 26)
+ #define GL_MDET_RX_VALID_M			BIT(31)
+ #define GL_MDET_TX_PQM				0x002D2E00
+ #define GL_MDET_TX_PQM_PF_NUM_S			0
+ #define GL_MDET_TX_PQM_PF_NUM_M			ICE_M(0x7, 0)
+ #define GL_MDET_TX_PQM_VF_NUM_S			4
+ #define GL_MDET_TX_PQM_VF_NUM_M			ICE_M(0xFF, 4)
+ #define GL_MDET_TX_PQM_QNUM_S			12
+ #define GL_MDET_TX_PQM_QNUM_M			ICE_M(0x3FFF, 12)
+ #define GL_MDET_TX_PQM_MAL_TYPE_S		26
+ #define GL_MDET_TX_PQM_MAL_TYPE_M		ICE_M(0x1F, 26)
+ #define GL_MDET_TX_PQM_VALID_M			BIT(31)
+-#define GL_MDET_TX_TCLAN			0x000FC068
++#define GL_MDET_TX_TCLAN_BY_MAC(hw)				  \
++	((hw)->mac_type == ICE_MAC_E830 ? E830_GL_MDET_TX_TCLAN : \
++	 E800_GL_MDET_TX_TCLAN)
++#define E800_GL_MDET_TX_TCLAN			0x000FC068
++#define E830_GL_MDET_TX_TCLAN			0x000FCCC0
+ #define GL_MDET_TX_TCLAN_QNUM_S			0
+ #define GL_MDET_TX_TCLAN_QNUM_M			ICE_M(0x7FFF, 0)
+ #define GL_MDET_TX_TCLAN_VF_NUM_S		15
+ #define GL_MDET_TX_TCLAN_VF_NUM_M		ICE_M(0xFF, 15)
+ #define GL_MDET_TX_TCLAN_PF_NUM_S		23
+ #define GL_MDET_TX_TCLAN_PF_NUM_M		ICE_M(0x7, 23)
+ #define GL_MDET_TX_TCLAN_MAL_TYPE_S		26
+ #define GL_MDET_TX_TCLAN_MAL_TYPE_M		ICE_M(0x1F, 26)
+ #define GL_MDET_TX_TCLAN_VALID_M		BIT(31)
+ #define PF_MDET_RX				0x00294280
+ #define PF_MDET_RX_VALID_M			BIT(0)
+ #define PF_MDET_TX_PQM				0x002D2C80
+ #define PF_MDET_TX_PQM_VALID_M			BIT(0)
+-#define PF_MDET_TX_TCLAN			0x000FC000
++#define PF_MDET_TX_TCLAN_BY_MAC(hw)				  \
++	((hw)->mac_type == ICE_MAC_E830 ? E830_PF_MDET_TX_TCLAN : \
++	 E800_PF_MDET_TX_TCLAN)
++#define E800_PF_MDET_TX_TCLAN			0x000FC000
++#define E830_PF_MDET_TX_TCLAN			0x000FCC00
+ #define PF_MDET_TX_TCLAN_VALID_M		BIT(0)
+ #define VP_MDET_RX(_VF)				(0x00294400 + ((_VF) * 4))
+ #define VP_MDET_RX_VALID_M			BIT(0)
+ #define VP_MDET_TX_PQM(_VF)			(0x002D2000 + ((_VF) * 4))
+ #define VP_MDET_TX_PQM_VALID_M			BIT(0)
+ #define VP_MDET_TX_TCLAN(_VF)			(0x000FB800 + ((_VF) * 4))
+ #define VP_MDET_TX_TCLAN_VALID_M		BIT(0)
+ #define VP_MDET_TX_TDPU(_VF)			(0x00040000 + ((_VF) * 4))
+ #define VP_MDET_TX_TDPU_VALID_M			BIT(0)
++#define E800_GL_MNG_FWSM_FW_MODES_M		GENMASK(2, 0)
++#define E830_GL_MNG_FWSM_FW_MODES_M		GENMASK(1, 0)
+ #define GL_MNG_FWSM				0x000B6134
+ #define GL_MNG_FWSM_FW_LOADING_M		BIT(30)
+ #define GLNVM_FLA				0x000B6108
+ #define GLNVM_FLA_LOCKED_M			BIT(6)
+ #define GLNVM_GENS				0x000B6100
+ #define GLNVM_GENS_SR_SIZE_S			5
+ #define GLNVM_GENS_SR_SIZE_M			ICE_M(0x7, 5)
+ #define GLNVM_ULD				0x000B6008
+ #define GLNVM_ULD_PCIER_DONE_M			BIT(0)
+ #define GLNVM_ULD_PCIER_DONE_1_M		BIT(1)
+ #define GLNVM_ULD_CORER_DONE_M			BIT(3)
+ #define GLNVM_ULD_GLOBR_DONE_M			BIT(4)
+ #define GLNVM_ULD_POR_DONE_M			BIT(5)
+ #define GLNVM_ULD_POR_DONE_1_M			BIT(8)
+ #define GLNVM_ULD_PCIER_DONE_2_M		BIT(9)
+ #define GLNVM_ULD_PE_DONE_M			BIT(10)
+ #define GLPCI_CNF2				0x000BE004
+ #define GLPCI_CNF2_CACHELINE_SIZE_M		BIT(1)
+ #define PF_FUNC_RID				0x0009E880
+ #define PF_FUNC_RID_FUNC_NUM_S			0
+ #define PF_FUNC_RID_FUNC_NUM_M			ICE_M(0x7, 0)
+ #define PF_PCI_CIAA				0x0009E580
+ #define PF_PCI_CIAA_VF_NUM_S			12
+ #define PF_PCI_CIAD				0x0009E500
+ #define GL_PWR_MODE_CTL				0x000B820C
+ #define GL_PWR_MODE_CTL_CAR_MAX_BW_S		30
+ #define GL_PWR_MODE_CTL_CAR_MAX_BW_M		ICE_M(0x3, 30)
+ #define GLQF_FD_CNT				0x00460018
++#define E800_GLQF_FD_CNT_FD_GCNT_M		GENMASK(14, 0)
++#define E830_GLQF_FD_CNT_FD_GCNT_M		GENMASK(15, 0)
+ #define GLQF_FD_CNT_FD_BCNT_S			16
+-#define GLQF_FD_CNT_FD_BCNT_M			ICE_M(0x7FFF, 16)
++#define E800_GLQF_FD_CNT_FD_BCNT_M		GENMASK(30, 16)
++#define E830_GLQF_FD_CNT_FD_BCNT_M		GENMASK(31, 16)
+ #define GLQF_FD_SIZE				0x00460010
+ #define GLQF_FD_SIZE_FD_GSIZE_S			0
+-#define GLQF_FD_SIZE_FD_GSIZE_M			ICE_M(0x7FFF, 0)
++#define E800_GLQF_FD_SIZE_FD_GSIZE_M		GENMASK(14, 0)
++#define E830_GLQF_FD_SIZE_FD_GSIZE_M		GENMASK(15, 0)
+ #define GLQF_FD_SIZE_FD_BSIZE_S			16
+-#define GLQF_FD_SIZE_FD_BSIZE_M			ICE_M(0x7FFF, 16)
++#define E800_GLQF_FD_SIZE_FD_BSIZE_M		GENMASK(30, 16)
++#define E830_GLQF_FD_SIZE_FD_BSIZE_M		GENMASK(31, 16)
+ #define GLQF_FDINSET(_i, _j)			(0x00412000 + ((_i) * 4 + (_j) * 512))
+ #define GLQF_FDMASK(_i)				(0x00410800 + ((_i) * 4))
+ #define GLQF_FDMASK_MAX_INDEX			31
+ #define GLQF_FDMASK_MSK_INDEX_S			0
+ #define GLQF_FDMASK_MSK_INDEX_M			ICE_M(0x1F, 0)
+ #define GLQF_FDMASK_MASK_S			16
+ #define GLQF_FDMASK_MASK_M			ICE_M(0xFFFF, 16)
+ #define GLQF_FDMASK_SEL(_i)			(0x00410400 + ((_i) * 4))
+ #define GLQF_FDSWAP(_i, _j)			(0x00413000 + ((_i) * 4 + (_j) * 512))
+ #define GLQF_HMASK(_i)				(0x0040FC00 + ((_i) * 4))
+ #define GLQF_HMASK_MAX_INDEX			31
+ #define GLQF_HMASK_MSK_INDEX_S			0
+ #define GLQF_HMASK_MSK_INDEX_M			ICE_M(0x1F, 0)
+ #define GLQF_HMASK_MASK_S			16
+ #define GLQF_HMASK_MASK_M			ICE_M(0xFFFF, 16)
+ #define GLQF_HMASK_SEL(_i)			(0x00410000 + ((_i) * 4))
+ #define GLQF_HMASK_SEL_MAX_INDEX		127
+ #define GLQF_HMASK_SEL_MASK_SEL_S		0
++#define E800_PFQF_FD_CNT_FD_GCNT_M		GENMASK(14, 0)
++#define E830_PFQF_FD_CNT_FD_GCNT_M		GENMASK(15, 0)
++#define E800_PFQF_FD_CNT_FD_BCNT_M		GENMASK(30, 16)
++#define E830_PFQF_FD_CNT_FD_BCNT_M		GENMASK(31, 16)
+ #define PFQF_FD_ENA				0x0043A000
+ #define PFQF_FD_ENA_FD_ENA_M			BIT(0)
+ #define PFQF_FD_SIZE				0x00460100
+ #define GLDCB_RTCTQ_RXQNUM_S			0
+ #define GLDCB_RTCTQ_RXQNUM_M			ICE_M(0x7FF, 0)
+ #define GLPRT_BPRCL(_i)				(0x00381380 + ((_i) * 8))
+ #define GLPRT_BPTCL(_i)				(0x00381240 + ((_i) * 8))
+ #define GLPRT_CRCERRS(_i)			(0x00380100 + ((_i) * 8))
+ #define GLPRT_GORCL(_i)				(0x00380000 + ((_i) * 8))
+ #define GLPRT_GOTCL(_i)				(0x00380B40 + ((_i) * 8))
+ #define GLPRT_ILLERRC(_i)			(0x003801C0 + ((_i) * 8))
+ #define GLPRT_LXOFFRXC(_i)			(0x003802C0 + ((_i) * 8))
+ #define GLPRT_LXOFFTXC(_i)			(0x00381180 + ((_i) * 8))
+ #define GLPRT_LXONRXC(_i)			(0x00380280 + ((_i) * 8))
+ #define GLPRT_LXONTXC(_i)			(0x00381140 + ((_i) * 8))
+ #define GLPRT_MLFC(_i)				(0x00380040 + ((_i) * 8))
+ #define GLPRT_MPRCL(_i)				(0x00381340 + ((_i) * 8))
+ #define GLPRT_MPTCL(_i)				(0x00381200 + ((_i) * 8))
+ #define GLPRT_MRFC(_i)				(0x00380080 + ((_i) * 8))
+ #define GLPRT_PRC1023L(_i)			(0x00380A00 + ((_i) * 8))
+ #define GLPRT_PRC127L(_i)			(0x00380940 + ((_i) * 8))
+ #define GLPRT_PRC1522L(_i)			(0x00380A40 + ((_i) * 8))
+ #define GLPRT_PRC255L(_i)			(0x00380980 + ((_i) * 8))
+ #define GLPRT_PRC511L(_i)			(0x003809C0 + ((_i) * 8))
+ #define GLPRT_PRC64L(_i)			(0x00380900 + ((_i) * 8))
+ #define GLPRT_PRC9522L(_i)			(0x00380A80 + ((_i) * 8))
+ #define GLPRT_PTC1023L(_i)			(0x00380C80 + ((_i) * 8))
+ #define GLPRT_PTC127L(_i)			(0x00380BC0 + ((_i) * 8))
+ #define GLPRT_PTC1522L(_i)			(0x00380CC0 + ((_i) * 8))
+ #define GLPRT_PTC255L(_i)			(0x00380C00 + ((_i) * 8))
+ #define GLPRT_PTC511L(_i)			(0x00380C40 + ((_i) * 8))
+ #define GLPRT_PTC64L(_i)			(0x00380B80 + ((_i) * 8))
+ #define GLPRT_PTC9522L(_i)			(0x00380D00 + ((_i) * 8))
+ #define GLPRT_PXOFFRXC(_i, _j)			(0x00380500 + ((_i) * 8 + (_j) * 64))
+ #define GLPRT_PXOFFTXC(_i, _j)			(0x00380F40 + ((_i) * 8 + (_j) * 64))
+ #define GLPRT_PXONRXC(_i, _j)			(0x00380300 + ((_i) * 8 + (_j) * 64))
+ #define GLPRT_PXONTXC(_i, _j)			(0x00380D40 + ((_i) * 8 + (_j) * 64))
+ #define GLPRT_RFC(_i)				(0x00380AC0 + ((_i) * 8))
+ #define GLPRT_RJC(_i)				(0x00380B00 + ((_i) * 8))
+ #define GLPRT_RLEC(_i)				(0x00380140 + ((_i) * 8))
+ #define GLPRT_ROC(_i)				(0x00380240 + ((_i) * 8))
+ #define GLPRT_RUC(_i)				(0x00380200 + ((_i) * 8))
+ #define GLPRT_RXON2OFFCNT(_i, _j)		(0x00380700 + ((_i) * 8 + (_j) * 64))
+ #define GLPRT_TDOLD(_i)				(0x00381280 + ((_i) * 8))
+ #define GLPRT_UPRCL(_i)				(0x00381300 + ((_i) * 8))
+ #define GLPRT_UPTCL(_i)				(0x003811C0 + ((_i) * 8))
+ #define GLSTAT_FD_CNT0L(_i)			(0x003A0000 + ((_i) * 8))
+ #define GLV_BPRCL(_i)				(0x003B6000 + ((_i) * 8))
+ #define GLV_BPTCL(_i)				(0x0030E000 + ((_i) * 8))
+ #define GLV_GORCL(_i)				(0x003B0000 + ((_i) * 8))
+ #define GLV_GOTCL(_i)				(0x00300000 + ((_i) * 8))
+ #define GLV_MPRCL(_i)				(0x003B4000 + ((_i) * 8))
+ #define GLV_MPTCL(_i)				(0x0030C000 + ((_i) * 8))
+ #define GLV_RDPC(_i)				(0x00294C04 + ((_i) * 4))
+ #define GLV_TEPC(_VSI)				(0x00312000 + ((_VSI) * 4))
+ #define GLV_UPRCL(_i)				(0x003B2000 + ((_i) * 8))
+ #define GLV_UPTCL(_i)				(0x0030A000 + ((_i) * 8))
+ #define PRTRPB_RDPC				0x000AC260
+ #define GLHH_ART_CTL				0x000A41D4
+ #define GLHH_ART_CTL_ACTIVE_M			BIT(0)
+ #define GLHH_ART_TIME_H				0x000A41D8
+ #define GLHH_ART_TIME_L				0x000A41DC
+ #define GLTSYN_AUX_IN_0(_i)			(0x000889D8 + ((_i) * 4))
+ #define GLTSYN_AUX_IN_0_INT_ENA_M		BIT(4)
+ #define GLTSYN_AUX_OUT_0(_i)			(0x00088998 + ((_i) * 4))
+ #define GLTSYN_AUX_OUT_0_OUT_ENA_M		BIT(0)
+ #define GLTSYN_AUX_OUT_0_OUTMOD_M		ICE_M(0x3, 1)
+ #define GLTSYN_CLKO_0(_i)			(0x000889B8 + ((_i) * 4))
+ #define GLTSYN_CMD				0x00088810
+ #define GLTSYN_CMD_SYNC				0x00088814
+ #define GLTSYN_ENA(_i)				(0x00088808 + ((_i) * 4))
+ #define GLTSYN_ENA_TSYN_ENA_M			BIT(0)
+ #define GLTSYN_EVNT_H_0(_i)			(0x00088970 + ((_i) * 4))
+ #define GLTSYN_EVNT_L_0(_i)			(0x00088968 + ((_i) * 4))
+ #define GLTSYN_HHTIME_H(_i)			(0x00088900 + ((_i) * 4))
+ #define GLTSYN_HHTIME_L(_i)			(0x000888F8 + ((_i) * 4))
+ #define GLTSYN_INCVAL_H(_i)			(0x00088920 + ((_i) * 4))
+ #define GLTSYN_INCVAL_L(_i)			(0x00088918 + ((_i) * 4))
+ #define GLTSYN_SHADJ_H(_i)			(0x00088910 + ((_i) * 4))
+ #define GLTSYN_SHADJ_L(_i)			(0x00088908 + ((_i) * 4))
+ #define GLTSYN_SHTIME_0(_i)			(0x000888E0 + ((_i) * 4))
+ #define GLTSYN_SHTIME_H(_i)			(0x000888F0 + ((_i) * 4))
+ #define GLTSYN_SHTIME_L(_i)			(0x000888E8 + ((_i) * 4))
+ #define GLTSYN_STAT(_i)				(0x000888C0 + ((_i) * 4))
+ #define GLTSYN_STAT_EVENT0_M			BIT(0)
+ #define GLTSYN_STAT_EVENT1_M			BIT(1)
+ #define GLTSYN_STAT_EVENT2_M			BIT(2)
+ #define GLTSYN_SYNC_DLAY			0x00088818
+ #define GLTSYN_TGT_H_0(_i)			(0x00088930 + ((_i) * 4))
+ #define GLTSYN_TGT_L_0(_i)			(0x00088928 + ((_i) * 4))
++#define GLTSYN_TIME_0(_i)			(0x000888C8 + ((_i) * 4))
+ #define GLTSYN_TIME_H(_i)			(0x000888D8 + ((_i) * 4))
+ #define GLTSYN_TIME_L(_i)			(0x000888D0 + ((_i) * 4))
+ #define PFHH_SEM				0x000A4200 /* Reset Source: PFR */
+ #define PFHH_SEM_BUSY_M				BIT(0)
+ #define PFTSYN_SEM				0x00088880
+ #define PFTSYN_SEM_BUSY_M			BIT(0)
+ #define VSIQF_FD_CNT(_VSI)			(0x00464000 + ((_VSI) * 4))
+ #define VSIQF_FD_CNT_FD_GCNT_S			0
+-#define VSIQF_FD_CNT_FD_GCNT_M			ICE_M(0x3FFF, 0)
++#define E800_VSIQF_FD_CNT_FD_GCNT_M		GENMASK(13, 0)
++#define E830_VSIQF_FD_CNT_FD_GCNT_M		GENMASK(15, 0)
+ #define VSIQF_FD_CNT_FD_BCNT_S			16
+-#define VSIQF_FD_CNT_FD_BCNT_M			ICE_M(0x3FFF, 16)
++#define E800_VSIQF_FD_CNT_FD_BCNT_M		GENMASK(29, 16)
++#define E830_VSIQF_FD_CNT_FD_BCNT_M		GENMASK(31, 16)
+ #define VSIQF_FD_SIZE(_VSI)			(0x00462000 + ((_VSI) * 4))
+ #define VSIQF_HKEY_MAX_INDEX			12
+ #define PFPM_APM				0x000B8080
+ #define PFPM_APM_APME_M				BIT(0)
+ #define PFPM_WUFC				0x0009DC00
+ #define PFPM_WUFC_MAG_M				BIT(1)
+ #define PFPM_WUS				0x0009DB80
+ #define PFPM_WUS_LNKC_M				BIT(0)
+ #define PFPM_WUS_MAG_M				BIT(1)
+ #define PFPM_WUS_MNG_M				BIT(3)
+ #define PFPM_WUS_FW_RST_WK_M			BIT(31)
++#define E830_PRTMAC_CL01_PS_QNT			0x001E32A0
++#define E830_PRTMAC_CL01_PS_QNT_CL0_M		GENMASK(15, 0)
++#define E830_PRTMAC_CL01_QNT_THR		0x001E3320
++#define E830_PRTMAC_CL01_QNT_THR_CL0_M		GENMASK(15, 0)
+ #define VFINT_DYN_CTLN(_i)			(0x00003800 + ((_i) * 4))
+ #define VFINT_DYN_CTLN_CLEARPBA_M		BIT(1)
+ 
+ #endif /* _ICE_HW_AUTOGEN_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index b67c806a5a4d..da10f35d35a8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -1,28 +1,28 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ /* Intel(R) Ethernet Connection E800 Series Linux Driver */
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+ 
+ #include <generated/utsrelease.h>
+ #include <linux/crash_dump.h>
+ #include "ice.h"
+ #include "ice_base.h"
+ #include "ice_lib.h"
+ #include "ice_fltr.h"
+ #include "ice_dcb_lib.h"
+ #include "ice_dcb_nl.h"
+ #include "ice_devlink.h"
+ /* Including ice_trace.h with CREATE_TRACE_POINTS defined will generate the
+  * ice tracepoint functions. This must be done exactly once across the
+  * ice driver.
+  */
+ #define CREATE_TRACE_POINTS
+ #include "ice_trace.h"
+ #include "ice_eswitch.h"
+ #include "ice_tc_lib.h"
+ #include "ice_vsi_vlan_ops.h"
+ #include <net/xdp_sock_drv.h>
+ 
+ #define DRV_SUMMARY	"Intel(R) Ethernet Connection E800 Series Linux Driver"
+@@ -1718,174 +1718,174 @@ static void ice_service_timer(struct timer_list *t)
+ /**
+  * ice_handle_mdd_event - handle malicious driver detect event
+  * @pf: pointer to the PF structure
+  *
+  * Called from service task. OICR interrupt handler indicates MDD event.
+  * VF MDD logging is guarded by net_ratelimit. Additional PF and VF log
+  * messages are wrapped by netif_msg_[rx|tx]_err. Since VF Rx MDD events
+  * disable the queue, the PF can be configured to reset the VF using ethtool
+  * private flag mdd-auto-reset-vf.
+  */
+ static void ice_handle_mdd_event(struct ice_pf *pf)
+ {
+ 	struct device *dev = ice_pf_to_dev(pf);
+ 	struct ice_hw *hw = &pf->hw;
+ 	struct ice_vf *vf;
+ 	unsigned int bkt;
+ 	u32 reg;
+ 
+ 	if (!test_and_clear_bit(ICE_MDD_EVENT_PENDING, pf->state)) {
+ 		/* Since the VF MDD event logging is rate limited, check if
+ 		 * there are pending MDD events.
+ 		 */
+ 		ice_print_vfs_mdd_events(pf);
+ 		return;
+ 	}
+ 
+ 	/* find what triggered an MDD event */
+ 	reg = rd32(hw, GL_MDET_TX_PQM);
+ 	if (reg & GL_MDET_TX_PQM_VALID_M) {
+ 		u8 pf_num = (reg & GL_MDET_TX_PQM_PF_NUM_M) >>
+ 				GL_MDET_TX_PQM_PF_NUM_S;
+ 		u16 vf_num = (reg & GL_MDET_TX_PQM_VF_NUM_M) >>
+ 				GL_MDET_TX_PQM_VF_NUM_S;
+ 		u8 event = (reg & GL_MDET_TX_PQM_MAL_TYPE_M) >>
+ 				GL_MDET_TX_PQM_MAL_TYPE_S;
+ 		u16 queue = ((reg & GL_MDET_TX_PQM_QNUM_M) >>
+ 				GL_MDET_TX_PQM_QNUM_S);
+ 
+ 		if (netif_msg_tx_err(pf))
+ 			dev_info(dev, "Malicious Driver Detection event %d on TX queue %d PF# %d VF# %d\n",
+ 				 event, queue, pf_num, vf_num);
+ 		wr32(hw, GL_MDET_TX_PQM, 0xffffffff);
+ 	}
+ 
+-	reg = rd32(hw, GL_MDET_TX_TCLAN);
++	reg = rd32(hw, GL_MDET_TX_TCLAN_BY_MAC(hw));
+ 	if (reg & GL_MDET_TX_TCLAN_VALID_M) {
+ 		u8 pf_num = (reg & GL_MDET_TX_TCLAN_PF_NUM_M) >>
+ 				GL_MDET_TX_TCLAN_PF_NUM_S;
+ 		u16 vf_num = (reg & GL_MDET_TX_TCLAN_VF_NUM_M) >>
+ 				GL_MDET_TX_TCLAN_VF_NUM_S;
+ 		u8 event = (reg & GL_MDET_TX_TCLAN_MAL_TYPE_M) >>
+ 				GL_MDET_TX_TCLAN_MAL_TYPE_S;
+ 		u16 queue = ((reg & GL_MDET_TX_TCLAN_QNUM_M) >>
+ 				GL_MDET_TX_TCLAN_QNUM_S);
+ 
+ 		if (netif_msg_tx_err(pf))
+ 			dev_info(dev, "Malicious Driver Detection event %d on TX queue %d PF# %d VF# %d\n",
+ 				 event, queue, pf_num, vf_num);
+-		wr32(hw, GL_MDET_TX_TCLAN, 0xffffffff);
++		wr32(hw, GL_MDET_TX_TCLAN_BY_MAC(hw), U32_MAX);
+ 	}
+ 
+ 	reg = rd32(hw, GL_MDET_RX);
+ 	if (reg & GL_MDET_RX_VALID_M) {
+ 		u8 pf_num = (reg & GL_MDET_RX_PF_NUM_M) >>
+ 				GL_MDET_RX_PF_NUM_S;
+ 		u16 vf_num = (reg & GL_MDET_RX_VF_NUM_M) >>
+ 				GL_MDET_RX_VF_NUM_S;
+ 		u8 event = (reg & GL_MDET_RX_MAL_TYPE_M) >>
+ 				GL_MDET_RX_MAL_TYPE_S;
+ 		u16 queue = ((reg & GL_MDET_RX_QNUM_M) >>
+ 				GL_MDET_RX_QNUM_S);
+ 
+ 		if (netif_msg_rx_err(pf))
+ 			dev_info(dev, "Malicious Driver Detection event %d on RX queue %d PF# %d VF# %d\n",
+ 				 event, queue, pf_num, vf_num);
+ 		wr32(hw, GL_MDET_RX, 0xffffffff);
+ 	}
+ 
+ 	/* check to see if this PF caused an MDD event */
+ 	reg = rd32(hw, PF_MDET_TX_PQM);
+ 	if (reg & PF_MDET_TX_PQM_VALID_M) {
+ 		wr32(hw, PF_MDET_TX_PQM, 0xFFFF);
+ 		if (netif_msg_tx_err(pf))
+ 			dev_info(dev, "Malicious Driver Detection event TX_PQM detected on PF\n");
+ 	}
+ 
+-	reg = rd32(hw, PF_MDET_TX_TCLAN);
++	reg = rd32(hw, PF_MDET_TX_TCLAN_BY_MAC(hw));
+ 	if (reg & PF_MDET_TX_TCLAN_VALID_M) {
+-		wr32(hw, PF_MDET_TX_TCLAN, 0xFFFF);
++		wr32(hw, PF_MDET_TX_TCLAN_BY_MAC(hw), 0xffff);
+ 		if (netif_msg_tx_err(pf))
+ 			dev_info(dev, "Malicious Driver Detection event TX_TCLAN detected on PF\n");
+ 	}
+ 
+ 	reg = rd32(hw, PF_MDET_RX);
+ 	if (reg & PF_MDET_RX_VALID_M) {
+ 		wr32(hw, PF_MDET_RX, 0xFFFF);
+ 		if (netif_msg_rx_err(pf))
+ 			dev_info(dev, "Malicious Driver Detection event RX detected on PF\n");
+ 	}
+ 
+ 	/* Check to see if one of the VFs caused an MDD event, and then
+ 	 * increment counters and set print pending
+ 	 */
+ 	mutex_lock(&pf->vfs.table_lock);
+ 	ice_for_each_vf(pf, bkt, vf) {
+ 		reg = rd32(hw, VP_MDET_TX_PQM(vf->vf_id));
+ 		if (reg & VP_MDET_TX_PQM_VALID_M) {
+ 			wr32(hw, VP_MDET_TX_PQM(vf->vf_id), 0xFFFF);
+ 			vf->mdd_tx_events.count++;
+ 			set_bit(ICE_MDD_VF_PRINT_PENDING, pf->state);
+ 			if (netif_msg_tx_err(pf))
+ 				dev_info(dev, "Malicious Driver Detection event TX_PQM detected on VF %d\n",
+ 					 vf->vf_id);
+ 		}
+ 
+ 		reg = rd32(hw, VP_MDET_TX_TCLAN(vf->vf_id));
+ 		if (reg & VP_MDET_TX_TCLAN_VALID_M) {
+ 			wr32(hw, VP_MDET_TX_TCLAN(vf->vf_id), 0xFFFF);
+ 			vf->mdd_tx_events.count++;
+ 			set_bit(ICE_MDD_VF_PRINT_PENDING, pf->state);
+ 			if (netif_msg_tx_err(pf))
+ 				dev_info(dev, "Malicious Driver Detection event TX_TCLAN detected on VF %d\n",
+ 					 vf->vf_id);
+ 		}
+ 
+ 		reg = rd32(hw, VP_MDET_TX_TDPU(vf->vf_id));
+ 		if (reg & VP_MDET_TX_TDPU_VALID_M) {
+ 			wr32(hw, VP_MDET_TX_TDPU(vf->vf_id), 0xFFFF);
+ 			vf->mdd_tx_events.count++;
+ 			set_bit(ICE_MDD_VF_PRINT_PENDING, pf->state);
+ 			if (netif_msg_tx_err(pf))
+ 				dev_info(dev, "Malicious Driver Detection event TX_TDPU detected on VF %d\n",
+ 					 vf->vf_id);
+ 		}
+ 
+ 		reg = rd32(hw, VP_MDET_RX(vf->vf_id));
+ 		if (reg & VP_MDET_RX_VALID_M) {
+ 			wr32(hw, VP_MDET_RX(vf->vf_id), 0xFFFF);
+ 			vf->mdd_rx_events.count++;
+ 			set_bit(ICE_MDD_VF_PRINT_PENDING, pf->state);
+ 			if (netif_msg_rx_err(pf))
+ 				dev_info(dev, "Malicious Driver Detection event RX detected on VF %d\n",
+ 					 vf->vf_id);
+ 
+ 			/* Since the queue is disabled on VF Rx MDD events, the
+ 			 * PF can be configured to reset the VF through ethtool
+ 			 * private flag mdd-auto-reset-vf.
+ 			 */
+ 			if (test_bit(ICE_FLAG_MDD_AUTO_RESET_VF, pf->flags)) {
+ 				/* VF MDD event counters will be cleared by
+ 				 * reset, so print the event prior to reset.
+ 				 */
+ 				ice_print_vf_rx_mdd_event(vf);
+ 				ice_reset_vf(vf, ICE_VF_RESET_LOCK);
+ 			}
+ 		}
+ 	}
+ 	mutex_unlock(&pf->vfs.table_lock);
+ 
+ 	ice_print_vfs_mdd_events(pf);
+ }
+ 
+ /**
+  * ice_force_phys_link_state - Force the physical link state
+  * @vsi: VSI to force the physical link state to up/down
+  * @link_up: true/false indicates to set the physical link to up/down
+  *
+  * Force the physical link state by getting the current PHY capabilities from
+  * hardware and setting the PHY config based on the determined capabilities. If
+  * link changes a link event will be triggered because both the Enable Automatic
+  * Link Update and LESM Enable bits are set when setting the PHY capabilities.
+  *
+  * Returns 0 on success, negative on failure
+  */
+@@ -3832,53 +3832,54 @@ static void ice_deinit_pf(struct ice_pf *pf)
+ /**
+  * ice_set_pf_caps - set PFs capability flags
+  * @pf: pointer to the PF instance
+  */
+ static void ice_set_pf_caps(struct ice_pf *pf)
+ {
+ 	struct ice_hw_func_caps *func_caps = &pf->hw.func_caps;
+ 
+ 	clear_bit(ICE_FLAG_RDMA_ENA, pf->flags);
+ 	if (func_caps->common_cap.rdma)
+ 		set_bit(ICE_FLAG_RDMA_ENA, pf->flags);
+ 	clear_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
+ 	if (func_caps->common_cap.dcb)
+ 		set_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
+ 	clear_bit(ICE_FLAG_SRIOV_CAPABLE, pf->flags);
+ 	if (func_caps->common_cap.sr_iov_1_1) {
+ 		set_bit(ICE_FLAG_SRIOV_CAPABLE, pf->flags);
+ 		pf->vfs.num_supported = min_t(int, func_caps->num_allocd_vfs,
+ 					      ICE_MAX_SRIOV_VFS);
+ 	}
+ 	clear_bit(ICE_FLAG_RSS_ENA, pf->flags);
+ 	if (func_caps->common_cap.rss_table_size)
+ 		set_bit(ICE_FLAG_RSS_ENA, pf->flags);
+ 
+ 	clear_bit(ICE_FLAG_FD_ENA, pf->flags);
+ 	if (func_caps->fd_fltr_guar > 0 || func_caps->fd_fltr_best_effort > 0) {
+ 		u16 unused;
+ 
+ 		/* ctrl_vsi_idx will be set to a valid value when flow director
+ 		 * is setup by ice_init_fdir
+ 		 */
+ 		pf->ctrl_vsi_idx = ICE_NO_VSI;
+ 		set_bit(ICE_FLAG_FD_ENA, pf->flags);
+ 		/* force guaranteed filter pool for PF */
+ 		ice_alloc_fd_guar_item(&pf->hw, &unused,
+ 				       func_caps->fd_fltr_guar);
+ 		/* force shared filter pool for PF */
+ 		ice_alloc_fd_shrd_item(&pf->hw, &unused,
+ 				       func_caps->fd_fltr_best_effort);
+ 	}
+ 
+ 	clear_bit(ICE_FLAG_PTP_SUPPORTED, pf->flags);
+-	if (func_caps->common_cap.ieee_1588)
++	if (func_caps->common_cap.ieee_1588 &&
++	    !(pf->hw.mac_type == ICE_MAC_E830))
+ 		set_bit(ICE_FLAG_PTP_SUPPORTED, pf->flags);
+ 
+ 	pf->max_pf_txqs = func_caps->common_cap.num_txq;
+ 	pf->max_pf_rxqs = func_caps->common_cap.num_rxq;
+ }
+ 
+ /**
+  * ice_init_pf - Initialize general software structures (struct ice_pf)
+  * @pf: board private structure to initialize
+  */
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index bb5d8b681bc2..f5d36c44abd2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -1,19 +1,19 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ #ifndef _ICE_TYPE_H_
+ #define _ICE_TYPE_H_
+ 
+ #define ICE_BYTES_PER_WORD	2
+ #define ICE_BYTES_PER_DWORD	4
+ #define ICE_CHNL_MAX_TC		16
+ 
+ #include "ice_hw_autogen.h"
+ #include "ice_devids.h"
+ #include "ice_osdep.h"
+ #include "ice_controlq.h"
+ #include "ice_lan_tx_rx.h"
+ #include "ice_flex_type.h"
+ #include "ice_protocol_type.h"
+ #include "ice_sbq_cmd.h"
+ #include "ice_vlan_mode.h"
+@@ -128,8 +128,9 @@ enum ice_set_fc_aq_failures {
+ /* Various MAC types */
+ enum ice_mac_type {
+ 	ICE_MAC_UNKNOWN = 0,
+ 	ICE_MAC_E810,
++	ICE_MAC_E830,
+ 	ICE_MAC_GENERIC,
+ };
+ 
+ /* Media Types */
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+index daa6a1e894cf..24b23b7ef04a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+@@ -1,36 +1,36 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (C) 2021, Intel Corporation. */
++/* Copyright (C) 2021-2023, Intel Corporation. */
+ 
+ #include "ice.h"
+ #include "ice_base.h"
+ #include "ice_lib.h"
+ #include "ice_flow.h"
+ #include "ice_vf_lib_private.h"
+ 
+ #define to_fltr_conf_from_desc(p) \
+ 	container_of(p, struct virtchnl_fdir_fltr_conf, input)
+ 
+ #define ICE_FLOW_PROF_TYPE_S	0
+ #define ICE_FLOW_PROF_TYPE_M	(0xFFFFFFFFULL << ICE_FLOW_PROF_TYPE_S)
+ #define ICE_FLOW_PROF_VSI_S	32
+ #define ICE_FLOW_PROF_VSI_M	(0xFFFFFFFFULL << ICE_FLOW_PROF_VSI_S)
+ 
+ /* Flow profile ID format:
+  * [0:31] - flow type, flow + tun_offs
+  * [32:63] - VSI index
+  */
+ #define ICE_FLOW_PROF_FD(vsi, flow, tun_offs) \
+ 	((u64)(((((flow) + (tun_offs)) & ICE_FLOW_PROF_TYPE_M)) | \
+ 	      (((u64)(vsi) << ICE_FLOW_PROF_VSI_S) & ICE_FLOW_PROF_VSI_M)))
+ 
+ #define GTPU_TEID_OFFSET 4
+ #define GTPU_EH_QFI_OFFSET 1
+ #define GTPU_EH_QFI_MASK 0x3F
+ #define PFCP_S_OFFSET 0
+ #define PFCP_S_MASK 0x1
+ #define PFCP_PORT_NR 8805
+ 
+ #define FDIR_INSET_FLAG_ESP_S 0
+ #define FDIR_INSET_FLAG_ESP_M BIT_ULL(FDIR_INSET_FLAG_ESP_S)
+ #define FDIR_INSET_FLAG_ESP_UDP BIT_ULL(FDIR_INSET_FLAG_ESP_S)
+ #define FDIR_INSET_FLAG_ESP_IPSEC (0ULL << FDIR_INSET_FLAG_ESP_S)
+@@ -1419,42 +1419,55 @@ ice_vc_fdir_irq_handler(struct ice_vsi *ctrl_vsi,
+ /**
+  * ice_vf_fdir_dump_info - dump FDIR information for diagnosis
+  * @vf: pointer to the VF info
+  */
+ static void ice_vf_fdir_dump_info(struct ice_vf *vf)
+ {
++	u32 fd_size, fd_cnt, fd_size_g, fd_cnt_g, fd_size_b, fd_cnt_b;
+ 	struct ice_vsi *vf_vsi;
+-	u32 fd_size, fd_cnt;
+ 	struct device *dev;
+ 	struct ice_pf *pf;
+ 	struct ice_hw *hw;
+ 	u16 vsi_num;
+ 
+ 	pf = vf->pf;
+ 	hw = &pf->hw;
+ 	dev = ice_pf_to_dev(pf);
+ 	vf_vsi = ice_get_vf_vsi(vf);
+ 	if (!vf_vsi) {
+ 		dev_dbg(dev, "VF %d: invalid VSI pointer\n", vf->vf_id);
+ 		return;
+ 	}
+ 
+ 	vsi_num = ice_get_hw_vsi_num(hw, vf_vsi->idx);
+ 
+ 	fd_size = rd32(hw, VSIQF_FD_SIZE(vsi_num));
+ 	fd_cnt = rd32(hw, VSIQF_FD_CNT(vsi_num));
+-	dev_dbg(dev, "VF %d: space allocated: guar:0x%x, be:0x%x, space consumed: guar:0x%x, be:0x%x\n",
+-		vf->vf_id,
+-		(fd_size & VSIQF_FD_CNT_FD_GCNT_M) >> VSIQF_FD_CNT_FD_GCNT_S,
+-		(fd_size & VSIQF_FD_CNT_FD_BCNT_M) >> VSIQF_FD_CNT_FD_BCNT_S,
+-		(fd_cnt & VSIQF_FD_CNT_FD_GCNT_M) >> VSIQF_FD_CNT_FD_GCNT_S,
+-		(fd_cnt & VSIQF_FD_CNT_FD_BCNT_M) >> VSIQF_FD_CNT_FD_BCNT_S);
++	switch (hw->mac_type) {
++	case ICE_MAC_E830:
++		fd_size_g = FIELD_GET(E830_VSIQF_FD_CNT_FD_GCNT_M, fd_size);
++		fd_size_b = FIELD_GET(E830_VSIQF_FD_CNT_FD_BCNT_M, fd_size);
++		fd_cnt_g = FIELD_GET(E830_VSIQF_FD_CNT_FD_GCNT_M, fd_cnt);
++		fd_cnt_b = FIELD_GET(E830_VSIQF_FD_CNT_FD_BCNT_M, fd_cnt);
++		break;
++	case ICE_MAC_E810:
++	default:
++		fd_size_g = FIELD_GET(E800_VSIQF_FD_CNT_FD_GCNT_M, fd_size);
++		fd_size_b = FIELD_GET(E800_VSIQF_FD_CNT_FD_BCNT_M, fd_size);
++		fd_cnt_g = FIELD_GET(E800_VSIQF_FD_CNT_FD_GCNT_M, fd_cnt);
++		fd_cnt_b = FIELD_GET(E800_VSIQF_FD_CNT_FD_BCNT_M, fd_cnt);
++	}
++
++	dev_dbg(dev, "VF %d: Size in the FD table: guaranteed:0x%x, best effort:0x%x\n",
++		vf->vf_id, fd_size_g, fd_size_b);
++	dev_dbg(dev, "VF %d: Filter counter in the FD table: guaranteed:0x%x, best effort:0x%x\n",
++		vf->vf_id, fd_cnt_g, fd_cnt_b);
+ }
+ 
+ /**
+  * ice_vf_verify_rx_desc - verify received FDIR programming status descriptor
+  * @vf: pointer to the VF info
+  * @ctx: FDIR context info for post processing
+  * @status: virtchnl FDIR program status
+  *
+  * Return: 0 on success, and other on error.
+  */

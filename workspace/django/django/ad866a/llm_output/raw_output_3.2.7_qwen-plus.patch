@@ -1,8 +1,8 @@
 A. Commit message:
-[3.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in IPv6 validation.
+Fixed CVE-2024-56374 -- Mitigated potential DoS in IPv6 validation.
 
 B. Change summary:
-The max_length parameter has been set to 39 for GenericIPAddressField in both forms and models to prevent denial-of-service attacks due to overly long IPv6 strings. Added validation to ensure the value's length does not exceed this limit. Updated test cases to reflect these changes, ensuring proper handling of valid and invalid IPv6 addresses with respect to the new length restriction.
+Updated the max_length for GenericIPAddressField to prevent excessively long IPv6 addresses from causing a denial-of-service vulnerability. Added length validation checks and tests to ensure only valid IPv6 addresses within the defined maximum length are accepted.
 
 C. Compatibility Risk:
 Medium
@@ -11,110 +11,137 @@ D. Fixed Code:
 diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
 --- a/django/db/models/fields/__init__.py
 +++ b/django/db/models/fields/__init__.py
-@@ -2160,7 +2160,7 @@ def __init__(
-             invalid_error_message,
-         ) = validators.ip_address_validators(protocol, unpack_ipv4)
-         self.default_error_messages["invalid"] = invalid_error_message
--        kwargs["max_length"] = 39
-+        kwargs.setdefault("max_length", 39)
-         super().__init__(verbose_name, name, *args, **kwargs)
+@@ -2198,7 +2198,7 @@
+          self.protocol = protocol
+          self.default_validators, invalid_error_message = \
+              validators.ip_address_validators(protocol, unpack_ipv4)
+-        self.default_error_messages['invalid'] = invalid_error_message
++        self.default_error_messages['invalid'] = invalid_error_message
+          kwargs['max_length'] = 39
+          super().__init__(verbose_name, name, *args, **kwargs)
  
-     def check(self, **kwargs):
-@@ -2187,7 +2187,7 @@ def deconstruct(self):
-             kwargs["unpack_ipv4"] = self.unpack_ipv4
-         if self.protocol != "both":
-             kwargs["protocol"] = self.protocol
--        if kwargs.get("max_length") == self.max_length:
-+        if kwargs.get("max_length") is None or kwargs.get("max_length") == self.max_length:
-             del kwargs["max_length"]
-         return name, path, args, kwargs
- 
+@@ -2207,7 +2207,9 @@
+      def deconstruct(self):
+          name, path, args, kwargs = super().deconstruct()
+          if self.unpack_ipv4 is not False:
+-            kwargs["unpack_ipv4"] = self.unpack_ipv4
++            kwargs['unpack_ipv4'] = self.unpack_ipv4
+          if self.protocol != "both":
+-            kwargs["protocol"] = self.protocol
++            kwargs['protocol'] = self.protocol
++        if kwargs.get("max_length") == 39:
++            del kwargs["max_length"]
+          return name, path, args, kwargs
+
 diff --git a/django/forms/fields.py b/django/forms/fields.py
 --- a/django/forms/fields.py
 +++ b/django/forms/fields.py
-@@ -1284,6 +1284,7 @@ def __init__(self, *, protocol="both", unpack_ipv4=False, **kwargs):
+@@ -1307,6 +1307,7 @@
+ class GenericIPAddressField(CharField):
+     def __init__(self, *, protocol='both', unpack_ipv4=False, **kwargs):
          self.unpack_ipv4 = unpack_ipv4
++        kwargs.setdefault('max_length', 39)
          self.default_validators = validators.ip_address_validators(protocol, unpack_ipv4)[0]
-         kwargs.setdefault("max_length", 39)
-+        kwargs.setdefault("min_length", 1)
-         super().__init__(strip=True, **kwargs)
+         super().__init__(**kwargs)
  
-     def to_python(self, value):
 
 diff --git a/django/utils/ipv6.py b/django/utils/ipv6.py
 --- a/django/utils/ipv6.py
 +++ b/django/utils/ipv6.py
-@@ -3,9 +3,22 @@
+@@ -4,6 +4,7 @@
  from django.core.exceptions import ValidationError
  from django.utils.translation import gettext_lazy as _
  
 +MAX_IPV6_ADDRESS_LENGTH = 39
-+
-+
-+def _ipv6_address_from_str(ip_str, max_length=MAX_IPV6_ADDRESS_LENGTH):
-+    if len(ip_str) > max_length:
-+        raise ValueError(
-+            f"Unable to convert {ip_str} to an IPv6 address (value too long)."
-+        )
-+    return ipaddress.IPv6Address(int(ipaddress.IPv6Address(ip_str)))
-+
-+
- def clean_ipv6_address(
--    ip_str, unpack_ipv4=False, error_message=_("This is not a valid IPv6 address."))
-+    ip_str,
-+    unpack_ipv4=False,
-+    error_message=_("This is not a valid IPv6 address."),
-+    max_length=MAX_IPV6_ADDRESS_LENGTH,
- ):
+ 
+ 
+ def clean_ipv6_address(ip_str, unpack_ipv4=False,
+@@ -11,7 +12,7 @@
      """
      Clean an IPv6 address string.
-@@ -24,7 +37,7 @@ def clean_ipv6_address(
-     Return a compressed IPv6 address or the same value.
+ 
+-    Returns a compressed IPv6 address or the same value.
++    Returns a compressed IPv6 address or raises ValidationError if invalid.
      """
      try:
--        addr = ipaddress.IPv6Address(int(ipaddress.IPv6Address(ip_str)))
-+        addr = _ipv6_address_from_str(ip_str, max_length)
-     except ValueError:
-         raise ValidationError(error_message, code="invalid")
+         addr = ipaddress.IPv6Address(int(ipaddress.IPv6Address(ip_str)))
+@@ -19,6 +20,10 @@ def clean_ipv6_address(ip_str, unpack_ipv4=False,
+         raise ValidationError(error_message, code='invalid')
  
+     if unpack_ipv4 and addr.ipv4_mapped:
++        if len(addr.exploded) > MAX_IPV6_ADDRESS_LENGTH:
++            raise ValueError(
++                f"Unable to convert {ip_str} to an IPv6 address (value too long)."
++            )
+         return str(addr.ipv4_mapped)
+     elif addr.ipv4_mapped:
+         return '::ffff:%s' % str(addr.ipv4_mapped)
+
+diff --git a/docs/ref/forms/fields.txt b/docs/ref/forms/fields.txt
+--- a/docs/ref/forms/fields.txt
++++ b/docs/ref/forms/fields.txt
+@@ -697,6 +697,15 @@ Validates that the given value is a valid IP address.
+     .. attribute:: unpack_ipv4
+ 
+         Unpacks IPv4 mapped addresses like ``::ffff:192.0.2.1``.
++
++    .. attribute:: max_length
++
++        Defaults to 39, and behaves the same way as it does for
++        :class:`CharField`.
++
++    .. versionchanged:: 3.2.8
++
++        The default value for ``max_length`` was set to 39 characters.
+ 
+ ``MultipleChoiceField``
+ -----------------------
 
 diff --git a/tests/forms_tests/field_tests/test_genericipaddressfield.py b/tests/forms_tests/field_tests/test_genericipaddressfield.py
 --- a/tests/forms_tests/field_tests/test_genericipaddressfield.py
 +++ b/tests/forms_tests/field_tests/test_genericipaddressfield.py
-@@ -125,6 +126,14 @@ def test_generic_ipaddress_as_ipv6_only(self):
-             f.clean("fe80::223:6cff:fe8a:2e8a"), "fe80::223:6cff:fe8a:2e8a"
+@@ -126,6 +126,24 @@ def test_generic_ipaddress_as_generic_not_required(self):
+             f.clean(" 2a02::223:6cff:fe8a:2e8a "), "2a02::223:6cff:fe8a:2e8a"
          )
  
-+    def test_generic_ipaddress_max_length_validation(self):
++    def test_generic_ipaddress_max_length_custom(self):
 +        # Valid IPv4-mapped IPv6 address, len 45.
 +        addr = "0000:0000:0000:0000:0000:ffff:192.168.100.228"
 +        f = GenericIPAddressField(max_length=len(addr))
 +        f.clean(addr)
-+        with self.assertRaisesMessage(ValidationError, "'Ensure this value has at most 39 characters.'"):
-+            f.clean("x" * 40)
 +
-     def test_generic_ipaddress_as_generic_not_required(self):
-         f = GenericIPAddressField(required=False)
-         self.assertEqual(f.clean(""), "")
++    def test_generic_ipaddress_max_length_validation_error(self):
++        # Valid IPv4-mapped IPv6 address, len 45.
++        addr = "0000:0000:0000:0000:0000:ffff:192.168.100.228"
++
++        cases = [
++            ({}, 39),  # Default value.
++            ({"max_length": len(addr) - 1}, len(addr) - 1),
++        ]
++        for kwargs, max_length in cases:
++            max_length_plus_one = max_length + 1
++            msg = (
++                f"Ensure this value has at most {max_length} characters (it has "
++                f"{max_length_plus_one}).'"
++            )
++            with self.subTest(max_length=max_length):
++                f = GenericIPAddressField(**kwargs)
++                with self.assertRaisesMessage(ValidationError, msg):
++                    f.clean("x" * max_length_plus_one)
++                with self.assertRaisesMessage(
++                    ValidationError, "Enter a valid IPv4 or IPv6 address."
++                ):
++                    f.clean(addr)
 
 diff --git a/tests/utils_tests/test_ipv6.py b/tests/utils_tests/test_ipv6.py
 --- a/tests/utils_tests/test_ipv6.py
 +++ b/tests/utils_tests/test_ipv6.py
-@@ -1,4 +1,5 @@
--import unittest
-+import traceback
-+from io import StringIO
- 
--from django.utils.ipv6 import clean_ipv6_address, is_valid_ipv6_address
-+from django.core.exceptions import ValidationError
-+from django.utils.ipv6 import MAX_IPV6_ADDRESS_LENGTH, clean_ipv6_address, is_valid_ipv6_address
- from django.utils.version import PY310
- 
- 
-@@ -64,3 +66,15 @@ def test_unpacks_ipv4(self):
-         self.assertEqual(
-             clean_ipv6_address("::ffff:18.52.18.52", unpack_ipv4=True), "18.52.18.52"
-         )
+@@ -12,6 +12,16 @@ def test_validates_correct_plain_address(self):
+         self.assertTrue(is_valid_ipv6_address('2a02::223:6cff:fe8a:2e8a'))
+         self.assertTrue(is_valid_ipv6_address('1::2:3:4:5:6:7'))
+         self.assertTrue(is_valid_ipv6_address('::'))
++        # Test case for very long but valid IPv6 address.
++        self.assertTrue(is_valid_ipv6_address('0000:0000:0000:0000:0000:ffff:192.168.100.228'))
 +
 +    def test_address_too_long(self):
 +        addresses = [
@@ -122,8 +149,10 @@ diff --git a/tests/utils_tests/test_ipv6.py b/tests/utils_tests/test_ipv6.py
 +            "0000:0000:0000:0000:0000:ffff:192.168.100.228%123456",  # % scope/zone
 +            "fe80::223:6cff:fe8a:2e8a:1234:5678:00000",  # MAX_IPV6_ADDRESS_LENGTH + 1
 +        ]
-+        msg = "This is the error message."
-+        value_error_msg = "Unable to convert %s to an IPv6 address (value too long)."
 +        for addr in addresses:
 +            with self.subTest(addr=addr):
-+                self.assertIn(value_error_msg % addr, clean_ipv6_address(addr, error_message=msg))
++                self.assertGreater(len(addr), MAX_IPV6_ADDRESS_LENGTH)
++                self.assertFalse(is_valid_ipv6_address(addr))
+ 
+     def test_validates_incorrect_plain_address(self):
+         self.assertFalse(is_valid_ipv6_address('foo'))

@@ -1,0 +1,32 @@
+From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia <124304+nessita@users.noreply.github.com>
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia <124304+nessita@users.noreply.github.com>
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/django/forms/fields.py b/django/forms/fields.py
+index 01cd831964ea..e62417f5523b 100644
+--- a/django/forms/fields.py
++++ b/django/forms/fields.py
+@@ -1284,6 +1284,7 @@ def __init__(self, *, protocol="both", unpack_ipv4=False, **kwargs):
+         self.default_validators = validators.ip_address_validators(
+             protocol, unpack_ipv4
+         )[0]
++        kwargs.setdefault("max_length", MAX_IPV6_ADDRESS_LENGTH)
+         super().__init__(**kwargs)
+ 
+     def to_python(self, value):

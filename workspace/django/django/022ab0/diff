@@ -1,0 +1,77 @@
+modified file: django/utils/html.py
+--- workspace/django/django/022ab0/newer/django/utils/html.py
++++ workspace/django/django/022ab0/5.1/django/utils/html.py
+@@ -129,11 +129,10 @@
+      """
+      if not (args or kwargs):
+          # RemovedInDjango60Warning: when the deprecation ends, replace with:
+ -        # raise TypeError("args or kwargs must be provided.")
+ +        # raise ValueError("args or kwargs must be provided.")
+          warnings.warn(
+              "Calling format_html() without passing args or kwargs is deprecated.",
+              RemovedInDjango60Warning,
+ -            stacklevel=2,
+          )
+      args_safe = map(conditional_escape, args)
+      kwargs_safe = {k: conditional_escape(v) for (k, v) in kwargs.items()}
+
+""""""
+
+""""""
+The file does not exist in the older (target) version: docs/releases/4.2.16.txt
+
+""""""
+The file does not exist in the older (target) version: docs/releases/5.0.9.txt
+
+""""""
+The file does not exist in the older (target) version: docs/releases/5.1.1.txt
+
+""""""
+modified file: tests/template_tests/filter_tests/test_urlize.py
+--- workspace/django/django/022ab0/newer/tests/template_tests/filter_tests/test_urlize.py
++++ workspace/django/django/022ab0/5.1/tests/template_tests/filter_tests/test_urlize.py
+@@ -305,23 +305,6 @@
+              "http://testing.com/example</a>.,:;)&quot;!",
+          )
+  
+ -    def test_trailing_semicolon(self):
+ -        self.assertEqual(
+ -            urlize("http://example.com?x=&amp;", autoescape=False),
+ -            '<a href="http://example.com?x=" rel="nofollow">'
+ -            "http://example.com?x=&amp;</a>",
+ -        )
+ -        self.assertEqual(
+ -            urlize("http://example.com?x=&amp;;", autoescape=False),
+ -            '<a href="http://example.com?x=" rel="nofollow">'
+ -            "http://example.com?x=&amp;</a>;",
+ -        )
+ -        self.assertEqual(
+ -            urlize("http://example.com?x=&amp;;;", autoescape=False),
+ -            '<a href="http://example.com?x=" rel="nofollow">'
+ -            "http://example.com?x=&amp;</a>;;",
+ -        )
+ -
+      def test_brackets(self):
+          """
+          #19070 - Check urlize handles brackets properly
+
+""""""
+modified file: tests/utils_tests/test_html.py
+--- workspace/django/django/022ab0/newer/tests/utils_tests/test_html.py
++++ workspace/django/django/022ab0/5.1/tests/utils_tests/test_html.py
+@@ -70,11 +70,10 @@
+          msg = "Calling format_html() without passing args or kwargs is deprecated."
+          # RemovedInDjango60Warning: when the deprecation ends, replace with:
+          # msg = "args or kwargs must be provided."
+ -        # with self.assertRaisesMessage(TypeError, msg):
+ -        with self.assertWarnsMessage(RemovedInDjango60Warning, msg) as ctx:
+ +        # with self.assertRaisesMessage(ValueError, msg):
+ +        with self.assertWarnsMessage(RemovedInDjango60Warning, msg):
+              name = "Adam"
+              self.assertEqual(format_html(f"<i>{name}</i>"), "<i>Adam</i>")
+ -        self.assertEqual(ctx.filename, __file__)
+  
+      def test_linebreaks(self):
+          items = (
+
+""""""

@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>chunk_analyzer 模块评估报告 - ad866a</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+    h1, h2, h3 { color: #2c3e50; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 20px; }
+    .success { color: #27ae60; }
+    .error { color: #e74c3c; }
+    .info { color: #3498db; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    th { background-color: #f8f9fa; }
+    tr:hover { background-color: #f5f5f5; }
+    pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    .progress-container { width: 100%; background-color: #f1f1f1; border-radius: 5px; }
+    .progress-bar { height: 20px; border-radius: 5px; }
+    .success-bg { background-color: #4CAF50; }
+    .pending-bg { background-color: #2196F3; }
+    .error-bg { background-color: #f44336; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+    .tag-success { background-color: #e8f5e9; color: #2e7d32; }
+    .tag-error { background-color: #ffebee; color: #c62828; }
+    .tag-pending { background-color: #e3f2fd; color: #1565c0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>chunk_analyzer 模块评估报告</h1>
+    
+    <div class="card">
+      <h2>基本信息</h2>
+      <table>
+        <tr>
+          <td width="150"><strong>模块名称</strong></td>
+          <td>chunk_analyzer</td>
+        </tr>
+        <tr>
+          <td><strong>模块类型</strong></td>
+          <td>ModuleType.CHUNK_ANALYZER</td>
+        </tr>
+        <tr>
+          <td><strong>提交SHA</strong></td>
+          <td>ad866a1ca3e7d60da888d25d27e46a8adb2ed36e.patch</td>
+        </tr>
+        <tr>
+          <td><strong>目标版本</strong></td>
+          <td>3.2.7</td>
+        </tr>
+        <tr>
+          <td><strong>执行时间</strong></td>
+          <td>2025-06-12T17:59:10.409905</td>
+        </tr>
+        <tr>
+          <td><strong>状态</strong></td>
+          <td>
+            <span class="tag tag-success">成功</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输入信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>原始补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/django/django/ad866a/patches/upstream_ad866a.patch</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>代码仓库路径</strong></td>
+                  <td>/home/elpsy/.cache/port-patch/django</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输出信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>状态</strong></td>
+                  <td>成功</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总尝试次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>执行时间</strong></td>
+                  <td>0.29384</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总块数</strong></td>
+                  <td>18</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功应用块数</strong></td>
+                  <td>5</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功率</strong></td>
+                  <td>27.78%</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>剩余补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/django/django/ad866a/chunk_patches/remaining_chunks_20250612_175910.patch</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    
+        <div class="card">
+          <h2>补丁块应用统计</h2>
+          
+          <div class="progress-container">
+            <div class="progress-bar success-bg" style="width: 27%"></div>
+          </div>
+          <p>
+            成功应用 <strong class="success">5</strong> 个块，
+            总共 <strong>18</strong> 个块
+            (成功率: <strong>27.8%</strong>)
+          </p>
+        </div>
+        
+        <div class="card">
+          <h2>补丁内容详情</h2>
+          <div class="tabs">
+            <div class="tab-header">
+              <button class="tab-button active" onclick="openTab(event, 'original-patch')">原始补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'applied-patches')">应用成功的补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'remaining-patch')">未应用成功的补丁</button>
+            </div>
+            
+            <div id="original-patch" class="tab-content" style="display:block;">
+              <h3>原始补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index b65948d783ae..0cfba4e0aab6 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -25,7 +25,7 @@
+ )
+ from django.utils.duration import duration_microseconds, duration_string
+ from django.utils.functional import Promise, cached_property
+-from django.utils.ipv6 import clean_ipv6_address
++from django.utils.ipv6 import MAX_IPV6_ADDRESS_LENGTH, clean_ipv6_address
+ from django.utils.itercompat import is_iterable
+ from django.utils.text import capfirst
+ from django.utils.translation import gettext_lazy as _
+@@ -2160,7 +2160,7 @@ def __init__(
+             invalid_error_message,
+         ) = validators.ip_address_validators(protocol, unpack_ipv4)
+         self.default_error_messages["invalid"] = invalid_error_message
+-        kwargs["max_length"] = 39
++        kwargs["max_length"] = MAX_IPV6_ADDRESS_LENGTH
+         super().__init__(verbose_name, name, *args, **kwargs)
+ 
+     def check(self, **kwargs):
+@@ -2187,7 +2187,7 @@ def deconstruct(self):
+             kwargs["unpack_ipv4"] = self.unpack_ipv4
+         if self.protocol != "both":
+             kwargs["protocol"] = self.protocol
+-        if kwargs.get("max_length") == 39:
++        if kwargs.get("max_length") == self.max_length:
+             del kwargs["max_length"]
+         return name, path, args, kwargs
+ 
+diff --git a/django/forms/fields.py b/django/forms/fields.py
+index 01cd831964ea..e62417f5523b 100644
+--- a/django/forms/fields.py
++++ b/django/forms/fields.py
+@@ -42,7 +42,7 @@
+ from django.utils import formats
+ from django.utils.dateparse import parse_datetime, parse_duration
+ from django.utils.duration import duration_string
+-from django.utils.ipv6 import clean_ipv6_address
++from django.utils.ipv6 import MAX_IPV6_ADDRESS_LENGTH, clean_ipv6_address
+ from django.utils.regex_helper import _lazy_re_compile
+ from django.utils.translation import gettext_lazy as _
+ from django.utils.translation import ngettext_lazy
+@@ -1284,6 +1284,7 @@ def __init__(self, *, protocol="both", unpack_ipv4=False, **kwargs):
+         self.default_validators = validators.ip_address_validators(
+             protocol, unpack_ipv4
+         )[0]
++        kwargs.setdefault("max_length", MAX_IPV6_ADDRESS_LENGTH)
+         super().__init__(**kwargs)
+ 
+     def to_python(self, value):
+@@ -1291,7 +1292,9 @@ def to_python(self, value):
+             return ""
+         value = value.strip()
+         if value and ":" in value:
+-            return clean_ipv6_address(value, self.unpack_ipv4)
++            return clean_ipv6_address(
++                value, self.unpack_ipv4, max_length=self.max_length
++            )
+         return value
+ 
+ 
+diff --git a/django/utils/ipv6.py b/django/utils/ipv6.py
+index 88dd6ecb4b84..de41a97f7210 100644
+--- a/django/utils/ipv6.py
++++ b/django/utils/ipv6.py
+@@ -3,9 +3,22 @@
+ from django.core.exceptions import ValidationError
+ from django.utils.translation import gettext_lazy as _
+ 
++MAX_IPV6_ADDRESS_LENGTH = 39
++
++
++def _ipv6_address_from_str(ip_str, max_length=MAX_IPV6_ADDRESS_LENGTH):
++    if len(ip_str) &gt; max_length:
++        raise ValueError(
++            f"Unable to convert {ip_str} to an IPv6 address (value too long)."
++        )
++    return ipaddress.IPv6Address(int(ipaddress.IPv6Address(ip_str)))
++
+ 
+ def clean_ipv6_address(
+-    ip_str, unpack_ipv4=False, error_message=_("This is not a valid IPv6 address.")
++    ip_str,
++    unpack_ipv4=False,
++    error_message=_("This is not a valid IPv6 address."),
++    max_length=MAX_IPV6_ADDRESS_LENGTH,
+ ):
+     """
+     Clean an IPv6 address string.
+@@ -24,7 +37,7 @@ def clean_ipv6_address(
+     Return a compressed IPv6 address or the same value.
+     """
+     try:
+-        addr = ipaddress.IPv6Address(int(ipaddress.IPv6Address(ip_str)))
++        addr = _ipv6_address_from_str(ip_str, max_length)
+     except ValueError:
+         raise ValidationError(error_message, code="invalid")
+ 
+@@ -41,7 +54,7 @@ def is_valid_ipv6_address(ip_str):
+     Return whether or not the `ip_str` string is a valid IPv6 address.
+     """
+     try:
+-        ipaddress.IPv6Address(ip_str)
++        _ipv6_address_from_str(ip_str)
+     except ValueError:
+         return False
+     return True
+diff --git a/docs/ref/forms/fields.txt b/docs/ref/forms/fields.txt
+index 1a7274e0d1ad..76b4587e21a6 100644
+--- a/docs/ref/forms/fields.txt
++++ b/docs/ref/forms/fields.txt
+@@ -719,7 +719,7 @@ For each field, we describe the default widget used if you don't specify
+     * Empty value: ``''`` (an empty string)
+     * Normalizes to: A string. IPv6 addresses are normalized as described below.
+     * Validates that the given value is a valid IP address.
+-    * Error message keys: ``required``, ``invalid``
++    * Error message keys: ``required``, ``invalid``, ``max_length``
+ 
+     The IPv6 address normalization follows :rfc:`4291#section-2.2` section 2.2,
+     including using the IPv4 format suggested in paragraph 3 of that section, like
+@@ -727,7 +727,7 @@ For each field, we describe the default widget used if you don't specify
+     ``2001::1``, and ``::ffff:0a0a:0a0a`` to ``::ffff:10.10.10.10``. All characters
+     are converted to lowercase.
+ 
+-    Takes two optional arguments:
++    Takes three optional arguments:
+ 
+     .. attribute:: protocol
+ 
+@@ -742,6 +742,15 @@ For each field, we describe the default widget used if you don't specify
+         ``192.0.2.1``. Default is disabled. Can only be used
+         when ``protocol`` is set to ``'both'``.
+ 
++    .. attribute:: max_length
++
++        Defaults to 39, and behaves the same way as it does for
++        :class:`CharField`.
++
++    .. versionchanged:: 4.2.18
++
++        The default value for ``max_length`` was set to 39 characters.
++
+ ``ImageField``
+ --------------
+ 
+diff --git a/docs/releases/4.2.18.txt b/docs/releases/4.2.18.txt
+index ae0c4e3334fb..fef91d9150bf 100644
+--- a/docs/releases/4.2.18.txt
++++ b/docs/releases/4.2.18.txt
+@@ -5,3 +5,15 @@ Django 4.2.18 release notes
+ *January 14, 2025*
+ 
+ Django 4.2.18 fixes a security issue with severity "moderate" in 4.2.17.
++
++CVE-2024-56374: Potential denial-of-service vulnerability in IPv6 validation
++============================================================================
++
++Lack of upper bound limit enforcement in strings passed when performing IPv6
++validation could lead to a potential denial-of-service attack. The undocumented
++and private functions ``clean_ipv6_address`` and ``is_valid_ipv6_address`` were
++vulnerable, as was the  :class:`django.forms.GenericIPAddressField` form field,
++which has now been updated to define a ``max_length`` of 39 characters.
++
++The :class:`django.db.models.GenericIPAddressField` model field was not
++affected.
+diff --git a/tests/forms_tests/field_tests/test_genericipaddressfield.py b/tests/forms_tests/field_tests/test_genericipaddressfield.py
+index 80722f5c65c1..ef00a727a468 100644
+--- a/tests/forms_tests/field_tests/test_genericipaddressfield.py
++++ b/tests/forms_tests/field_tests/test_genericipaddressfield.py
+@@ -1,6 +1,7 @@
+ from django.core.exceptions import ValidationError
+ from django.forms import GenericIPAddressField
+ from django.test import SimpleTestCase
++from django.utils.ipv6 import MAX_IPV6_ADDRESS_LENGTH
+ 
+ 
+ class GenericIPAddressFieldTest(SimpleTestCase):
+@@ -125,6 +126,35 @@ def test_generic_ipaddress_as_ipv6_only(self):
+         ):
+             f.clean("1:2")
+ 
++    def test_generic_ipaddress_max_length_custom(self):
++        # Valid IPv4-mapped IPv6 address, len 45.
++        addr = "0000:0000:0000:0000:0000:ffff:192.168.100.228"
++        f = GenericIPAddressField(max_length=len(addr))
++        f.clean(addr)
++
++    def test_generic_ipaddress_max_length_validation_error(self):
++        # Valid IPv4-mapped IPv6 address, len 45.
++        addr = "0000:0000:0000:0000:0000:ffff:192.168.100.228"
++
++        cases = [
++            ({}, MAX_IPV6_ADDRESS_LENGTH),  # Default value.
++            ({"max_length": len(addr) - 1}, len(addr) - 1),
++        ]
++        for kwargs, max_length in cases:
++            max_length_plus_one = max_length + 1
++            msg = (
++                f"Ensure this value has at most {max_length} characters (it has "
++                f"{max_length_plus_one}).'"
++            )
++            with self.subTest(max_length=max_length):
++                f = GenericIPAddressField(**kwargs)
++                with self.assertRaisesMessage(ValidationError, msg):
++                    f.clean("x" * max_length_plus_one)
++                with self.assertRaisesMessage(
++                    ValidationError, "This is not a valid IPv6 address."
++                ):
++                    f.clean(addr)
++
+     def test_generic_ipaddress_as_generic_not_required(self):
+         f = GenericIPAddressField(required=False)
+         self.assertEqual(f.clean(""), "")
+@@ -150,7 +180,8 @@ def test_generic_ipaddress_as_generic_not_required(self):
+             f.clean(" fe80::223:6cff:fe8a:2e8a "), "fe80::223:6cff:fe8a:2e8a"
+         )
+         self.assertEqual(
+-            f.clean(" 2a02::223:6cff:fe8a:2e8a "), "2a02::223:6cff:fe8a:2e8a"
++            f.clean(" " * MAX_IPV6_ADDRESS_LENGTH + " 2a02::223:6cff:fe8a:2e8a "),
++            "2a02::223:6cff:fe8a:2e8a",
+         )
+         with self.assertRaisesMessage(
+             ValidationError, "'This is not a valid IPv6 address.'"
+diff --git a/tests/utils_tests/test_ipv6.py b/tests/utils_tests/test_ipv6.py
+index bf78ed91c08f..2d06507fa152 100644
+--- a/tests/utils_tests/test_ipv6.py
++++ b/tests/utils_tests/test_ipv6.py
+@@ -1,9 +1,17 @@
+-import unittest
++import traceback
++from io import StringIO
+ 
+-from django.utils.ipv6 import clean_ipv6_address, is_valid_ipv6_address
++from django.core.exceptions import ValidationError
++from django.test import SimpleTestCase
++from django.utils.ipv6 import (
++    MAX_IPV6_ADDRESS_LENGTH,
++    clean_ipv6_address,
++    is_valid_ipv6_address,
++)
++from django.utils.version import PY310
+ 
+ 
+-class TestUtilsIPv6(unittest.TestCase):
++class TestUtilsIPv6(SimpleTestCase):
+     def test_validates_correct_plain_address(self):
+         self.assertTrue(is_valid_ipv6_address("fe80::223:6cff:fe8a:2e8a"))
+         self.assertTrue(is_valid_ipv6_address("2a02::223:6cff:fe8a:2e8a"))
+@@ -64,3 +72,29 @@ def test_unpacks_ipv4(self):
+         self.assertEqual(
+             clean_ipv6_address("::ffff:18.52.18.52", unpack_ipv4=True), "18.52.18.52"
+         )
++
++    def test_address_too_long(self):
++        addresses = [
++            "0000:0000:0000:0000:0000:ffff:192.168.100.228",  # IPv4-mapped IPv6 address
++            "0000:0000:0000:0000:0000:ffff:192.168.100.228%123456",  # % scope/zone
++            "fe80::223:6cff:fe8a:2e8a:1234:5678:00000",  # MAX_IPV6_ADDRESS_LENGTH + 1
++        ]
++        msg = "This is the error message."
++        value_error_msg = "Unable to convert %s to an IPv6 address (value too long)."
++        for addr in addresses:
++            with self.subTest(addr=addr):
++                self.assertGreater(len(addr), MAX_IPV6_ADDRESS_LENGTH)
++                self.assertEqual(is_valid_ipv6_address(addr), False)
++                with self.assertRaisesMessage(ValidationError, msg) as ctx:
++                    clean_ipv6_address(addr, error_message=msg)
++                exception_traceback = StringIO()
++                if PY310:
++                    traceback.print_exception(ctx.exception, file=exception_traceback)
++                else:
++                    traceback.print_exception(
++                        type(ctx.exception),
++                        value=ctx.exception,
++                        tb=ctx.exception.__traceback__,
++                        file=exception_traceback,
++                    )
++                self.assertIn(value_error_msg % addr, exception_traceback.getvalue())
+</pre>
+              </div>
+            </div>
+            
+            <div id="applied-patches" class="tab-content">
+              <h3>应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">
+
+# ===== 应用成功的补丁块 1 =====
+
+From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index b65948d783ae..0cfba4e0aab6 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -25,7 +25,7 @@
+ )
+ from django.utils.duration import duration_microseconds, duration_string
+ from django.utils.functional import Promise, cached_property
+-from django.utils.ipv6 import clean_ipv6_address
++from django.utils.ipv6 import MAX_IPV6_ADDRESS_LENGTH, clean_ipv6_address
+ from django.utils.itercompat import is_iterable
+ from django.utils.text import capfirst
+ from django.utils.translation import gettext_lazy as _
+
+
+# ===== 应用成功的补丁块 2 =====
+
+From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/django/utils/ipv6.py b/django/utils/ipv6.py
+index 88dd6ecb4b84..de41a97f7210 100644
+--- a/django/utils/ipv6.py
++++ b/django/utils/ipv6.py
+@@ -41,7 +54,7 @@ def is_valid_ipv6_address(ip_str):
+     Return whether or not the `ip_str` string is a valid IPv6 address.
+     """
+     try:
+-        ipaddress.IPv6Address(ip_str)
++        _ipv6_address_from_str(ip_str)
+     except ValueError:
+         return False
+     return True
+
+
+# ===== 应用成功的补丁块 3 =====
+
+From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/docs/ref/forms/fields.txt b/docs/ref/forms/fields.txt
+index 1a7274e0d1ad..76b4587e21a6 100644
+--- a/docs/ref/forms/fields.txt
++++ b/docs/ref/forms/fields.txt
+@@ -719,7 +719,7 @@ For each field, we describe the default widget used if you don't specify
+     * Empty value: ``''`` (an empty string)
+     * Normalizes to: A string. IPv6 addresses are normalized as described below.
+     * Validates that the given value is a valid IP address.
+-    * Error message keys: ``required``, ``invalid``
++    * Error message keys: ``required``, ``invalid``, ``max_length``
+ 
+     The IPv6 address normalization follows :rfc:`4291#section-2.2` section 2.2,
+     including using the IPv4 format suggested in paragraph 3 of that section, like
+
+
+# ===== 应用成功的补丁块 4 =====
+
+From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/docs/ref/forms/fields.txt b/docs/ref/forms/fields.txt
+index 1a7274e0d1ad..76b4587e21a6 100644
+--- a/docs/ref/forms/fields.txt
++++ b/docs/ref/forms/fields.txt
+@@ -727,7 +727,7 @@ For each field, we describe the default widget used if you don't specify
+     ``2001::1``, and ``::ffff:0a0a:0a0a`` to ``::ffff:10.10.10.10``. All characters
+     are converted to lowercase.
+ 
+-    Takes two optional arguments:
++    Takes three optional arguments:
+ 
+     .. attribute:: protocol
+ 
+
+
+# ===== 应用成功的补丁块 5 =====
+
+From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/tests/forms_tests/field_tests/test_genericipaddressfield.py b/tests/forms_tests/field_tests/test_genericipaddressfield.py
+index 80722f5c65c1..ef00a727a468 100644
+--- a/tests/forms_tests/field_tests/test_genericipaddressfield.py
++++ b/tests/forms_tests/field_tests/test_genericipaddressfield.py
+@@ -1,6 +1,7 @@
+ from django.core.exceptions import ValidationError
+ from django.forms import GenericIPAddressField
+ from django.test import SimpleTestCase
++from django.utils.ipv6 import MAX_IPV6_ADDRESS_LENGTH
+ 
+ 
+ class GenericIPAddressFieldTest(SimpleTestCase):
+</pre>
+              </div>
+            </div>
+            
+            <div id="remaining-patch" class="tab-content">
+              <h3>未应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index b65948d783ae..0cfba4e0aab6 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -2160,7 +2160,7 @@ def __init__(
+             invalid_error_message,
+         ) = validators.ip_address_validators(protocol, unpack_ipv4)
+         self.default_error_messages["invalid"] = invalid_error_message
+-        kwargs["max_length"] = 39
++        kwargs["max_length"] = MAX_IPV6_ADDRESS_LENGTH
+         super().__init__(verbose_name, name, *args, **kwargs)
+ 
+     def check(self, **kwargs):
+@@ -2187,7 +2187,7 @@ def deconstruct(self):
+             kwargs["unpack_ipv4"] = self.unpack_ipv4
+         if self.protocol != "both":
+             kwargs["protocol"] = self.protocol
+-        if kwargs.get("max_length") == 39:
++        if kwargs.get("max_length") == self.max_length:
+             del kwargs["max_length"]
+         return name, path, args, kwargs
+ 
+diff --git a/django/forms/fields.py b/django/forms/fields.py
+index 01cd831964ea..e62417f5523b 100644
+--- a/django/forms/fields.py
++++ b/django/forms/fields.py
+@@ -42,7 +42,7 @@
+ from django.utils import formats
+ from django.utils.dateparse import parse_datetime, parse_duration
+ from django.utils.duration import duration_string
+-from django.utils.ipv6 import clean_ipv6_address
++from django.utils.ipv6 import MAX_IPV6_ADDRESS_LENGTH, clean_ipv6_address
+ from django.utils.regex_helper import _lazy_re_compile
+ from django.utils.translation import gettext_lazy as _
+ from django.utils.translation import ngettext_lazy
+@@ -1284,6 +1284,7 @@ def __init__(self, *, protocol="both", unpack_ipv4=False, **kwargs):
+         self.default_validators = validators.ip_address_validators(
+             protocol, unpack_ipv4
+         )[0]
++        kwargs.setdefault("max_length", MAX_IPV6_ADDRESS_LENGTH)
+         super().__init__(**kwargs)
+ 
+     def to_python(self, value):
+@@ -1291,7 +1292,9 @@ def to_python(self, value):
+             return ""
+         value = value.strip()
+         if value and ":" in value:
+-            return clean_ipv6_address(value, self.unpack_ipv4)
++            return clean_ipv6_address(
++                value, self.unpack_ipv4, max_length=self.max_length
++            )
+         return value
+ 
+ 
+diff --git a/django/utils/ipv6.py b/django/utils/ipv6.py
+index 88dd6ecb4b84..de41a97f7210 100644
+--- a/django/utils/ipv6.py
++++ b/django/utils/ipv6.py
+@@ -3,9 +3,22 @@
+ from django.core.exceptions import ValidationError
+ from django.utils.translation import gettext_lazy as _
+ 
++MAX_IPV6_ADDRESS_LENGTH = 39
++
++
++def _ipv6_address_from_str(ip_str, max_length=MAX_IPV6_ADDRESS_LENGTH):
++    if len(ip_str) &gt; max_length:
++        raise ValueError(
++            f"Unable to convert {ip_str} to an IPv6 address (value too long)."
++        )
++    return ipaddress.IPv6Address(int(ipaddress.IPv6Address(ip_str)))
++
+ 
+ def clean_ipv6_address(
+-    ip_str, unpack_ipv4=False, error_message=_("This is not a valid IPv6 address.")
++    ip_str,
++    unpack_ipv4=False,
++    error_message=_("This is not a valid IPv6 address."),
++    max_length=MAX_IPV6_ADDRESS_LENGTH,
+ ):
+     """
+     Clean an IPv6 address string.
+@@ -24,7 +37,7 @@ def clean_ipv6_address(
+     Return a compressed IPv6 address or the same value.
+     """
+     try:
+-        addr = ipaddress.IPv6Address(int(ipaddress.IPv6Address(ip_str)))
++        addr = _ipv6_address_from_str(ip_str, max_length)
+     except ValueError:
+         raise ValidationError(error_message, code="invalid")
+ 
+diff --git a/docs/ref/forms/fields.txt b/docs/ref/forms/fields.txt
+index 1a7274e0d1ad..76b4587e21a6 100644
+--- a/docs/ref/forms/fields.txt
++++ b/docs/ref/forms/fields.txt
+@@ -742,6 +742,15 @@ For each field, we describe the default widget used if you don't specify
+         ``192.0.2.1``. Default is disabled. Can only be used
+         when ``protocol`` is set to ``'both'``.
+ 
++    .. attribute:: max_length
++
++        Defaults to 39, and behaves the same way as it does for
++        :class:`CharField`.
++
++    .. versionchanged:: 4.2.18
++
++        The default value for ``max_length`` was set to 39 characters.
++
+ ``ImageField``
+ --------------
+ 
+diff --git a/docs/releases/4.2.18.txt b/docs/releases/4.2.18.txt
+index ae0c4e3334fb..fef91d9150bf 100644
+--- a/docs/releases/4.2.18.txt
++++ b/docs/releases/4.2.18.txt
+@@ -5,3 +5,15 @@ Django 4.2.18 release notes
+ *January 14, 2025*
+ 
+ Django 4.2.18 fixes a security issue with severity "moderate" in 4.2.17.
++
++CVE-2024-56374: Potential denial-of-service vulnerability in IPv6 validation
++============================================================================
++
++Lack of upper bound limit enforcement in strings passed when performing IPv6
++validation could lead to a potential denial-of-service attack. The undocumented
++and private functions ``clean_ipv6_address`` and ``is_valid_ipv6_address`` were
++vulnerable, as was the  :class:`django.forms.GenericIPAddressField` form field,
++which has now been updated to define a ``max_length`` of 39 characters.
++
++The :class:`django.db.models.GenericIPAddressField` model field was not
++affected.
+diff --git a/tests/forms_tests/field_tests/test_genericipaddressfield.py b/tests/forms_tests/field_tests/test_genericipaddressfield.py
+index 80722f5c65c1..ef00a727a468 100644
+--- a/tests/forms_tests/field_tests/test_genericipaddressfield.py
++++ b/tests/forms_tests/field_tests/test_genericipaddressfield.py
+@@ -125,6 +126,35 @@ def test_generic_ipaddress_as_ipv6_only(self):
+         ):
+             f.clean("1:2")
+ 
++    def test_generic_ipaddress_max_length_custom(self):
++        # Valid IPv4-mapped IPv6 address, len 45.
++        addr = "0000:0000:0000:0000:0000:ffff:192.168.100.228"
++        f = GenericIPAddressField(max_length=len(addr))
++        f.clean(addr)
++
++    def test_generic_ipaddress_max_length_validation_error(self):
++        # Valid IPv4-mapped IPv6 address, len 45.
++        addr = "0000:0000:0000:0000:0000:ffff:192.168.100.228"
++
++        cases = [
++            ({}, MAX_IPV6_ADDRESS_LENGTH),  # Default value.
++            ({"max_length": len(addr) - 1}, len(addr) - 1),
++        ]
++        for kwargs, max_length in cases:
++            max_length_plus_one = max_length + 1
++            msg = (
++                f"Ensure this value has at most {max_length} characters (it has "
++                f"{max_length_plus_one}).'"
++            )
++            with self.subTest(max_length=max_length):
++                f = GenericIPAddressField(**kwargs)
++                with self.assertRaisesMessage(ValidationError, msg):
++                    f.clean("x" * max_length_plus_one)
++                with self.assertRaisesMessage(
++                    ValidationError, "This is not a valid IPv6 address."
++                ):
++                    f.clean(addr)
++
+     def test_generic_ipaddress_as_generic_not_required(self):
+         f = GenericIPAddressField(required=False)
+         self.assertEqual(f.clean(""), "")
+@@ -150,7 +180,8 @@ def test_generic_ipaddress_as_generic_not_required(self):
+             f.clean(" fe80::223:6cff:fe8a:2e8a "), "fe80::223:6cff:fe8a:2e8a"
+         )
+         self.assertEqual(
+-            f.clean(" 2a02::223:6cff:fe8a:2e8a "), "2a02::223:6cff:fe8a:2e8a"
++            f.clean(" " * MAX_IPV6_ADDRESS_LENGTH + " 2a02::223:6cff:fe8a:2e8a "),
++            "2a02::223:6cff:fe8a:2e8a",
+         )
+         with self.assertRaisesMessage(
+             ValidationError, "'This is not a valid IPv6 address.'"
+diff --git a/tests/utils_tests/test_ipv6.py b/tests/utils_tests/test_ipv6.py
+index bf78ed91c08f..2d06507fa152 100644
+--- a/tests/utils_tests/test_ipv6.py
++++ b/tests/utils_tests/test_ipv6.py
+@@ -1,9 +1,17 @@
+-import unittest
++import traceback
++from io import StringIO
+ 
+-from django.utils.ipv6 import clean_ipv6_address, is_valid_ipv6_address
++from django.core.exceptions import ValidationError
++from django.test import SimpleTestCase
++from django.utils.ipv6 import (
++    MAX_IPV6_ADDRESS_LENGTH,
++    clean_ipv6_address,
++    is_valid_ipv6_address,
++)
++from django.utils.version import PY310
+ 
+ 
+-class TestUtilsIPv6(unittest.TestCase):
++class TestUtilsIPv6(SimpleTestCase):
+     def test_validates_correct_plain_address(self):
+         self.assertTrue(is_valid_ipv6_address("fe80::223:6cff:fe8a:2e8a"))
+         self.assertTrue(is_valid_ipv6_address("2a02::223:6cff:fe8a:2e8a"))
+@@ -64,3 +72,29 @@ def test_unpacks_ipv4(self):
+         self.assertEqual(
+             clean_ipv6_address("::ffff:18.52.18.52", unpack_ipv4=True), "18.52.18.52"
+         )
++
++    def test_address_too_long(self):
++        addresses = [
++            "0000:0000:0000:0000:0000:ffff:192.168.100.228",  # IPv4-mapped IPv6 address
++            "0000:0000:0000:0000:0000:ffff:192.168.100.228%123456",  # % scope/zone
++            "fe80::223:6cff:fe8a:2e8a:1234:5678:00000",  # MAX_IPV6_ADDRESS_LENGTH + 1
++        ]
++        msg = "This is the error message."
++        value_error_msg = "Unable to convert %s to an IPv6 address (value too long)."
++        for addr in addresses:
++            with self.subTest(addr=addr):
++                self.assertGreater(len(addr), MAX_IPV6_ADDRESS_LENGTH)
++                self.assertEqual(is_valid_ipv6_address(addr), False)
++                with self.assertRaisesMessage(ValidationError, msg) as ctx:
++                    clean_ipv6_address(addr, error_message=msg)
++                exception_traceback = StringIO()
++                if PY310:
++                    traceback.print_exception(ctx.exception, file=exception_traceback)
++                else:
++                    traceback.print_exception(
++                        type(ctx.exception),
++                        value=ctx.exception,
++                        tb=ctx.exception.__traceback__,
++                        file=exception_traceback,
++                    )
++                self.assertIn(value_error_msg % addr, exception_traceback.getvalue())
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+                <div class="card">
+                  <h2>应用成功的补丁块</h2>
+                  <table>
+                    <tr>
+                      <th>块索引</th>
+                      <th>修改文件</th>
+                      <th>修改位置</th>
+                      <th>操作</th>
+                    </tr>
+                    
+                    <tr>
+                      <td>1</td>
+                      <td>django/db/models/fields/__init__.py</td>
+                      <td>25-25</td>
+                      <td><a href="applied_chunk_1.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>2</td>
+                      <td>django/utils/ipv6.py</td>
+                      <td>41-54</td>
+                      <td><a href="applied_chunk_2.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>3</td>
+                      <td>docs/ref/forms/fields.txt</td>
+                      <td>719-719</td>
+                      <td><a href="applied_chunk_3.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>4</td>
+                      <td>docs/ref/forms/fields.txt</td>
+                      <td>727-727</td>
+                      <td><a href="applied_chunk_4.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>5</td>
+                      <td>tests/forms_tests/field_tests/test_genericipaddressfield.py</td>
+                      <td>1-1</td>
+                      <td><a href="applied_chunk_5.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+                  </table>
+                </div>
+                
+            <div class="card">
+              <h2>剩余补丁</h2>
+              <p>有 <strong class="info">13</strong> 个块未成功应用，已生成剩余补丁:</p>
+              <p><code>/home/elpsy/workspace/sow/patch-backport/workspace/django/django/ad866a/chunk_patches/remaining_chunks_20250612_175910.patch</code></p>
+              <p><a href="remaining_patch.diff" target="_blank">查看剩余补丁</a></p>
+            </div>
+            
+        <style>
+        .code-container {
+          max-height: 500px;
+          overflow-y: auto;
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          border: 1px solid #eee;
+        }
+        
+        .code-block {
+          padding: 15px;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: monospace;
+          font-size: 13px;
+          line-height: 1.4;
+        }
+        
+        /* 为补丁内容添加语法高亮 */
+        .code-block .add {
+          background-color: #e6ffed;
+          color: #22863a;
+        }
+        
+        .code-block .remove {
+          background-color: #ffeef0;
+          color: #cb2431;
+        }
+        
+        .code-block .hunk {
+          color: #0366d6;
+          background-color: #f1f8ff;
+        }
+        
+        .code-block .header {
+          color: #6f42c1;
+          font-weight: bold;
+        }
+        </style>
+        
+        <script>
+        // 对补丁内容应用简单的语法高亮
+        document.addEventListener('DOMContentLoaded', function() {
+          const codeBlocks = document.querySelectorAll('.code-block');
+          codeBlocks.forEach(function(block) {
+            let html = block.innerHTML;
+            
+            // 替换添加的行
+            html = html.replace(/^(\+[^+].*)/gm, '<span class="add">$1</span>');
+            
+            // 替换删除的行
+            html = html.replace(/^(-[^-].*)/gm, '<span class="remove">$1</span>');
+            
+            // 替换区块头
+            html = html.replace(/^(@@.*@@)/gm, '<span class="hunk">$1</span>');
+            
+            // 替换diff头 - 修复无效转义序列
+            html = html.replace(/^(diff --git.*|index.*|---.*|\+\+\+.*)/gm, '<span class="header">$1</span>');
+            
+            block.innerHTML = html;
+          });
+        });
+        </script>
+        
+    
+  </div>
+</body>
+</html>

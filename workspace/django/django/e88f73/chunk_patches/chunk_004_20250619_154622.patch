@@ -1,0 +1,34 @@
+From e88f7376fe68dbf4ebaf11fad1513ce700b45860 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Tue, 25 Feb 2025 09:40:54 +0100
+Subject: [PATCH] [4.2.x] Fixed CVE-2025-26699 -- Mitigated potential DoS in
+ wordwrap template filter.
+
+Thanks sw0rd1ight for the report.
+
+Backport of 55d89e25f4115c5674cdd9b9bcba2bb2bb6d820b from main.
+---
+ django/utils/text.py                          | 28 +++++++------------
+ docs/releases/4.2.20.txt                      |  6 ++++
+ .../filter_tests/test_wordwrap.py             | 11 ++++++++
+ 3 files changed, 27 insertions(+), 18 deletions(-)
+
+diff --git a/tests/template_tests/filter_tests/test_wordwrap.py b/tests/template_tests/filter_tests/test_wordwrap.py
+index 88fbd274da94..4afa1dd234f1 100644
+--- a/tests/template_tests/filter_tests/test_wordwrap.py
++++ b/tests/template_tests/filter_tests/test_wordwrap.py
+@@ -78,3 +78,14 @@ def test_wrap_lazy_string(self):
+             "this is a long\nparagraph of\ntext that\nreally needs\nto be wrapped\n"
+             "I'm afraid",
+         )
++
++    def test_wrap_long_text(self):
++        long_text = (
++            "this is a long paragraph of text that really needs"
++            " to be wrapped I'm afraid " * 20_000
++        )
++        self.assertIn(
++            "this is a\nlong\nparagraph\nof text\nthat\nreally\nneeds to\nbe wrapped\n"
++            "I'm afraid",
++            wordwrap(long_text, 10),
++        )

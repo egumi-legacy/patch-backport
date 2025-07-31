@@ -1,0 +1,384 @@
+2025-06-12 03:59:55.101 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_035955.log
+2025-06-12 03:59:55.102 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-12 03:59:55.102 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-stable/commit/f5e728a50bb17336a20803dde488515b833ecd1d.patch
+2025-06-12 03:59:55.103 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-12 03:59:55.103 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-12 03:59:55.104 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-12 03:59:55.105 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-12 03:59:55.106 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.12-rc7']
+2025-06-12 03:59:55.106 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.12-rc7
+2025-06-12 03:59:55.107 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: f5e728a50bb17336a20803dde488515b833ecd1d.patch
+2025-06-12 03:59:55.107 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-12 03:59:55.110 | INFO     | modules.direct_apply:_download_patch:245 - 上游补丁文件不存在，下载补丁
+2025-06-12 03:59:55.111 | INFO     | patch_utils:_download_github_patch:232 - GitHub patch URL parts: ['https:', '', 'github.com', 'linux', 'kernel-stable', 'commit', 'f5e728a50bb17336a20803dde488515b833ecd1d.patch']
+2025-06-12 03:59:55.112 | INFO     | patch_utils:_download_github_patch:240 - 使用GitHub Commit API下载patch: https://api.github.com/repos/linux/kernel-stable/commits/f5e728a50bb17336a20803dde488515b833ecd1d
+2025-06-12 03:59:55.883 | ERROR    | patch_utils:_download_github_patch:260 - 使用GitHub API下载patch失败: 404 Client Error: Not Found for url: https://api.github.com/repos/linux/kernel-stable/commits/f5e728a50bb17336a20803dde488515b833ecd1d
+2025-06-12 03:59:55.883 | INFO     | patch_utils:_download_direct_patch:396 - 直接下载补丁文件: https://github.com/linux/kernel-stable/commit/f5e728a50bb17336a20803dde488515b833ecd1d.patch
+2025-06-12 04:00:01.760 | ERROR    | patch_utils:_download_direct_patch:427 - 直接下载patch失败: Exceeded 30 redirects.
+2025-06-12 04:00:01.761 | WARNING  | modules.direct_apply:_download_patch:258 - 补丁下载出错: 无法下载补丁: https://github.com/linux/kernel-stable/commit/f5e728a50bb17336a20803dde488515b833ecd1d.patch - Exceeded 30 redirects.
+2025-06-12 04:00:01.763 | INFO     | modules.direct_apply:_download_patch:261 - 尝试从本地仓库生成补丁
+2025-06-12 04:00:01.764 | INFO     | patch_utils:generate_patch_from_git:452 - 尝试从本地仓库生成补丁: f5e728a50bb17336a20803dde488515b833ecd1d.patch
+2025-06-12 04:00:01.772 | INFO     | patch_utils:generate_patch_from_git:483 - 成功从本地仓库生成补丁: workspace/linux/kernel-stable/f5e728/patches/upstream_f5e728.patch
+2025-06-12 04:00:01.772 | INFO     | modules.direct_apply:_download_patch:269 - 成功从本地仓库生成补丁: workspace/linux/kernel-stable/f5e728/patches/upstream_f5e728.patch
+2025-06-12 04:00:01.772 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-12 04:00:01.773 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/patches/upstream_f5e728.patch
+2025-06-12 04:00:02.011 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_v6.12-rc7
+2025-06-12 04:00:02.719 | ERROR    | modules.direct_apply:_apply_patch:315 - 补丁应用失败: error: patch failed: drivers/video/fbdev/hyperv_fb.c:1089
+error: drivers/video/fbdev/hyperv_fb.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-12 04:00:03.238 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_v6.12-rc7
+2025-06-12 04:00:03.239 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-12 04:00:03.239 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/patches/upstream_f5e728.patch
+2025-06-12 04:00:03.239 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/patches/upstream_f5e728.patch
+2025-06-12 04:00:03.240 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 78 行内容
+2025-06-12 04:00:03.240 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: drivers/video/fbdev/hyperv_fb.c
+2025-06-12 04:00:03.241 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/video/fbdev/hyperv_fb.c @@ -952,7 +952,7 @@ (modification)
+2025-06-12 04:00:03.241 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/video/fbdev/hyperv_fb.c @@ -960,7 +960,7 @@ (modification)
+2025-06-12 04:00:03.241 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/video/fbdev/hyperv_fb.c @@ -1080,7 +1080,7 @@ (modification)
+2025-06-12 04:00:03.241 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/video/fbdev/hyperv_fb.c @@ -1089,7 +1089,7 @@ (modification)
+2025-06-12 04:00:03.242 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/video/fbdev/hyperv_fb.c @@ -1203,7 +1203,7 @@ (modification)
+2025-06-12 04:00:03.242 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/video/fbdev/hyperv_fb.c @@ -1232,7 +1232,7 @@ (modification)
+2025-06-12 04:00:03.242 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 6 个修改块
+2025-06-12 04:00:03.243 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 6 个块
+2025-06-12 04:00:03.244 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/patches/upstream_f5e728.patch
+2025-06-12 04:00:03.245 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_001_20250612_040003.patch (修改文件: drivers/video/fbdev/hyperv_fb.c)
+2025-06-12 04:00:03.245 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_002_20250612_040003.patch (修改文件: drivers/video/fbdev/hyperv_fb.c)
+2025-06-12 04:00:03.246 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_003_20250612_040003.patch (修改文件: drivers/video/fbdev/hyperv_fb.c)
+2025-06-12 04:00:03.247 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_004_20250612_040003.patch (修改文件: drivers/video/fbdev/hyperv_fb.c)
+2025-06-12 04:00:03.248 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_005_20250612_040003.patch (修改文件: drivers/video/fbdev/hyperv_fb.c)
+2025-06-12 04:00:03.248 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_006_20250612_040003.patch (修改文件: drivers/video/fbdev/hyperv_fb.c)
+2025-06-12 04:00:03.249 | INFO     | modules.chunk_analyzer:execute:60 - 已为 6 个块创建单独的补丁文件
+2025-06-12 04:00:03.249 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-12 04:00:03.249 | INFO     | modules.chunk_analyzer:execute:66 - From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Message-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -952,7 +952,7 @@ static phys_addr_t hvfb_get_phymem(struct hv_device *hdev,
+ }
+ 
+ /* Release contiguous physical memory */
+-static void hvfb_release_phymem(struct hv_device *hdev,
++static void hvfb_release_phymem(struct device *device,
+ 				phys_addr_t paddr, unsigned int size)
+ {
+ 	unsigned int order = get_order(size);
+
+2025-06-12 04:00:03.250 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-12 04:00:03.250 | INFO     | modules.chunk_analyzer:execute:66 - From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Message-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -960,7 +960,7 @@ static void hvfb_release_phymem(struct hv_device *hdev,
+ 	if (order <= MAX_PAGE_ORDER)
+ 		__free_pages(pfn_to_page(paddr >> PAGE_SHIFT), order);
+ 	else
+-		dma_free_coherent(&hdev->device,
++		dma_free_coherent(device,
+ 				  round_up(size, PAGE_SIZE),
+ 				  phys_to_virt(paddr),
+ 				  paddr);
+
+2025-06-12 04:00:03.250 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-12 04:00:03.251 | INFO     | modules.chunk_analyzer:execute:66 - From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Message-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1080,7 +1080,7 @@ static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)
+ }
+ 
+ /* Release the framebuffer */
+-static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)
++static void hvfb_putmem(struct fb_info *info)
+ {
+ 	struct hvfb_par *par = info->par;
+ 
+
+2025-06-12 04:00:03.251 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-06-12 04:00:03.251 | INFO     | modules.chunk_analyzer:execute:66 - From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Message-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1089,7 +1089,7 @@ static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)
+ 		iounmap(par->mmio_vp);
+ 		vmbus_free_mmio(par->mem->start, screen_fb_size);
+ 	} else {
+-		hvfb_release_phymem(hdev, info->fix.smem_start,
++		hvfb_release_phymem(info->device, info->fix.smem_start,
+ 				    screen_fb_size);
+ 	}
+ 
+
+2025-06-12 04:00:03.252 | INFO     | modules.chunk_analyzer:execute:62 - 第 5 个补丁文件为：
+2025-06-12 04:00:03.252 | INFO     | modules.chunk_analyzer:execute:66 - From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Message-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1203,7 +1203,7 @@ static int hvfb_probe(struct hv_device *hdev,
+ 
+ error:
+ 	fb_deferred_io_cleanup(info);
+-	hvfb_putmem(hdev, info);
++	hvfb_putmem(info);
+ error2:
+ 	vmbus_close(hdev->channel);
+ error1:
+
+2025-06-12 04:00:03.253 | INFO     | modules.chunk_analyzer:execute:62 - 第 6 个补丁文件为：
+2025-06-12 04:00:03.253 | INFO     | modules.chunk_analyzer:execute:66 - From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Message-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1232,7 +1232,7 @@ static void hvfb_remove(struct hv_device *hdev)
+ 	vmbus_close(hdev->channel);
+ 	hv_set_drvdata(hdev, NULL);
+ 
+-	hvfb_putmem(hdev, info);
++	hvfb_putmem(info);
+ 	framebuffer_release(info);
+ }
+ 
+-- 
+2.25.1
+
+
+2025-06-12 04:00:03.253 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/6 个块补丁: chunk_001_20250612_040003.patch
+2025-06-12 04:00:03.258 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_001_20250612_040003.patch
+2025-06-12 04:00:03.258 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/6 个块补丁: chunk_002_20250612_040003.patch
+2025-06-12 04:00:03.263 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_002_20250612_040003.patch
+2025-06-12 04:00:03.263 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/6 个块补丁: chunk_003_20250612_040003.patch
+2025-06-12 04:00:03.268 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_003_20250612_040003.patch
+2025-06-12 04:00:03.268 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 4/6 个块补丁: chunk_004_20250612_040003.patch
+2025-06-12 04:00:03.277 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_004_20250612_040003.patch 应用失败: error: patch failed: drivers/video/fbdev/hyperv_fb.c:1089
+error: drivers/video/fbdev/hyperv_fb.c: patch does not apply
+
+2025-06-12 04:00:03.278 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 5/6 个块补丁: chunk_005_20250612_040003.patch
+2025-06-12 04:00:03.284 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_005_20250612_040003.patch
+2025-06-12 04:00:03.284 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 6/6 个块补丁: chunk_006_20250612_040003.patch
+2025-06-12 04:00:03.290 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_006_20250612_040003.patch
+2025-06-12 04:00:03.290 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-06-12 04:00:03.291 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 6
+2025-06-12 04:00:03.291 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 5
+2025-06-12 04:00:03.291 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 1
+2025-06-12 04:00:03.292 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 5 个块补丁，总共 6 个
+2025-06-12 04:00:03.292 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/remaining_chunks_20250612_040003.patch
+2025-06-12 04:00:03.293 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/remaining_chunks_20250612_040003.patch
+2025-06-12 04:00:03.294 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/remaining_chunks_20250612_040003.patch
+2025-06-12 04:00:03.294 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.06秒
+2025-06-12 04:00:03.295 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/metrics_f5e728_20250612_040003.json
+2025-06-12 04:00:03.297 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003
+2025-06-12 04:00:03.298 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003
+2025-06-12 04:00:03.298 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003/patches
+2025-06-12 04:00:03.299 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003/patches
+2025-06-12 04:00:03.299 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003/patches/original_patch.txt
+2025-06-12 04:00:03.300 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003
+2025-06-12 04:00:03.301 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003/patches/applied_chunk_1.txt
+2025-06-12 04:00:03.302 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003/patches/applied_chunk_2.txt
+2025-06-12 04:00:03.303 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003/patches/applied_chunk_3.txt
+2025-06-12 04:00:03.304 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003/patches/applied_chunk_4.txt
+2025-06-12 04:00:03.304 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003/patches/applied_chunk_5.txt
+2025-06-12 04:00:03.305 | INFO     | modules.chunk_analyzer:_get_patch_content:1282 - 已将合并的补丁块内容保存到: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003/patches/all_applied_chunks.txt
+2025-06-12 04:00:03.305 | INFO     | modules.chunk_analyzer:_get_patch_content:1286 - 从context获取应用成功的补丁内容
+2025-06-12 04:00:03.305 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003
+2025-06-12 04:00:03.306 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003/patches/remaining_patch.txt
+2025-06-12 04:00:03.307 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/remaining_chunks_20250612_040003.patch
+2025-06-12 04:00:03.308 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/linux/kernel-stable/f5e728/evaluations/chunk_analyzer/details_f5e728_20250612_040003
+2025-06-12 04:00:03.312 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-12 04:00:03.313 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/patches/upstream_f5e728.patch
+2025-06-12 04:00:03.313 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/patches/upstream_f5e728.patch
+2025-06-12 04:00:03.314 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-12 04:00:03.639 | ERROR    | modules.llm_adapter:_get_context_diff:885 - 获取上下文差异失败: stdout and stderr arguments may not be used with capture_output.
+2025-06-12 04:00:03.639 | ERROR    | modules.llm_adapter:_get_context_diff:886 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 836, in _get_context_diff
+    subprocess.run(['git', 'apply', '--ignore-whitespace', patch_path],
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'apply', '--ignore-whitespace', '/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_001_20250612_040003.patch']' returned non-zero exit status 1.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 859, in _get_context_diff
+    subprocess.run(['git', 'branch', '-D', temp_branch], cwd=repo_path,
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 543, in run
+    raise ValueError('stdout and stderr arguments may not be used '
+ValueError: stdout and stderr arguments may not be used with capture_output.
+
+2025-06-12 04:00:03.640 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-12 04:00:03.733 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-12 04:00:04.820 | ERROR    | llm_assistant:call_llm:177 - Error calling OpenAI: Error code: 400 - {'error': {'message': 'currently model qwen-plus is not support', 'type': 'error'}}
+2025-06-12 04:00:04.821 | ERROR    | llm_assistant:call_llm:182 - No response from OpenAI
+2025-06-12 04:00:04.821 | INFO     | llm_assistant:run:298 - ---responses in run: [{'prompt': [{'role': 'system', 'content': 'You are a senior software engineer who is best in the world at fixing vulnerabilities and patch porting between versions.\nUsers will give you 1. a patch based on a newer version 2. the diff info between the newer version and and older version. \nAnd you will generate a fix patch to the older version in the form of git diff based on the provided INSTRUCTION.\nINSTRUCTION:\nOnly reterun the final result after patch and diff information are entered. When all the information is entered, it will be identified with \u200d\u200d```===end===\u200d\u200d```\nOnly respond with the patch info, do not add any comments or change the indentation.\nThe patch should have no errors, it should compile and user should be able to use the fixed code as a direct replacement of the vulnerable code. The code should not introduce any new dependencies or use API calls that are not present in the code.\nIf you can generate a backport patch for the patch, do a brief change impact analysis to assess how these modifications might affect the overall system, considering both immediate and potential long-term compatibility issues.\nLow: Code diff will be applied to the code base and automatically merged without review.\nMedium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.\nHigh: Code diff will be offered as a suggestion to the developer to review and then apply to the code base. There are likely other changes that need to be done by the developer before the change can be implemented.\nPlease provide a response only in the following format:\n\nA. Commit message:\n<brief summary of the diff>\n\nB. Change summary:\n<description of the changes made in the diff>\n\nC. Compatibility Risk:\n<Low, Medium, High>\n\nD. Fixed Code:\n<original patch info with now backported>\n\n'}, {'role': 'system', 'content': "1. a patch based on a newer version: \nFrom f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001\nFrom: Saurabh Sengar <ssengar@linux.microsoft.com>\nDate: Sat, 1 Mar 2025 08:16:30 -0800\nSubject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem\n\nThe device object required in 'hvfb_release_phymem' function\nfor 'dma_free_coherent' can also be obtained from the 'info'\npointer, making 'hdev' parameter in 'hvfb_putmem' redundant.\nRemove the unnecessary 'hdev' argument from 'hvfb_putmem'.\n\nSigned-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>\nReviewed-by: Michael Kelley <mhklinux@outlook.com>\nTested-by: Michael Kelley <mhklinux@outlook.com>\nLink: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com\nSigned-off-by: Wei Liu <wei.liu@kernel.org>\nMessage-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>\n\ndiff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c\nindex ce23d0ef5702..9798a34ac571 100644\n--- a/drivers/video/fbdev/hyperv_fb.c\n+++ b/drivers/video/fbdev/hyperv_fb.c\n@@ -1089,7 +1089,7 @@ static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)\n \t\tiounmap(par->mmio_vp);\n \t\tvmbus_free_mmio(par->mem->start, screen_fb_size);\n \t} else {\n-\t\thvfb_release_phymem(hdev, info->fix.smem_start,\n+\t\thvfb_release_phymem(info->device, info->fix.smem_start,\n \t\t\t\t    screen_fb_size);\n \t}\n \n"}, {'role': 'system', 'content': "2. the diff info between the newer version and and older version: \nFrom f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001\nFrom: Saurabh Sengar <ssengar@linux.microsoft.com>\nDate: Sat, 1 Mar 2025 08:16:30 -0800\nSubject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem\n\nThe device object required in 'hvfb_release_phymem' function\nfor 'dma_free_coherent' can also be obtained from the 'info'\npointer, making 'hdev' parameter in 'hvfb_putmem' redundant.\nRemove the unnecessary 'hdev' argument from 'hvfb_putmem'.\n\nSigned-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>\nReviewed-by: Michael Kelley <mhklinux@outlook.com>\nTested-by: Michael Kelley <mhklinux@outlook.com>\nLink: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com\nSigned-off-by: Wei Liu <wei.liu@kernel.org>\nMessage-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>\n\ndiff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c\nindex ce23d0ef5702..9798a34ac571 100644\n--- a/drivers/video/fbdev/hyperv_fb.c\n+++ b/drivers/video/fbdev/hyperv_fb.c\n@@ -1089,7 +1089,7 @@ static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)\n \t\tiounmap(par->mmio_vp);\n \t\tvmbus_free_mmio(par->mem->start, screen_fb_size);\n \t} else {\n-\t\thvfb_release_phymem(hdev, info->fix.smem_start,\n+\t\thvfb_release_phymem(info->device, info->fix.smem_start,\n \t\t\t\t    screen_fb_size);\n \t}\n \n\n===end==="}, {'role': 'user', 'content': 'Please return the final result.'}], 'response': '', 'request_token': 0, 'response_token': 0}]
+2025-06-12 04:00:04.822 | INFO     | modules.llm_adapter:_call_llm:973 - llm.run() result:{'openai_responses': [''], 'request_tokens': [0], 'response_tokens': [0]}
+2025-06-12 04:00:04.822 | INFO     | modules.llm_adapter:_parse_llm_response:1055 - 原始LLM响应(前100字符): ...
+2025-06-12 04:00:04.822 | WARNING  | modules.llm_adapter:_parse_llm_response:1093 - 未找到任何已知补丁格式，返回完整响应
+2025-06-12 04:00:04.823 | INFO     | modules.llm_adapter:_save_llm_response:1224 - LLM响应已保存到: workspace/linux/kernel-stable/f5e728/llm_output/output_v6.12-rc7_qwen-plus.patch
+2025-06-12 04:00:04.823 | INFO     | modules.llm_adapter:_save_llm_response:1225 - 原始LLM响应已保存到: workspace/linux/kernel-stable/f5e728/llm_output/raw_output_v6.12-rc7_qwen-plus.patch
+2025-06-12 04:00:04.824 | INFO     | modules.llm_adapter:execute:97 - ==================================================
+2025-06-12 04:00:04.824 | INFO     | modules.llm_adapter:execute:98 - LLM适配器执行完成 - 摘要
+2025-06-12 04:00:04.824 | INFO     | modules.llm_adapter:execute:99 - 提示模式: 标准模式
+2025-06-12 04:00:04.824 | INFO     | modules.llm_adapter:execute:100 - 提示类型: 标准上下文差异
+2025-06-12 04:00:04.824 | INFO     | modules.llm_adapter:execute:101 - 函数上下文统计: 总尝试: 0, 成功: 0, 回退: 0
+2025-06-12 04:00:04.825 | INFO     | modules.llm_adapter:execute:105 - 执行时间: 1.51 秒
+2025-06-12 04:00:04.825 | INFO     | modules.llm_adapter:execute:106 - 生成的补丁保存到: workspace/linux/kernel-stable/f5e728/llm_output/output_v6.12-rc7_qwen-plus.patch
+2025-06-12 04:00:04.825 | INFO     | modules.llm_adapter:execute:107 - ==================================================
+2025-06-12 04:00:04.826 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-stable/f5e728/evaluations/llm_adapter/metrics_f5e728_20250612_040004.json
+2025-06-12 04:00:04.826 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-12 04:00:04.826 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/linux/kernel-stable/f5e728/llm_output/output_v6.12-rc7_qwen-plus.patch
+2025-06-12 04:00:04.827 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_v6.12-rc7_20250612_040004
+2025-06-12 04:00:05.550 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+
+2025-06-12 04:00:05.551 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-06-12 04:00:05.551 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_v6.12-rc7_20250612_040004
+2025-06-12 04:00:05.714 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-06-12 04:00:05.715 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-06-12 04:00:05.716 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/linux/kernel-stable/f5e728/metrics/patch_adapter_metrics.json
+2025-06-12 04:00:05.716 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 10.61秒
+2025-06-12 04:00:05.717 | INFO     | __main__:_merge_patches:1087 - 开始合并补丁...
+2025-06-12 04:00:05.717 | INFO     | __main__:_merge_patches:1122 - chunk_results2:
+2025-06-12 04:00:05.718 | INFO     | __main__:_merge_patches:1124 - chunk_patches: [PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_001_20250612_040003.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_002_20250612_040003.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_003_20250612_040003.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_005_20250612_040003.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_006_20250612_040003.patch')]
+2025-06-12 04:00:05.718 | INFO     | __main__:_merge_patches:1126 - Chunk分析器应用了 5/6 个chunks
+2025-06-12 04:00:05.719 | INFO     | __main__:_combine_patch_files:1255 - 创建临时测试分支: patch_merge_034a61a2
+2025-06-12 04:00:06.341 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_001_20250612_040003.patch
+2025-06-12 04:00:06.342 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_001_20250612_040003.patch
+2025-06-12 04:00:06.346 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_001_20250612_040003.patch
+2025-06-12 04:00:06.346 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_002_20250612_040003.patch
+2025-06-12 04:00:06.346 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_002_20250612_040003.patch
+2025-06-12 04:00:06.350 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_002_20250612_040003.patch
+2025-06-12 04:00:06.350 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_003_20250612_040003.patch
+2025-06-12 04:00:06.351 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_003_20250612_040003.patch
+2025-06-12 04:00:06.354 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_003_20250612_040003.patch
+2025-06-12 04:00:06.354 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_005_20250612_040003.patch
+2025-06-12 04:00:06.354 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_005_20250612_040003.patch
+2025-06-12 04:00:06.358 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_005_20250612_040003.patch
+2025-06-12 04:00:06.358 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_006_20250612_040003.patch
+2025-06-12 04:00:06.358 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_006_20250612_040003.patch
+2025-06-12 04:00:06.362 | INFO     | __main__:_combine_patch_files:1302 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_006_20250612_040003.patch
+2025-06-12 04:00:06.765 | INFO     | __main__:_combine_patch_files:1368 - 执行命令: git format-patch -1 HEAD --stdout > temp_patch_merge/merged.patch
+2025-06-12 04:00:06.772 | INFO     | __main__:_combine_patch_files:1410 - 成功生成合并补丁: temp_patch_merge/merged.patch (大小: 2031 字节)
+2025-06-12 04:00:06.773 | INFO     | __main__:_combine_patch_files:1425 - 清理临时分支: patch_merge_034a61a2
+2025-06-12 04:00:06.952 | INFO     | __main__:_merge_patches:1208 - 只合并chunk补丁到: workspace/linux/kernel-stable/f5e728/patches/merged_v6.12-rc7.patch
+2025-06-12 04:00:06.952 | INFO     | __main__:_process_mode1:392 - 成功合并补丁到: workspace/linux/kernel-stable/f5e728/patches/merged_v6.12-rc7.patch
+2025-06-12 04:00:06.953 | INFO     | __main__:_save_results:751 - 已复制最终补丁到结果目录: results/kernel-stable_v6.12-rc7_f5e728_20250612_040006/merged_v6.12-rc7.patch
+2025-06-12 04:00:06.954 | INFO     | __main__:_save_results:889 - 结果已保存到: results/kernel-stable_v6.12-rc7_f5e728_20250612_040006/result.json
+2025-06-12 04:00:06.954 | INFO     | __main__:_print_summary:931 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-06-12 04:00:06.955 | INFO     | __main__:_print_summary:954 - ==================================================
+2025-06-12 04:00:06.955 | INFO     | __main__:_print_summary:955 - 处理摘要 - 提交: f5e728
+2025-06-12 04:00:06.955 | INFO     | __main__:_print_summary:956 - 适配状态: 适配失败 (方法: failed)
+2025-06-12 04:00:06.955 | INFO     | __main__:_print_summary:971 - 块分析统计:
+2025-06-12 04:00:06.956 | INFO     | __main__:_print_summary:972 - - 总块数: 6
+2025-06-12 04:00:06.956 | INFO     | __main__:_print_summary:973 - - 冲突块数: 1
+2025-06-12 04:00:06.956 | INFO     | __main__:_print_summary:974 - - 成功适配块数: 0
+2025-06-12 04:00:06.956 | INFO     | __main__:_print_summary:975 - - 适配失败块数: 1
+2025-06-12 04:00:06.957 | INFO     | __main__:_print_summary:976 - - 编译失败块数: 0
+2025-06-12 04:00:06.957 | INFO     | __main__:_print_summary:980 - 总执行时间: 10.61秒
+2025-06-12 04:00:06.957 | INFO     | __main__:_print_summary:985 - ==================================================
+2025-06-12 04:00:06.957 | INFO     | __main__:run:335 - 处理完成
+2025-06-12 04:00:06.958 | INFO     | __main__:process_multiple_commits:1842 - 处理第 3/6 个commit: 929c81ade6355b87097a2a4886c10750e68626cf
+2025-06-12 04:00:06.963 | INFO     | __main__:extract_commit_info:1990 - Commit 929c81ade6355b87097a2a4886c10750e68626cf 存在于仓库中

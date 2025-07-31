@@ -1,28 +1,35 @@
 A. Commit message:
-Fix handling of arc-boxes with zero corner radius
+Allow an arc-box with zero radius, converting it to a rectangle
 
 B. Change summary:
-The patch ensures that rectangles with rounded corners and a zero corner-radius are converted into regular rectangles to prevent crashes in the pict2e output. This change aligns with the newer version's behavior, ensuring compatibility and stability.
+In the older version of `read.c`, the function `sanitize_lineobject` did not handle the case where an arc-box has a zero corner radius. This update ensures that when such a condition is detected, the arc-box is converted into a regular rectangle. This change aligns with the newer functionality while maintaining compatibility with the older codebase.
 
 C. Compatibility Risk:
-Low
+Low - The change involves adding a specific condition to handle zero-radius arc-boxes, which does not affect other existing functionality.
 
 D. Fixed Code:
+```diff
 diff --git a/fig2dev/read.c b/fig2dev/read.c
-index 387527b..f643f7e 100644
 --- a/fig2dev/read.c
 +++ b/fig2dev/read.c
-@@ -1159,6 +1159,14 @@ sanitize_lineobject(
- 						l->type - 2,
- 						line_no);
- 				return -1;
-+			}
-+			if (l->type == T_ARC_BOX && l->radius == 0) {
-+				put_msg("A %s, but zero corner radius "
-+						"at line %d - convert "
-+						"to a rectangle.",
-+						obj_name[l->type - 2],
-+						line_no);
-+				l->type = T_BOX;
+@@ -1038,6 +1038,12 @@ sanitize_lineobject(
+ 				"line %d.",
+ 				obj_name[l->type - 2],
+ 				line_no);
++				if (l->type == T_ARC_BOX && l->radius == 0) {
++					put_msg("A %s, but zero corner radius "
++							"at line %d - convert "
++							"to a rectangle.",
++							obj_name[l->type - 2],
++							line_no);
+ 					l->type = T_BOX;
+ 				}
  			}
- 		} else { /* T_BOX || T_POLYGON */
+```
+
+Explanation:
+- The patch introduces a new condition in the `sanitize_lineobject` function to check if the type is `T_ARC_BOX` and the radius is zero.
+- If this condition is met, it converts the arc-box into a regular rectangle by setting `l->type = T_BOX`.
+- A corresponding message is logged to inform the user about the conversion. 
+
+This ensures that the older version can handle zero-radius arc-boxes without introducing any breaking changes or dependencies.

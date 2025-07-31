@@ -1,0 +1,10 @@
+[
+  {
+    "索引": 1,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/mcj/fig2dev/ff9aba/chunk_patches/chunk_002_20250612_174829.patch",
+    "实际补丁": null,
+    "修改文件": "fig2dev/tests/read.at",
+    "修改位置": "123-123",
+    "内容": "From ff9aba206a30288f456dfc91584a52ba9927b438 Mon Sep 17 00:00:00 2001\nFrom: Thomas Loimer <thomas.loimer@tuwien.ac.at>\nDate: Tue, 21 Jan 2025 20:50:15 +0100\nSubject: [PATCH] Allow an arc-box with zero radius, ticket #184\n\nIn the pict2e output, a rectangle with rounded corners,\ndashed line type and zero corner-radius would cause a crash.\nConvert rectangles with rounded corners and zero corner-radius to\nregular rectangles.\n\ndiff --git a/fig2dev/tests/read.at b/fig2dev/tests/read.at\nindex 588424d..1b4baea 100644\n--- a/fig2dev/tests/read.at\n+++ b/fig2dev/tests/read.at\n@@ -123,6 +123,17 @@ A rectangle with 3 corners at line 11 - convert to a polygon.\n ])\n AT_CLEANUP\n \n+AT_SETUP([convert an arc-box with zero radius to a box])\n+AT_KEYWORDS(read.c arc-box)\n+AT_CHECK([fig2dev -L pict2e <<EOF\n+FIG_FILE_TOP\n+2 4 1 1 0 0 50 -1 -1 4.0 0 0 0 0 0 5\n+\t0 0 300 0 300 300 0 300 0 0\n+EOF\n+],0,ignore,[A rectangle with rounded corners, but zero corner radius at line 11 - convert to a rectangle.\n+])\n+AT_CLEANUP\n+\n AT_SETUP([fail on a malformed arc-box])\n AT_KEYWORDS(read.c malformed arc-box)\n AT_CHECK([fig2dev -L pict2e <<EOF\n-- \n2.25.1\n\n"
+  }
+]

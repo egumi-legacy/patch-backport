@@ -1,0 +1,101 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "chunks_info": {
+      "total_chunks": 5,
+      "no_conflict_chunks": 4,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 1,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-12T04:03:48.591877"
+  },
+  "to_adapt_commit": {
+    "sha": "743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch",
+    "patch_url": "https://github.com/linux/kernel-stable/commit/743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "workspace/linux/kernel-stable/743eb6/patches/merged_v6.12-rc7.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "v6.12-rc7",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: sound/soc/sof/sof-audio.c:46\nerror: sound/soc/sof/sof-audio.c: patch does not apply\nerror: patch failed: sound/soc/sof/topology.c:2356\nerror: sound/soc/sof/topology.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/patches/upstream_743eb6.patch",
+      "timestamp": "2025-06-12T04:03:25.193642"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/patches/upstream_743eb6.patch",
+      "total_chunks": 5,
+      "applied_chunks": 4,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_001_20250612_040325.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_002_20250612_040325.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_003_20250612_040325.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_005_20250612_040325.patch"
+      ],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/remaining_chunks_20250612_040325.patch",
+      "timestamp": "2025-06-12T04:03:25.448841",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c\nindex 25fb0d1443b6..915c2e88e32b 100644\n--- a/sound/soc/sof/topology.c\n+++ b/sound/soc/sof/topology.c\n@@ -2356,23 +2356,29 @@ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,\n \tif (WIDGET_IS_DAI(w->id)) {\n \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n \t\tstruct snd_sof_widget *swidget;\n-\t\tstruct snd_sof_dai dai;\n+\t\tstruct snd_sof_dai *sdai;\n \t\tint ret;\n \n \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n \t\tif (!swidget)\n \t\t\treturn -ENOMEM;\n \n-\t\tmemset(&dai, 0, sizeof(dai));\n+\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n+\t\tif (!sdai) {\n+\t\t\tkfree(swidget);\n+\t\t\treturn -ENOMEM;\n+\t\t}\n \n-\t\tret = sof_connect_dai_widget(scomp, w, tw, &dai);\n+\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n \t\tif (ret) {\n \t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n \t\t\treturn ret;\n \t\t}\n \n \t\tswidget->scomp = scomp;\n \t\tswidget->widget = w;\n+\t\tswidget->private = sdai;\n \t\tmutex_init(&swidget->setup_mutex);\n \t\tw->dobj.private = swidget;\n \t\tlist_add(&swidget->list, &sdev->widget_list);",
+      "prompt": {
+        "patch_content": "From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001\nFrom: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>\nDate: Tue, 13 Feb 2024 12:12:41 +0200\nSubject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI\n widget->private\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\nFor dspless mode, we need to allocate and store an 'sdai'\nstructure. The existing code allocate the data on the stack and does\nnot set the widget->private pointer.\n\nThis minor change should not have any impact on existing DAIs, even\nwhen the DSP is used.\n\nSigned-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>\nReviewed-by: P\u00e9ter Ujfalusi <peter.ujfalusi@linux.intel.com>\nReviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>\nSigned-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>\nLink: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\n\ndiff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c\nindex 25fb0d1443b6..915c2e88e32b 100644\n--- a/sound/soc/sof/topology.c\n+++ b/sound/soc/sof/topology.c\n@@ -2356,23 +2356,29 @@ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,\n \tif (WIDGET_IS_DAI(w->id)) {\n \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n \t\tstruct snd_sof_widget *swidget;\n-\t\tstruct snd_sof_dai dai;\n+\t\tstruct snd_sof_dai *sdai;\n \t\tint ret;\n \n \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n \t\tif (!swidget)\n \t\t\treturn -ENOMEM;\n \n-\t\tmemset(&dai, 0, sizeof(dai));\n+\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n+\t\tif (!sdai) {\n+\t\t\tkfree(swidget);\n+\t\t\treturn -ENOMEM;\n+\t\t}\n \n-\t\tret = sof_connect_dai_widget(scomp, w, tw, &dai);\n+\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n \t\tif (ret) {\n \t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n \t\t\treturn ret;\n \t\t}\n \n \t\tswidget->scomp = scomp;\n \t\tswidget->widget = w;\n+\t\tswidget->private = sdai;\n \t\tmutex_init(&swidget->setup_mutex);\n \t\tw->dobj.private = swidget;\n \t\tlist_add(&swidget->list, &sdev->widget_list);\n",
+        "target_version": "v6.12-rc7",
+        "context_diff": "# \u65e0\u6cd5\u751f\u6210\u5dee\u5f02\u6587\u4ef6\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/linux/kernel-stable/743eb6/llm_output/output_v6.12-rc7_qwen-plus.patch",
+      "timestamp": "2025-06-12T04:03:46.043134",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "final_patch_path": "workspace/linux/kernel-stable/743eb6/patches/merged_v6.12-rc7.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-12T04:03:24.049166",
+    "end_time": "2025-06-12T04:03:47.026000",
+    "total_seconds": 22.976834,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "patch_content": "",
+    "llm_output": "diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c\nindex 25fb0d1443b6..915c2e88e32b 100644\n--- a/sound/soc/sof/topology.c\n+++ b/sound/soc/sof/topology.c\n@@ -2356,23 +2356,29 @@ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,\n \tif (WIDGET_IS_DAI(w->id)) {\n \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n \t\tstruct snd_sof_widget *swidget;\n-\t\tstruct snd_sof_dai dai;\n+\t\tstruct snd_sof_dai *sdai;\n \t\tint ret;\n \n \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n \t\tif (!swidget)\n \t\t\treturn -ENOMEM;\n \n-\t\tmemset(&dai, 0, sizeof(dai));\n+\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n+\t\tif (!sdai) {\n+\t\t\tkfree(swidget);\n+\t\t\treturn -ENOMEM;\n+\t\t}\n \n-\t\tret = sof_connect_dai_widget(scomp, w, tw, &dai);\n+\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n \t\tif (ret) {\n \t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n \t\t\treturn ret;\n \t\t}\n \n \t\tswidget->scomp = scomp;\n \t\tswidget->widget = w;\n+\t\tswidget->private = sdai;\n \t\tmutex_init(&swidget->setup_mutex);\n \t\tw->dobj.private = swidget;\n \t\tlist_add(&swidget->list, &sdev->widget_list);",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "v6.12-rc7",
+      "commit_sha": "743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch",
+      "timestamp": "2025-06-12T04:03:48.591892",
+      "execution_path": "chunk_analyzer (4/5 chunks)",
+      "adaptation_method": "unknown"
+    }
+  }
+}

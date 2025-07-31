@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>chunk_analyzer 模块评估报告 - 022ab0</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+    h1, h2, h3 { color: #2c3e50; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 20px; }
+    .success { color: #27ae60; }
+    .error { color: #e74c3c; }
+    .info { color: #3498db; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    th { background-color: #f8f9fa; }
+    tr:hover { background-color: #f5f5f5; }
+    pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    .progress-container { width: 100%; background-color: #f1f1f1; border-radius: 5px; }
+    .progress-bar { height: 20px; border-radius: 5px; }
+    .success-bg { background-color: #4CAF50; }
+    .pending-bg { background-color: #2196F3; }
+    .error-bg { background-color: #f44336; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+    .tag-success { background-color: #e8f5e9; color: #2e7d32; }
+    .tag-error { background-color: #ffebee; color: #c62828; }
+    .tag-pending { background-color: #e3f2fd; color: #1565c0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>chunk_analyzer 模块评估报告</h1>
+    
+    <div class="card">
+      <h2>基本信息</h2>
+      <table>
+        <tr>
+          <td width="150"><strong>模块名称</strong></td>
+          <td>chunk_analyzer</td>
+        </tr>
+        <tr>
+          <td><strong>模块类型</strong></td>
+          <td>ModuleType.CHUNK_ANALYZER</td>
+        </tr>
+        <tr>
+          <td><strong>提交SHA</strong></td>
+          <td>022ab0a75c76ab2ea31dfcc5f2cf5501e378d397.patch</td>
+        </tr>
+        <tr>
+          <td><strong>目标版本</strong></td>
+          <td>5.1</td>
+        </tr>
+        <tr>
+          <td><strong>执行时间</strong></td>
+          <td>2025-06-19T16:20:33.143725</td>
+        </tr>
+        <tr>
+          <td><strong>状态</strong></td>
+          <td>
+            <span class="tag tag-success">成功</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输入信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>原始补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/django/django/022ab0/patches/upstream_022ab0.patch</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>代码仓库路径</strong></td>
+                  <td>/home/elpsy/.cache/port-patch/django</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输出信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>状态</strong></td>
+                  <td>成功</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总尝试次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>执行时间</strong></td>
+                  <td>0.680356</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总块数</strong></td>
+                  <td>7</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功应用块数</strong></td>
+                  <td>3</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功率</strong></td>
+                  <td>42.86%</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>剩余补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/django/django/022ab0/chunk_patches/remaining_chunks_20250619_162033.patch</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    
+        <div class="card">
+          <h2>补丁块应用统计</h2>
+          
+          <div class="progress-container">
+            <div class="progress-bar success-bg" style="width: 42%"></div>
+          </div>
+          <p>
+            成功应用 <strong class="success">3</strong> 个块，
+            总共 <strong>7</strong> 个块
+            (成功率: <strong>42.9%</strong>)
+          </p>
+        </div>
+        
+        <div class="card">
+          <h2>补丁内容详情</h2>
+          <div class="tabs">
+            <div class="tab-header">
+              <button class="tab-button active" onclick="openTab(event, 'original-patch')">原始补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'applied-patches')">应用成功的补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'remaining-patch')">未应用成功的补丁</button>
+            </div>
+            
+            <div id="original-patch" class="tab-content" style="display:block;">
+              <h3>原始补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce &lt;42296566+sarahboyce@users.noreply.github.com&gt;
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                            | 17 ++++++++++-------
+ docs/ref/templates/builtins.txt                 | 11 +++++++++++
+ docs/releases/4.2.16.txt                        |  7 ++++++-
+ docs/releases/5.0.9.txt                         |  7 ++++++-
+ docs/releases/5.1.1.txt                         |  7 +++++++
+ .../template_tests/filter_tests/test_urlize.py  |  5 +++++
+ tests/utils_tests/test_html.py                  |  1 +
+ 7 files changed, 46 insertions(+), 9 deletions(-)
+
+diff --git a/django/utils/html.py b/django/utils/html.py
+index e5ad5646fa77..d9513fc75848 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -428,14 +428,17 @@ def trim_punctuation(self, word):
+                 potential_entity = middle[amp:]
+                 escaped = html.unescape(potential_entity)
+                 if escaped == potential_entity or escaped.endswith(";"):
+-                    rstripped = middle.rstrip(";")
+-                    amount_stripped = len(middle) - len(rstripped)
+-                    if amp &gt; -1 and amount_stripped &gt; 1:
+-                        # Leave a trailing semicolon as might be an entity.
+-                        trail = middle[len(rstripped) + 1 :] + trail
+-                        middle = rstripped + ";"
++                    rstripped = middle.rstrip(self.trailing_punctuation_chars)
++                    trail_start = len(rstripped)
++                    amount_trailing_semicolons = len(middle) - len(middle.rstrip(";"))
++                    if amp &gt; -1 and amount_trailing_semicolons &gt; 1:
++                        # Leave up to most recent semicolon as might be an entity.
++                        recent_semicolon = middle[trail_start:].index(";")
++                        middle_semicolon_index = recent_semicolon + trail_start + 1
++                        trail = middle[middle_semicolon_index:] + trail
++                        middle = rstripped + middle[trail_start:middle_semicolon_index]
+                     else:
+-                        trail = middle[len(rstripped) :] + trail
++                        trail = middle[trail_start:] + trail
+                         middle = rstripped
+                     trimmed_something = True
+ 
+diff --git a/docs/ref/templates/builtins.txt b/docs/ref/templates/builtins.txt
+index 3e2d63800a66..86841b3dbd38 100644
+--- a/docs/ref/templates/builtins.txt
++++ b/docs/ref/templates/builtins.txt
+@@ -2932,6 +2932,17 @@ Django's built-in :tfilter:`escape` filter. The default value for
+     email addresses that contain single quotes (``'``), things won't work as
+     expected. Apply this filter only to plain text.
+ 
++.. warning::
++
++    Using ``urlize`` or ``urlizetrunc`` can incur a performance penalty, which
++    can become severe when applied to user controlled values such as content
++    stored in a :class:`~django.db.models.TextField`. You can use
++    :tfilter:`truncatechars` to add a limit to such inputs:
++
++    .. code-block:: html+django
++
++        {{ value|truncatechars:500|urlize }}
++
+ .. templatefilter:: urlizetrunc
+ 
+ ``urlizetrunc``
+diff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt
+index 985300438608..2a84186867c5 100644
+--- a/docs/releases/4.2.16.txt
++++ b/docs/releases/4.2.16.txt
+@@ -7,4 +7,9 @@ Django 4.2.16 release notes
+ Django 4.2.16 fixes one security issue with severity "moderate" and one
+ security issue with severity "low" in 4.2.15.
+ 
+-...
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
+diff --git a/docs/releases/5.0.9.txt b/docs/releases/5.0.9.txt
+index eb3dbe832d8d..50e94ea3f2ec 100644
+--- a/docs/releases/5.0.9.txt
++++ b/docs/releases/5.0.9.txt
+@@ -7,4 +7,9 @@ Django 5.0.9 release notes
+ Django 5.0.9 fixes one security issue with severity "moderate" and one security
+ issue with severity "low" in 5.0.8.
+ 
+-...
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
+diff --git a/docs/releases/5.1.1.txt b/docs/releases/5.1.1.txt
+index 743f2753a8e7..dd249291004d 100644
+--- a/docs/releases/5.1.1.txt
++++ b/docs/releases/5.1.1.txt
+@@ -7,6 +7,13 @@ Django 5.1.1 release notes
+ Django 5.1.1 fixes one security issue with severity "moderate", one security
+ issue with severity "low", and several bugs in 5.1.
+ 
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
++
+ Bugfixes
+ ========
+ 
+diff --git a/tests/template_tests/filter_tests/test_urlize.py b/tests/template_tests/filter_tests/test_urlize.py
+index c19103859ebe..546bd6c7d615 100644
+--- a/tests/template_tests/filter_tests/test_urlize.py
++++ b/tests/template_tests/filter_tests/test_urlize.py
+@@ -321,6 +321,11 @@ def test_trailing_semicolon(self):
+             '&lt;a href="http://example.com?x=" rel="nofollow"&gt;'
+             "http://example.com?x=&amp;&lt;/a&gt;;;",
+         )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp.;...;", autoescape=False),
++            '&lt;a href="http://example.com?x=" rel="nofollow"&gt;'
++            "http://example.com?x=&amp&lt;/a&gt;.;...;",
++        )
+ 
+     def test_brackets(self):
+         """
+diff --git a/tests/utils_tests/test_html.py b/tests/utils_tests/test_html.py
+index 10ba621dd5fc..9bee483dc7ff 100644
+--- a/tests/utils_tests/test_html.py
++++ b/tests/utils_tests/test_html.py
+@@ -375,6 +375,7 @@ def test_urlize_unchanged_inputs(self):
+             "&:" + ";" * 100_000,
+             "&.;" * 100_000,
+             ".;" * 100_000,
++            "&" + ";:" * 100_000,
+         )
+         for value in tests:
+             with self.subTest(value=value):
+</pre>
+              </div>
+            </div>
+            
+            <div id="applied-patches" class="tab-content">
+              <h3>应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">
+
+# ===== 应用成功的补丁块 1 =====
+
+From 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce &lt;42296566+sarahboyce@users.noreply.github.com&gt;
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                            | 17 ++++++++++-------
+ docs/ref/templates/builtins.txt                 | 11 +++++++++++
+ docs/releases/4.2.16.txt                        |  7 ++++++-
+ docs/releases/5.0.9.txt                         |  7 ++++++-
+ docs/releases/5.1.1.txt                         |  7 +++++++
+ .../template_tests/filter_tests/test_urlize.py  |  5 +++++
+ tests/utils_tests/test_html.py                  |  1 +
+ 7 files changed, 46 insertions(+), 9 deletions(-)
+
+diff --git a/django/utils/html.py b/django/utils/html.py
+index e5ad5646fa77..d9513fc75848 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -428,14 +428,17 @@ def trim_punctuation(self, word):
+                 potential_entity = middle[amp:]
+                 escaped = html.unescape(potential_entity)
+                 if escaped == potential_entity or escaped.endswith(";"):
+-                    rstripped = middle.rstrip(";")
+-                    amount_stripped = len(middle) - len(rstripped)
+-                    if amp &gt; -1 and amount_stripped &gt; 1:
+-                        # Leave a trailing semicolon as might be an entity.
+-                        trail = middle[len(rstripped) + 1 :] + trail
+-                        middle = rstripped + ";"
++                    rstripped = middle.rstrip(self.trailing_punctuation_chars)
++                    trail_start = len(rstripped)
++                    amount_trailing_semicolons = len(middle) - len(middle.rstrip(";"))
++                    if amp &gt; -1 and amount_trailing_semicolons &gt; 1:
++                        # Leave up to most recent semicolon as might be an entity.
++                        recent_semicolon = middle[trail_start:].index(";")
++                        middle_semicolon_index = recent_semicolon + trail_start + 1
++                        trail = middle[middle_semicolon_index:] + trail
++                        middle = rstripped + middle[trail_start:middle_semicolon_index]
+                     else:
+-                        trail = middle[len(rstripped) :] + trail
++                        trail = middle[trail_start:] + trail
+                         middle = rstripped
+                     trimmed_something = True
+ 
+
+
+# ===== 应用成功的补丁块 2 =====
+
+From 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce &lt;42296566+sarahboyce@users.noreply.github.com&gt;
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                            | 17 ++++++++++-------
+ docs/ref/templates/builtins.txt                 | 11 +++++++++++
+ docs/releases/4.2.16.txt                        |  7 ++++++-
+ docs/releases/5.0.9.txt                         |  7 ++++++-
+ docs/releases/5.1.1.txt                         |  7 +++++++
+ .../template_tests/filter_tests/test_urlize.py  |  5 +++++
+ tests/utils_tests/test_html.py                  |  1 +
+ 7 files changed, 46 insertions(+), 9 deletions(-)
+
+diff --git a/docs/ref/templates/builtins.txt b/docs/ref/templates/builtins.txt
+index 3e2d63800a66..86841b3dbd38 100644
+--- a/docs/ref/templates/builtins.txt
++++ b/docs/ref/templates/builtins.txt
+@@ -2932,6 +2932,17 @@ Django's built-in :tfilter:`escape` filter. The default value for
+     email addresses that contain single quotes (``'``), things won't work as
+     expected. Apply this filter only to plain text.
+ 
++.. warning::
++
++    Using ``urlize`` or ``urlizetrunc`` can incur a performance penalty, which
++    can become severe when applied to user controlled values such as content
++    stored in a :class:`~django.db.models.TextField`. You can use
++    :tfilter:`truncatechars` to add a limit to such inputs:
++
++    .. code-block:: html+django
++
++        {{ value|truncatechars:500|urlize }}
++
+ .. templatefilter:: urlizetrunc
+ 
+ ``urlizetrunc``
+
+
+# ===== 应用成功的补丁块 3 =====
+
+From 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce &lt;42296566+sarahboyce@users.noreply.github.com&gt;
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                            | 17 ++++++++++-------
+ docs/ref/templates/builtins.txt                 | 11 +++++++++++
+ docs/releases/4.2.16.txt                        |  7 ++++++-
+ docs/releases/5.0.9.txt                         |  7 ++++++-
+ docs/releases/5.1.1.txt                         |  7 +++++++
+ .../template_tests/filter_tests/test_urlize.py  |  5 +++++
+ tests/utils_tests/test_html.py                  |  1 +
+ 7 files changed, 46 insertions(+), 9 deletions(-)
+
+diff --git a/tests/utils_tests/test_html.py b/tests/utils_tests/test_html.py
+index 10ba621dd5fc..9bee483dc7ff 100644
+--- a/tests/utils_tests/test_html.py
++++ b/tests/utils_tests/test_html.py
+@@ -375,6 +375,7 @@ def test_urlize_unchanged_inputs(self):
+             "&:" + ";" * 100_000,
+             "&.;" * 100_000,
+             ".;" * 100_000,
++            "&" + ";:" * 100_000,
+         )
+         for value in tests:
+             with self.subTest(value=value):
+</pre>
+              </div>
+            </div>
+            
+            <div id="remaining-patch" class="tab-content">
+              <h3>未应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce &lt;42296566+sarahboyce@users.noreply.github.com&gt;
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                            | 17 ++++++++++-------
+ docs/ref/templates/builtins.txt                 | 11 +++++++++++
+ docs/releases/4.2.16.txt                        |  7 ++++++-
+ docs/releases/5.0.9.txt                         |  7 ++++++-
+ docs/releases/5.1.1.txt                         |  7 +++++++
+ .../template_tests/filter_tests/test_urlize.py  |  5 +++++
+ tests/utils_tests/test_html.py                  |  1 +
+ 7 files changed, 46 insertions(+), 9 deletions(-)
+
+diff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt
+index 985300438608..2a84186867c5 100644
+--- a/docs/releases/4.2.16.txt
++++ b/docs/releases/4.2.16.txt
+@@ -7,4 +7,9 @@ Django 4.2.16 release notes
+ Django 4.2.16 fixes one security issue with severity "moderate" and one
+ security issue with severity "low" in 4.2.15.
+ 
+-...
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
+diff --git a/docs/releases/5.0.9.txt b/docs/releases/5.0.9.txt
+index eb3dbe832d8d..50e94ea3f2ec 100644
+--- a/docs/releases/5.0.9.txt
++++ b/docs/releases/5.0.9.txt
+@@ -7,4 +7,9 @@ Django 5.0.9 release notes
+ Django 5.0.9 fixes one security issue with severity "moderate" and one security
+ issue with severity "low" in 5.0.8.
+ 
+-...
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
+diff --git a/docs/releases/5.1.1.txt b/docs/releases/5.1.1.txt
+index 743f2753a8e7..dd249291004d 100644
+--- a/docs/releases/5.1.1.txt
++++ b/docs/releases/5.1.1.txt
+@@ -7,6 +7,13 @@ Django 5.1.1 release notes
+ Django 5.1.1 fixes one security issue with severity "moderate", one security
+ issue with severity "low", and several bugs in 5.1.
+ 
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
++
+ Bugfixes
+ ========
+ 
+diff --git a/tests/template_tests/filter_tests/test_urlize.py b/tests/template_tests/filter_tests/test_urlize.py
+index c19103859ebe..546bd6c7d615 100644
+--- a/tests/template_tests/filter_tests/test_urlize.py
++++ b/tests/template_tests/filter_tests/test_urlize.py
+@@ -321,6 +321,11 @@ def test_trailing_semicolon(self):
+             '&lt;a href="http://example.com?x=" rel="nofollow"&gt;'
+             "http://example.com?x=&amp;&lt;/a&gt;;;",
+         )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp.;...;", autoescape=False),
++            '&lt;a href="http://example.com?x=" rel="nofollow"&gt;'
++            "http://example.com?x=&amp&lt;/a&gt;.;...;",
++        )
+ 
+     def test_brackets(self):
+         """
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+                <div class="card">
+                  <h2>应用成功的补丁块</h2>
+                  <table>
+                    <tr>
+                      <th>块索引</th>
+                      <th>修改文件</th>
+                      <th>修改位置</th>
+                      <th>操作</th>
+                    </tr>
+                    
+                    <tr>
+                      <td>1</td>
+                      <td>django/utils/html.py</td>
+                      <td>428-428</td>
+                      <td><a href="applied_chunk_1.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>2</td>
+                      <td>docs/ref/templates/builtins.txt</td>
+                      <td>2932-2932</td>
+                      <td><a href="applied_chunk_2.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>3</td>
+                      <td>tests/utils_tests/test_html.py</td>
+                      <td>375-375</td>
+                      <td><a href="applied_chunk_3.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+                  </table>
+                </div>
+                
+            <div class="card">
+              <h2>剩余补丁</h2>
+              <p>有 <strong class="info">4</strong> 个块未成功应用，已生成剩余补丁:</p>
+              <p><code>/home/elpsy/workspace/sow/patch-backport/workspace/django/django/022ab0/chunk_patches/remaining_chunks_20250619_162033.patch</code></p>
+              <p><a href="remaining_patch.diff" target="_blank">查看剩余补丁</a></p>
+            </div>
+            
+        <style>
+        .code-container {
+          max-height: 500px;
+          overflow-y: auto;
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          border: 1px solid #eee;
+        }
+        
+        .code-block {
+          padding: 15px;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: monospace;
+          font-size: 13px;
+          line-height: 1.4;
+        }
+        
+        /* 为补丁内容添加语法高亮 */
+        .code-block .add {
+          background-color: #e6ffed;
+          color: #22863a;
+        }
+        
+        .code-block .remove {
+          background-color: #ffeef0;
+          color: #cb2431;
+        }
+        
+        .code-block .hunk {
+          color: #0366d6;
+          background-color: #f1f8ff;
+        }
+        
+        .code-block .header {
+          color: #6f42c1;
+          font-weight: bold;
+        }
+        </style>
+        
+        <script>
+        // 对补丁内容应用简单的语法高亮
+        document.addEventListener('DOMContentLoaded', function() {
+          const codeBlocks = document.querySelectorAll('.code-block');
+          codeBlocks.forEach(function(block) {
+            let html = block.innerHTML;
+            
+            // 替换添加的行
+            html = html.replace(/^(\+[^+].*)/gm, '<span class="add">$1</span>');
+            
+            // 替换删除的行
+            html = html.replace(/^(-[^-].*)/gm, '<span class="remove">$1</span>');
+            
+            // 替换区块头
+            html = html.replace(/^(@@.*@@)/gm, '<span class="hunk">$1</span>');
+            
+            // 替换diff头 - 修复无效转义序列
+            html = html.replace(/^(diff --git.*|index.*|---.*|\+\+\+.*)/gm, '<span class="header">$1</span>');
+            
+            block.innerHTML = html;
+          });
+        });
+        </script>
+        
+    
+  </div>
+</body>
+</html>

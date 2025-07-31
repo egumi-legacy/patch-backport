@@ -1,0 +1,40 @@
+From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia <124304+nessita@users.noreply.github.com>
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia <124304+nessita@users.noreply.github.com>
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/docs/releases/4.2.18.txt b/docs/releases/4.2.18.txt
+index ae0c4e3334fb..fef91d9150bf 100644
+--- a/docs/releases/4.2.18.txt
++++ b/docs/releases/4.2.18.txt
+@@ -5,3 +5,15 @@ Django 4.2.18 release notes
+ *January 14, 2025*
+ 
+ Django 4.2.18 fixes a security issue with severity "moderate" in 4.2.17.
++
++CVE-2024-56374: Potential denial-of-service vulnerability in IPv6 validation
++============================================================================
++
++Lack of upper bound limit enforcement in strings passed when performing IPv6
++validation could lead to a potential denial-of-service attack. The undocumented
++and private functions ``clean_ipv6_address`` and ``is_valid_ipv6_address`` were
++vulnerable, as was the  :class:`django.forms.GenericIPAddressField` form field,
++which has now been updated to define a ``max_length`` of 39 characters.
++
++The :class:`django.db.models.GenericIPAddressField` model field was not
++affected.

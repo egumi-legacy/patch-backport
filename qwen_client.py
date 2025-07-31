@@ -13,7 +13,7 @@ class QWen_Client:
     }
     def __init__(self, api_key, base_url):
         self.api_key = api_key
-        self.base_url = base_url
+        self.base_url = base_url or 'https://dashscope.aliyuncs.com/compatible-mode/v1'
         self.client = OpenAI(
             base_url=base_url,
             api_key=api_key,

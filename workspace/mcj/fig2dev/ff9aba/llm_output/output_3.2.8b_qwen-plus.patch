@@ -1,18 +1,16 @@
 diff --git a/fig2dev/read.c b/fig2dev/read.c
-index 387527b..f643f7e 100644
 --- a/fig2dev/read.c
 +++ b/fig2dev/read.c
-@@ -1159,6 +1159,14 @@ sanitize_lineobject(
- 						l->type - 2,
- 						line_no);
- 				return -1;
-+			}
-+			if (l->type == T_ARC_BOX && l->radius == 0) {
-+				put_msg("A %s, but zero corner radius "
-+						"at line %d - convert "
-+						"to a rectangle.",
-+						obj_name[l->type - 2],
-+						line_no);
-+				l->type = T_BOX;
+@@ -1038,6 +1038,12 @@ sanitize_lineobject(
+ 				"line %d.",
+ 				obj_name[l->type - 2],
+ 				line_no);
++				if (l->type == T_ARC_BOX && l->radius == 0) {
++					put_msg("A %s, but zero corner radius "
++							"at line %d - convert "
++							"to a rectangle.",
++							obj_name[l->type - 2],
++							line_no);
+ 					l->type = T_BOX;
+ 				}
  			}
- 		} else { /* T_BOX || T_POLYGON */

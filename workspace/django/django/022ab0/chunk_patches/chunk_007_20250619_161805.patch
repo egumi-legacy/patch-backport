@@ -1,0 +1,29 @@
+From 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                            | 17 ++++++++++-------
+ docs/ref/templates/builtins.txt                 | 11 +++++++++++
+ docs/releases/4.2.16.txt                        |  7 ++++++-
+ docs/releases/5.0.9.txt                         |  7 ++++++-
+ docs/releases/5.1.1.txt                         |  7 +++++++
+ .../template_tests/filter_tests/test_urlize.py  |  5 +++++
+ tests/utils_tests/test_html.py                  |  1 +
+ 7 files changed, 46 insertions(+), 9 deletions(-)
+
+diff --git a/tests/utils_tests/test_html.py b/tests/utils_tests/test_html.py
+index 10ba621dd5fc..9bee483dc7ff 100644
+--- a/tests/utils_tests/test_html.py
++++ b/tests/utils_tests/test_html.py
+@@ -375,6 +375,7 @@ def test_urlize_unchanged_inputs(self):
+             "&:" + ";" * 100_000,
+             "&.;" * 100_000,
+             ".;" * 100_000,
++            "&" + ";:" * 100_000,
+         )
+         for value in tests:
+             with self.subTest(value=value):

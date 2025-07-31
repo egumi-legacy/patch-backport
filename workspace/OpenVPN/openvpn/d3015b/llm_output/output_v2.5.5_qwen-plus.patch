@@ -1,0 +1,9 @@
+Allow tls-crypt-v2 setup only on the initial packet of a session
+
+This fixes an internal server error condition that can be triggered by a
+malicious authenticated client, unlucky packet corruption, or an attacker
+injecting a specially crafted packet at the right time.
+
+The error condition results in an ASSERT statement being triggered.
+
+CVE: 2025-2704

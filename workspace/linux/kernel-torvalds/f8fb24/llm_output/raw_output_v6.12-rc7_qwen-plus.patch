@@ -1,0 +1,235 @@
+A. Commit message:
+```
+scsi: ufs: core: Backport fix for use-after-free in init error and remove paths
+
+This patch backports the fix to prevent a use-after-free situation during driver initialization or removal by managing resources more carefully using devres. The ufshcd_dealloc_host() function is removed, and its functionality is replaced with devm_add_action_or_reset(). This ensures that all allocated resources are cleaned up automatically when the device is released.
+```
+
+B. Change summary:
+- Removed `ufshcd_dealloc_host()` function as it is no longer needed.
+- Added `ufshcd_devres_release()` function to handle `scsi_host_put()` during resource cleanup.
+- Modified `ufshcd_alloc_host()` to register `ufshcd_devres_release()` using `devm_add_action_or_reset()`.
+- Adjusted error handling paths in `ufshcd_pltfrm_init()` to return errors directly instead of calling `ufshcd_dealloc_host()`.
+- Removed calls to `ufshcd_dealloc_host()` in `ufshcd_pltfrm_remove()`.
+
+C. Compatibility Risk:
+Medium - The changes involve restructuring resource management and removing a function (`ufshcd_dealloc_host()`). These changes could potentially affect drivers relying on the old behavior, but the new approach ensures proper cleanup and avoids use-after-free issues.
+
+D. Fixed Code:
+```diff
+diff --git a/drivers/ufs/host/ufshcd-pltfrm.c b/drivers/ufs/host/ufshcd-pltfrm.c
+--- a/drivers/ufs/host/ufshcd-pltfrm.c
++++ b/drivers/ufs/host/ufshcd-pltfrm.c
+@@ -452,75 +452,66 @@ EXPORT_SYMBOL_GPL(ufshcd_init_host_params);
+ /**
+  * ufshcd_pltfrm_init - probe routine of the driver
+  * @pdev: pointer to Platform device handle
+  * @vops: pointer to variant ops
+  *
+  * Return: 0 on success, non-zero value on failure.
+  */
+ int ufshcd_pltfrm_init(struct platform_device *pdev,
+ 		       const struct ufs_hba_variant_ops *vops)
+ {
+ 	struct ufs_hba *hba;
+ 	void __iomem *mmio_base;
+ 	int irq, err;
+ 	struct device *dev = &pdev->dev;
+ 
+ 	mmio_base = devm_platform_ioremap_resource(pdev, 0);
+-	if (IS_ERR(mmio_base)) {
+-		err = PTR_ERR(mmio_base);
+-		goto out;
+-	}
++	if (IS_ERR(mmio_base))
++		return PTR_ERR(mmio_base);
+ 
+ 	irq = platform_get_irq(pdev, 0);
+-	if (irq < 0) {
+-		err = irq;
+-		goto out;
+-	}
++	if (irq < 0)
++		return irq;
+ 
+ 	err = ufshcd_alloc_host(dev, &hba);
+ 	if (err) {
+ 		dev_err(dev, "Allocation failed\n");
+-		goto out;
++		return err;
+ 	}
+ 
+ 	hba->vops = vops;
+ 
+ 	err = ufshcd_parse_clock_info(hba);
+ 	if (err) {
+ 		dev_err(dev, "%s: clock parse failed %d\n",
+ 				__func__, err);
+-		goto dealloc_host;
++		return err;
+ 	}
+ 	err = ufshcd_parse_regulator_info(hba);
+ 	if (err) {
+ 		dev_err(dev, "%s: regulator init failed %d\n",
+ 				__func__, err);
+-		goto dealloc_host;
++		return err;
+ 	}
+ 
+ 	ufshcd_init_lanes_per_dir(hba);
+ 
+ 	err = ufshcd_parse_operating_points(hba);
+ 	if (err) {
+ 		dev_err(dev, "%s: OPP parse failed %d\n", __func__, err);
+-		goto dealloc_host;
++		return err;
+ 	}
+ 
+ 	err = ufshcd_init(hba, mmio_base, irq);
+ 	if (err) {
+ 		dev_err_probe(dev, err, "Initialization failed with error %d\n",
+ 			      err);
+-		goto dealloc_host;
++		return err;
+ 	}
+ 
+ 	pm_runtime_set_active(dev);
+ 	pm_runtime_enable(dev);
+ 
+ 	return 0;
+-
+-dealloc_host:
+-	ufshcd_dealloc_host(hba);
+-out:
+-	return err;
+ }
+ EXPORT_SYMBOL_GPL(ufshcd_pltfrm_init);
+ 
+@@ -527,14 +518,13 @@ EXPORT_SYMBOL_GPL(ufshcd_pltfrm_init);
+ /**
+  * ufshcd_pltfrm_remove - Remove ufshcd platform
+  * @pdev: pointer to Platform device handle
+  */
+ void ufshcd_pltfrm_remove(struct platform_device *pdev)
+ {
+ 	struct ufs_hba *hba =  platform_get_drvdata(pdev);
+ 
+ 	pm_runtime_get_sync(&pdev->dev);
+ 	ufshcd_remove(hba);
+-	ufshcd_dealloc_host(hba);
+ 	pm_runtime_disable(&pdev->dev);
+ 	pm_runtime_put_noidle(&pdev->dev);
+ }
+diff --git a/include/ufs/ufshcd.h b/include/ufs/ufshcd.h
+--- a/include/ufs/ufshcd.h
++++ b/include/ufs/ufshcd.h
+@@ -1309,7 +1309,6 @@ static inline void ufshcd_rmwl(struct ufs_hba *hba, u32 mask, u32 val, u32 reg)
+ void ufshcd_enable_irq(struct ufs_hba *hba);
+ void ufshcd_disable_irq(struct ufs_hba *hba);
+ int ufshcd_alloc_host(struct device *, struct ufs_hba **);
+-void ufshcd_dealloc_host(struct ufs_hba *);
+ int ufshcd_hba_enable(struct ufs_hba *hba);
+ int ufshcd_init(struct ufs_hba *, void __iomem *, unsigned int);
+ int ufshcd_link_recovery(struct ufs_hba *hba);
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -10223,76 +10223,87 @@ int ufshcd_system_thaw(struct device *dev)
+ {
+ 	return ufshcd_system_resume(dev);
+ }
+ EXPORT_SYMBOL_GPL(ufshcd_system_thaw);
+ #endif /* CONFIG_PM_SLEEP  */
+ 
+-/**
+- * ufshcd_dealloc_host - deallocate Host Bus Adapter (HBA)
+- * @hba: pointer to Host Bus Adapter (HBA)
+- */
+-void ufshcd_dealloc_host(struct ufs_hba *hba)
+-{
+-	scsi_host_put(hba->host);
+-}
+-EXPORT_SYMBOL_GPL(ufshcd_dealloc_host);
+-
+ /**
+  * ufshcd_set_dma_mask - Set dma mask based on the controller
+  *			 addressing capability
+  * @hba: per adapter instance
+  *
+  * Return: 0 for success, non-zero for failure.
+  */
+ static int ufshcd_set_dma_mask(struct ufs_hba *hba)
+ {
+ 	if (hba->vops && hba->vops->set_dma_mask)
+ 		return hba->vops->set_dma_mask(hba);
+ 	if (hba->capabilities & MASK_64_ADDRESSING_SUPPORT) {
+ 		if (!dma_set_mask_and_coherent(hba->dev, DMA_BIT_MASK(64)))
+ 			return 0;
+ 	}
+ 	return dma_set_mask_and_coherent(hba->dev, DMA_BIT_MASK(32));
+ }
+ 
++/**
++ * ufshcd_devres_release - devres cleanup handler, invoked during release of
++ *			   hba->dev
++ * @host: pointer to SCSI host
++ */
++static void ufshcd_devres_release(void *host)
++{
++	scsi_host_put(host);
++}
++
+ /**
+  * ufshcd_alloc_host - allocate Host Bus Adapter (HBA)
+  * @dev: pointer to device handle
+  * @hba_handle: driver private handle
+  *
+  * Return: 0 on success, non-zero value on failure.
++ *
++ * NOTE: There is no corresponding ufshcd_dealloc_host() because this function
++ * keeps track of its allocations using devres and deallocates everything on
++ * device removal automatically.
+  */
+ int ufshcd_alloc_host(struct device *dev, struct ufs_hba **hba_handle)
+ {
+ 	struct Scsi_Host *host;
+ 	struct ufs_hba *hba;
+ 	int err = 0;
+ 
+ 	if (!dev) {
+ 		dev_err(dev,
+ 		"Invalid memory reference for dev is NULL\n");
+ 		err = -ENODEV;
+ 		goto out_error;
+ 	}
+ 
+ 	host = scsi_host_alloc(&ufshcd_driver_template,
+ 				sizeof(struct ufs_hba));
+ 	if (!host) {
+ 		dev_err(dev, "scsi_host_alloc failed\n");
+ 		err = -ENOMEM;
+ 		goto out_error;
+ 	}
++
++	err = devm_add_action_or_reset(dev, ufshcd_devres_release,
++				       host);
++	if (err)
++		return dev_err_probe(dev, err,
++				     "failed to add ufshcd dealloc action\n");
++
+ 	host->nr_maps = HCTX_TYPE_POLL + 1;
+ 	hba = shost_priv(host);
+ 	hba->host = host;
+ 	hba->dev = dev;
+ 	hba->dev_ref_clk_freq = REF_CLK_FREQ_INVAL;
+ 	hba->nop_out_timeout = NOP_OUT_TIMEOUT;
+ 	ufshcd_set_sg_entry_size(hba, sizeof(struct ufshcd_sg_entry));
+ 	INIT_LIST_HEAD(&hba->clk_list_head);
+ 	spin_lock_init(&hba->outstanding_lock);
+ 
+ 	*hba_handle = hba;
+ 
+ out_error:
+ 	return err;
+ }
+```

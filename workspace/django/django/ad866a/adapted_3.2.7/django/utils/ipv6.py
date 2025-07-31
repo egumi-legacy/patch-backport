@@ -23,11 +23,15 @@ def clean_ipv6_address(ip_str, unpack_ipv4=False,
     Return a compressed IPv6 address or the same value.
     """
     try:
-        addr = _ipv6_address_from_str(ip_str, max_length)
+        addr = ipaddress.IPv6Address(int(ipaddress.IPv6Address(ip_str)))
     except ValueError:
         raise ValidationError(error_message, code='invalid')
 
     if unpack_ipv4 and addr.ipv4_mapped:
+        if len(addr.exploded) > MAX_IPV6_ADDRESS_LENGTH:
+            raise ValueError(
+                f"Unable to convert {ip_str} to an IPv6 address (value too long)."
+            )
         return str(addr.ipv4_mapped)
     elif addr.ipv4_mapped:
         return '::ffff:%s' % str(addr.ipv4_mapped)

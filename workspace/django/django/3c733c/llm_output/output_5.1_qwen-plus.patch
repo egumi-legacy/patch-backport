@@ -1,0 +1,5 @@
+[3.2.x] Backported fix for CVE-2024-45231 -- Avoided server error on password reset when email sending fails.
+
+On successful submission of a password reset request, an email is sent to the accounts known to the system. If sending this email fails (due to email backend misconfiguration, service provider outage, network issues, etc.), an attacker might exploit this by detecting which password reset requests succeed and which ones generate a 500 error response.
+
+This patch ensures that exceptions during email sending are caught and logged instead of propagating to the user. Logging is done using the Python `logging` module without introducing new dependencies or APIs not present in Django 3.2.x.

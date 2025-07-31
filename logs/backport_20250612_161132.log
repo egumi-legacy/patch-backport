@@ -1,0 +1,57 @@
+2025-06-12 16:11:32.154 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_161132.log
+2025-06-12 16:11:32.155 | INFO     | __main__:process_multiple_commits:1842 - 处理第 1/3 个commit: abc7b3f1f056d69a8f11d6dceecc0c9549ace770
+2025-06-12 16:11:32.159 | INFO     | __main__:extract_commit_info:1990 - Commit abc7b3f1f056d69a8f11d6dceecc0c9549ace770 存在于仓库中
+2025-06-12 16:11:32.178 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_161132.log
+2025-06-12 16:11:32.178 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-12 16:11:32.178 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-torvalds/commit/abc7b3f1f056d69a8f11d6dceecc0c9549ace770.patch
+2025-06-12 16:11:32.179 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-12 16:11:32.179 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-12 16:11:32.181 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-12 16:11:32.181 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-12 16:11:32.181 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.12-rc7']
+2025-06-12 16:11:32.182 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.12-rc7
+2025-06-12 16:11:32.182 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: abc7b3f1f056d69a8f11d6dceecc0c9549ace770.patch
+2025-06-12 16:11:32.182 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-12 16:11:32.183 | INFO     | modules.direct_apply:_download_patch:245 - 上游补丁文件不存在，下载补丁
+2025-06-12 16:11:32.184 | INFO     | patch_utils:_download_github_patch:232 - GitHub patch URL parts: ['https:', '', 'github.com', 'linux', 'kernel-torvalds', 'commit', 'abc7b3f1f056d69a8f11d6dceecc0c9549ace770.patch']
+2025-06-12 16:11:32.185 | INFO     | patch_utils:_download_github_patch:240 - 使用GitHub Commit API下载patch: https://api.github.com/repos/linux/kernel-torvalds/commits/abc7b3f1f056d69a8f11d6dceecc0c9549ace770
+2025-06-12 16:11:32.913 | ERROR    | patch_utils:_download_github_patch:260 - 使用GitHub API下载patch失败: 404 Client Error: Not Found for url: https://api.github.com/repos/linux/kernel-torvalds/commits/abc7b3f1f056d69a8f11d6dceecc0c9549ace770
+2025-06-12 16:11:32.913 | INFO     | patch_utils:_download_direct_patch:396 - 直接下载补丁文件: https://github.com/linux/kernel-torvalds/commit/abc7b3f1f056d69a8f11d6dceecc0c9549ace770.patch
+2025-06-12 16:11:44.604 | ERROR    | patch_utils:_download_direct_patch:427 - 直接下载patch失败: Exceeded 30 redirects.
+2025-06-12 16:11:44.605 | WARNING  | modules.direct_apply:_download_patch:258 - 补丁下载出错: 无法下载补丁: https://github.com/linux/kernel-torvalds/commit/abc7b3f1f056d69a8f11d6dceecc0c9549ace770.patch - Exceeded 30 redirects.
+2025-06-12 16:11:44.606 | INFO     | modules.direct_apply:_download_patch:261 - 尝试从本地仓库生成补丁
+2025-06-12 16:11:44.607 | INFO     | patch_utils:generate_patch_from_git:452 - 尝试从本地仓库生成补丁: abc7b3f1f056d69a8f11d6dceecc0c9549ace770.patch
+2025-06-12 16:11:44.625 | INFO     | patch_utils:generate_patch_from_git:483 - 成功从本地仓库生成补丁: workspace/linux/kernel-torvalds/abc7b3/patches/upstream_abc7b3.patch
+2025-06-12 16:11:44.625 | INFO     | modules.direct_apply:_download_patch:269 - 成功从本地仓库生成补丁: workspace/linux/kernel-torvalds/abc7b3/patches/upstream_abc7b3.patch
+2025-06-12 16:11:44.626 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-12 16:11:44.626 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/abc7b3/patches/upstream_abc7b3.patch
+2025-06-12 16:11:44.784 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_v6.12-rc7
+2025-06-12 16:11:45.453 | INFO     | modules.direct_apply:_apply_patch:311 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/abc7b3/patches/upstream_abc7b3.patch
+2025-06-12 16:11:45.498 | INFO     | modules.direct_apply:_move_to_cache:131 - 源目录: workspace/linux/kernel-torvalds/abc7b3
+2025-06-12 16:11:45.498 | INFO     | modules.direct_apply:_move_to_cache:139 - 目标目录: workspace/linux/kernel-torvalds_cache
+2025-06-12 16:11:45.499 | INFO     | modules.direct_apply:_move_to_cache:150 - 已将成功的commit文件夹移动到缓存: workspace/linux/kernel-torvalds_cache
+2025-06-12 16:11:45.651 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_v6.12-rc7
+2025-06-12 16:11:45.653 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-torvalds/abc7b3/evaluations/direct_apply/metrics_abc7b3_20250612_161145.json
+2025-06-12 16:11:45.653 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: ChunkAnalyzerModule
+2025-06-12 16:11:45.654 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-06-12 16:11:45.654 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-06-12 16:11:45.654 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 13.47秒
+2025-06-12 16:11:45.654 | INFO     | __main__:_merge_patches:1087 - 开始合并补丁...
+2025-06-12 16:11:45.654 | WARNING  | __main__:_merge_patches:1095 - 没有找到任何可合并的补丁结果
+2025-06-12 16:11:45.655 | ERROR    | __main__:_save_results:758 - 复制补丁文件时出错: [Errno 2] No such file or directory: '/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/abc7b3/patches/upstream_abc7b3.patch'
+2025-06-12 16:11:45.656 | INFO     | __main__:_save_results:889 - 结果已保存到: results/kernel-torvalds_v6.12-rc7_abc7b3_20250612_161145/result.json
+2025-06-12 16:11:45.656 | INFO     | __main__:_print_summary:931 - context.patch_adapter_result: []
+2025-06-12 16:11:45.656 | INFO     | __main__:_print_summary:954 - ==================================================
+2025-06-12 16:11:45.657 | INFO     | __main__:_print_summary:955 - 处理摘要 - 提交: abc7b3
+2025-06-12 16:11:45.657 | INFO     | __main__:_print_summary:956 - 适配状态: 无需适配 (直接应用成功) (方法: direct_apply)
+2025-06-12 16:11:45.657 | INFO     | __main__:_print_summary:971 - 块分析统计:
+2025-06-12 16:11:45.658 | INFO     | __main__:_print_summary:972 - - 总块数: 0
+2025-06-12 16:11:45.658 | INFO     | __main__:_print_summary:973 - - 冲突块数: 0
+2025-06-12 16:11:45.658 | INFO     | __main__:_print_summary:974 - - 成功适配块数: 0
+2025-06-12 16:11:45.658 | INFO     | __main__:_print_summary:975 - - 适配失败块数: 0
+2025-06-12 16:11:45.659 | INFO     | __main__:_print_summary:976 - - 编译失败块数: 0
+2025-06-12 16:11:45.659 | INFO     | __main__:_print_summary:980 - 总执行时间: 13.47秒
+2025-06-12 16:11:45.659 | INFO     | __main__:_print_summary:985 - ==================================================
+2025-06-12 16:11:45.659 | INFO     | __main__:run:335 - 处理完成
+2025-06-12 16:11:45.660 | INFO     | __main__:process_multiple_commits:1842 - 处理第 2/3 个commit: 1b8b67f3c5e5169535e26efedd3e422172e2db64
+2025-06-12 16:11:45.664 | INFO     | __main__:extract_commit_info:1990 - Commit 1b8b67f3c5e5169535e26efedd3e422172e2db64 存在于仓库中

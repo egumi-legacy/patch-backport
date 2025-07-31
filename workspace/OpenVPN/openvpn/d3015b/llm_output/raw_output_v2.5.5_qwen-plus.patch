@@ -1,0 +1,205 @@
+A. Commit message:
+```
+Allow tls-crypt-v2 setup only on the initial packet of a session
+
+This fixes an internal server error condition that can be triggered by a
+malicious authenticated client, unlucky packet corruption, or an attacker
+injecting a specially crafted packet at the right time.
+
+The error condition results in an ASSERT statement being triggered.
+
+CVE: 2025-2704
+```
+
+B. Change summary:
+```
+- Added S_PRE_START_SKIP state to allow deferred processing of initial packets
+- Modified read_control_auth to accept an additional 'initial_packet' parameter
+- Updated tls_crypt_v2_extract_client_key to ignore wrapped keys if not an initial packet
+- Adjusted state transitions in tls_pre_decrypt to account for S_PRE_START_SKIP
+- Ensured proper handling of initial packets in tls_pre_decrypt_lite
+```
+
+C. Compatibility Risk:
+Medium
+
+D. Fixed Code:
+```diff
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -841,6 +841,9 @@ static const char *
+ state_name(int state)
+ {
+     switch (state)
+     {
++        case S_PRE_START_SKIP:
++            return "S_PRE_START_SKIP";
++
+         case S_INITIAL:
+             return "S_INITIAL";
+ 
+@@ -2577,7 +2580,7 @@ session_move_pre_start(const struct tls_session *session,
+                        struct key_state *ks, bool skip_initial_send)
+ {
+     // ...
+-    ks->state = S_PRE_START;
++    ks->state = skip_initial_send ? S_PRE_START_SKIP : S_PRE_START;
+     // ...
+ }
+ 
+@@ -3659,7 +3662,7 @@ tls_pre_decrypt(struct tls_multi *multi,
+                 const struct link_socket_actual *from,
+                 struct buffer *buf,
+                 struct crypto_options **opt,
+-                bool floated)
++                bool floated, const uint8_t **ad_start)
+ {
+     // ...
+ 
+@@ -3717,7 +3720,7 @@ tls_pre_decrypt(struct tls_multi *multi,
+                 "TLS Error: unknown opcode received from %s op=%d",
+                 print_link_socket_actual(from, &gc), op);
+         goto error;
+     }
+ 
+-    /* hard reset ? */
++    /* Hard reset or initial packet? */
+     if (is_hard_reset_method2(op))
+     {
+         // ...
+@@ -3745,7 +3748,13 @@ tls_pre_decrypt(struct tls_multi *multi,
+         {
+             msg(D_TLS_ERRORS,
+                 "TLS Error: Cannot accept new session request from %s due "
+-                "to session context expire or --single-session",
++                "to session context expire or --single-session",
++                print_link_socket_actual(from, &gc));
++            goto error;
++        }
++
++        if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id), from,
++                               session->opt, true))
+         {
+             goto error;
+         }
+@@ -3825,6 +3834,12 @@ tls_pre_decrypt(struct tls_multi *multi,
+         {
+             reliable_mark_deleted(ks->send_reliable, buf);
+         }
++        INCR_GENERATED;
++        ks->state = skip_initial_send ? S_PRE_START_SKIP : S_PRE_START;
++        // ...
++    } else if (ks->state == S_PRE_START_SKIP) {
++        ks->state = S_PRE_START;
++    }
+ 
+     // ...
+ }
+diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+--- a/src/openvpn/ssl_pkt.c
++++ b/src/openvpn/ssl_pkt.c
+@@ -200,7 +200,8 @@ bool
+ read_control_auth(struct buffer *buf,
+                   struct tls_wrap_ctx *ctx,
+                   const struct link_socket_actual *from,
+-                  const struct tls_options *opt)
++                  const struct tls_options *opt,
++                  bool initial_packet)
+ {
+     // ...
+     if ((opcode == P_CONTROL_HARD_RESET_CLIENT_V3
+@@ -212,6 +213,16 @@ read_control_auth(struct buffer *buf,
+         )
+     {
+         msg(D_TLS_ERRORS,
++            "control channel security already setup ignoring "
++            "wrapped key part of packet.");
++
++        ASSERT(buf_inc_len(buf, -(BLEN(&wrapped_client_key))));
++        return true;
++    }
++
++    if (!initial_packet)
++    {
++        msg(D_TLS_ERRORS,
+             "Can not extract tls-crypt-v2 client key from %s",
+             print_link_socket_actual(from, &gc));
+         goto cleanup;
+@@ -307,7 +318,7 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+                      struct tls_pre_decrypt_state *state,
+                      const struct link_socket_actual *from,
+                      const struct buffer *buf)
+ {
+-    bool status = read_control_auth(&state->newbuf, &state->tls_wrap_tmp, from, NULL);
++    bool status = read_control_auth(&state->newbuf, &state->tls_wrap_tmp, from, NULL, true);
+     // ...
+ }
+ 
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -612,6 +612,14 @@ tls_crypt_v2_extract_client_key(struct buffer *buf,
+                                 struct tls_wrap_ctx *ctx,
+-                                const struct tls_options *opt)
++                                const struct tls_options *opt,
++                                bool initial_packet)
+ {
++    if (!initial_packet)
++    {
++        msg(D_TLS_ERRORS, "Ignoring wrapped key on non-initial packet");
++        ASSERT(buf_inc_len(buf, -(BLEN(&wrapped_client_key))));
++        return true;
++    }
+     // ...
+ }
+ 
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -1,112 +1,115 @@
+ #define S_ERROR          -1     /**< Error state.  */
+ #define S_UNDEF           0     /**< Undefined state */
+-#define S_PRE_START       2     /**< Waiting for acknowledgment */
++#define S_PRE_START_SKIP  2     /**< Deferred acknowledgment */
++#define S_PRE_START       3     /**< Waiting for acknowledgment */
+-#define S_START           3     /**< Handshake complete */
++#define S_START           4     /**< Handshake complete */
+ // ...
+ 
+diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
+--- a/src/openvpn/ssl_pkt.h
++++ b/src/openvpn/ssl_pkt.h
+@@ -201,7 +201,8 @@ void
+ write_control_auth(struct tls_session *session,
+                    struct key_state *ks,
+                    struct buffer *buf,
+                    struct link_socket_actual **to_link_addr,
+-                   int opcode, int max_ack, bool prepend_ack);
++                   int opcode, int max_ack, bool prepend_ack);
++
+ bool
+ read_control_auth(struct buffer *buf,
+                   struct tls_wrap_ctx *ctx,
+                   const struct link_socket_actual *from,
+-                  const struct tls_options *opt);
++                  const struct tls_options *opt,
++                  bool initial_packet);
+ 
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -182,7 +182,8 @@ void tls_crypt_v2_init_client_key(struct key_ctx_bi *key,
+                                   struct buffer *wrapped_key_buf,
+                                   const char *key_file, bool key_inline);
+ 
+ bool tls_crypt_v2_extract_client_key(struct buffer *buf,
+                                      struct tls_wrap_ctx *ctx,
+-                                     const struct tls_options *opt);
++                                     const struct tls_options *opt,
++                                     bool initial_packet);
+ 
+ void tls_crypt_v2_generate_server_key(const char *filename);
+``` 
+
+This backported patch ensures that `tls-crypt-v2` is only set up during the initial packet exchange, avoiding potential errors caused by malformed or resent packets.

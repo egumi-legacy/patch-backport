@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>chunk_analyzer 模块评估报告 - f5e728</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+    h1, h2, h3 { color: #2c3e50; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 20px; }
+    .success { color: #27ae60; }
+    .error { color: #e74c3c; }
+    .info { color: #3498db; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    th { background-color: #f8f9fa; }
+    tr:hover { background-color: #f5f5f5; }
+    pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    .progress-container { width: 100%; background-color: #f1f1f1; border-radius: 5px; }
+    .progress-bar { height: 20px; border-radius: 5px; }
+    .success-bg { background-color: #4CAF50; }
+    .pending-bg { background-color: #2196F3; }
+    .error-bg { background-color: #f44336; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+    .tag-success { background-color: #e8f5e9; color: #2e7d32; }
+    .tag-error { background-color: #ffebee; color: #c62828; }
+    .tag-pending { background-color: #e3f2fd; color: #1565c0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>chunk_analyzer 模块评估报告</h1>
+    
+    <div class="card">
+      <h2>基本信息</h2>
+      <table>
+        <tr>
+          <td width="150"><strong>模块名称</strong></td>
+          <td>chunk_analyzer</td>
+        </tr>
+        <tr>
+          <td><strong>模块类型</strong></td>
+          <td>ModuleType.CHUNK_ANALYZER</td>
+        </tr>
+        <tr>
+          <td><strong>提交SHA</strong></td>
+          <td>f5e728a50bb17336a20803dde488515b833ecd1d.patch</td>
+        </tr>
+        <tr>
+          <td><strong>目标版本</strong></td>
+          <td>v6.12-rc7</td>
+        </tr>
+        <tr>
+          <td><strong>执行时间</strong></td>
+          <td>2025-06-12T15:50:00.583325</td>
+        </tr>
+        <tr>
+          <td><strong>状态</strong></td>
+          <td>
+            <span class="tag tag-success">成功</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输入信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>原始补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f5e728/patches/upstream_f5e728.patch</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>代码仓库路径</strong></td>
+                  <td>/home/elpsy/.cache/port-patch/linux_kernel-torvalds</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输出信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>状态</strong></td>
+                  <td>成功</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总尝试次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>执行时间</strong></td>
+                  <td>0.041029</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总块数</strong></td>
+                  <td>6</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功应用块数</strong></td>
+                  <td>5</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功率</strong></td>
+                  <td>83.33%</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>剩余补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f5e728/chunk_patches/remaining_chunks_20250612_155000.patch</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    
+        <div class="card">
+          <h2>补丁块应用统计</h2>
+          
+          <div class="progress-container">
+            <div class="progress-bar success-bg" style="width: 83%"></div>
+          </div>
+          <p>
+            成功应用 <strong class="success">5</strong> 个块，
+            总共 <strong>6</strong> 个块
+            (成功率: <strong>83.3%</strong>)
+          </p>
+        </div>
+        
+        <div class="card">
+          <h2>补丁内容详情</h2>
+          <div class="tabs">
+            <div class="tab-header">
+              <button class="tab-button active" onclick="openTab(event, 'original-patch')">原始补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'applied-patches')">应用成功的补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'remaining-patch')">未应用成功的补丁</button>
+            </div>
+            
+            <div id="original-patch" class="tab-content" style="display:block;">
+              <h3>原始补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Reviewed-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Tested-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu &lt;wei.liu@kernel.org&gt;
+Message-ID: &lt;1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com&gt;
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -952,7 +952,7 @@ static phys_addr_t hvfb_get_phymem(struct hv_device *hdev,
+ }
+ 
+ /* Release contiguous physical memory */
+-static void hvfb_release_phymem(struct hv_device *hdev,
++static void hvfb_release_phymem(struct device *device,
+ 				phys_addr_t paddr, unsigned int size)
+ {
+ 	unsigned int order = get_order(size);
+@@ -960,7 +960,7 @@ static void hvfb_release_phymem(struct hv_device *hdev,
+ 	if (order &lt;= MAX_PAGE_ORDER)
+ 		__free_pages(pfn_to_page(paddr &gt;&gt; PAGE_SHIFT), order);
+ 	else
+-		dma_free_coherent(&hdev-&gt;device,
++		dma_free_coherent(device,
+ 				  round_up(size, PAGE_SIZE),
+ 				  phys_to_virt(paddr),
+ 				  paddr);
+@@ -1080,7 +1080,7 @@ static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)
+ }
+ 
+ /* Release the framebuffer */
+-static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)
++static void hvfb_putmem(struct fb_info *info)
+ {
+ 	struct hvfb_par *par = info-&gt;par;
+ 
+@@ -1089,7 +1089,7 @@ static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)
+ 		iounmap(par-&gt;mmio_vp);
+ 		vmbus_free_mmio(par-&gt;mem-&gt;start, screen_fb_size);
+ 	} else {
+-		hvfb_release_phymem(hdev, info-&gt;fix.smem_start,
++		hvfb_release_phymem(info-&gt;device, info-&gt;fix.smem_start,
+ 				    screen_fb_size);
+ 	}
+ 
+@@ -1203,7 +1203,7 @@ static int hvfb_probe(struct hv_device *hdev,
+ 
+ error:
+ 	fb_deferred_io_cleanup(info);
+-	hvfb_putmem(hdev, info);
++	hvfb_putmem(info);
+ error2:
+ 	vmbus_close(hdev-&gt;channel);
+ error1:
+@@ -1232,7 +1232,7 @@ static void hvfb_remove(struct hv_device *hdev)
+ 	vmbus_close(hdev-&gt;channel);
+ 	hv_set_drvdata(hdev, NULL);
+ 
+-	hvfb_putmem(hdev, info);
++	hvfb_putmem(info);
+ 	framebuffer_release(info);
+ }
+ 
+-- 
+2.25.1
+
+</pre>
+              </div>
+            </div>
+            
+            <div id="applied-patches" class="tab-content">
+              <h3>应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">
+
+# ===== 应用成功的补丁块 1 =====
+
+From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Reviewed-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Tested-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu &lt;wei.liu@kernel.org&gt;
+Message-ID: &lt;1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com&gt;
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -952,7 +952,7 @@ static phys_addr_t hvfb_get_phymem(struct hv_device *hdev,
+ }
+ 
+ /* Release contiguous physical memory */
+-static void hvfb_release_phymem(struct hv_device *hdev,
++static void hvfb_release_phymem(struct device *device,
+ 				phys_addr_t paddr, unsigned int size)
+ {
+ 	unsigned int order = get_order(size);
+
+
+# ===== 应用成功的补丁块 2 =====
+
+From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Reviewed-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Tested-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu &lt;wei.liu@kernel.org&gt;
+Message-ID: &lt;1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com&gt;
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -960,7 +960,7 @@ static void hvfb_release_phymem(struct hv_device *hdev,
+ 	if (order &lt;= MAX_PAGE_ORDER)
+ 		__free_pages(pfn_to_page(paddr &gt;&gt; PAGE_SHIFT), order);
+ 	else
+-		dma_free_coherent(&hdev-&gt;device,
++		dma_free_coherent(device,
+ 				  round_up(size, PAGE_SIZE),
+ 				  phys_to_virt(paddr),
+ 				  paddr);
+
+
+# ===== 应用成功的补丁块 3 =====
+
+From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Reviewed-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Tested-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu &lt;wei.liu@kernel.org&gt;
+Message-ID: &lt;1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com&gt;
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1080,7 +1080,7 @@ static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)
+ }
+ 
+ /* Release the framebuffer */
+-static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)
++static void hvfb_putmem(struct fb_info *info)
+ {
+ 	struct hvfb_par *par = info-&gt;par;
+ 
+
+
+# ===== 应用成功的补丁块 4 =====
+
+From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Reviewed-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Tested-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu &lt;wei.liu@kernel.org&gt;
+Message-ID: &lt;1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com&gt;
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1203,7 +1203,7 @@ static int hvfb_probe(struct hv_device *hdev,
+ 
+ error:
+ 	fb_deferred_io_cleanup(info);
+-	hvfb_putmem(hdev, info);
++	hvfb_putmem(info);
+ error2:
+ 	vmbus_close(hdev-&gt;channel);
+ error1:
+
+
+# ===== 应用成功的补丁块 5 =====
+
+From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Reviewed-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Tested-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu &lt;wei.liu@kernel.org&gt;
+Message-ID: &lt;1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com&gt;
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1232,7 +1232,7 @@ static void hvfb_remove(struct hv_device *hdev)
+ 	vmbus_close(hdev-&gt;channel);
+ 	hv_set_drvdata(hdev, NULL);
+ 
+-	hvfb_putmem(hdev, info);
++	hvfb_putmem(info);
+ 	framebuffer_release(info);
+ }
+ 
+-- 
+2.25.1
+
+</pre>
+              </div>
+            </div>
+            
+            <div id="remaining-patch" class="tab-content">
+              <h3>未应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Date: Sat, 1 Mar 2025 08:16:30 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem
+
+The device object required in 'hvfb_release_phymem' function
+for 'dma_free_coherent' can also be obtained from the 'info'
+pointer, making 'hdev' parameter in 'hvfb_putmem' redundant.
+Remove the unnecessary 'hdev' argument from 'hvfb_putmem'.
+
+Signed-off-by: Saurabh Sengar &lt;ssengar@linux.microsoft.com&gt;
+Reviewed-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Tested-by: Michael Kelley &lt;mhklinux@outlook.com&gt;
+Link: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu &lt;wei.liu@kernel.org&gt;
+Message-ID: &lt;1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com&gt;
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1089,7 +1089,7 @@ static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)
+ 		iounmap(par-&gt;mmio_vp);
+ 		vmbus_free_mmio(par-&gt;mem-&gt;start, screen_fb_size);
+ 	} else {
+-		hvfb_release_phymem(hdev, info-&gt;fix.smem_start,
++		hvfb_release_phymem(info-&gt;device, info-&gt;fix.smem_start,
+ 				    screen_fb_size);
+ 	}
+ 
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+                <div class="card">
+                  <h2>应用成功的补丁块</h2>
+                  <table>
+                    <tr>
+                      <th>块索引</th>
+                      <th>修改文件</th>
+                      <th>修改位置</th>
+                      <th>操作</th>
+                    </tr>
+                    
+                    <tr>
+                      <td>1</td>
+                      <td>drivers/video/fbdev/hyperv_fb.c</td>
+                      <td>952-952</td>
+                      <td><a href="applied_chunk_1.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>2</td>
+                      <td>drivers/video/fbdev/hyperv_fb.c</td>
+                      <td>960-960</td>
+                      <td><a href="applied_chunk_2.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>3</td>
+                      <td>drivers/video/fbdev/hyperv_fb.c</td>
+                      <td>1080-1080</td>
+                      <td><a href="applied_chunk_3.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>4</td>
+                      <td>drivers/video/fbdev/hyperv_fb.c</td>
+                      <td>1203-1203</td>
+                      <td><a href="applied_chunk_4.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>5</td>
+                      <td>drivers/video/fbdev/hyperv_fb.c</td>
+                      <td>1232-1232</td>
+                      <td><a href="applied_chunk_5.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+                  </table>
+                </div>
+                
+            <div class="card">
+              <h2>剩余补丁</h2>
+              <p>有 <strong class="info">1</strong> 个块未成功应用，已生成剩余补丁:</p>
+              <p><code>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f5e728/chunk_patches/remaining_chunks_20250612_155000.patch</code></p>
+              <p><a href="remaining_patch.diff" target="_blank">查看剩余补丁</a></p>
+            </div>
+            
+        <style>
+        .code-container {
+          max-height: 500px;
+          overflow-y: auto;
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          border: 1px solid #eee;
+        }
+        
+        .code-block {
+          padding: 15px;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: monospace;
+          font-size: 13px;
+          line-height: 1.4;
+        }
+        
+        /* 为补丁内容添加语法高亮 */
+        .code-block .add {
+          background-color: #e6ffed;
+          color: #22863a;
+        }
+        
+        .code-block .remove {
+          background-color: #ffeef0;
+          color: #cb2431;
+        }
+        
+        .code-block .hunk {
+          color: #0366d6;
+          background-color: #f1f8ff;
+        }
+        
+        .code-block .header {
+          color: #6f42c1;
+          font-weight: bold;
+        }
+        </style>
+        
+        <script>
+        // 对补丁内容应用简单的语法高亮
+        document.addEventListener('DOMContentLoaded', function() {
+          const codeBlocks = document.querySelectorAll('.code-block');
+          codeBlocks.forEach(function(block) {
+            let html = block.innerHTML;
+            
+            // 替换添加的行
+            html = html.replace(/^(\+[^+].*)/gm, '<span class="add">$1</span>');
+            
+            // 替换删除的行
+            html = html.replace(/^(-[^-].*)/gm, '<span class="remove">$1</span>');
+            
+            // 替换区块头
+            html = html.replace(/^(@@.*@@)/gm, '<span class="hunk">$1</span>');
+            
+            // 替换diff头 - 修复无效转义序列
+            html = html.replace(/^(diff --git.*|index.*|---.*|\+\+\+.*)/gm, '<span class="header">$1</span>');
+            
+            block.innerHTML = html;
+          });
+        });
+        </script>
+        
+    
+  </div>
+</body>
+</html>

@@ -1,0 +1,1038 @@
+commit d3015bfd65348db629dab51e20a9d4e2f3b23493
+Author: Arne Schwabe <arne@rfc2549.org>
+Date:   Tue Apr 1 19:30:37 2025 +0200
+
+    Allow tls-crypt-v2 to be setup only on initial packet of a session
+    
+    This fixes an internal server error condition that can be triggered by a
+    malicous authenticated client, a very unlucky corruption of packets in
+    transit or by an attacker that is able to inject a specially created
+    packet at the right time and is able to observe the traffic to construct
+    the packet.
+    
+    The error condition results in an ASSERT statement being triggered,
+    
+    NOTE: due to the security sensitive nature, this patch was prepared
+    under embargo on the security@openvpn.net mailing list, and thus has
+    no publically available "mailing list discussion before merge" URL.
+    
+    CVE: 2025-2704
+    Change-Id: I07c1352204d308e5bde5f0b85e561a5dd0bc63c8
+    Signed-off-by: Arne Schwabe <arne@rfc2549.org>
+    Acked-by: Gert Doering <gert@greenie.muc.de>
+    Message-Id: <385d88f0-d7c9-4330-82ff-9f5931183afd@rfc2549.org>
+    Signed-off-by: Gert Doering <gert@greenie.muc.de>
+    (cherry picked from commit 82ee2fe4b42d9988c59ae3f83bd56a54d54e8c76)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 4fa7ea6f..5a0bf95a 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -841,35 +841,38 @@ static const char *
+ state_name(int state)
+ {
+     switch (state)
+     {
+         case S_UNDEF:
+             return "S_UNDEF";
+ 
+         case S_INITIAL:
+             return "S_INITIAL";
+ 
++        case S_PRE_START_SKIP:
++            return "S_PRE_START_SKIP";
++
+         case S_PRE_START:
+             return "S_PRE_START";
+ 
+         case S_START:
+             return "S_START";
+ 
+         case S_SENT_KEY:
+             return "S_SENT_KEY";
+ 
+         case S_GOT_KEY:
+             return "S_GOT_KEY";
+ 
+         case S_ACTIVE:
+             return "S_ACTIVE";
+ 
+         case S_ERROR:
+             return "S_ERROR";
+ 
+         case S_GENERATED_KEYS:
+             return "S_GENERATED_KEYS";
+ 
+         default:
+             return "S_???";
+     }
+ }
+@@ -2577,51 +2580,51 @@ static bool
+ session_move_pre_start(const struct tls_session *session,
+                        struct key_state *ks, bool skip_initial_send)
+ {
+     struct buffer *buf = reliable_get_buf_output_sequenced(ks->send_reliable);
+     if (!buf)
+     {
+         return false;
+     }
+ 
+     ks->initial = now;
+     ks->must_negotiate = now + session->opt->handshake_window;
+     ks->auth_deferred_expire = now + auth_deferred_expire_window(session->opt);
+ 
+     /* null buffer */
+     reliable_mark_active_outgoing(ks->send_reliable, buf, ks->initial_opcode);
+ 
+     /* If we want to skip sending the initial handshake packet we still generate
+      * it to increase internal counters etc. but immediately mark it as done */
+     if (skip_initial_send)
+     {
+         reliable_mark_deleted(ks->send_reliable, buf);
+     }
+     INCR_GENERATED;
+ 
+-    ks->state = S_PRE_START;
++    ks->state = skip_initial_send ? S_PRE_START_SKIP : S_PRE_START;
+ 
+     struct gc_arena gc = gc_new();
+     dmsg(D_TLS_DEBUG, "TLS: Initial Handshake, sid=%s",
+          session_id_print(&session->session_id, &gc));
+     gc_free(&gc);
+ 
+ #ifdef ENABLE_MANAGEMENT
+     if (management && ks->initial_opcode != P_CONTROL_SOFT_RESET_V1)
+     {
+         management_set_state(management,
+                              OPENVPN_STATE_WAIT,
+                              NULL,
+                              NULL,
+                              NULL,
+                              NULL,
+                              NULL);
+     }
+ #endif
+     return true;
+ 
+ }
+ 
+ /**
+  * Moves the key to state to S_ACTIVE and also advances the multi_state state
+  * machine if this is the initial connection.
+  */
+@@ -3659,350 +3662,365 @@ bool
+ tls_pre_decrypt(struct tls_multi *multi,
+                 const struct link_socket_actual *from,
+                 struct buffer *buf,
+                 struct crypto_options **opt,
+                 bool floated,
+                 const uint8_t **ad_start)
+ {
+ 
+     if (buf->len <= 0)
+     {
+         buf->len = 0;
+         *opt = NULL;
+         return false;
+     }
+ 
+     struct gc_arena gc = gc_new();
+     bool ret = false;
+ 
+     /* get opcode  */
+     uint8_t pkt_firstbyte = *BPTR(buf);
+     int op = pkt_firstbyte >> P_OPCODE_SHIFT;
+ 
+     if ((op == P_DATA_V1) || (op == P_DATA_V2))
+     {
+         handle_data_channel_packet(multi, from, buf, opt, floated, ad_start);
+         return false;
+     }
+ 
+     /* get key_id */
+     int key_id = pkt_firstbyte & P_KEY_ID_MASK;
+ 
+     /* control channel packet */
+     bool do_burst = false;
+     bool new_link = false;
+     struct session_id sid;         /* remote session ID */
+ 
+     /* verify legal opcode */
+     if (op < P_FIRST_OPCODE || op > P_LAST_OPCODE)
+     {
+         if (op == P_CONTROL_HARD_RESET_CLIENT_V1
+             || op == P_CONTROL_HARD_RESET_SERVER_V1)
+         {
+             msg(D_TLS_ERRORS, "Peer tried unsupported key-method 1");
+         }
+         msg(D_TLS_ERRORS,
+             "TLS Error: unknown opcode received from %s op=%d",
+             print_link_socket_actual(from, &gc), op);
+         goto error;
+     }
+ 
+     /* hard reset ? */
+     if (is_hard_reset_method2(op))
+     {
+         /* verify client -> server or server -> client connection */
+         if (((op == P_CONTROL_HARD_RESET_CLIENT_V2
+               || op == P_CONTROL_HARD_RESET_CLIENT_V3) && !multi->opt.server)
+             || ((op == P_CONTROL_HARD_RESET_SERVER_V2) && multi->opt.server))
+         {
+             msg(D_TLS_ERRORS,
+                 "TLS Error: client->client or server->server connection attempted from %s",
+                 print_link_socket_actual(from, &gc));
+             goto error;
+         }
+     }
+ 
+     /*
+      * Authenticate Packet
+      */
+     dmsg(D_TLS_DEBUG, "TLS: control channel, op=%s, IP=%s",
+          packet_opcode_name(op), print_link_socket_actual(from, &gc));
+ 
+     /* get remote session-id */
+     {
+         struct buffer tmp = *buf;
+         buf_advance(&tmp, 1);
+         if (!session_id_read(&sid, &tmp) || !session_id_defined(&sid))
+         {
+             msg(D_TLS_ERRORS,
+                 "TLS Error: session-id not found in packet from %s",
+                 print_link_socket_actual(from, &gc));
+             goto error;
+         }
+     }
+ 
+     int i;
+     /* use session ID to match up packet with appropriate tls_session object */
+     for (i = 0; i < TM_SIZE; ++i)
+     {
+         struct tls_session *session = &multi->session[i];
+         struct key_state *ks = &session->key[KS_PRIMARY];
+ 
+         dmsg(D_TLS_DEBUG,
+              "TLS: initial packet test, i=%d state=%s, mysid=%s, rec-sid=%s, rec-ip=%s, stored-sid=%s, stored-ip=%s",
+              i,
+              state_name(ks->state),
+              session_id_print(&session->session_id, &gc),
+              session_id_print(&sid, &gc),
+              print_link_socket_actual(from, &gc),
+              session_id_print(&ks->session_id_remote, &gc),
+              print_link_socket_actual(&ks->remote_addr, &gc));
+ 
+         if (session_id_equal(&ks->session_id_remote, &sid))
+         /* found a match */
+         {
+             if (i == TM_LAME_DUCK)
+             {
+                 msg(D_TLS_ERRORS,
+                     "TLS ERROR: received control packet with stale session-id=%s",
+                     session_id_print(&sid, &gc));
+                 goto error;
+             }
+             dmsg(D_TLS_DEBUG,
+                  "TLS: found match, session[%d], sid=%s",
+                  i, session_id_print(&sid, &gc));
+             break;
+         }
+     }
+ 
+     /*
+      * Hard reset and session id does not match any session in
+      * multi->session: Possible initial packet. New sessions always start
+      * as TM_INITIAL
+      */
+     if (i == TM_SIZE && is_hard_reset_method2(op))
+     {
+         /*
+          * No match with existing sessions,
+          * probably a new session.
+          */
+         struct tls_session *session = &multi->session[TM_INITIAL];
+ 
+         /*
+          * If --single-session, don't allow any hard-reset connection request
+          * unless it is the first packet of the session.
+          */
+         if (multi->opt.single_session && multi->n_sessions)
+         {
+             msg(D_TLS_ERRORS,
+                 "TLS Error: Cannot accept new session request from %s due "
+                 "to session context expire or --single-session",
+                 print_link_socket_actual(from, &gc));
+             goto error;
+         }
+ 
+         if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id), from,
+-                               session->opt))
++                               session->opt, true))
+         {
+             goto error;
+         }
+ 
+ #ifdef ENABLE_MANAGEMENT
+         if (management)
+         {
+             management_set_state(management,
+                                  OPENVPN_STATE_AUTH,
+                                  NULL,
+                                  NULL,
+                                  NULL,
+                                  NULL,
+                                  NULL);
+         }
+ #endif
+ 
+         /*
+          * New session-initiating control packet is authenticated at this point,
+          * assuming that the --tls-auth command line option was used.
+          *
+          * Without --tls-auth, we leave authentication entirely up to TLS.
+          */
+         msg(D_TLS_DEBUG_LOW,
+             "TLS: Initial packet from %s, sid=%s",
+             print_link_socket_actual(from, &gc),
+             session_id_print(&sid, &gc));
+ 
+         do_burst = true;
+         new_link = true;
+         i = TM_INITIAL;
+         session->untrusted_addr = *from;
+     }
+     else
+     {
+         struct tls_session *session = &multi->session[i];
+         struct key_state *ks = &session->key[KS_PRIMARY];
+ 
+         /*
+          * Packet must belong to an existing session.
+          */
+         if (i != TM_ACTIVE && i != TM_INITIAL)
+         {
+             msg(D_TLS_ERRORS,
+                 "TLS Error: Unroutable control packet received from %s (si=%d op=%s)",
+                 print_link_socket_actual(from, &gc),
+                 i,
+                 packet_opcode_name(op));
+             goto error;
+         }
+ 
+         /*
+          * Verify remote IP address
+          */
+         if (!new_link && !link_socket_actual_match(&ks->remote_addr, from))
+         {
+             msg(D_TLS_ERRORS, "TLS Error: Received control packet from unexpected IP addr: %s",
+                 print_link_socket_actual(from, &gc));
+             goto error;
+         }
+ 
+         /*
+          * Remote is requesting a key renegotiation.  We only allow renegotiation
+          * when the previous session is fully established to avoid weird corner
+          * cases.
+          */
+         if (op == P_CONTROL_SOFT_RESET_V1 && ks->state >= S_GENERATED_KEYS)
+         {
+             if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id),
+-                                   from, session->opt))
++                                   from, session->opt, false))
+             {
+                 goto error;
+             }
+ 
+             key_state_soft_reset(session);
+ 
+             dmsg(D_TLS_DEBUG,
+                  "TLS: received P_CONTROL_SOFT_RESET_V1 s=%d sid=%s",
+                  i, session_id_print(&sid, &gc));
+         }
+         else
+         {
++            bool initial_packet = false;
++            if (ks->state == S_PRE_START_SKIP)
++            {
++                /* When we are coming from the session_skip_to_pre_start
++                 * method, we allow this initial packet to setup the
++                 * tls-crypt-v2 peer specific key */
++                initial_packet = true;
++                ks->state = S_PRE_START;
++            }
+             /*
+              * Remote responding to our key renegotiation request?
+              */
+             if (op == P_CONTROL_SOFT_RESET_V1)
+             {
+                 do_burst = true;
+             }
+ 
+             if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id),
+-                                   from, session->opt))
++                                   from, session->opt, initial_packet))
+             {
++                /* if an initial packet in read_control_auth, we rather
++                 * error out than anything else */
++                if (initial_packet)
++                {
++                    multi->n_hard_errors++;
++                }
+                 goto error;
+             }
+ 
+             dmsg(D_TLS_DEBUG,
+                  "TLS: received control channel packet s#=%d sid=%s",
+                  i, session_id_print(&sid, &gc));
+         }
+     }
+ 
+     /*
+      * We have an authenticated control channel packet (if --tls-auth/tls-crypt
+      * or tls-crypt-v2 was set).
+      * Now pass to our reliability layer which deals with
+      * packet acknowledgements, retransmits, sequencing, etc.
+      */
+     struct tls_session *session = &multi->session[i];
+     struct key_state *ks = &session->key[KS_PRIMARY];
+ 
+     /* Make sure we were initialized and that we're not in an error state */
+     ASSERT(ks->state != S_UNDEF);
+     ASSERT(ks->state != S_ERROR);
+     ASSERT(session_id_defined(&session->session_id));
+ 
+     /* Let our caller know we processed a control channel packet */
+     ret = true;
+ 
+     /*
+      * Set our remote address and remote session_id
+      */
+     if (new_link)
+     {
+         ks->session_id_remote = sid;
+         ks->remote_addr = *from;
+         ++multi->n_sessions;
+     }
+     else if (!link_socket_actual_match(&ks->remote_addr, from))
+     {
+         msg(D_TLS_ERRORS,
+             "TLS Error: Existing session control channel packet from unknown IP address: %s",
+             print_link_socket_actual(from, &gc));
+         goto error;
+     }
+ 
+     /*
+      * Should we do a retransmit of all unacknowledged packets in
+      * the send buffer?  This improves the start-up efficiency of the
+      * initial key negotiation after the 2nd peer comes online.
+      */
+     if (do_burst && !session->burst)
+     {
+         reliable_schedule_now(ks->send_reliable);
+         session->burst = true;
+     }
+ 
+     /* Check key_id */
+     if (ks->key_id != key_id)
+     {
+         msg(D_TLS_ERRORS,
+             "TLS ERROR: local/remote key IDs out of sync (%d/%d) ID: %s",
+             ks->key_id, key_id, print_key_id(multi, &gc));
+         goto error;
+     }
+ 
+     /*
+      * Process incoming ACKs for packets we can now
+      * delete from reliable send buffer
+      */
+     {
+         /* buffers all packet IDs to delete from send_reliable */
+         struct reliable_ack send_ack;
+ 
+         if (!reliable_ack_read(&send_ack, buf, &session->session_id))
+         {
+             msg(D_TLS_ERRORS,
+                 "TLS Error: reading acknowledgement record from packet");
+             goto error;
+         }
+         reliable_send_purge(ks->send_reliable, &send_ack);
+     }
+ 
+     if (op != P_ACK_V1 && reliable_can_get(ks->rec_reliable))
+     {
+         packet_id_type id;
+ 
+         /* Extract the packet ID from the packet */
+         if (reliable_ack_read_packet_id(buf, &id))
+         {
+             /* Avoid deadlock by rejecting packet that would de-sequentialize receive buffer */
+             if (reliable_wont_break_sequentiality(ks->rec_reliable, id))
+             {
+                 if (reliable_not_replay(ks->rec_reliable, id))
+                 {
+                     /* Save incoming ciphertext packet to reliable buffer */
+                     struct buffer *in = reliable_get_buf(ks->rec_reliable);
+                     ASSERT(in);
+                     if (!buf_copy(in, buf))
+                     {
+                         msg(D_MULTI_DROPPED,
+                             "Incoming control channel packet too big, dropping.");
+                         goto error;
+                     }
+                     reliable_mark_active_incoming(ks->rec_reliable, in, id, op);
+                 }
+ 
+                 /* Process outgoing acknowledgment for packet just received, even if it's a replay */
+                 reliable_ack_acknowledge_packet_id(ks->rec_ack, id);
+             }
+         }
+     }
+     /* Remember that we received a valid control channel packet */
+     ks->peer_last_packet = now;
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 08525634..8b6ae3f2 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -1,112 +1,115 @@
+ /*
+  *  OpenVPN -- An application to securely tunnel IP networks
+  *             over a single TCP/UDP port, with support for SSL/TLS-based
+  *             session authentication and key exchange,
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2024 OpenVPN Inc <sales@openvpn.net>
+  *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@foxcrypto.com>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+  *  as published by the Free Software Foundation.
+  *
+  *  This program is distributed in the hope that it will be useful,
+  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  *  GNU General Public License for more details.
+  *
+  *  You should have received a copy of the GNU General Public License along
+  *  with this program; if not, write to the Free Software Foundation, Inc.,
+  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+  */
+ 
+ /**
+  * @file Control Channel Common Data Structures
+  */
+ 
+ #ifndef SSL_COMMON_H_
+ #define SSL_COMMON_H_
+ 
+ #include "session_id.h"
+ #include "socket.h"
+ #include "packet_id.h"
+ #include "crypto.h"
+ #include "options.h"
+ 
+ #include "ssl_backend.h"
+ 
+ /* passwords */
+ #define UP_TYPE_AUTH        "Auth"
+ #define UP_TYPE_PRIVATE_KEY "Private Key"
+ 
+ /** @addtogroup control_processor
+  *  @{ */
+ /**
+  * @name Control channel negotiation states
+  *
+  * These states represent the different phases of control channel
+  * negotiation between OpenVPN peers.  OpenVPN servers and clients
+  * progress through the states in a different order, because of their
+  * different roles during exchange of random material.  The references to
+  * the \c key_source2 structure in the list below is only valid if %key
+  * method 2 is being used.  See the \link key_generation data channel key
+  * generation\endlink related page for more information.
+  *
+  * Clients follow this order:
+  *   -# \c S_INITIAL, ready to begin three-way handshake and control
+  *      channel negotiation.
+  *   -# \c S_PRE_START, have started three-way handshake, waiting for
+  *      acknowledgment from remote.
+  *   -# \c S_START, initial three-way handshake complete.
+  *   -# \c S_SENT_KEY, have sent local part of \c key_source2 random
+  *      material.
+  *   -# \c S_GOT_KEY, have received remote part of \c key_source2 random
+  *      material.
+  *   -# \c S_ACTIVE, control channel successfully established
+  *   -# \c S_GENERATED_KEYS, the data channel keys have been generated
+  *
+  * Servers follow the same order, except for \c S_SENT_KEY and \c
+  * S_GOT_KEY being reversed, because the server first receives the
+  * client's \c key_source2 random material before generating and sending
+  * its own.
+  *
+  * @{
+  */
+ #define S_ERROR          -1     /**< Error state.  */
+ #define S_UNDEF           0     /**< Undefined state, used after a \c
+                                  *   key_state is cleaned up. */
+ #define S_INITIAL         1     /**< Initial \c key_state state after
+                                  *   initialization by \c key_state_init()
+                                  *   before start of three-way handshake. */
+-#define S_PRE_START       2     /**< Waiting for the remote OpenVPN peer
++#define S_PRE_START_SKIP  2     /**< Waiting for the remote OpenVPN peer
+                                  *   to acknowledge during the initial
+                                  *   three-way handshake. */
+-#define S_START           3     /**< Three-way handshake is complete,
++#define S_PRE_START       3     /**< Waiting for the remote OpenVPN peer
++                                 *   to acknowledge during the initial
++                                 *   three-way handshake. */
++#define S_START           4     /**< Three-way handshake is complete,
+                                  *   start of key exchange. */
+-#define S_SENT_KEY        4     /**< Local OpenVPN process has sent its
++#define S_SENT_KEY        5     /**< Local OpenVPN process has sent its
+                                  *   part of the key material. */
+-#define S_GOT_KEY         5     /**< Local OpenVPN process has received
++#define S_GOT_KEY         6     /**< Local OpenVPN process has received
+                                  *   the remote's part of the key
+                                  *   material. */
+-#define S_ACTIVE          6     /**< Operational \c key_state state
++#define S_ACTIVE          7     /**< Operational \c key_state state
+                                  *   immediately after negotiation has
+                                  *   completed while still within the
+                                  *   handshake window.  Deferred auth and
+                                  *   client connect can still be pending. */
+-#define S_GENERATED_KEYS  7     /**< The data channel keys have been generated
++#define S_GENERATED_KEYS  8     /**< The data channel keys have been generated
+                                  *  The TLS session is fully authenticated
+                                  *  when reaching this state. */
+ 
+ /* Note that earlier versions also had a S_OP_NORMAL state that was
+  * virtually identical with S_ACTIVE and the code still assumes everything
+  * >= S_ACTIVE to be fully operational */
+ /** @} name Control channel negotiation states */
+ /** @} addtogroup control_processor */
+ 
+ /**
+  * Container for one half of random material to be used in %key method 2
+  * \ref key_generation "data channel key generation".
+  * @ingroup control_processor
+  */
+diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+index 689cd7f9..41299f46 100644
+--- a/src/openvpn/ssl_pkt.c
++++ b/src/openvpn/ssl_pkt.c
+@@ -200,79 +200,80 @@ bool
+ read_control_auth(struct buffer *buf,
+                   struct tls_wrap_ctx *ctx,
+                   const struct link_socket_actual *from,
+-                  const struct tls_options *opt)
++                  const struct tls_options *opt,
++                  bool initial_packet)
+ {
+     struct gc_arena gc = gc_new();
+     bool ret = false;
+ 
+     const uint8_t opcode = *(BPTR(buf)) >> P_OPCODE_SHIFT;
+     if ((opcode == P_CONTROL_HARD_RESET_CLIENT_V3
+          || opcode == P_CONTROL_WKC_V1)
+-        && !tls_crypt_v2_extract_client_key(buf, ctx, opt))
++        && !tls_crypt_v2_extract_client_key(buf, ctx, opt, initial_packet))
+     {
+         msg(D_TLS_ERRORS,
+             "TLS Error: can not extract tls-crypt-v2 client key from %s",
+             print_link_socket_actual(from, &gc));
+         goto cleanup;
+     }
+ 
+     if (ctx->mode == TLS_WRAP_AUTH)
+     {
+         struct buffer null = clear_buf();
+ 
+         /* move the hmac record to the front of the packet */
+         if (!swap_hmac(buf, &ctx->opt, true))
+         {
+             msg(D_TLS_ERRORS,
+                 "TLS Error: cannot locate HMAC in incoming packet from %s",
+                 print_link_socket_actual(from, &gc));
+             gc_free(&gc);
+             return false;
+         }
+ 
+         /* authenticate only (no decrypt) and remove the hmac record
+          * from the head of the buffer */
+         openvpn_decrypt(buf, null, &ctx->opt, NULL, BPTR(buf));
+         if (!buf->len)
+         {
+             msg(D_TLS_ERRORS,
+                 "TLS Error: incoming packet authentication failed from %s",
+                 print_link_socket_actual(from, &gc));
+             goto cleanup;
+         }
+ 
+     }
+     else if (ctx->mode == TLS_WRAP_CRYPT)
+     {
+         struct buffer tmp = alloc_buf_gc(buf_forward_capacity_total(buf), &gc);
+         if (!tls_crypt_unwrap(buf, &tmp, &ctx->opt))
+         {
+             msg(D_TLS_ERRORS, "TLS Error: tls-crypt unwrapping failed from %s",
+                 print_link_socket_actual(from, &gc));
+             goto cleanup;
+         }
+         ASSERT(buf_init(buf, buf->offset));
+         ASSERT(buf_copy(buf, &tmp));
+         buf_clear(&tmp);
+     }
+     else if (ctx->tls_crypt_v2_server_key.cipher)
+     {
+         /* If tls-crypt-v2 is enabled, require *some* wrapping */
+         msg(D_TLS_ERRORS, "TLS Error: could not determine wrapping from %s",
+             print_link_socket_actual(from, &gc));
+         /* TODO Do we want to support using tls-crypt-v2 and no control channel
+          * wrapping at all simultaneously?  That would allow server admins to
+          * upgrade clients one-by-one without running a second instance, but we
+          * should not enable it by default because it breaks DoS-protection.
+          * So, add something like --tls-crypt-v2-allow-insecure-fallback ? */
+         goto cleanup;
+     }
+ 
+     if (ctx->mode == TLS_WRAP_NONE || ctx->mode == TLS_WRAP_AUTH)
+     {
+         /* advance buffer pointer past opcode & session_id since our caller
+          * already read it */
+         buf_advance(buf, SID_SIZE + 1);
+     }
+ 
+     ret = true;
+@@ -307,112 +308,112 @@ enum first_packet_verdict
+ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+                      struct tls_pre_decrypt_state *state,
+                      const struct link_socket_actual *from,
+                      const struct buffer *buf)
+ {
+     struct gc_arena gc = gc_new();
+     /* A packet needs to have at least an opcode and session id */
+     if (buf->len < (1 + SID_SIZE))
+     {
+         dmsg(D_TLS_STATE_ERRORS,
+              "TLS State Error: Too short packet (length  %d) received from %s",
+              buf->len, print_link_socket_actual(from, &gc));
+         goto error;
+     }
+ 
+     /* get opcode and key ID */
+     uint8_t pkt_firstbyte = *BPTR(buf);
+     int op = pkt_firstbyte >> P_OPCODE_SHIFT;
+     int key_id = pkt_firstbyte & P_KEY_ID_MASK;
+ 
+     /* this packet is from an as-yet untrusted source, so
+      * scrutinize carefully */
+ 
+     /* Allow only the reset packet or the first packet of the actual handshake. */
+     if (op != P_CONTROL_HARD_RESET_CLIENT_V2
+         && op != P_CONTROL_HARD_RESET_CLIENT_V3
+         && op != P_CONTROL_V1
+         && op != P_CONTROL_WKC_V1
+         && op != P_ACK_V1)
+     {
+         /*
+          * This can occur due to bogus data or DoS packets.
+          */
+         dmsg(D_TLS_STATE_ERRORS,
+              "TLS State Error: No TLS state for client %s, opcode=%d",
+              print_link_socket_actual(from, &gc),
+              op);
+         goto error;
+     }
+ 
+     if (key_id != 0)
+     {
+         dmsg(D_TLS_STATE_ERRORS,
+              "TLS State Error: Unknown key ID (%d) received from %s -- 0 was expected",
+              key_id,
+              print_link_socket_actual(from, &gc));
+         goto error;
+     }
+ 
+     /* read peer session id, we do this at this point since
+      * read_control_auth will skip over it */
+     struct buffer tmp = *buf;
+     buf_advance(&tmp, 1);
+     if (!session_id_read(&state->peer_session_id, &tmp)
+         || !session_id_defined(&state->peer_session_id))
+     {
+         msg(D_TLS_ERRORS,
+             "TLS Error: session-id not found in packet from %s",
+             print_link_socket_actual(from, &gc));
+         goto error;
+     }
+ 
+     state->newbuf = clone_buf(buf);
+     state->tls_wrap_tmp = tas->tls_wrap;
+ 
+     /* HMAC test and unwrapping the encrypted part of the control message
+      * into newbuf or just setting newbuf to point to the start of control
+      * message */
+     bool status = read_control_auth(&state->newbuf, &state->tls_wrap_tmp,
+-                                    from, NULL);
++                                    from, NULL, true);
+ 
+     if (!status)
+     {
+         goto error;
+     }
+ 
+     /*
+      * At this point, if --tls-auth is being used, we know that
+      * the packet has passed the HMAC test, but we don't know if
+      * it is a replay yet.  We will attempt to defeat replays
+      * by not advancing to the S_START state until we
+      * receive an ACK from our first reply to the client
+      * that includes an HMAC of our randomly generated 64 bit
+      * session ID.
+      *
+      * On the other hand if --tls-auth is not being used, we
+      * will proceed to begin the TLS authentication
+      * handshake with only cursory integrity checks having
+      * been performed, since we will be leaving the task
+      * of authentication solely up to TLS.
+      */
+     gc_free(&gc);
+     if (op == P_CONTROL_V1)
+     {
+         return VERDICT_VALID_CONTROL_V1;
+     }
+     else if (op == P_ACK_V1)
+     {
+         return VERDICT_VALID_ACK_V1;
+     }
+     else if (op == P_CONTROL_HARD_RESET_CLIENT_V3)
+     {
+         return VERDICT_VALID_RESET_V3;
+     }
+     else if (op == P_CONTROL_WKC_V1)
+     {
+         return VERDICT_VALID_WKC_V1;
+     }
+     else
+     {
+         return VERDICT_VALID_RESET_V2;
+     }
+diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
+index c8a27fba..2033da61 100644
+--- a/src/openvpn/ssl_pkt.h
++++ b/src/openvpn/ssl_pkt.h
+@@ -201,24 +201,32 @@ void
+ write_control_auth(struct tls_session *session,
+                    struct key_state *ks,
+                    struct buffer *buf,
+                    struct link_socket_actual **to_link_addr,
+                    int opcode,
+                    int max_ack,
+                    bool prepend_ack);
+ 
+ 
+-/*
++
++/**
+  * Read a control channel authentication record.
++ * @param buf               buffer that holds the incoming packet
++ * @param ctx               control channel security context
++ * @param from              incoming link socket address
++ * @param opt               tls options struct for the session
++ * @param initial_packet    whether this is the initial packet for the connection
++ * @return                  if the packet was successfully processed
+  */
+ bool
+ read_control_auth(struct buffer *buf,
+                   struct tls_wrap_ctx *ctx,
+                   const struct link_socket_actual *from,
+-                  const struct tls_options *opt);
++                  const struct tls_options *opt,
++                  bool initial_packet);
+ 
+ 
+ /**
+  * This function creates a reset packet using the information
+  * from the tls pre decrypt state.
+  *
+  */
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 975d31fa..50228e78 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -612,61 +612,83 @@ cleanup:
+ bool
+ tls_crypt_v2_extract_client_key(struct buffer *buf,
+                                 struct tls_wrap_ctx *ctx,
+-                                const struct tls_options *opt)
++                                const struct tls_options *opt,
++                                bool initial_packet)
+ {
+     if (!ctx->tls_crypt_v2_server_key.cipher)
+     {
+         msg(D_TLS_ERRORS,
+             "Client wants tls-crypt-v2, but no server key present.");
+         return false;
+     }
+ 
+     msg(D_HANDSHAKE, "Control Channel: using tls-crypt-v2 key");
+ 
+     struct buffer wrapped_client_key = *buf;
+     uint16_t net_len = 0;
+ 
+     if (BLEN(&wrapped_client_key) < sizeof(net_len))
+     {
+         msg(D_TLS_ERRORS, "Can not read tls-crypt-v2 client key length");
+         return false;
+     }
+     memcpy(&net_len, BEND(&wrapped_client_key) - sizeof(net_len),
+            sizeof(net_len));
+ 
+     size_t wkc_len = ntohs(net_len);
+     if (!buf_advance(&wrapped_client_key, BLEN(&wrapped_client_key) - wkc_len))
+     {
+         msg(D_TLS_ERRORS, "Can not locate tls-crypt-v2 client key");
+         return false;
+     }
+ 
++    if (!initial_packet)
++    {
++        /* This might be a harmless resend of the packet but it is better to
++         * just ignore the WKC part than trying to setup tls-crypt keys again.
++         *
++         * A CONTROL_WKC_V1 packets has a normal packet part and an appended
++         * wrapped control key. These are authenticated individually. We already
++         * set up tls-crypt with the wrapped key, so we are ignoring this part
++         * of the message but we return the normal packet part as the normal
++         * part of the message might have been corrupted earlier and discarded
++         * and this is resend. So return the normal part of the packet,
++         * basically transforming the CONTROL_WKC_V1 into a normal CONTROL_V1
++         * packet*/
++        msg(D_TLS_ERRORS, "control channel security already setup ignoring "
++            "wrapped key part of packet.");
++
++        /* Remove client key from buffer so tls-crypt code can unwrap message */
++        ASSERT(buf_inc_len(buf, -(BLEN(&wrapped_client_key))));
++        return true;
++    }
++
+     ctx->tls_crypt_v2_metadata = alloc_buf(TLS_CRYPT_V2_MAX_METADATA_LEN);
+     if (!tls_crypt_v2_unwrap_client_key(&ctx->original_wrap_keydata,
+                                         &ctx->tls_crypt_v2_metadata,
+                                         wrapped_client_key,
+                                         &ctx->tls_crypt_v2_server_key))
+     {
+         msg(D_TLS_ERRORS, "Can not unwrap tls-crypt-v2 client key");
+         secure_memzero(&ctx->original_wrap_keydata, sizeof(ctx->original_wrap_keydata));
+         return false;
+     }
+ 
+     /* Load the decrypted key */
+     ctx->mode = TLS_WRAP_CRYPT;
+     ctx->cleanup_key_ctx = true;
+     ctx->opt.flags |= CO_PACKET_ID_LONG_FORM;
+     memset(&ctx->opt.key_ctx_bi, 0, sizeof(ctx->opt.key_ctx_bi));
+     tls_crypt_v2_load_client_key(&ctx->opt.key_ctx_bi,
+                                  &ctx->original_wrap_keydata, true);
+ 
+     /* Remove client key from buffer so tls-crypt code can unwrap message */
+     ASSERT(buf_inc_len(buf, -(BLEN(&wrapped_client_key))));
+ 
+     if (opt && opt->tls_crypt_v2_verify_script)
+     {
+         return tls_crypt_v2_verify_metadata(ctx, opt);
+     }
+ 
+     return true;
+ }
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+index 8c87e208..331c0c06 100644
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -182,39 +182,44 @@ void tls_crypt_v2_init_server_key(struct key_ctx *key_ctx, bool encrypt,
+ /**
+  * Initialize a tls-crypt-v2 client key.
+  *
+  * @param key               Key structure to be initialized with the client
+  *                          key.
+  * @param original_key      contains the key data that has been used to
+  *                          initialise the key parameter
+  * @param wrapped_key_buf   Returns buffer containing the wrapped key that will
+  *                          be sent to the server when connecting.  Caller must
+  *                          free this buffer when no longer needed.
+  * @param key_file          File path of the key file to load or the key itself
+  *                          if key_inline is true.
+  * @param key_inline        True if key_file contains an inline key, False
+  *                          otherwise.
+  */
+ void tls_crypt_v2_init_client_key(struct key_ctx_bi *key,
+                                   struct key2 *original_key,
+                                   struct buffer *wrapped_key_buf,
+                                   const char *key_file, bool key_inline);
+ 
+ /**
+  * Extract a tls-crypt-v2 client key from a P_CONTROL_HARD_RESET_CLIENT_V3
+  * message, and load the key into the supplied tls wrap context.
+  *
+  * @param buf   Buffer containing a received P_CONTROL_HARD_RESET_CLIENT_V3
+  *              message.
+  * @param ctx   tls-wrap context to be initialized with the client key.
+  *
++ * @param initial_packet    whether this is the initial packet of the
++ *                          connection. Only in these scenarios unwrapping
++ *                          of a tls-crypt-v2 key is allowed
++ *
+  * @returns true if a key was successfully extracted.
+  */
+ bool tls_crypt_v2_extract_client_key(struct buffer *buf,
+                                      struct tls_wrap_ctx *ctx,
+-                                     const struct tls_options *opt);
++                                     const struct tls_options *opt,
++                                     bool initial_packet);
+ 
+ /**
+  * Generate a tls-crypt-v2 server key, and write to file.
+  *
+  * @param filename          Filename of the server key file to create.
+  */
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
+index 465543a7..3eac04cf 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -508,36 +508,36 @@ static void
+ tls_crypt_v2_wrap_unwrap_max_metadata(void **state)
+ {
+     struct test_tls_crypt_v2_context *ctx =
+         (struct test_tls_crypt_v2_context *) *state;
+ 
+     uint8_t *metadata =
+         buf_write_alloc(&ctx->metadata, TLS_CRYPT_V2_MAX_METADATA_LEN);
+     assert_true(rand_bytes(metadata, TLS_CRYPT_V2_MAX_METADATA_LEN));
+     assert_true(tls_crypt_v2_wrap_client_key(&ctx->wkc, &ctx->client_key2,
+                                              &ctx->metadata,
+                                              &ctx->server_keys.encrypt,
+                                              &ctx->gc));
+ 
+     struct buffer unwrap_metadata = alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN,
+                                                  &ctx->gc);
+     struct key2 unwrapped_client_key2 = { 0 };
+     assert_true(tls_crypt_v2_unwrap_client_key(&unwrapped_client_key2,
+                                                &unwrap_metadata, ctx->wkc,
+                                                &ctx->server_keys.decrypt));
+ 
+     assert_true(0 == memcmp(ctx->client_key2.keys, unwrapped_client_key2.keys,
+                             sizeof(ctx->client_key2.keys)));
+     assert_true(buf_equal(&ctx->metadata, &unwrap_metadata));
+ 
+     struct tls_wrap_ctx wrap_ctx = {
+         .mode = TLS_WRAP_CRYPT,
+         .tls_crypt_v2_server_key = ctx->server_keys.encrypt,
+     };
+-    assert_true(tls_crypt_v2_extract_client_key(&ctx->wkc, &wrap_ctx, NULL));
++    assert_true(tls_crypt_v2_extract_client_key(&ctx->wkc, &wrap_ctx, NULL, true));
+     tls_wrap_free(&wrap_ctx);
+ }
+ 
+ /**
+  * Check that wrapping a tls-crypt-v2 client key with too long metadata fails
+  * as expected.
+  */

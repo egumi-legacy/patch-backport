@@ -1,0 +1,2208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>chunk_analyzer 模块评估报告 - ba1124</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+    h1, h2, h3 { color: #2c3e50; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 20px; }
+    .success { color: #27ae60; }
+    .error { color: #e74c3c; }
+    .info { color: #3498db; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    th { background-color: #f8f9fa; }
+    tr:hover { background-color: #f5f5f5; }
+    pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    .progress-container { width: 100%; background-color: #f1f1f1; border-radius: 5px; }
+    .progress-bar { height: 20px; border-radius: 5px; }
+    .success-bg { background-color: #4CAF50; }
+    .pending-bg { background-color: #2196F3; }
+    .error-bg { background-color: #f44336; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+    .tag-success { background-color: #e8f5e9; color: #2e7d32; }
+    .tag-error { background-color: #ffebee; color: #c62828; }
+    .tag-pending { background-color: #e3f2fd; color: #1565c0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>chunk_analyzer 模块评估报告</h1>
+    
+    <div class="card">
+      <h2>基本信息</h2>
+      <table>
+        <tr>
+          <td width="150"><strong>模块名称</strong></td>
+          <td>chunk_analyzer</td>
+        </tr>
+        <tr>
+          <td><strong>模块类型</strong></td>
+          <td>ModuleType.CHUNK_ANALYZER</td>
+        </tr>
+        <tr>
+          <td><strong>提交SHA</strong></td>
+          <td>ba1124f58afd37d9ff155d4ab7c9f209346aaed9.patch</td>
+        </tr>
+        <tr>
+          <td><strong>目标版本</strong></td>
+          <td>v6.12-rc7</td>
+        </tr>
+        <tr>
+          <td><strong>执行时间</strong></td>
+          <td>2025-06-19T16:06:46.883107</td>
+        </tr>
+        <tr>
+          <td><strong>状态</strong></td>
+          <td>
+            <span class="tag tag-success">成功</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输入信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>原始补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/ba1124/patches/upstream_ba1124.patch</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>代码仓库路径</strong></td>
+                  <td>/home/elpsy/.cache/port-patch/linux_kernel-stable</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输出信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>状态</strong></td>
+                  <td>成功</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总尝试次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>执行时间</strong></td>
+                  <td>3.676794</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总块数</strong></td>
+                  <td>29</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功应用块数</strong></td>
+                  <td>24</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功率</strong></td>
+                  <td>82.76%</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>剩余补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/ba1124/chunk_patches/remaining_chunks_20250619_160646.patch</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    
+        <div class="card">
+          <h2>补丁块应用统计</h2>
+          
+          <div class="progress-container">
+            <div class="progress-bar success-bg" style="width: 82%"></div>
+          </div>
+          <p>
+            成功应用 <strong class="success">24</strong> 个块，
+            总共 <strong>29</strong> 个块
+            (成功率: <strong>82.8%</strong>)
+          </p>
+        </div>
+        
+        <div class="card">
+          <h2>补丁内容详情</h2>
+          <div class="tabs">
+            <div class="tab-header">
+              <button class="tab-button active" onclick="openTab(event, 'original-patch')">原始补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'applied-patches')">应用成功的补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'remaining-patch')">未应用成功的补丁</button>
+            </div>
+            
+            <div id="original-patch" class="tab-content" style="display:block;">
+              <h3>原始补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 377fae41bbae..683a0d6b5337 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ #include "ice_common.h"
+ #include "ice_sched.h"
+@@ -154,6 +154,12 @@ static int ice_set_mac_type(struct ice_hw *hw)
+ 	case ICE_DEV_ID_E823L_SFP:
+ 		hw-&gt;mac_type = ICE_MAC_GENERIC;
+ 		break;
++	case ICE_DEV_ID_E830_BACKPLANE:
++	case ICE_DEV_ID_E830_QSFP56:
++	case ICE_DEV_ID_E830_SFP:
++	case ICE_DEV_ID_E830_SFP_DD:
++		hw-&gt;mac_type = ICE_MAC_E830;
++		break;
+ 	default:
+ 		hw-&gt;mac_type = ICE_MAC_UNKNOWN;
+ 		break;
+@@ -759,8 +765,7 @@ static void
+ ice_fill_tx_timer_and_fc_thresh(struct ice_hw *hw,
+ 				struct ice_aqc_set_mac_cfg *cmd)
+ {
+-	u16 fc_thres_val, tx_timer_val;
+-	u32 val;
++	u32 val, fc_thres_m;
+ 
+ 	/* We read back the transmit timer and FC threshold value of
+ 	 * LFC. Thus, we will use index =
+@@ -769,19 +774,32 @@ ice_fill_tx_timer_and_fc_thresh(struct ice_hw *hw,
+ 	 * Also, because we are operating on transmit timer and FC
+ 	 * threshold of LFC, we don't turn on any bit in tx_tmr_priority
+ 	 */
+-#define IDX_OF_LFC PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_MAX_INDEX
+-
+-	/* Retrieve the transmit timer */
+-	val = rd32(hw, PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA(IDX_OF_LFC));
+-	tx_timer_val = val &
+-		PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_HSEC_CTL_TX_PAUSE_QUANTA_M;
+-	cmd-&gt;tx_tmr_value = cpu_to_le16(tx_timer_val);
+-
+-	/* Retrieve the FC threshold */
+-	val = rd32(hw, PRTMAC_HSEC_CTL_TX_PAUSE_REFRESH_TIMER(IDX_OF_LFC));
+-	fc_thres_val = val & PRTMAC_HSEC_CTL_TX_PAUSE_REFRESH_TIMER_M;
+-
+-	cmd-&gt;fc_refresh_threshold = cpu_to_le16(fc_thres_val);
++#define E800_IDX_OF_LFC E800_PRTMAC_HSEC_CTL_TX_PS_QNT_MAX
++#define E800_REFRESH_TMR E800_PRTMAC_HSEC_CTL_TX_PS_RFSH_TMR
++
++	if (hw-&gt;mac_type == ICE_MAC_E830) {
++		/* Retrieve the transmit timer */
++		val = rd32(hw, E830_PRTMAC_CL01_PS_QNT);
++		cmd-&gt;tx_tmr_value =
++			le16_encode_bits(val, E830_PRTMAC_CL01_PS_QNT_CL0_M);
++
++		/* Retrieve the fc threshold */
++		val = rd32(hw, E830_PRTMAC_CL01_QNT_THR);
++		fc_thres_m = E830_PRTMAC_CL01_QNT_THR_CL0_M;
++	} else {
++		/* Retrieve the transmit timer */
++		val = rd32(hw,
++			   E800_PRTMAC_HSEC_CTL_TX_PS_QNT(E800_IDX_OF_LFC));
++		cmd-&gt;tx_tmr_value =
++			le16_encode_bits(val,
++					 E800_PRTMAC_HSEC_CTL_TX_PS_QNT_M);
++
++		/* Retrieve the fc threshold */
++		val = rd32(hw,
++			   E800_REFRESH_TMR(E800_IDX_OF_LFC));
++		fc_thres_m = E800_PRTMAC_HSEC_CTL_TX_PS_RFSH_TMR_M;
++	}
++	cmd-&gt;fc_refresh_threshold = le16_encode_bits(val, fc_thres_m);
+ }
+ 
+ /**
+@@ -2464,16 +2482,21 @@ ice_parse_1588_func_caps(struct ice_hw *hw, struct ice_hw_func_caps *func_p,
+ static void
+ ice_parse_fdir_func_caps(struct ice_hw *hw, struct ice_hw_func_caps *func_p)
+ {
+-	u32 reg_val, val;
++	u32 reg_val, gsize, bsize;
+ 
+ 	reg_val = rd32(hw, GLQF_FD_SIZE);
+-	val = (reg_val & GLQF_FD_SIZE_FD_GSIZE_M) &gt;&gt;
+-		GLQF_FD_SIZE_FD_GSIZE_S;
+-	func_p-&gt;fd_fltr_guar =
+-		ice_get_num_per_func(hw, val);
+-	val = (reg_val & GLQF_FD_SIZE_FD_BSIZE_M) &gt;&gt;
+-		GLQF_FD_SIZE_FD_BSIZE_S;
+-	func_p-&gt;fd_fltr_best_effort = val;
++	switch (hw-&gt;mac_type) {
++	case ICE_MAC_E830:
++		gsize = FIELD_GET(E830_GLQF_FD_SIZE_FD_GSIZE_M, reg_val);
++		bsize = FIELD_GET(E830_GLQF_FD_SIZE_FD_BSIZE_M, reg_val);
++		break;
++	case ICE_MAC_E810:
++	default:
++		gsize = FIELD_GET(E800_GLQF_FD_SIZE_FD_GSIZE_M, reg_val);
++		bsize = FIELD_GET(E800_GLQF_FD_SIZE_FD_BSIZE_M, reg_val);
++	}
++	func_p-&gt;fd_fltr_guar = ice_get_num_per_func(hw, gsize);
++	func_p-&gt;fd_fltr_best_effort = bsize;
+ 
+ 	ice_debug(hw, ICE_DBG_INIT, "func caps: fd_fltr_guar = %d\n",
+ 		  func_p-&gt;fd_fltr_guar);
+diff --git a/drivers/net/ethernet/intel/ice/ice_devids.h b/drivers/net/ethernet/intel/ice/ice_devids.h
+index 6d560d1c74a4..a2d384dbfc76 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devids.h
++++ b/drivers/net/ethernet/intel/ice/ice_devids.h
+@@ -1,5 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ #ifndef _ICE_DEVIDS_H_
+ #define _ICE_DEVIDS_H_
+@@ -16,6 +16,14 @@
+ #define ICE_DEV_ID_E823L_1GBE		0x124F
+ /* Intel(R) Ethernet Connection E823-L for QSFP */
+ #define ICE_DEV_ID_E823L_QSFP		0x151D
++/* Intel(R) Ethernet Controller E830-C for backplane */
++#define ICE_DEV_ID_E830_BACKPLANE	0x12D1
++/* Intel(R) Ethernet Controller E830-C for QSFP */
++#define ICE_DEV_ID_E830_QSFP56		0x12D2
++/* Intel(R) Ethernet Controller E830-C for SFP */
++#define ICE_DEV_ID_E830_SFP		0x12D3
++/* Intel(R) Ethernet Controller E830-C for SFP-DD */
++#define ICE_DEV_ID_E830_SFP_DD		0x12D4
+ /* Intel(R) Ethernet Controller E810-C for backplane */
+ #define ICE_DEV_ID_E810C_BACKPLANE	0x1591
+ /* Intel(R) Ethernet Controller E810-C for QSFP */
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
+index 8c6e13f87b7d..d151e5bacfec 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (C) 2018-2020, Intel Corporation. */
++/* Copyright (C) 2018-2023, Intel Corporation. */
+ 
+ /* flow director ethtool support for ice */
+ 
+@@ -540,16 +540,24 @@ static int ice_fdir_num_avail_fltr(struct ice_hw *hw, struct ice_vsi *vsi)
+ 	/* total guaranteed filters assigned to this VSI */
+ 	num_guar = vsi-&gt;num_gfltr;
+ 
+-	/* minus the guaranteed filters programed by this VSI */
+-	num_guar -= (rd32(hw, VSIQF_FD_CNT(vsi_num)) &
+-		     VSIQF_FD_CNT_FD_GCNT_M) &gt;&gt; VSIQF_FD_CNT_FD_GCNT_S;
+-
+ 	/* total global best effort filters */
+ 	num_be = hw-&gt;func_caps.fd_fltr_best_effort;
+ 
+-	/* minus the global best effort filters programmed */
+-	num_be -= (rd32(hw, GLQF_FD_CNT) & GLQF_FD_CNT_FD_BCNT_M) &gt;&gt;
+-		   GLQF_FD_CNT_FD_BCNT_S;
++	/* Subtract the number of programmed filters from the global values */
++	switch (hw-&gt;mac_type) {
++	case ICE_MAC_E830:
++		num_guar -= FIELD_GET(E830_VSIQF_FD_CNT_FD_GCNT_M,
++				      rd32(hw, VSIQF_FD_CNT(vsi_num)));
++		num_be -= FIELD_GET(E830_GLQF_FD_CNT_FD_BCNT_M,
++				    rd32(hw, GLQF_FD_CNT));
++		break;
++	case ICE_MAC_E810:
++	default:
++		num_guar -= FIELD_GET(E800_VSIQF_FD_CNT_FD_GCNT_M,
++				      rd32(hw, VSIQF_FD_CNT(vsi_num)));
++		num_be -= FIELD_GET(E800_GLQF_FD_CNT_FD_BCNT_M,
++				    rd32(hw, GLQF_FD_CNT));
++	}
+ 
+ 	return num_guar + num_be;
+ }
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -1,5 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ /* Machine-generated file */
+ 
+@@ -285,11 +285,11 @@
+ #define VPLAN_TX_QBASE_VFNUMQ_M			ICE_M(0xFF, 16)
+ #define VPLAN_TXQ_MAPENA(_VF)			(0x00073800 + ((_VF) * 4))
+ #define VPLAN_TXQ_MAPENA_TX_ENA_M		BIT(0)
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA(_i)	(0x001E36E0 + ((_i) * 32))
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_MAX_INDEX 8
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_HSEC_CTL_TX_PAUSE_QUANTA_M ICE_M(0xFFFF, 0)
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_REFRESH_TIMER(_i) (0x001E3800 + ((_i) * 32))
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_REFRESH_TIMER_M ICE_M(0xFFFF, 0)
++#define E800_PRTMAC_HSEC_CTL_TX_PS_QNT(_i)	(0x001E36E0 + ((_i) * 32))
++#define E800_PRTMAC_HSEC_CTL_TX_PS_QNT_MAX	8
++#define E800_PRTMAC_HSEC_CTL_TX_PS_QNT_M	GENMASK(15, 0)
++#define E800_PRTMAC_HSEC_CTL_TX_PS_RFSH_TMR(_i)	(0x001E3800 + ((_i) * 32))
++#define E800_PRTMAC_HSEC_CTL_TX_PS_RFSH_TMR_M	GENMASK(15, 0)
+ #define GL_MDCK_TX_TDPU				0x00049348
+ #define GL_MDCK_TX_TDPU_RCU_ANTISPOOF_ITR_DIS_M BIT(1)
+ #define GL_MDET_RX				0x00294C00
+@@ -312,7 +312,11 @@
+ #define GL_MDET_TX_PQM_MAL_TYPE_S		26
+ #define GL_MDET_TX_PQM_MAL_TYPE_M		ICE_M(0x1F, 26)
+ #define GL_MDET_TX_PQM_VALID_M			BIT(31)
+-#define GL_MDET_TX_TCLAN			0x000FC068
++#define GL_MDET_TX_TCLAN_BY_MAC(hw)				  \
++	((hw)-&gt;mac_type == ICE_MAC_E830 ? E830_GL_MDET_TX_TCLAN : \
++	 E800_GL_MDET_TX_TCLAN)
++#define E800_GL_MDET_TX_TCLAN			0x000FC068
++#define E830_GL_MDET_TX_TCLAN			0x000FCCC0
+ #define GL_MDET_TX_TCLAN_QNUM_S			0
+ #define GL_MDET_TX_TCLAN_QNUM_M			ICE_M(0x7FFF, 0)
+ #define GL_MDET_TX_TCLAN_VF_NUM_S		15
+@@ -326,7 +330,11 @@
+ #define PF_MDET_RX_VALID_M			BIT(0)
+ #define PF_MDET_TX_PQM				0x002D2C80
+ #define PF_MDET_TX_PQM_VALID_M			BIT(0)
+-#define PF_MDET_TX_TCLAN			0x000FC000
++#define PF_MDET_TX_TCLAN_BY_MAC(hw)				  \
++	((hw)-&gt;mac_type == ICE_MAC_E830 ? E830_PF_MDET_TX_TCLAN : \
++	 E800_PF_MDET_TX_TCLAN)
++#define E800_PF_MDET_TX_TCLAN			0x000FC000
++#define E830_PF_MDET_TX_TCLAN			0x000FCC00
+ #define PF_MDET_TX_TCLAN_VALID_M		BIT(0)
+ #define VP_MDET_RX(_VF)				(0x00294400 + ((_VF) * 4))
+ #define VP_MDET_RX_VALID_M			BIT(0)
+@@ -336,6 +344,8 @@
+ #define VP_MDET_TX_TCLAN_VALID_M		BIT(0)
+ #define VP_MDET_TX_TDPU(_VF)			(0x00040000 + ((_VF) * 4))
+ #define VP_MDET_TX_TDPU_VALID_M			BIT(0)
++#define E800_GL_MNG_FWSM_FW_MODES_M		GENMASK(2, 0)
++#define E830_GL_MNG_FWSM_FW_MODES_M		GENMASK(1, 0)
+ #define GL_MNG_FWSM				0x000B6134
+ #define GL_MNG_FWSM_FW_LOADING_M		BIT(30)
+ #define GLNVM_FLA				0x000B6108
+@@ -364,13 +374,18 @@
+ #define GL_PWR_MODE_CTL_CAR_MAX_BW_S		30
+ #define GL_PWR_MODE_CTL_CAR_MAX_BW_M		ICE_M(0x3, 30)
+ #define GLQF_FD_CNT				0x00460018
++#define E800_GLQF_FD_CNT_FD_GCNT_M		GENMASK(14, 0)
++#define E830_GLQF_FD_CNT_FD_GCNT_M		GENMASK(15, 0)
+ #define GLQF_FD_CNT_FD_BCNT_S			16
+-#define GLQF_FD_CNT_FD_BCNT_M			ICE_M(0x7FFF, 16)
++#define E800_GLQF_FD_CNT_FD_BCNT_M		GENMASK(30, 16)
++#define E830_GLQF_FD_CNT_FD_BCNT_M		GENMASK(31, 16)
+ #define GLQF_FD_SIZE				0x00460010
+ #define GLQF_FD_SIZE_FD_GSIZE_S			0
+-#define GLQF_FD_SIZE_FD_GSIZE_M			ICE_M(0x7FFF, 0)
++#define E800_GLQF_FD_SIZE_FD_GSIZE_M		GENMASK(14, 0)
++#define E830_GLQF_FD_SIZE_FD_GSIZE_M		GENMASK(15, 0)
+ #define GLQF_FD_SIZE_FD_BSIZE_S			16
+-#define GLQF_FD_SIZE_FD_BSIZE_M			ICE_M(0x7FFF, 16)
++#define E800_GLQF_FD_SIZE_FD_BSIZE_M		GENMASK(30, 16)
++#define E830_GLQF_FD_SIZE_FD_BSIZE_M		GENMASK(31, 16)
+ #define GLQF_FDINSET(_i, _j)			(0x00412000 + ((_i) * 4 + (_j) * 512))
+ #define GLQF_FDMASK(_i)				(0x00410800 + ((_i) * 4))
+ #define GLQF_FDMASK_MAX_INDEX			31
+@@ -389,6 +404,10 @@
+ #define GLQF_HMASK_SEL(_i)			(0x00410000 + ((_i) * 4))
+ #define GLQF_HMASK_SEL_MAX_INDEX		127
+ #define GLQF_HMASK_SEL_MASK_SEL_S		0
++#define E800_PFQF_FD_CNT_FD_GCNT_M		GENMASK(14, 0)
++#define E830_PFQF_FD_CNT_FD_GCNT_M		GENMASK(15, 0)
++#define E800_PFQF_FD_CNT_FD_BCNT_M		GENMASK(30, 16)
++#define E830_PFQF_FD_CNT_FD_BCNT_M		GENMASK(31, 16)
+ #define PFQF_FD_ENA				0x0043A000
+ #define PFQF_FD_ENA_FD_ENA_M			BIT(0)
+ #define PFQF_FD_SIZE				0x00460100
+@@ -479,6 +498,7 @@
+ #define GLTSYN_SYNC_DLAY			0x00088818
+ #define GLTSYN_TGT_H_0(_i)			(0x00088930 + ((_i) * 4))
+ #define GLTSYN_TGT_L_0(_i)			(0x00088928 + ((_i) * 4))
++#define GLTSYN_TIME_0(_i)			(0x000888C8 + ((_i) * 4))
+ #define GLTSYN_TIME_H(_i)			(0x000888D8 + ((_i) * 4))
+ #define GLTSYN_TIME_L(_i)			(0x000888D0 + ((_i) * 4))
+ #define PFHH_SEM				0x000A4200 /* Reset Source: PFR */
+@@ -487,9 +507,11 @@
+ #define PFTSYN_SEM_BUSY_M			BIT(0)
+ #define VSIQF_FD_CNT(_VSI)			(0x00464000 + ((_VSI) * 4))
+ #define VSIQF_FD_CNT_FD_GCNT_S			0
+-#define VSIQF_FD_CNT_FD_GCNT_M			ICE_M(0x3FFF, 0)
++#define E800_VSIQF_FD_CNT_FD_GCNT_M		GENMASK(13, 0)
++#define E830_VSIQF_FD_CNT_FD_GCNT_M		GENMASK(15, 0)
+ #define VSIQF_FD_CNT_FD_BCNT_S			16
+-#define VSIQF_FD_CNT_FD_BCNT_M			ICE_M(0x3FFF, 16)
++#define E800_VSIQF_FD_CNT_FD_BCNT_M		GENMASK(29, 16)
++#define E830_VSIQF_FD_CNT_FD_BCNT_M		GENMASK(31, 16)
+ #define VSIQF_FD_SIZE(_VSI)			(0x00462000 + ((_VSI) * 4))
+ #define VSIQF_HKEY_MAX_INDEX			12
+ #define PFPM_APM				0x000B8080
+@@ -501,6 +523,10 @@
+ #define PFPM_WUS_MAG_M				BIT(1)
+ #define PFPM_WUS_MNG_M				BIT(3)
+ #define PFPM_WUS_FW_RST_WK_M			BIT(31)
++#define E830_PRTMAC_CL01_PS_QNT			0x001E32A0
++#define E830_PRTMAC_CL01_PS_QNT_CL0_M		GENMASK(15, 0)
++#define E830_PRTMAC_CL01_QNT_THR		0x001E3320
++#define E830_PRTMAC_CL01_QNT_THR_CL0_M		GENMASK(15, 0)
+ #define VFINT_DYN_CTLN(_i)			(0x00003800 + ((_i) * 4))
+ #define VFINT_DYN_CTLN_CLEARPBA_M		BIT(1)
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index b67c806a5a4d..da10f35d35a8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ /* Intel(R) Ethernet Connection E800 Series Linux Driver */
+ 
+@@ -1759,7 +1759,7 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
+ 		wr32(hw, GL_MDET_TX_PQM, 0xffffffff);
+ 	}
+ 
+-	reg = rd32(hw, GL_MDET_TX_TCLAN);
++	reg = rd32(hw, GL_MDET_TX_TCLAN_BY_MAC(hw));
+ 	if (reg & GL_MDET_TX_TCLAN_VALID_M) {
+ 		u8 pf_num = (reg & GL_MDET_TX_TCLAN_PF_NUM_M) &gt;&gt;
+ 				GL_MDET_TX_TCLAN_PF_NUM_S;
+@@ -1773,7 +1773,7 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
+ 		if (netif_msg_tx_err(pf))
+ 			dev_info(dev, "Malicious Driver Detection event %d on TX queue %d PF# %d VF# %d\n",
+ 				 event, queue, pf_num, vf_num);
+-		wr32(hw, GL_MDET_TX_TCLAN, 0xffffffff);
++		wr32(hw, GL_MDET_TX_TCLAN_BY_MAC(hw), U32_MAX);
+ 	}
+ 
+ 	reg = rd32(hw, GL_MDET_RX);
+@@ -1801,9 +1801,9 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
+ 			dev_info(dev, "Malicious Driver Detection event TX_PQM detected on PF\n");
+ 	}
+ 
+-	reg = rd32(hw, PF_MDET_TX_TCLAN);
++	reg = rd32(hw, PF_MDET_TX_TCLAN_BY_MAC(hw));
+ 	if (reg & PF_MDET_TX_TCLAN_VALID_M) {
+-		wr32(hw, PF_MDET_TX_TCLAN, 0xFFFF);
++		wr32(hw, PF_MDET_TX_TCLAN_BY_MAC(hw), 0xffff);
+ 		if (netif_msg_tx_err(pf))
+ 			dev_info(dev, "Malicious Driver Detection event TX_TCLAN detected on PF\n");
+ 	}
+@@ -3871,7 +3871,8 @@ static void ice_set_pf_caps(struct ice_pf *pf)
+ 	}
+ 
+ 	clear_bit(ICE_FLAG_PTP_SUPPORTED, pf-&gt;flags);
+-	if (func_caps-&gt;common_cap.ieee_1588)
++	if (func_caps-&gt;common_cap.ieee_1588 &&
++	    !(pf-&gt;hw.mac_type == ICE_MAC_E830))
+ 		set_bit(ICE_FLAG_PTP_SUPPORTED, pf-&gt;flags);
+ 
+ 	pf-&gt;max_pf_txqs = func_caps-&gt;common_cap.num_txq;
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index bb5d8b681bc2..f5d36c44abd2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -1,5 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ #ifndef _ICE_TYPE_H_
+ #define _ICE_TYPE_H_
+@@ -129,6 +129,7 @@ enum ice_set_fc_aq_failures {
+ enum ice_mac_type {
+ 	ICE_MAC_UNKNOWN = 0,
+ 	ICE_MAC_E810,
++	ICE_MAC_E830,
+ 	ICE_MAC_GENERIC,
+ };
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+index daa6a1e894cf..24b23b7ef04a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (C) 2021, Intel Corporation. */
++/* Copyright (C) 2021-2023, Intel Corporation. */
+ 
+ #include "ice.h"
+ #include "ice_base.h"
+@@ -1422,8 +1422,8 @@ ice_vc_fdir_irq_handler(struct ice_vsi *ctrl_vsi,
+  */
+ static void ice_vf_fdir_dump_info(struct ice_vf *vf)
+ {
++	u32 fd_size, fd_cnt, fd_size_g, fd_cnt_g, fd_size_b, fd_cnt_b;
+ 	struct ice_vsi *vf_vsi;
+-	u32 fd_size, fd_cnt;
+ 	struct device *dev;
+ 	struct ice_pf *pf;
+ 	struct ice_hw *hw;
+@@ -1442,12 +1442,25 @@ static void ice_vf_fdir_dump_info(struct ice_vf *vf)
+ 
+ 	fd_size = rd32(hw, VSIQF_FD_SIZE(vsi_num));
+ 	fd_cnt = rd32(hw, VSIQF_FD_CNT(vsi_num));
+-	dev_dbg(dev, "VF %d: space allocated: guar:0x%x, be:0x%x, space consumed: guar:0x%x, be:0x%x\n",
+-		vf-&gt;vf_id,
+-		(fd_size & VSIQF_FD_CNT_FD_GCNT_M) &gt;&gt; VSIQF_FD_CNT_FD_GCNT_S,
+-		(fd_size & VSIQF_FD_CNT_FD_BCNT_M) &gt;&gt; VSIQF_FD_CNT_FD_BCNT_S,
+-		(fd_cnt & VSIQF_FD_CNT_FD_GCNT_M) &gt;&gt; VSIQF_FD_CNT_FD_GCNT_S,
+-		(fd_cnt & VSIQF_FD_CNT_FD_BCNT_M) &gt;&gt; VSIQF_FD_CNT_FD_BCNT_S);
++	switch (hw-&gt;mac_type) {
++	case ICE_MAC_E830:
++		fd_size_g = FIELD_GET(E830_VSIQF_FD_CNT_FD_GCNT_M, fd_size);
++		fd_size_b = FIELD_GET(E830_VSIQF_FD_CNT_FD_BCNT_M, fd_size);
++		fd_cnt_g = FIELD_GET(E830_VSIQF_FD_CNT_FD_GCNT_M, fd_cnt);
++		fd_cnt_b = FIELD_GET(E830_VSIQF_FD_CNT_FD_BCNT_M, fd_cnt);
++		break;
++	case ICE_MAC_E810:
++	default:
++		fd_size_g = FIELD_GET(E800_VSIQF_FD_CNT_FD_GCNT_M, fd_size);
++		fd_size_b = FIELD_GET(E800_VSIQF_FD_CNT_FD_BCNT_M, fd_size);
++		fd_cnt_g = FIELD_GET(E800_VSIQF_FD_CNT_FD_GCNT_M, fd_cnt);
++		fd_cnt_b = FIELD_GET(E800_VSIQF_FD_CNT_FD_BCNT_M, fd_cnt);
++	}
++
++	dev_dbg(dev, "VF %d: Size in the FD table: guaranteed:0x%x, best effort:0x%x\n",
++		vf-&gt;vf_id, fd_size_g, fd_size_b);
++	dev_dbg(dev, "VF %d: Filter counter in the FD table: guaranteed:0x%x, best effort:0x%x\n",
++		vf-&gt;vf_id, fd_cnt_g, fd_cnt_b);
+ }
+ 
+ /**
+-- 
+2.25.1
+
+</pre>
+              </div>
+            </div>
+            
+            <div id="applied-patches" class="tab-content">
+              <h3>应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">
+
+# ===== 应用成功的补丁块 1 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 377fae41bbae..683a0d6b5337 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ #include "ice_common.h"
+ #include "ice_sched.h"
+
+
+# ===== 应用成功的补丁块 2 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 377fae41bbae..683a0d6b5337 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -759,8 +765,7 @@ static void
+ ice_fill_tx_timer_and_fc_thresh(struct ice_hw *hw,
+ 				struct ice_aqc_set_mac_cfg *cmd)
+ {
+-	u16 fc_thres_val, tx_timer_val;
+-	u32 val;
++	u32 val, fc_thres_m;
+ 
+ 	/* We read back the transmit timer and FC threshold value of
+ 	 * LFC. Thus, we will use index =
+
+
+# ===== 应用成功的补丁块 3 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 377fae41bbae..683a0d6b5337 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -769,19 +774,32 @@ ice_fill_tx_timer_and_fc_thresh(struct ice_hw *hw,
+ 	 * Also, because we are operating on transmit timer and FC
+ 	 * threshold of LFC, we don't turn on any bit in tx_tmr_priority
+ 	 */
+-#define IDX_OF_LFC PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_MAX_INDEX
+-
+-	/* Retrieve the transmit timer */
+-	val = rd32(hw, PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA(IDX_OF_LFC));
+-	tx_timer_val = val &
+-		PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_HSEC_CTL_TX_PAUSE_QUANTA_M;
+-	cmd-&gt;tx_tmr_value = cpu_to_le16(tx_timer_val);
+-
+-	/* Retrieve the FC threshold */
+-	val = rd32(hw, PRTMAC_HSEC_CTL_TX_PAUSE_REFRESH_TIMER(IDX_OF_LFC));
+-	fc_thres_val = val & PRTMAC_HSEC_CTL_TX_PAUSE_REFRESH_TIMER_M;
+-
+-	cmd-&gt;fc_refresh_threshold = cpu_to_le16(fc_thres_val);
++#define E800_IDX_OF_LFC E800_PRTMAC_HSEC_CTL_TX_PS_QNT_MAX
++#define E800_REFRESH_TMR E800_PRTMAC_HSEC_CTL_TX_PS_RFSH_TMR
++
++	if (hw-&gt;mac_type == ICE_MAC_E830) {
++		/* Retrieve the transmit timer */
++		val = rd32(hw, E830_PRTMAC_CL01_PS_QNT);
++		cmd-&gt;tx_tmr_value =
++			le16_encode_bits(val, E830_PRTMAC_CL01_PS_QNT_CL0_M);
++
++		/* Retrieve the fc threshold */
++		val = rd32(hw, E830_PRTMAC_CL01_QNT_THR);
++		fc_thres_m = E830_PRTMAC_CL01_QNT_THR_CL0_M;
++	} else {
++		/* Retrieve the transmit timer */
++		val = rd32(hw,
++			   E800_PRTMAC_HSEC_CTL_TX_PS_QNT(E800_IDX_OF_LFC));
++		cmd-&gt;tx_tmr_value =
++			le16_encode_bits(val,
++					 E800_PRTMAC_HSEC_CTL_TX_PS_QNT_M);
++
++		/* Retrieve the fc threshold */
++		val = rd32(hw,
++			   E800_REFRESH_TMR(E800_IDX_OF_LFC));
++		fc_thres_m = E800_PRTMAC_HSEC_CTL_TX_PS_RFSH_TMR_M;
++	}
++	cmd-&gt;fc_refresh_threshold = le16_encode_bits(val, fc_thres_m);
+ }
+ 
+ /**
+
+
+# ===== 应用成功的补丁块 4 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 377fae41bbae..683a0d6b5337 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -2464,16 +2482,21 @@ ice_parse_1588_func_caps(struct ice_hw *hw, struct ice_hw_func_caps *func_p,
+ static void
+ ice_parse_fdir_func_caps(struct ice_hw *hw, struct ice_hw_func_caps *func_p)
+ {
+-	u32 reg_val, val;
++	u32 reg_val, gsize, bsize;
+ 
+ 	reg_val = rd32(hw, GLQF_FD_SIZE);
+-	val = (reg_val & GLQF_FD_SIZE_FD_GSIZE_M) &gt;&gt;
+-		GLQF_FD_SIZE_FD_GSIZE_S;
+-	func_p-&gt;fd_fltr_guar =
+-		ice_get_num_per_func(hw, val);
+-	val = (reg_val & GLQF_FD_SIZE_FD_BSIZE_M) &gt;&gt;
+-		GLQF_FD_SIZE_FD_BSIZE_S;
+-	func_p-&gt;fd_fltr_best_effort = val;
++	switch (hw-&gt;mac_type) {
++	case ICE_MAC_E830:
++		gsize = FIELD_GET(E830_GLQF_FD_SIZE_FD_GSIZE_M, reg_val);
++		bsize = FIELD_GET(E830_GLQF_FD_SIZE_FD_BSIZE_M, reg_val);
++		break;
++	case ICE_MAC_E810:
++	default:
++		gsize = FIELD_GET(E800_GLQF_FD_SIZE_FD_GSIZE_M, reg_val);
++		bsize = FIELD_GET(E800_GLQF_FD_SIZE_FD_BSIZE_M, reg_val);
++	}
++	func_p-&gt;fd_fltr_guar = ice_get_num_per_func(hw, gsize);
++	func_p-&gt;fd_fltr_best_effort = bsize;
+ 
+ 	ice_debug(hw, ICE_DBG_INIT, "func caps: fd_fltr_guar = %d\n",
+ 		  func_p-&gt;fd_fltr_guar);
+
+
+# ===== 应用成功的补丁块 5 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_devids.h b/drivers/net/ethernet/intel/ice/ice_devids.h
+index 6d560d1c74a4..a2d384dbfc76 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devids.h
++++ b/drivers/net/ethernet/intel/ice/ice_devids.h
+@@ -1,5 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ #ifndef _ICE_DEVIDS_H_
+ #define _ICE_DEVIDS_H_
+
+
+# ===== 应用成功的补丁块 6 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
+index 8c6e13f87b7d..d151e5bacfec 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (C) 2018-2020, Intel Corporation. */
++/* Copyright (C) 2018-2023, Intel Corporation. */
+ 
+ /* flow director ethtool support for ice */
+ 
+
+
+# ===== 应用成功的补丁块 7 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
+index 8c6e13f87b7d..d151e5bacfec 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
+@@ -540,16 +540,24 @@ static int ice_fdir_num_avail_fltr(struct ice_hw *hw, struct ice_vsi *vsi)
+ 	/* total guaranteed filters assigned to this VSI */
+ 	num_guar = vsi-&gt;num_gfltr;
+ 
+-	/* minus the guaranteed filters programed by this VSI */
+-	num_guar -= (rd32(hw, VSIQF_FD_CNT(vsi_num)) &
+-		     VSIQF_FD_CNT_FD_GCNT_M) &gt;&gt; VSIQF_FD_CNT_FD_GCNT_S;
+-
+ 	/* total global best effort filters */
+ 	num_be = hw-&gt;func_caps.fd_fltr_best_effort;
+ 
+-	/* minus the global best effort filters programmed */
+-	num_be -= (rd32(hw, GLQF_FD_CNT) & GLQF_FD_CNT_FD_BCNT_M) &gt;&gt;
+-		   GLQF_FD_CNT_FD_BCNT_S;
++	/* Subtract the number of programmed filters from the global values */
++	switch (hw-&gt;mac_type) {
++	case ICE_MAC_E830:
++		num_guar -= FIELD_GET(E830_VSIQF_FD_CNT_FD_GCNT_M,
++				      rd32(hw, VSIQF_FD_CNT(vsi_num)));
++		num_be -= FIELD_GET(E830_GLQF_FD_CNT_FD_BCNT_M,
++				    rd32(hw, GLQF_FD_CNT));
++		break;
++	case ICE_MAC_E810:
++	default:
++		num_guar -= FIELD_GET(E800_VSIQF_FD_CNT_FD_GCNT_M,
++				      rd32(hw, VSIQF_FD_CNT(vsi_num)));
++		num_be -= FIELD_GET(E800_GLQF_FD_CNT_FD_BCNT_M,
++				    rd32(hw, GLQF_FD_CNT));
++	}
+ 
+ 	return num_guar + num_be;
+ }
+
+
+# ===== 应用成功的补丁块 8 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -1,5 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ /* Machine-generated file */
+ 
+
+
+# ===== 应用成功的补丁块 9 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -285,11 +285,11 @@
+ #define VPLAN_TX_QBASE_VFNUMQ_M			ICE_M(0xFF, 16)
+ #define VPLAN_TXQ_MAPENA(_VF)			(0x00073800 + ((_VF) * 4))
+ #define VPLAN_TXQ_MAPENA_TX_ENA_M		BIT(0)
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA(_i)	(0x001E36E0 + ((_i) * 32))
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_MAX_INDEX 8
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_QUANTA_HSEC_CTL_TX_PAUSE_QUANTA_M ICE_M(0xFFFF, 0)
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_REFRESH_TIMER(_i) (0x001E3800 + ((_i) * 32))
+-#define PRTMAC_HSEC_CTL_TX_PAUSE_REFRESH_TIMER_M ICE_M(0xFFFF, 0)
++#define E800_PRTMAC_HSEC_CTL_TX_PS_QNT(_i)	(0x001E36E0 + ((_i) * 32))
++#define E800_PRTMAC_HSEC_CTL_TX_PS_QNT_MAX	8
++#define E800_PRTMAC_HSEC_CTL_TX_PS_QNT_M	GENMASK(15, 0)
++#define E800_PRTMAC_HSEC_CTL_TX_PS_RFSH_TMR(_i)	(0x001E3800 + ((_i) * 32))
++#define E800_PRTMAC_HSEC_CTL_TX_PS_RFSH_TMR_M	GENMASK(15, 0)
+ #define GL_MDCK_TX_TDPU				0x00049348
+ #define GL_MDCK_TX_TDPU_RCU_ANTISPOOF_ITR_DIS_M BIT(1)
+ #define GL_MDET_RX				0x00294C00
+
+
+# ===== 应用成功的补丁块 10 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -312,7 +312,11 @@
+ #define GL_MDET_TX_PQM_MAL_TYPE_S		26
+ #define GL_MDET_TX_PQM_MAL_TYPE_M		ICE_M(0x1F, 26)
+ #define GL_MDET_TX_PQM_VALID_M			BIT(31)
+-#define GL_MDET_TX_TCLAN			0x000FC068
++#define GL_MDET_TX_TCLAN_BY_MAC(hw)				  \
++	((hw)-&gt;mac_type == ICE_MAC_E830 ? E830_GL_MDET_TX_TCLAN : \
++	 E800_GL_MDET_TX_TCLAN)
++#define E800_GL_MDET_TX_TCLAN			0x000FC068
++#define E830_GL_MDET_TX_TCLAN			0x000FCCC0
+ #define GL_MDET_TX_TCLAN_QNUM_S			0
+ #define GL_MDET_TX_TCLAN_QNUM_M			ICE_M(0x7FFF, 0)
+ #define GL_MDET_TX_TCLAN_VF_NUM_S		15
+
+
+# ===== 应用成功的补丁块 11 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -326,7 +330,11 @@
+ #define PF_MDET_RX_VALID_M			BIT(0)
+ #define PF_MDET_TX_PQM				0x002D2C80
+ #define PF_MDET_TX_PQM_VALID_M			BIT(0)
+-#define PF_MDET_TX_TCLAN			0x000FC000
++#define PF_MDET_TX_TCLAN_BY_MAC(hw)				  \
++	((hw)-&gt;mac_type == ICE_MAC_E830 ? E830_PF_MDET_TX_TCLAN : \
++	 E800_PF_MDET_TX_TCLAN)
++#define E800_PF_MDET_TX_TCLAN			0x000FC000
++#define E830_PF_MDET_TX_TCLAN			0x000FCC00
+ #define PF_MDET_TX_TCLAN_VALID_M		BIT(0)
+ #define VP_MDET_RX(_VF)				(0x00294400 + ((_VF) * 4))
+ #define VP_MDET_RX_VALID_M			BIT(0)
+
+
+# ===== 应用成功的补丁块 12 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -336,6 +344,8 @@
+ #define VP_MDET_TX_TCLAN_VALID_M		BIT(0)
+ #define VP_MDET_TX_TDPU(_VF)			(0x00040000 + ((_VF) * 4))
+ #define VP_MDET_TX_TDPU_VALID_M			BIT(0)
++#define E800_GL_MNG_FWSM_FW_MODES_M		GENMASK(2, 0)
++#define E830_GL_MNG_FWSM_FW_MODES_M		GENMASK(1, 0)
+ #define GL_MNG_FWSM				0x000B6134
+ #define GL_MNG_FWSM_FW_LOADING_M		BIT(30)
+ #define GLNVM_FLA				0x000B6108
+
+
+# ===== 应用成功的补丁块 13 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -364,13 +374,18 @@
+ #define GL_PWR_MODE_CTL_CAR_MAX_BW_S		30
+ #define GL_PWR_MODE_CTL_CAR_MAX_BW_M		ICE_M(0x3, 30)
+ #define GLQF_FD_CNT				0x00460018
++#define E800_GLQF_FD_CNT_FD_GCNT_M		GENMASK(14, 0)
++#define E830_GLQF_FD_CNT_FD_GCNT_M		GENMASK(15, 0)
+ #define GLQF_FD_CNT_FD_BCNT_S			16
+-#define GLQF_FD_CNT_FD_BCNT_M			ICE_M(0x7FFF, 16)
++#define E800_GLQF_FD_CNT_FD_BCNT_M		GENMASK(30, 16)
++#define E830_GLQF_FD_CNT_FD_BCNT_M		GENMASK(31, 16)
+ #define GLQF_FD_SIZE				0x00460010
+ #define GLQF_FD_SIZE_FD_GSIZE_S			0
+-#define GLQF_FD_SIZE_FD_GSIZE_M			ICE_M(0x7FFF, 0)
++#define E800_GLQF_FD_SIZE_FD_GSIZE_M		GENMASK(14, 0)
++#define E830_GLQF_FD_SIZE_FD_GSIZE_M		GENMASK(15, 0)
+ #define GLQF_FD_SIZE_FD_BSIZE_S			16
+-#define GLQF_FD_SIZE_FD_BSIZE_M			ICE_M(0x7FFF, 16)
++#define E800_GLQF_FD_SIZE_FD_BSIZE_M		GENMASK(30, 16)
++#define E830_GLQF_FD_SIZE_FD_BSIZE_M		GENMASK(31, 16)
+ #define GLQF_FDINSET(_i, _j)			(0x00412000 + ((_i) * 4 + (_j) * 512))
+ #define GLQF_FDMASK(_i)				(0x00410800 + ((_i) * 4))
+ #define GLQF_FDMASK_MAX_INDEX			31
+
+
+# ===== 应用成功的补丁块 14 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -479,6 +498,7 @@
+ #define GLTSYN_SYNC_DLAY			0x00088818
+ #define GLTSYN_TGT_H_0(_i)			(0x00088930 + ((_i) * 4))
+ #define GLTSYN_TGT_L_0(_i)			(0x00088928 + ((_i) * 4))
++#define GLTSYN_TIME_0(_i)			(0x000888C8 + ((_i) * 4))
+ #define GLTSYN_TIME_H(_i)			(0x000888D8 + ((_i) * 4))
+ #define GLTSYN_TIME_L(_i)			(0x000888D0 + ((_i) * 4))
+ #define PFHH_SEM				0x000A4200 /* Reset Source: PFR */
+
+
+# ===== 应用成功的补丁块 15 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -487,9 +507,11 @@
+ #define PFTSYN_SEM_BUSY_M			BIT(0)
+ #define VSIQF_FD_CNT(_VSI)			(0x00464000 + ((_VSI) * 4))
+ #define VSIQF_FD_CNT_FD_GCNT_S			0
+-#define VSIQF_FD_CNT_FD_GCNT_M			ICE_M(0x3FFF, 0)
++#define E800_VSIQF_FD_CNT_FD_GCNT_M		GENMASK(13, 0)
++#define E830_VSIQF_FD_CNT_FD_GCNT_M		GENMASK(15, 0)
+ #define VSIQF_FD_CNT_FD_BCNT_S			16
+-#define VSIQF_FD_CNT_FD_BCNT_M			ICE_M(0x3FFF, 16)
++#define E800_VSIQF_FD_CNT_FD_BCNT_M		GENMASK(29, 16)
++#define E830_VSIQF_FD_CNT_FD_BCNT_M		GENMASK(31, 16)
+ #define VSIQF_FD_SIZE(_VSI)			(0x00462000 + ((_VSI) * 4))
+ #define VSIQF_HKEY_MAX_INDEX			12
+ #define PFPM_APM				0x000B8080
+
+
+# ===== 应用成功的补丁块 16 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -501,6 +523,10 @@
+ #define PFPM_WUS_MAG_M				BIT(1)
+ #define PFPM_WUS_MNG_M				BIT(3)
+ #define PFPM_WUS_FW_RST_WK_M			BIT(31)
++#define E830_PRTMAC_CL01_PS_QNT			0x001E32A0
++#define E830_PRTMAC_CL01_PS_QNT_CL0_M		GENMASK(15, 0)
++#define E830_PRTMAC_CL01_QNT_THR		0x001E3320
++#define E830_PRTMAC_CL01_QNT_THR_CL0_M		GENMASK(15, 0)
+ #define VFINT_DYN_CTLN(_i)			(0x00003800 + ((_i) * 4))
+ #define VFINT_DYN_CTLN_CLEARPBA_M		BIT(1)
+ 
+
+
+# ===== 应用成功的补丁块 17 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index b67c806a5a4d..da10f35d35a8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ /* Intel(R) Ethernet Connection E800 Series Linux Driver */
+ 
+
+
+# ===== 应用成功的补丁块 18 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index b67c806a5a4d..da10f35d35a8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -1773,7 +1773,7 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
+ 		if (netif_msg_tx_err(pf))
+ 			dev_info(dev, "Malicious Driver Detection event %d on TX queue %d PF# %d VF# %d\n",
+ 				 event, queue, pf_num, vf_num);
+-		wr32(hw, GL_MDET_TX_TCLAN, 0xffffffff);
++		wr32(hw, GL_MDET_TX_TCLAN_BY_MAC(hw), U32_MAX);
+ 	}
+ 
+ 	reg = rd32(hw, GL_MDET_RX);
+
+
+# ===== 应用成功的补丁块 19 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index b67c806a5a4d..da10f35d35a8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -1801,9 +1801,9 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
+ 			dev_info(dev, "Malicious Driver Detection event TX_PQM detected on PF\n");
+ 	}
+ 
+-	reg = rd32(hw, PF_MDET_TX_TCLAN);
++	reg = rd32(hw, PF_MDET_TX_TCLAN_BY_MAC(hw));
+ 	if (reg & PF_MDET_TX_TCLAN_VALID_M) {
+-		wr32(hw, PF_MDET_TX_TCLAN, 0xFFFF);
++		wr32(hw, PF_MDET_TX_TCLAN_BY_MAC(hw), 0xffff);
+ 		if (netif_msg_tx_err(pf))
+ 			dev_info(dev, "Malicious Driver Detection event TX_TCLAN detected on PF\n");
+ 	}
+
+
+# ===== 应用成功的补丁块 20 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index b67c806a5a4d..da10f35d35a8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -3871,7 +3871,8 @@ static void ice_set_pf_caps(struct ice_pf *pf)
+ 	}
+ 
+ 	clear_bit(ICE_FLAG_PTP_SUPPORTED, pf-&gt;flags);
+-	if (func_caps-&gt;common_cap.ieee_1588)
++	if (func_caps-&gt;common_cap.ieee_1588 &&
++	    !(pf-&gt;hw.mac_type == ICE_MAC_E830))
+ 		set_bit(ICE_FLAG_PTP_SUPPORTED, pf-&gt;flags);
+ 
+ 	pf-&gt;max_pf_txqs = func_caps-&gt;common_cap.num_txq;
+
+
+# ===== 应用成功的补丁块 21 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index bb5d8b681bc2..f5d36c44abd2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -1,5 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-/* Copyright (c) 2018, Intel Corporation. */
++/* Copyright (c) 2018-2023, Intel Corporation. */
+ 
+ #ifndef _ICE_TYPE_H_
+ #define _ICE_TYPE_H_
+
+
+# ===== 应用成功的补丁块 22 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+index daa6a1e894cf..24b23b7ef04a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (C) 2021, Intel Corporation. */
++/* Copyright (C) 2021-2023, Intel Corporation. */
+ 
+ #include "ice.h"
+ #include "ice_base.h"
+
+
+# ===== 应用成功的补丁块 23 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+index daa6a1e894cf..24b23b7ef04a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+@@ -1422,8 +1422,8 @@ ice_vc_fdir_irq_handler(struct ice_vsi *ctrl_vsi,
+  */
+ static void ice_vf_fdir_dump_info(struct ice_vf *vf)
+ {
++	u32 fd_size, fd_cnt, fd_size_g, fd_cnt_g, fd_size_b, fd_cnt_b;
+ 	struct ice_vsi *vf_vsi;
+-	u32 fd_size, fd_cnt;
+ 	struct device *dev;
+ 	struct ice_pf *pf;
+ 	struct ice_hw *hw;
+
+
+# ===== 应用成功的补丁块 24 =====
+
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+index daa6a1e894cf..24b23b7ef04a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+@@ -1442,12 +1442,25 @@ static void ice_vf_fdir_dump_info(struct ice_vf *vf)
+ 
+ 	fd_size = rd32(hw, VSIQF_FD_SIZE(vsi_num));
+ 	fd_cnt = rd32(hw, VSIQF_FD_CNT(vsi_num));
+-	dev_dbg(dev, "VF %d: space allocated: guar:0x%x, be:0x%x, space consumed: guar:0x%x, be:0x%x\n",
+-		vf-&gt;vf_id,
+-		(fd_size & VSIQF_FD_CNT_FD_GCNT_M) &gt;&gt; VSIQF_FD_CNT_FD_GCNT_S,
+-		(fd_size & VSIQF_FD_CNT_FD_BCNT_M) &gt;&gt; VSIQF_FD_CNT_FD_BCNT_S,
+-		(fd_cnt & VSIQF_FD_CNT_FD_GCNT_M) &gt;&gt; VSIQF_FD_CNT_FD_GCNT_S,
+-		(fd_cnt & VSIQF_FD_CNT_FD_BCNT_M) &gt;&gt; VSIQF_FD_CNT_FD_BCNT_S);
++	switch (hw-&gt;mac_type) {
++	case ICE_MAC_E830:
++		fd_size_g = FIELD_GET(E830_VSIQF_FD_CNT_FD_GCNT_M, fd_size);
++		fd_size_b = FIELD_GET(E830_VSIQF_FD_CNT_FD_BCNT_M, fd_size);
++		fd_cnt_g = FIELD_GET(E830_VSIQF_FD_CNT_FD_GCNT_M, fd_cnt);
++		fd_cnt_b = FIELD_GET(E830_VSIQF_FD_CNT_FD_BCNT_M, fd_cnt);
++		break;
++	case ICE_MAC_E810:
++	default:
++		fd_size_g = FIELD_GET(E800_VSIQF_FD_CNT_FD_GCNT_M, fd_size);
++		fd_size_b = FIELD_GET(E800_VSIQF_FD_CNT_FD_BCNT_M, fd_size);
++		fd_cnt_g = FIELD_GET(E800_VSIQF_FD_CNT_FD_GCNT_M, fd_cnt);
++		fd_cnt_b = FIELD_GET(E800_VSIQF_FD_CNT_FD_BCNT_M, fd_cnt);
++	}
++
++	dev_dbg(dev, "VF %d: Size in the FD table: guaranteed:0x%x, best effort:0x%x\n",
++		vf-&gt;vf_id, fd_size_g, fd_size_b);
++	dev_dbg(dev, "VF %d: Filter counter in the FD table: guaranteed:0x%x, best effort:0x%x\n",
++		vf-&gt;vf_id, fd_cnt_g, fd_cnt_b);
+ }
+ 
+ /**
+-- 
+2.25.1
+
+</pre>
+              </div>
+            </div>
+            
+            <div id="remaining-patch" class="tab-content">
+              <h3>未应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)-&gt;mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Signed-off-by: Milena Olech &lt;milena.olech@intel.com&gt;
+Co-developed-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Signed-off-by: Dan Nowlin &lt;dan.nowlin@intel.com&gt;
+Co-developed-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Signed-off-by: Scott Taylor &lt;scott.w.taylor@intel.com&gt;
+Co-developed-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Signed-off-by: Pawel Chmielewski &lt;pawel.chmielewski@intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Signed-off-by: Paul Greenwalt &lt;paul.greenwalt@intel.com&gt;
+Tested-by: Tony Brelinski &lt;tony.brelinski@intel.com&gt;
+Signed-off-by: Jacob Keller &lt;jacob.e.keller@intel.com&gt;
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 377fae41bbae..683a0d6b5337 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -154,6 +154,12 @@ static int ice_set_mac_type(struct ice_hw *hw)
+ 	case ICE_DEV_ID_E823L_SFP:
+ 		hw-&gt;mac_type = ICE_MAC_GENERIC;
+ 		break;
++	case ICE_DEV_ID_E830_BACKPLANE:
++	case ICE_DEV_ID_E830_QSFP56:
++	case ICE_DEV_ID_E830_SFP:
++	case ICE_DEV_ID_E830_SFP_DD:
++		hw-&gt;mac_type = ICE_MAC_E830;
++		break;
+ 	default:
+ 		hw-&gt;mac_type = ICE_MAC_UNKNOWN;
+ 		break;
+diff --git a/drivers/net/ethernet/intel/ice/ice_devids.h b/drivers/net/ethernet/intel/ice/ice_devids.h
+index 6d560d1c74a4..a2d384dbfc76 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devids.h
++++ b/drivers/net/ethernet/intel/ice/ice_devids.h
+@@ -16,6 +16,14 @@
+ #define ICE_DEV_ID_E823L_1GBE		0x124F
+ /* Intel(R) Ethernet Connection E823-L for QSFP */
+ #define ICE_DEV_ID_E823L_QSFP		0x151D
++/* Intel(R) Ethernet Controller E830-C for backplane */
++#define ICE_DEV_ID_E830_BACKPLANE	0x12D1
++/* Intel(R) Ethernet Controller E830-C for QSFP */
++#define ICE_DEV_ID_E830_QSFP56		0x12D2
++/* Intel(R) Ethernet Controller E830-C for SFP */
++#define ICE_DEV_ID_E830_SFP		0x12D3
++/* Intel(R) Ethernet Controller E830-C for SFP-DD */
++#define ICE_DEV_ID_E830_SFP_DD		0x12D4
+ /* Intel(R) Ethernet Controller E810-C for backplane */
+ #define ICE_DEV_ID_E810C_BACKPLANE	0x1591
+ /* Intel(R) Ethernet Controller E810-C for QSFP */
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -389,6 +404,10 @@
+ #define GLQF_HMASK_SEL(_i)			(0x00410000 + ((_i) * 4))
+ #define GLQF_HMASK_SEL_MAX_INDEX		127
+ #define GLQF_HMASK_SEL_MASK_SEL_S		0
++#define E800_PFQF_FD_CNT_FD_GCNT_M		GENMASK(14, 0)
++#define E830_PFQF_FD_CNT_FD_GCNT_M		GENMASK(15, 0)
++#define E800_PFQF_FD_CNT_FD_BCNT_M		GENMASK(30, 16)
++#define E830_PFQF_FD_CNT_FD_BCNT_M		GENMASK(31, 16)
+ #define PFQF_FD_ENA				0x0043A000
+ #define PFQF_FD_ENA_FD_ENA_M			BIT(0)
+ #define PFQF_FD_SIZE				0x00460100
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index b67c806a5a4d..da10f35d35a8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -1759,7 +1759,7 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
+ 		wr32(hw, GL_MDET_TX_PQM, 0xffffffff);
+ 	}
+ 
+-	reg = rd32(hw, GL_MDET_TX_TCLAN);
++	reg = rd32(hw, GL_MDET_TX_TCLAN_BY_MAC(hw));
+ 	if (reg & GL_MDET_TX_TCLAN_VALID_M) {
+ 		u8 pf_num = (reg & GL_MDET_TX_TCLAN_PF_NUM_M) &gt;&gt;
+ 				GL_MDET_TX_TCLAN_PF_NUM_S;
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index bb5d8b681bc2..f5d36c44abd2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -129,6 +129,7 @@ enum ice_set_fc_aq_failures {
+ enum ice_mac_type {
+ 	ICE_MAC_UNKNOWN = 0,
+ 	ICE_MAC_E810,
++	ICE_MAC_E830,
+ 	ICE_MAC_GENERIC,
+ };
+ 
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+                <div class="card">
+                  <h2>应用成功的补丁块</h2>
+                  <table>
+                    <tr>
+                      <th>块索引</th>
+                      <th>修改文件</th>
+                      <th>修改位置</th>
+                      <th>操作</th>
+                    </tr>
+                    
+                    <tr>
+                      <td>1</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_common.c</td>
+                      <td>1-1</td>
+                      <td><a href="applied_chunk_1.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>2</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_common.c</td>
+                      <td>759-765</td>
+                      <td><a href="applied_chunk_2.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>3</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_common.c</td>
+                      <td>769-774</td>
+                      <td><a href="applied_chunk_3.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>4</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_common.c</td>
+                      <td>2464-2482</td>
+                      <td><a href="applied_chunk_4.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>5</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_devids.h</td>
+                      <td>1-1</td>
+                      <td><a href="applied_chunk_5.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>6</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c</td>
+                      <td>1-1</td>
+                      <td><a href="applied_chunk_6.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>7</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c</td>
+                      <td>540-540</td>
+                      <td><a href="applied_chunk_7.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>8</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_hw_autogen.h</td>
+                      <td>1-1</td>
+                      <td><a href="applied_chunk_8.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>9</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_hw_autogen.h</td>
+                      <td>285-285</td>
+                      <td><a href="applied_chunk_9.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>10</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_hw_autogen.h</td>
+                      <td>312-312</td>
+                      <td><a href="applied_chunk_10.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>11</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_hw_autogen.h</td>
+                      <td>326-330</td>
+                      <td><a href="applied_chunk_11.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>12</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_hw_autogen.h</td>
+                      <td>336-344</td>
+                      <td><a href="applied_chunk_12.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>13</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_hw_autogen.h</td>
+                      <td>364-374</td>
+                      <td><a href="applied_chunk_13.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>14</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_hw_autogen.h</td>
+                      <td>479-498</td>
+                      <td><a href="applied_chunk_14.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>15</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_hw_autogen.h</td>
+                      <td>487-507</td>
+                      <td><a href="applied_chunk_15.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>16</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_hw_autogen.h</td>
+                      <td>501-523</td>
+                      <td><a href="applied_chunk_16.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>17</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_main.c</td>
+                      <td>1-1</td>
+                      <td><a href="applied_chunk_17.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>18</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_main.c</td>
+                      <td>1773-1773</td>
+                      <td><a href="applied_chunk_18.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>19</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_main.c</td>
+                      <td>1801-1801</td>
+                      <td><a href="applied_chunk_19.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>20</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_main.c</td>
+                      <td>3871-3871</td>
+                      <td><a href="applied_chunk_20.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>21</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_type.h</td>
+                      <td>1-1</td>
+                      <td><a href="applied_chunk_21.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>22</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c</td>
+                      <td>1-1</td>
+                      <td><a href="applied_chunk_22.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>23</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c</td>
+                      <td>1422-1422</td>
+                      <td><a href="applied_chunk_23.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>24</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c</td>
+                      <td>1442-1442</td>
+                      <td><a href="applied_chunk_24.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+                  </table>
+                </div>
+                
+            <div class="card">
+              <h2>剩余补丁</h2>
+              <p>有 <strong class="info">5</strong> 个块未成功应用，已生成剩余补丁:</p>
+              <p><code>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/ba1124/chunk_patches/remaining_chunks_20250619_160646.patch</code></p>
+              <p><a href="remaining_patch.diff" target="_blank">查看剩余补丁</a></p>
+            </div>
+            
+        <style>
+        .code-container {
+          max-height: 500px;
+          overflow-y: auto;
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          border: 1px solid #eee;
+        }
+        
+        .code-block {
+          padding: 15px;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: monospace;
+          font-size: 13px;
+          line-height: 1.4;
+        }
+        
+        /* 为补丁内容添加语法高亮 */
+        .code-block .add {
+          background-color: #e6ffed;
+          color: #22863a;
+        }
+        
+        .code-block .remove {
+          background-color: #ffeef0;
+          color: #cb2431;
+        }
+        
+        .code-block .hunk {
+          color: #0366d6;
+          background-color: #f1f8ff;
+        }
+        
+        .code-block .header {
+          color: #6f42c1;
+          font-weight: bold;
+        }
+        </style>
+        
+        <script>
+        // 对补丁内容应用简单的语法高亮
+        document.addEventListener('DOMContentLoaded', function() {
+          const codeBlocks = document.querySelectorAll('.code-block');
+          codeBlocks.forEach(function(block) {
+            let html = block.innerHTML;
+            
+            // 替换添加的行
+            html = html.replace(/^(\+[^+].*)/gm, '<span class="add">$1</span>');
+            
+            // 替换删除的行
+            html = html.replace(/^(-[^-].*)/gm, '<span class="remove">$1</span>');
+            
+            // 替换区块头
+            html = html.replace(/^(@@.*@@)/gm, '<span class="hunk">$1</span>');
+            
+            // 替换diff头 - 修复无效转义序列
+            html = html.replace(/^(diff --git.*|index.*|---.*|\+\+\+.*)/gm, '<span class="header">$1</span>');
+            
+            block.innerHTML = html;
+          });
+        });
+        </script>
+        
+    
+  </div>
+</body>
+</html>

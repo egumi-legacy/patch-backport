@@ -1,0 +1,29 @@
+From e88f7376fe68dbf4ebaf11fad1513ce700b45860 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Tue, 25 Feb 2025 09:40:54 +0100
+Subject: [PATCH] [4.2.x] Fixed CVE-2025-26699 -- Mitigated potential DoS in
+ wordwrap template filter.
+
+Thanks sw0rd1ight for the report.
+
+Backport of 55d89e25f4115c5674cdd9b9bcba2bb2bb6d820b from main.
+---
+ django/utils/text.py                          | 28 +++++++------------
+ docs/releases/4.2.20.txt                      |  6 ++++
+ .../filter_tests/test_wordwrap.py             | 11 ++++++++
+ 3 files changed, 27 insertions(+), 18 deletions(-)
+
+diff --git a/docs/releases/4.2.20.txt b/docs/releases/4.2.20.txt
+index c71fa05f43c5..5849fe2a42ed 100644
+--- a/docs/releases/4.2.20.txt
++++ b/docs/releases/4.2.20.txt
+@@ -5,3 +5,9 @@ Django 4.2.20 release notes
+ *March 6, 2025*
+ 
+ Django 4.2.20 fixes a security issue with severity "moderate" in 4.2.19.
++
++CVE-2025-26699: Potential denial-of-service vulnerability in ``django.utils.text.wrap()``
++=========================================================================================
++
++The ``wrap()`` and :tfilter:`wordwrap` template filter were subject to a
++potential denial-of-service attack when used with very long strings.

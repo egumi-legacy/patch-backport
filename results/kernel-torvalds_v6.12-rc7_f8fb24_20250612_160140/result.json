@@ -1,0 +1,106 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "chunks_info": {
+      "total_chunks": 10,
+      "no_conflict_chunks": 9,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 1,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-12T16:01:40.083508"
+  },
+  "to_adapt_commit": {
+    "sha": "f8fb2403ddebb5eea0033d90d9daae4c88749ada.patch",
+    "patch_url": "https://github.com/linux/kernel-torvalds/commit/f8fb2403ddebb5eea0033d90d9daae4c88749ada",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "workspace/linux/kernel-torvalds/f8fb24/patches/merged_v6.12-rc7.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "v6.12-rc7",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/ufs/host/ufshcd-pltfrm.c:534\nerror: drivers/ufs/host/ufshcd-pltfrm.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/patches/upstream_f8fb24.patch",
+      "timestamp": "2025-06-12T16:01:17.029335"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/patches/upstream_f8fb24.patch",
+      "total_chunks": 10,
+      "applied_chunks": 9,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_001_20250612_160117.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_002_20250612_160117.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_003_20250612_160117.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_004_20250612_160117.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_005_20250612_160117.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_006_20250612_160117.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_007_20250612_160117.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_008_20250612_160117.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_010_20250612_160117.patch"
+      ],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/remaining_chunks_20250612_160117.patch",
+      "timestamp": "2025-06-12T16:01:17.321100",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/drivers/ufs/host/ufshcd-pltfrm.c b/drivers/ufs/host/ufshcd-pltfrm.c\nindex 505572d4fa87..ffe5d1d2b215 100644\n--- a/drivers/ufs/host/ufshcd-pltfrm.c\n+++ b/drivers/ufs/host/ufshcd-pltfrm.c\n@@ -534,7 +525,6 @@ void ufshcd_pltfrm_remove(struct platform_device *pdev)\n \n \tpm_runtime_get_sync(&pdev->dev);\n \tufshcd_remove(hba);\n-\tufshcd_dealloc_host(hba);\n \tpm_runtime_disable(&pdev->dev);\n \tpm_runtime_put_noidle(&pdev->dev);\n }",
+      "prompt": {
+        "patch_content": "From f8fb2403ddebb5eea0033d90d9daae4c88749ada Mon Sep 17 00:00:00 2001\nFrom: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>\nDate: Fri, 24 Jan 2025 15:09:00 +0000\nSubject: [PATCH] scsi: ufs: core: Fix use-after free in init error and remove\n paths\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\ndevm_blk_crypto_profile_init() registers a cleanup handler to run when\nthe associated (platform-) device is being released. For UFS, the\ncrypto private data and pointers are stored as part of the ufs_hba's\ndata structure 'struct ufs_hba::crypto_profile'. This structure is\nallocated as part of the underlying ufshcd and therefore Scsi_host\nallocation.\n\nDuring driver release or during error handling in ufshcd_pltfrm_init(),\nthis structure is released as part of ufshcd_dealloc_host() before the\n(platform-) device associated with the crypto call above is released.\nOnce this device is released, the crypto cleanup code will run, using\nthe just-released 'struct ufs_hba::crypto_profile'. This causes a\nuse-after-free situation:\n\n  Call trace:\n   kfree+0x60/0x2d8 (P)\n   kvfree+0x44/0x60\n   blk_crypto_profile_destroy_callback+0x28/0x70\n   devm_action_release+0x1c/0x30\n   release_nodes+0x6c/0x108\n   devres_release_all+0x98/0x100\n   device_unbind_cleanup+0x20/0x70\n   really_probe+0x218/0x2d0\n\nIn other words, the initialisation code flow is:\n\n  platform-device probe\n    ufshcd_pltfrm_init()\n      ufshcd_alloc_host()\n        scsi_host_alloc()\n          allocation of struct ufs_hba\n          creation of scsi-host devices\n    devm_blk_crypto_profile_init()\n      devm registration of cleanup handler using platform-device\n\nand during error handling of ufshcd_pltfrm_init() or during driver\nremoval:\n\n  ufshcd_dealloc_host()\n    scsi_host_put()\n      put_device(scsi-host)\n        release of struct ufs_hba\n  put_device(platform-device)\n    crypto cleanup handler\n\nTo fix this use-after free, change ufshcd_alloc_host() to register a\ndevres action to automatically cleanup the underlying SCSI device on\nufshcd destruction, without requiring explicit calls to\nufshcd_dealloc_host(). This way:\n\n    * the crypto profile and all other ufs_hba-owned resources are\n      destroyed before SCSI (as they've been registered after)\n    * a memleak is plugged in tc-dwc-g210-pci.c remove() as a\n      side-effect\n    * EXPORT_SYMBOL_GPL(ufshcd_dealloc_host) can be removed fully as\n      it's not needed anymore\n    * no future drivers using ufshcd_alloc_host() could ever forget\n      adding the cleanup\n\nFixes: cb77cb5abe1f (\"blk-crypto: rename blk_keyslot_manager to blk_crypto_profile\")\nFixes: d76d9d7d1009 (\"scsi: ufs: use devm_blk_ksm_init()\")\nCc: stable@vger.kernel.org\nSigned-off-by: Andr\u00e9 Draszik <andre.draszik@linaro.org>\nLink: https://lore.kernel.org/r/20250124-ufshcd-fix-v4-1-c5d0144aae59@linaro.org\nReviewed-by: Bean Huo <beanhuo@micron.com>\nReviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>\nAcked-by: Eric Biggers <ebiggers@kernel.org>\nSigned-off-by: Martin K. Petersen <martin.petersen@oracle.com>\n\ndiff --git a/drivers/ufs/host/ufshcd-pltfrm.c b/drivers/ufs/host/ufshcd-pltfrm.c\nindex 505572d4fa87..ffe5d1d2b215 100644\n--- a/drivers/ufs/host/ufshcd-pltfrm.c\n+++ b/drivers/ufs/host/ufshcd-pltfrm.c\n@@ -534,7 +525,6 @@ void ufshcd_pltfrm_remove(struct platform_device *pdev)\n \n \tpm_runtime_get_sync(&pdev->dev);\n \tufshcd_remove(hba);\n-\tufshcd_dealloc_host(hba);\n \tpm_runtime_disable(&pdev->dev);\n \tpm_runtime_put_noidle(&pdev->dev);\n }\n",
+        "target_version": "v6.12-rc7",
+        "context_diff": "From f8fb2403ddebb5eea0033d90d9daae4c88749ada Mon Sep 17 00:00:00 2001\nFrom: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>\nDate: Fri, 24 Jan 2025 15:09:00 +0000\nSubject: [PATCH] scsi: ufs: core: Fix use-after free in init error and remove\n paths\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\ndevm_blk_crypto_profile_init() registers a cleanup handler to run when\nthe associated (platform-) device is being released. For UFS, the\ncrypto private data and pointers are stored as part of the ufs_hba's\ndata structure 'struct ufs_hba::crypto_profile'. This structure is\nallocated as part of the underlying ufshcd and therefore Scsi_host\nallocation.\n\nDuring driver release or during error handling in ufshcd_pltfrm_init(),\nthis structure is released as part of ufshcd_dealloc_host() before the\n(platform-) device associated with the crypto call above is released.\nOnce this device is released, the crypto cleanup code will run, using\nthe just-released 'struct ufs_hba::crypto_profile'. This causes a\nuse-after-free situation:\n\n  Call trace:\n   kfree+0x60/0x2d8 (P)\n   kvfree+0x44/0x60\n   blk_crypto_profile_destroy_callback+0x28/0x70\n   devm_action_release+0x1c/0x30\n   release_nodes+0x6c/0x108\n   devres_release_all+0x98/0x100\n   device_unbind_cleanup+0x20/0x70\n   really_probe+0x218/0x2d0\n\nIn other words, the initialisation code flow is:\n\n  platform-device probe\n    ufshcd_pltfrm_init()\n      ufshcd_alloc_host()\n        scsi_host_alloc()\n          allocation of struct ufs_hba\n          creation of scsi-host devices\n    devm_blk_crypto_profile_init()\n      devm registration of cleanup handler using platform-device\n\nand during error handling of ufshcd_pltfrm_init() or during driver\nremoval:\n\n  ufshcd_dealloc_host()\n    scsi_host_put()\n      put_device(scsi-host)\n        release of struct ufs_hba\n  put_device(platform-device)\n    crypto cleanup handler\n\nTo fix this use-after free, change ufshcd_alloc_host() to register a\ndevres action to automatically cleanup the underlying SCSI device on\nufshcd destruction, without requiring explicit calls to\nufshcd_dealloc_host(). This way:\n\n    * the crypto profile and all other ufs_hba-owned resources are\n      destroyed before SCSI (as they've been registered after)\n    * a memleak is plugged in tc-dwc-g210-pci.c remove() as a\n      side-effect\n    * EXPORT_SYMBOL_GPL(ufshcd_dealloc_host) can be removed fully as\n      it's not needed anymore\n    * no future drivers using ufshcd_alloc_host() could ever forget\n      adding the cleanup\n\nFixes: cb77cb5abe1f (\"blk-crypto: rename blk_keyslot_manager to blk_crypto_profile\")\nFixes: d76d9d7d1009 (\"scsi: ufs: use devm_blk_ksm_init()\")\nCc: stable@vger.kernel.org\nSigned-off-by: Andr\u00e9 Draszik <andre.draszik@linaro.org>\nLink: https://lore.kernel.org/r/20250124-ufshcd-fix-v4-1-c5d0144aae59@linaro.org\nReviewed-by: Bean Huo <beanhuo@micron.com>\nReviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>\nAcked-by: Eric Biggers <ebiggers@kernel.org>\nSigned-off-by: Martin K. Petersen <martin.petersen@oracle.com>\n\ndiff --git a/drivers/ufs/host/ufshcd-pltfrm.c b/drivers/ufs/host/ufshcd-pltfrm.c\nindex 505572d4fa87..ffe5d1d2b215 100644\n--- a/drivers/ufs/host/ufshcd-pltfrm.c\n+++ b/drivers/ufs/host/ufshcd-pltfrm.c\n@@ -534,7 +525,6 @@ void ufshcd_pltfrm_remove(struct platform_device *pdev)\n \n \tpm_runtime_get_sync(&pdev->dev);\n \tufshcd_remove(hba);\n-\tufshcd_dealloc_host(hba);\n \tpm_runtime_disable(&pdev->dev);\n \tpm_runtime_put_noidle(&pdev->dev);\n }\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/linux/kernel-torvalds/f8fb24/llm_output/output_v6.12-rc7_qwen-plus.patch",
+      "timestamp": "2025-06-12T16:01:37.966768",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "final_patch_path": "workspace/linux/kernel-torvalds/f8fb24/patches/merged_v6.12-rc7.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-12T16:01:08.875766",
+    "end_time": "2025-06-12T16:01:38.815759",
+    "total_seconds": 29.939993,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "patch_content": "From fb437e8b343d10737e3bbb91b6eb84987693466d Mon Sep 17 00:00:00 2001\nFrom: elpsy <hewenkuan_work@foxmail.com>\nDate: Thu, 12 Jun 2025 16:01:39 +0800\nSubject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A9?=\n =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\n---\n drivers/ufs/core/ufshcd.c        | 31 +++++++++++++++++++++----------\n drivers/ufs/host/ufshcd-pci.c    |  2 --\n drivers/ufs/host/ufshcd-pltfrm.c | 27 +++++++++------------------\n include/ufs/ufshcd.h             |  1 -\n 4 files changed, 30 insertions(+), 31 deletions(-)\n\ndiff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c\nindex abbe7135a977..17c5435c579f 100644\n--- a/drivers/ufs/core/ufshcd.c\n+++ b/drivers/ufs/core/ufshcd.c\n@@ -10290,16 +10290,6 @@ int ufshcd_system_thaw(struct device *dev)\n EXPORT_SYMBOL_GPL(ufshcd_system_thaw);\n #endif /* CONFIG_PM_SLEEP  */\n \n-/**\n- * ufshcd_dealloc_host - deallocate Host Bus Adapter (HBA)\n- * @hba: pointer to Host Bus Adapter (HBA)\n- */\n-void ufshcd_dealloc_host(struct ufs_hba *hba)\n-{\n-\tscsi_host_put(hba->host);\n-}\n-EXPORT_SYMBOL_GPL(ufshcd_dealloc_host);\n-\n /**\n  * ufshcd_set_dma_mask - Set dma mask based on the controller\n  *\t\t\t addressing capability\n@@ -10316,12 +10306,26 @@ static int ufshcd_set_dma_mask(struct ufs_hba *hba)\n \treturn dma_set_mask_and_coherent(hba->dev, DMA_BIT_MASK(32));\n }\n \n+/**\n+ * ufshcd_devres_release - devres cleanup handler, invoked during release of\n+ *\t\t\t   hba->dev\n+ * @host: pointer to SCSI host\n+ */\n+static void ufshcd_devres_release(void *host)\n+{\n+\tscsi_host_put(host);\n+}\n+\n /**\n  * ufshcd_alloc_host - allocate Host Bus Adapter (HBA)\n  * @dev: pointer to device handle\n  * @hba_handle: driver private handle\n  *\n  * Return: 0 on success, non-zero value on failure.\n+ *\n+ * NOTE: There is no corresponding ufshcd_dealloc_host() because this function\n+ * keeps track of its allocations using devres and deallocates everything on\n+ * device removal automatically.\n  */\n int ufshcd_alloc_host(struct device *dev, struct ufs_hba **hba_handle)\n {\n@@ -10343,6 +10347,13 @@ int ufshcd_alloc_host(struct device *dev, struct ufs_hba **hba_handle)\n \t\terr = -ENOMEM;\n \t\tgoto out_error;\n \t}\n+\n+\terr = devm_add_action_or_reset(dev, ufshcd_devres_release,\n+\t\t\t\t       host);\n+\tif (err)\n+\t\treturn dev_err_probe(dev, err,\n+\t\t\t\t     \"failed to add ufshcd dealloc action\\n\");\n+\n \thost->nr_maps = HCTX_TYPE_POLL + 1;\n \thba = shost_priv(host);\n \thba->host = host;\ndiff --git a/drivers/ufs/host/ufshcd-pci.c b/drivers/ufs/host/ufshcd-pci.c\nindex 54e0cc0653a2..850ff71130d5 100644\n--- a/drivers/ufs/host/ufshcd-pci.c\n+++ b/drivers/ufs/host/ufshcd-pci.c\n@@ -562,7 +562,6 @@ static void ufshcd_pci_remove(struct pci_dev *pdev)\n \tpm_runtime_forbid(&pdev->dev);\n \tpm_runtime_get_noresume(&pdev->dev);\n \tufshcd_remove(hba);\n-\tufshcd_dealloc_host(hba);\n }\n \n /**\n@@ -607,7 +606,6 @@ ufshcd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)\n \terr = ufshcd_init(hba, mmio_base, pdev->irq);\n \tif (err) {\n \t\tdev_err(&pdev->dev, \"Initialization failed\\n\");\n-\t\tufshcd_dealloc_host(hba);\n \t\treturn err;\n \t}\n \ndiff --git a/drivers/ufs/host/ufshcd-pltfrm.c b/drivers/ufs/host/ufshcd-pltfrm.c\nindex 1f4f30d6cb42..d876fd0d333f 100644\n--- a/drivers/ufs/host/ufshcd-pltfrm.c\n+++ b/drivers/ufs/host/ufshcd-pltfrm.c\n@@ -465,21 +465,17 @@ int ufshcd_pltfrm_init(struct platform_device *pdev,\n \tstruct device *dev = &pdev->dev;\n \n \tmmio_base = devm_platform_ioremap_resource(pdev, 0);\n-\tif (IS_ERR(mmio_base)) {\n-\t\terr = PTR_ERR(mmio_base);\n-\t\tgoto out;\n-\t}\n+\tif (IS_ERR(mmio_base))\n+\t\treturn PTR_ERR(mmio_base);\n \n \tirq = platform_get_irq(pdev, 0);\n-\tif (irq < 0) {\n-\t\terr = irq;\n-\t\tgoto out;\n-\t}\n+\tif (irq < 0)\n+\t\treturn irq;\n \n \terr = ufshcd_alloc_host(dev, &hba);\n \tif (err) {\n \t\tdev_err(dev, \"Allocation failed\\n\");\n-\t\tgoto out;\n+\t\treturn err;\n \t}\n \n \thba->vops = vops;\n@@ -488,13 +484,13 @@ int ufshcd_pltfrm_init(struct platform_device *pdev,\n \tif (err) {\n \t\tdev_err(dev, \"%s: clock parse failed %d\\n\",\n \t\t\t\t__func__, err);\n-\t\tgoto dealloc_host;\n+\t\treturn err;\n \t}\n \terr = ufshcd_parse_regulator_info(hba);\n \tif (err) {\n \t\tdev_err(dev, \"%s: regulator init failed %d\\n\",\n \t\t\t\t__func__, err);\n-\t\tgoto dealloc_host;\n+\t\treturn err;\n \t}\n \n \tufshcd_init_lanes_per_dir(hba);\n@@ -502,25 +498,20 @@ int ufshcd_pltfrm_init(struct platform_device *pdev,\n \terr = ufshcd_parse_operating_points(hba);\n \tif (err) {\n \t\tdev_err(dev, \"%s: OPP parse failed %d\\n\", __func__, err);\n-\t\tgoto dealloc_host;\n+\t\treturn err;\n \t}\n \n \terr = ufshcd_init(hba, mmio_base, irq);\n \tif (err) {\n \t\tdev_err_probe(dev, err, \"Initialization failed with error %d\\n\",\n \t\t\t      err);\n-\t\tgoto dealloc_host;\n+\t\treturn err;\n \t}\n \n \tpm_runtime_set_active(dev);\n \tpm_runtime_enable(dev);\n \n \treturn 0;\n-\n-dealloc_host:\n-\tufshcd_dealloc_host(hba);\n-out:\n-\treturn err;\n }\n EXPORT_SYMBOL_GPL(ufshcd_pltfrm_init);\n \ndiff --git a/include/ufs/ufshcd.h b/include/ufs/ufshcd.h\nindex 3f68ae3e4330..17c12124e82a 100644\n--- a/include/ufs/ufshcd.h\n+++ b/include/ufs/ufshcd.h\n@@ -1300,7 +1300,6 @@ static inline void ufshcd_rmwl(struct ufs_hba *hba, u32 mask, u32 val, u32 reg)\n void ufshcd_enable_irq(struct ufs_hba *hba);\n void ufshcd_disable_irq(struct ufs_hba *hba);\n int ufshcd_alloc_host(struct device *, struct ufs_hba **);\n-void ufshcd_dealloc_host(struct ufs_hba *);\n int ufshcd_hba_enable(struct ufs_hba *hba);\n int ufshcd_init(struct ufs_hba *, void __iomem *, unsigned int);\n int ufshcd_link_recovery(struct ufs_hba *hba);\n-- \n2.25.1\n\n",
+    "llm_output": "diff --git a/drivers/ufs/host/ufshcd-pltfrm.c b/drivers/ufs/host/ufshcd-pltfrm.c\nindex 505572d4fa87..ffe5d1d2b215 100644\n--- a/drivers/ufs/host/ufshcd-pltfrm.c\n+++ b/drivers/ufs/host/ufshcd-pltfrm.c\n@@ -534,7 +525,6 @@ void ufshcd_pltfrm_remove(struct platform_device *pdev)\n \n \tpm_runtime_get_sync(&pdev->dev);\n \tufshcd_remove(hba);\n-\tufshcd_dealloc_host(hba);\n \tpm_runtime_disable(&pdev->dev);\n \tpm_runtime_put_noidle(&pdev->dev);\n }",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "v6.12-rc7",
+      "commit_sha": "f8fb2403ddebb5eea0033d90d9daae4c88749ada.patch",
+      "timestamp": "2025-06-12T16:01:40.083520",
+      "execution_path": "chunk_analyzer (9/10 chunks)",
+      "adaptation_method": "unknown"
+    }
+  }
+}

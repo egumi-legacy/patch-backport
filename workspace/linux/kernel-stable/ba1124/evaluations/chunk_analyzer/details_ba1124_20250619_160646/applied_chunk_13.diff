@@ -1,0 +1,53 @@
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt <paul.greenwalt@intel.com>
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)->mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech <milena.olech@intel.com>
+Signed-off-by: Milena Olech <milena.olech@intel.com>
+Co-developed-by: Dan Nowlin <dan.nowlin@intel.com>
+Signed-off-by: Dan Nowlin <dan.nowlin@intel.com>
+Co-developed-by: Scott Taylor <scott.w.taylor@intel.com>
+Signed-off-by: Scott Taylor <scott.w.taylor@intel.com>
+Co-developed-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+Signed-off-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
+Tested-by: Tony Brelinski <tony.brelinski@intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -364,13 +374,18 @@
+ #define GL_PWR_MODE_CTL_CAR_MAX_BW_S		30
+ #define GL_PWR_MODE_CTL_CAR_MAX_BW_M		ICE_M(0x3, 30)
+ #define GLQF_FD_CNT				0x00460018
++#define E800_GLQF_FD_CNT_FD_GCNT_M		GENMASK(14, 0)
++#define E830_GLQF_FD_CNT_FD_GCNT_M		GENMASK(15, 0)
+ #define GLQF_FD_CNT_FD_BCNT_S			16
+-#define GLQF_FD_CNT_FD_BCNT_M			ICE_M(0x7FFF, 16)
++#define E800_GLQF_FD_CNT_FD_BCNT_M		GENMASK(30, 16)
++#define E830_GLQF_FD_CNT_FD_BCNT_M		GENMASK(31, 16)
+ #define GLQF_FD_SIZE				0x00460010
+ #define GLQF_FD_SIZE_FD_GSIZE_S			0
+-#define GLQF_FD_SIZE_FD_GSIZE_M			ICE_M(0x7FFF, 0)
++#define E800_GLQF_FD_SIZE_FD_GSIZE_M		GENMASK(14, 0)
++#define E830_GLQF_FD_SIZE_FD_GSIZE_M		GENMASK(15, 0)
+ #define GLQF_FD_SIZE_FD_BSIZE_S			16
+-#define GLQF_FD_SIZE_FD_BSIZE_M			ICE_M(0x7FFF, 16)
++#define E800_GLQF_FD_SIZE_FD_BSIZE_M		GENMASK(30, 16)
++#define E830_GLQF_FD_SIZE_FD_BSIZE_M		GENMASK(31, 16)
+ #define GLQF_FDINSET(_i, _j)			(0x00412000 + ((_i) * 4 + (_j) * 512))
+ #define GLQF_FDMASK(_i)				(0x00410800 + ((_i) * 4))
+ #define GLQF_FDMASK_MAX_INDEX			31

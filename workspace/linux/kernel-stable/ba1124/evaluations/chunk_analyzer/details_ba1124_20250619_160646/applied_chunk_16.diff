@@ -1,0 +1,42 @@
+From ba1124f58afd37d9ff155d4ab7c9f209346aaed9 Mon Sep 17 00:00:00 2001
+From: Paul Greenwalt <paul.greenwalt@intel.com>
+Date: Wed, 25 Oct 2023 14:41:52 -0700
+Subject: [PATCH] ice: Add E830 device IDs, MAC type and registers
+
+E830 is the 200G NIC family which uses the ice driver.
+
+Add specific E830 registers. Embed macros to use proper register based on
+(hw)->mac_type & name those macros to [ORIGINAL]_BY_MAC(hw). Registers
+only available on one of the macs will need to be explicitly referred to
+as E800_NAME instead of just NAME. PTP is not yet supported.
+
+Co-developed-by: Milena Olech <milena.olech@intel.com>
+Signed-off-by: Milena Olech <milena.olech@intel.com>
+Co-developed-by: Dan Nowlin <dan.nowlin@intel.com>
+Signed-off-by: Dan Nowlin <dan.nowlin@intel.com>
+Co-developed-by: Scott Taylor <scott.w.taylor@intel.com>
+Signed-off-by: Scott Taylor <scott.w.taylor@intel.com>
+Co-developed-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+Signed-off-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
+Tested-by: Tony Brelinski <tony.brelinski@intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Link: https://lore.kernel.org/r/20231025214157.1222758-2-jacob.e.keller@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6756f3d51d14..86936b758ade 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -501,6 +523,10 @@
+ #define PFPM_WUS_MAG_M				BIT(1)
+ #define PFPM_WUS_MNG_M				BIT(3)
+ #define PFPM_WUS_FW_RST_WK_M			BIT(31)
++#define E830_PRTMAC_CL01_PS_QNT			0x001E32A0
++#define E830_PRTMAC_CL01_PS_QNT_CL0_M		GENMASK(15, 0)
++#define E830_PRTMAC_CL01_QNT_THR		0x001E3320
++#define E830_PRTMAC_CL01_QNT_THR_CL0_M		GENMASK(15, 0)
+ #define VFINT_DYN_CTLN(_i)			(0x00003800 + ((_i) * 4))
+ #define VFINT_DYN_CTLN_CLEARPBA_M		BIT(1)
+ 

@@ -1,0 +1,99 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "chunks_info": {
+      "total_chunks": 2,
+      "no_conflict_chunks": 1,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 1,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-19T16:46:40.266576"
+  },
+  "to_adapt_commit": {
+    "sha": "27121e80f6dbb260f5a9f0452cd8411cb681f075.patch",
+    "patch_url": "https://github.com/rails/rails/commit/27121e80f6dbb260f5a9f0452cd8411cb681f075",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "workspace/rails/rails/27121e/patches/merged_v7.0.7.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "v7.0.7",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: actionpack/lib/action_dispatch/http/filter_redirect.rb:37\nerror: actionpack/lib/action_dispatch/http/filter_redirect.rb: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/patches/upstream_27121e.patch",
+      "already_applied": false,
+      "timestamp": "2025-06-19T16:46:21.592002"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/patches/upstream_27121e.patch",
+      "total_chunks": 2,
+      "applied_chunks": 1,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/chunk_patches/chunk_001_20250619_164621.patch"
+      ],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/chunk_patches/remaining_chunks_20250619_164621.patch",
+      "timestamp": "2025-06-19T16:46:21.907350",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/actionpack/lib/action_dispatch/http/filter_redirect.rb b/actionpack/lib/action_dispatch/http/filter_redirect.rb\nindex 5785fd61f5..ed9e81f7a3 100644\n--- a/actionpack/lib/action_dispatch/http/filter_redirect.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_redirect.rb\n@@ -37,9 +37,16 @@ def location_filter_match?\n       def parameter_filtered_location\n         uri = URI.parse(location)\n         unless uri.query.nil? || uri.query.empty?\n-          uri.query.gsub!(FilterParameters::PAIR_RE) do\n-            request.parameter_filter.filter($1 => $2).first.join(\"=\")\n+          parts = uri.query.split(/([&;])/)\n+          filtered_parts = parts.map do |part|\n+            if part.include?(\"=\")\n+              key, value = part.split(\"=\", 2)\n+              request.parameter_filter.filter(key => value).first.join(\"=\")\n+            else\n+              part\n+            end\n           end\n+          uri.query = filtered_parts.join(\"\")\n         end\n         uri.to_s\n       rescue URI::Error",
+      "prompt": {
+        "patch_content": "From 27121e80f6dbb260f5a9f0452cd8411cb681f075 Mon Sep 17 00:00:00 2001\nFrom: John Hawthorn <john@hawthorn.email>\nDate: Thu, 10 Oct 2024 20:41:33 -0700\nSubject: [PATCH] Avoid backtracking in filtered_query_string\n\nThanks scyoon for the patch\n\nCVE-2024-41128\n\ndiff --git a/actionpack/lib/action_dispatch/http/filter_redirect.rb b/actionpack/lib/action_dispatch/http/filter_redirect.rb\nindex 5785fd61f5..ed9e81f7a3 100644\n--- a/actionpack/lib/action_dispatch/http/filter_redirect.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_redirect.rb\n@@ -37,9 +37,16 @@ def location_filter_match?\n       def parameter_filtered_location\n         uri = URI.parse(location)\n         unless uri.query.nil? || uri.query.empty?\n-          uri.query.gsub!(FilterParameters::PAIR_RE) do\n-            request.parameter_filter.filter($1 => $2).first.join(\"=\")\n+          parts = uri.query.split(/([&;])/)\n+          filtered_parts = parts.map do |part|\n+            if part.include?(\"=\")\n+              key, value = part.split(\"=\", 2)\n+              request.parameter_filter.filter(key => value).first.join(\"=\")\n+            else\n+              part\n+            end\n           end\n+          uri.query = filtered_parts.join(\"\")\n         end\n         uri.to_s\n       rescue URI::Error\n-- \n2.25.1\n\n",
+        "target_version": "v7.0.7",
+        "context_diff": "From 27121e80f6dbb260f5a9f0452cd8411cb681f075 Mon Sep 17 00:00:00 2001\nFrom: John Hawthorn <john@hawthorn.email>\nDate: Thu, 10 Oct 2024 20:41:33 -0700\nSubject: [PATCH] Avoid backtracking in filtered_query_string\n\nThanks scyoon for the patch\n\nCVE-2024-41128\n\ndiff --git a/actionpack/lib/action_dispatch/http/filter_redirect.rb b/actionpack/lib/action_dispatch/http/filter_redirect.rb\nindex 5785fd61f5..ed9e81f7a3 100644\n--- a/actionpack/lib/action_dispatch/http/filter_redirect.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_redirect.rb\n@@ -37,9 +37,16 @@ def location_filter_match?\n       def parameter_filtered_location\n         uri = URI.parse(location)\n         unless uri.query.nil? || uri.query.empty?\n-          uri.query.gsub!(FilterParameters::PAIR_RE) do\n-            request.parameter_filter.filter($1 => $2).first.join(\"=\")\n+          parts = uri.query.split(/([&;])/)\n+          filtered_parts = parts.map do |part|\n+            if part.include?(\"=\")\n+              key, value = part.split(\"=\", 2)\n+              request.parameter_filter.filter(key => value).first.join(\"=\")\n+            else\n+              part\n+            end\n           end\n+          uri.query = filtered_parts.join(\"\")\n         end\n         uri.to_s\n       rescue URI::Error\n-- \n2.25.1\n\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/rails/rails/27121e/llm_output/output_v7.0.7_qwen-plus.patch",
+      "timestamp": "2025-06-19T16:46:39.471974",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "final_patch_path": "workspace/rails/rails/27121e/patches/merged_v7.0.7.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-19T16:46:21.371871",
+    "end_time": "2025-06-19T16:46:39.741505",
+    "total_seconds": 18.369634,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "patch_content": "From 878ddae4ed0b5983859962c44fc9cd407c5d888b Mon Sep 17 00:00:00 2001\nFrom: elpsy <hewenkuan_work@foxmail.com>\nDate: Thu, 19 Jun 2025 16:46:40 +0800\nSubject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A1/?=\n =?UTF-8?q?1=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\n---\n .../lib/action_dispatch/http/filter_parameters.rb   | 13 +++++++++----\n 1 file changed, 9 insertions(+), 4 deletions(-)\n\ndiff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb\nindex d053fc0b9f..0e2e771da1 100644\n--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb\n@@ -58,12 +58,17 @@ def parameter_filter_for(filters) # :doc:\n         ActiveSupport::ParameterFilter.new(filters)\n       end\n \n-      KV_RE   = \"[^&;=]+\"\n-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}\n       def filtered_query_string # :doc:\n-        query_string.gsub(PAIR_RE) do |_|\n-          parameter_filter.filter($1 => $2).first.join(\"=\")\n+        parts = query_string.split(/([&;])/)\n+        filtered_parts = parts.map do |part|\n+          if part.include?(\"=\")\n+            key, value = part.split(\"=\", 2)\n+            parameter_filter.filter(key => value).first.join(\"=\")\n+          else\n+            part\n+          end\n         end\n+        filtered_parts.join(\"\")\n       end\n     end\n   end\n-- \n2.25.1\n\n",
+    "llm_output": "diff --git a/actionpack/lib/action_dispatch/http/filter_redirect.rb b/actionpack/lib/action_dispatch/http/filter_redirect.rb\nindex 5785fd61f5..ed9e81f7a3 100644\n--- a/actionpack/lib/action_dispatch/http/filter_redirect.rb\n+++ b/actionpack/lib/action_dispatch/http/filter_redirect.rb\n@@ -37,9 +37,16 @@ def location_filter_match?\n       def parameter_filtered_location\n         uri = URI.parse(location)\n         unless uri.query.nil? || uri.query.empty?\n-          uri.query.gsub!(FilterParameters::PAIR_RE) do\n-            request.parameter_filter.filter($1 => $2).first.join(\"=\")\n+          parts = uri.query.split(/([&;])/)\n+          filtered_parts = parts.map do |part|\n+            if part.include?(\"=\")\n+              key, value = part.split(\"=\", 2)\n+              request.parameter_filter.filter(key => value).first.join(\"=\")\n+            else\n+              part\n+            end\n           end\n+          uri.query = filtered_parts.join(\"\")\n         end\n         uri.to_s\n       rescue URI::Error",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "v7.0.7",
+      "commit_sha": "27121e80f6dbb260f5a9f0452cd8411cb681f075.patch",
+      "timestamp": "2025-06-19T16:46:40.266617",
+      "execution_path": "chunk_analyzer (1/2 chunks)",
+      "adaptation_method": "unknown"
+    }
+  }
+}

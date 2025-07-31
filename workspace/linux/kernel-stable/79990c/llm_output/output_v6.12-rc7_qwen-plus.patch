@@ -1,13 +1,67 @@
 diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
-index b83f99c01d91..8aabf7749aa5 100644
+index 8aabf7749aa5..b83f99c01d91 100644
 --- a/drivers/net/ethernet/intel/ice/ice_sriov.c
 +++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
-@@ -193,10 +194,6 @@ void ice_free_vfs(struct ice_pf *pf)
- 			wr32(hw, GLGEN_VFLRSTAT(reg_idx), BIT(bit_idx));
- 		}
- 
--		/* clear malicious info since the VF is getting released */
--		list_del(&vf->mbx_info.list_entry);
--
- 		mutex_unlock(&vf->cfg_lock);
+@@ -193,6 +193,10 @@ void ice_free_vfs(struct ice_pf *pf)
+ 		wr32(hw, GLGEN_VFLRSTAT(reg_idx), BIT(bit_idx));
  	}
+ 
++	/* clear malicious info since the VF is getting released */
++	list_del(&vf->mbx_info.list_entry);
++
++	mutex_unlock(&vf->cfg_lock);
+ }
+ 
+ /*
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+index newer_version_hash..backported_version_hash 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+@@ -717,6 +717,23 @@
+ }
+ 
+ /**
++ * ice_reset_vf_mbx_cnt - reset VF mailbox counters
++ * @vf: pointer to the VF structure
++ */
++static void ice_reset_vf_mbx_cnt(struct ice_vf *vf)
++{
++	struct ice_pf *pf = vf->pf;
++
++	if (ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
++		ice_mbx_vf_clear_cnt_e830(&pf->hw, vf->vf_id);
++	else
++		ice_mbx_clear_malvf(&vf->mbx_info);
++}
++
++/**
+  * ice_reset_all_vfs - reset all allocated VFs in one go
+  * @pf: pointer to the PF structure
+  *
+@@ -759,7 +776,7 @@
+ 
+ 	ice_for_each_vf(pf, bkt, vf)
+-		ice_mbx_clear_malvf(&vf->mbx_info);
++		ice_reset_vf_mbx_cnt(vf);
+ 
+ 	if (test_and_set_bit(ICE_VF_DIS, pf->state)) {
+@@ -975,7 +992,7 @@
+ 	ice_eswitch_update_repr(&vf->repr_id, vsi);
+ 
+-	ice_mbx_clear_malvf(&vf->mbx_info);
++	ice_reset_vf_mbx_cnt(vf);
+ 
+ out_unlock:
+ 	if (lag && lag->bonded && lag->primary &&
+@@ -1028,7 +1045,10 @@
+ 	ice_vf_fdir_init(vf);
+ 
+-	ice_mbx_init_vf_info(&pf->hw, &vf->mbx_info);
++	if (ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
++		ice_mbx_vf_clear_cnt_e830(&pf->hw, vf->vf_id);
++	else
++		ice_mbx_init_vf_info(&pf->hw, &vf->mbx_info);
+ 
+ 	mutex_init(&vf->cfg_lock);
+ }

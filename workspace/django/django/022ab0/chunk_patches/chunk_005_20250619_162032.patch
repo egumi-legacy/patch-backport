@@ -1,0 +1,35 @@
+From 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                            | 17 ++++++++++-------
+ docs/ref/templates/builtins.txt                 | 11 +++++++++++
+ docs/releases/4.2.16.txt                        |  7 ++++++-
+ docs/releases/5.0.9.txt                         |  7 ++++++-
+ docs/releases/5.1.1.txt                         |  7 +++++++
+ .../template_tests/filter_tests/test_urlize.py  |  5 +++++
+ tests/utils_tests/test_html.py                  |  1 +
+ 7 files changed, 46 insertions(+), 9 deletions(-)
+
+diff --git a/docs/releases/5.1.1.txt b/docs/releases/5.1.1.txt
+index 743f2753a8e7..dd249291004d 100644
+--- a/docs/releases/5.1.1.txt
++++ b/docs/releases/5.1.1.txt
+@@ -7,6 +7,13 @@ Django 5.1.1 release notes
+ Django 5.1.1 fixes one security issue with severity "moderate", one security
+ issue with severity "low", and several bugs in 5.1.
+ 
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
++
+ Bugfixes
+ ========
+ 

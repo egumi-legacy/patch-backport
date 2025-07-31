@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>chunk_analyzer 模块评估报告 - d3015b</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+    h1, h2, h3 { color: #2c3e50; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 20px; }
+    .success { color: #27ae60; }
+    .error { color: #e74c3c; }
+    .info { color: #3498db; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    th { background-color: #f8f9fa; }
+    tr:hover { background-color: #f5f5f5; }
+    pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    .progress-container { width: 100%; background-color: #f1f1f1; border-radius: 5px; }
+    .progress-bar { height: 20px; border-radius: 5px; }
+    .success-bg { background-color: #4CAF50; }
+    .pending-bg { background-color: #2196F3; }
+    .error-bg { background-color: #f44336; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+    .tag-success { background-color: #e8f5e9; color: #2e7d32; }
+    .tag-error { background-color: #ffebee; color: #c62828; }
+    .tag-pending { background-color: #e3f2fd; color: #1565c0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>chunk_analyzer 模块评估报告</h1>
+    
+    <div class="card">
+      <h2>基本信息</h2>
+      <table>
+        <tr>
+          <td width="150"><strong>模块名称</strong></td>
+          <td>chunk_analyzer</td>
+        </tr>
+        <tr>
+          <td><strong>模块类型</strong></td>
+          <td>ModuleType.CHUNK_ANALYZER</td>
+        </tr>
+        <tr>
+          <td><strong>提交SHA</strong></td>
+          <td>d3015bfd65348db629dab51e20a9d4e2f3b23493.patch</td>
+        </tr>
+        <tr>
+          <td><strong>目标版本</strong></td>
+          <td>v2.5.5</td>
+        </tr>
+        <tr>
+          <td><strong>执行时间</strong></td>
+          <td>2025-06-12T18:06:40.112835</td>
+        </tr>
+        <tr>
+          <td><strong>状态</strong></td>
+          <td>
+            <span class="tag tag-success">成功</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输入信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>原始补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/OpenVPN/openvpn/d3015b/patches/upstream_d3015b.patch</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>代码仓库路径</strong></td>
+                  <td>/home/elpsy/.cache/port-patch/OpenVPN_openvpn</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输出信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>状态</strong></td>
+                  <td>成功</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总尝试次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>执行时间</strong></td>
+                  <td>0.248302</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总块数</strong></td>
+                  <td>15</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功应用块数</strong></td>
+                  <td>5</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功率</strong></td>
+                  <td>33.33%</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>剩余补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/OpenVPN/openvpn/d3015b/chunk_patches/remaining_chunks_20250612_180640.patch</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    
+        <div class="card">
+          <h2>补丁块应用统计</h2>
+          
+          <div class="progress-container">
+            <div class="progress-bar success-bg" style="width: 33%"></div>
+          </div>
+          <p>
+            成功应用 <strong class="success">5</strong> 个块，
+            总共 <strong>15</strong> 个块
+            (成功率: <strong>33.3%</strong>)
+          </p>
+        </div>
+        
+        <div class="card">
+          <h2>补丁内容详情</h2>
+          <div class="tabs">
+            <div class="tab-header">
+              <button class="tab-button active" onclick="openTab(event, 'original-patch')">原始补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'applied-patches')">应用成功的补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'remaining-patch')">未应用成功的补丁</button>
+            </div>
+            
+            <div id="original-patch" class="tab-content" style="display:block;">
+              <h3>原始补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From d3015bfd65348db629dab51e20a9d4e2f3b23493 Mon Sep 17 00:00:00 2001
+From: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Date: Tue, 1 Apr 2025 19:30:37 +0200
+Subject: [PATCH] Allow tls-crypt-v2 to be setup only on initial packet of a
+ session
+
+This fixes an internal server error condition that can be triggered by a
+malicous authenticated client, a very unlucky corruption of packets in
+transit or by an attacker that is able to inject a specially created
+packet at the right time and is able to observe the traffic to construct
+the packet.
+
+The error condition results in an ASSERT statement being triggered,
+
+NOTE: due to the security sensitive nature, this patch was prepared
+under embargo on the security@openvpn.net mailing list, and thus has
+no publically available "mailing list discussion before merge" URL.
+
+CVE: 2025-2704
+Change-Id: I07c1352204d308e5bde5f0b85e561a5dd0bc63c8
+Signed-off-by: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Acked-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+Message-Id: &lt;385d88f0-d7c9-4330-82ff-9f5931183afd@rfc2549.org&gt;
+Signed-off-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+(cherry picked from commit 82ee2fe4b42d9988c59ae3f83bd56a54d54e8c76)
+---
+ src/openvpn/ssl.c                         | 26 +++++++++++++++++++----
+ src/openvpn/ssl_common.h                  | 15 +++++++------
+ src/openvpn/ssl_pkt.c                     |  7 +++---
+ src/openvpn/ssl_pkt.h                     | 12 +++++++++--
+ src/openvpn/tls_crypt.c                   | 24 ++++++++++++++++++++-
+ src/openvpn/tls_crypt.h                   |  7 +++++-
+ tests/unit_tests/openvpn/test_tls_crypt.c |  2 +-
+ 7 files changed, 75 insertions(+), 18 deletions(-)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 4fa7ea6fc45..5a0bf95aace 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -848,6 +848,9 @@ state_name(int state)
+         case S_INITIAL:
+             return "S_INITIAL";
+ 
++        case S_PRE_START_SKIP:
++            return "S_PRE_START_SKIP";
++
+         case S_PRE_START:
+             return "S_PRE_START";
+ 
+@@ -2598,7 +2601,7 @@ session_move_pre_start(const struct tls_session *session,
+     }
+     INCR_GENERATED;
+ 
+-    ks-&gt;state = S_PRE_START;
++    ks-&gt;state = skip_initial_send ? S_PRE_START_SKIP : S_PRE_START;
+ 
+     struct gc_arena gc = gc_new();
+     dmsg(D_TLS_DEBUG, "TLS: Initial Handshake, sid=%s",
+@@ -3801,7 +3804,7 @@ tls_pre_decrypt(struct tls_multi *multi,
+         }
+ 
+         if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id), from,
+-                               session-&gt;opt))
++                               session-&gt;opt, true))
+         {
+             goto error;
+         }
+@@ -3871,7 +3874,7 @@ tls_pre_decrypt(struct tls_multi *multi,
+         if (op == P_CONTROL_SOFT_RESET_V1 && ks-&gt;state &gt;= S_GENERATED_KEYS)
+         {
+             if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id),
+-                                   from, session-&gt;opt))
++                                   from, session-&gt;opt, false))
+             {
+                 goto error;
+             }
+@@ -3884,6 +3887,15 @@ tls_pre_decrypt(struct tls_multi *multi,
+         }
+         else
+         {
++            bool initial_packet = false;
++            if (ks-&gt;state == S_PRE_START_SKIP)
++            {
++                /* When we are coming from the session_skip_to_pre_start
++                 * method, we allow this initial packet to setup the
++                 * tls-crypt-v2 peer specific key */
++                initial_packet = true;
++                ks-&gt;state = S_PRE_START;
++            }
+             /*
+              * Remote responding to our key renegotiation request?
+              */
+@@ -3893,8 +3905,14 @@ tls_pre_decrypt(struct tls_multi *multi,
+             }
+ 
+             if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id),
+-                                   from, session-&gt;opt))
++                                   from, session-&gt;opt, initial_packet))
+             {
++                /* if an initial packet in read_control_auth, we rather
++                 * error out than anything else */
++                if (initial_packet)
++                {
++                    multi-&gt;n_hard_errors++;
++                }
+                 goto error;
+             }
+ 
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 085256347ec..8b6ae3f2430 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -80,22 +80,25 @@
+ #define S_INITIAL         1     /**&lt; Initial \c key_state state after
+                                  *   initialization by \c key_state_init()
+                                  *   before start of three-way handshake. */
+-#define S_PRE_START       2     /**&lt; Waiting for the remote OpenVPN peer
++#define S_PRE_START_SKIP  2     /**&lt; Waiting for the remote OpenVPN peer
+                                  *   to acknowledge during the initial
+                                  *   three-way handshake. */
+-#define S_START           3     /**&lt; Three-way handshake is complete,
++#define S_PRE_START       3     /**&lt; Waiting for the remote OpenVPN peer
++                                 *   to acknowledge during the initial
++                                 *   three-way handshake. */
++#define S_START           4     /**&lt; Three-way handshake is complete,
+                                  *   start of key exchange. */
+-#define S_SENT_KEY        4     /**&lt; Local OpenVPN process has sent its
++#define S_SENT_KEY        5     /**&lt; Local OpenVPN process has sent its
+                                  *   part of the key material. */
+-#define S_GOT_KEY         5     /**&lt; Local OpenVPN process has received
++#define S_GOT_KEY         6     /**&lt; Local OpenVPN process has received
+                                  *   the remote's part of the key
+                                  *   material. */
+-#define S_ACTIVE          6     /**&lt; Operational \c key_state state
++#define S_ACTIVE          7     /**&lt; Operational \c key_state state
+                                  *   immediately after negotiation has
+                                  *   completed while still within the
+                                  *   handshake window.  Deferred auth and
+                                  *   client connect can still be pending. */
+-#define S_GENERATED_KEYS  7     /**&lt; The data channel keys have been generated
++#define S_GENERATED_KEYS  8     /**&lt; The data channel keys have been generated
+                                  *  The TLS session is fully authenticated
+                                  *  when reaching this state. */
+ 
+diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+index 689cd7f99f9..41299f462db 100644
+--- a/src/openvpn/ssl_pkt.c
++++ b/src/openvpn/ssl_pkt.c
+@@ -200,7 +200,8 @@ bool
+ read_control_auth(struct buffer *buf,
+                   struct tls_wrap_ctx *ctx,
+                   const struct link_socket_actual *from,
+-                  const struct tls_options *opt)
++                  const struct tls_options *opt,
++                  bool initial_packet)
+ {
+     struct gc_arena gc = gc_new();
+     bool ret = false;
+@@ -208,7 +209,7 @@ read_control_auth(struct buffer *buf,
+     const uint8_t opcode = *(BPTR(buf)) &gt;&gt; P_OPCODE_SHIFT;
+     if ((opcode == P_CONTROL_HARD_RESET_CLIENT_V3
+          || opcode == P_CONTROL_WKC_V1)
+-        && !tls_crypt_v2_extract_client_key(buf, ctx, opt))
++        && !tls_crypt_v2_extract_client_key(buf, ctx, opt, initial_packet))
+     {
+         msg(D_TLS_ERRORS,
+             "TLS Error: can not extract tls-crypt-v2 client key from %s",
+@@ -373,7 +374,7 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+      * into newbuf or just setting newbuf to point to the start of control
+      * message */
+     bool status = read_control_auth(&state-&gt;newbuf, &state-&gt;tls_wrap_tmp,
+-                                    from, NULL);
++                                    from, NULL, true);
+ 
+     if (!status)
+     {
+diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
+index c8a27fba9d7..2033da61ff7 100644
+--- a/src/openvpn/ssl_pkt.h
++++ b/src/openvpn/ssl_pkt.h
+@@ -207,14 +207,22 @@ write_control_auth(struct tls_session *session,
+                    bool prepend_ack);
+ 
+ 
+-/*
++
++/**
+  * Read a control channel authentication record.
++ * @param buf               buffer that holds the incoming packet
++ * @param ctx               control channel security context
++ * @param from              incoming link socket address
++ * @param opt               tls options struct for the session
++ * @param initial_packet    whether this is the initial packet for the connection
++ * @return                  if the packet was successfully processed
+  */
+ bool
+ read_control_auth(struct buffer *buf,
+                   struct tls_wrap_ctx *ctx,
+                   const struct link_socket_actual *from,
+-                  const struct tls_options *opt);
++                  const struct tls_options *opt,
++                  bool initial_packet);
+ 
+ 
+ /**
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 975d31fafb5..50228e786e0 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -612,7 +612,8 @@ tls_crypt_v2_verify_metadata(const struct tls_wrap_ctx *ctx,
+ bool
+ tls_crypt_v2_extract_client_key(struct buffer *buf,
+                                 struct tls_wrap_ctx *ctx,
+-                                const struct tls_options *opt)
++                                const struct tls_options *opt,
++                                bool initial_packet)
+ {
+     if (!ctx-&gt;tls_crypt_v2_server_key.cipher)
+     {
+@@ -641,6 +642,27 @@ tls_crypt_v2_extract_client_key(struct buffer *buf,
+         return false;
+     }
+ 
++    if (!initial_packet)
++    {
++        /* This might be a harmless resend of the packet but it is better to
++         * just ignore the WKC part than trying to setup tls-crypt keys again.
++         *
++         * A CONTROL_WKC_V1 packets has a normal packet part and an appended
++         * wrapped control key. These are authenticated individually. We already
++         * set up tls-crypt with the wrapped key, so we are ignoring this part
++         * of the message but we return the normal packet part as the normal
++         * part of the message might have been corrupted earlier and discarded
++         * and this is resend. So return the normal part of the packet,
++         * basically transforming the CONTROL_WKC_V1 into a normal CONTROL_V1
++         * packet*/
++        msg(D_TLS_ERRORS, "control channel security already setup ignoring "
++            "wrapped key part of packet.");
++
++        /* Remove client key from buffer so tls-crypt code can unwrap message */
++        ASSERT(buf_inc_len(buf, -(BLEN(&wrapped_client_key))));
++        return true;
++    }
++
+     ctx-&gt;tls_crypt_v2_metadata = alloc_buf(TLS_CRYPT_V2_MAX_METADATA_LEN);
+     if (!tls_crypt_v2_unwrap_client_key(&ctx-&gt;original_wrap_keydata,
+                                         &ctx-&gt;tls_crypt_v2_metadata,
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+index 8c87e2080a1..331c0c060a7 100644
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -207,11 +207,16 @@ void tls_crypt_v2_init_client_key(struct key_ctx_bi *key,
+  *              message.
+  * @param ctx   tls-wrap context to be initialized with the client key.
+  *
++ * @param initial_packet    whether this is the initial packet of the
++ *                          connection. Only in these scenarios unwrapping
++ *                          of a tls-crypt-v2 key is allowed
++ *
+  * @returns true if a key was successfully extracted.
+  */
+ bool tls_crypt_v2_extract_client_key(struct buffer *buf,
+                                      struct tls_wrap_ctx *ctx,
+-                                     const struct tls_options *opt);
++                                     const struct tls_options *opt,
++                                     bool initial_packet);
+ 
+ /**
+  * Generate a tls-crypt-v2 server key, and write to file.
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
+index 465543a740e..3eac04cf9ce 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -533,7 +533,7 @@ tls_crypt_v2_wrap_unwrap_max_metadata(void **state)
+         .mode = TLS_WRAP_CRYPT,
+         .tls_crypt_v2_server_key = ctx-&gt;server_keys.encrypt,
+     };
+-    assert_true(tls_crypt_v2_extract_client_key(&ctx-&gt;wkc, &wrap_ctx, NULL));
++    assert_true(tls_crypt_v2_extract_client_key(&ctx-&gt;wkc, &wrap_ctx, NULL, true));
+     tls_wrap_free(&wrap_ctx);
+ }
+ 
+</pre>
+              </div>
+            </div>
+            
+            <div id="applied-patches" class="tab-content">
+              <h3>应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">
+
+# ===== 应用成功的补丁块 1 =====
+
+From d3015bfd65348db629dab51e20a9d4e2f3b23493 Mon Sep 17 00:00:00 2001
+From: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Date: Tue, 1 Apr 2025 19:30:37 +0200
+Subject: [PATCH] Allow tls-crypt-v2 to be setup only on initial packet of a
+ session
+
+This fixes an internal server error condition that can be triggered by a
+malicous authenticated client, a very unlucky corruption of packets in
+transit or by an attacker that is able to inject a specially created
+packet at the right time and is able to observe the traffic to construct
+the packet.
+
+The error condition results in an ASSERT statement being triggered,
+
+NOTE: due to the security sensitive nature, this patch was prepared
+under embargo on the security@openvpn.net mailing list, and thus has
+no publically available "mailing list discussion before merge" URL.
+
+CVE: 2025-2704
+Change-Id: I07c1352204d308e5bde5f0b85e561a5dd0bc63c8
+Signed-off-by: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Acked-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+Message-Id: &lt;385d88f0-d7c9-4330-82ff-9f5931183afd@rfc2549.org&gt;
+Signed-off-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+(cherry picked from commit 82ee2fe4b42d9988c59ae3f83bd56a54d54e8c76)
+---
+ src/openvpn/ssl.c                         | 26 +++++++++++++++++++----
+ src/openvpn/ssl_common.h                  | 15 +++++++------
+ src/openvpn/ssl_pkt.c                     |  7 +++---
+ src/openvpn/ssl_pkt.h                     | 12 +++++++++--
+ src/openvpn/tls_crypt.c                   | 24 ++++++++++++++++++++-
+ src/openvpn/tls_crypt.h                   |  7 +++++-
+ tests/unit_tests/openvpn/test_tls_crypt.c |  2 +-
+ 7 files changed, 75 insertions(+), 18 deletions(-)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 4fa7ea6fc45..5a0bf95aace 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -848,6 +848,9 @@ state_name(int state)
+         case S_INITIAL:
+             return "S_INITIAL";
+ 
++        case S_PRE_START_SKIP:
++            return "S_PRE_START_SKIP";
++
+         case S_PRE_START:
+             return "S_PRE_START";
+ 
+
+
+# ===== 应用成功的补丁块 2 =====
+
+From d3015bfd65348db629dab51e20a9d4e2f3b23493 Mon Sep 17 00:00:00 2001
+From: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Date: Tue, 1 Apr 2025 19:30:37 +0200
+Subject: [PATCH] Allow tls-crypt-v2 to be setup only on initial packet of a
+ session
+
+This fixes an internal server error condition that can be triggered by a
+malicous authenticated client, a very unlucky corruption of packets in
+transit or by an attacker that is able to inject a specially created
+packet at the right time and is able to observe the traffic to construct
+the packet.
+
+The error condition results in an ASSERT statement being triggered,
+
+NOTE: due to the security sensitive nature, this patch was prepared
+under embargo on the security@openvpn.net mailing list, and thus has
+no publically available "mailing list discussion before merge" URL.
+
+CVE: 2025-2704
+Change-Id: I07c1352204d308e5bde5f0b85e561a5dd0bc63c8
+Signed-off-by: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Acked-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+Message-Id: &lt;385d88f0-d7c9-4330-82ff-9f5931183afd@rfc2549.org&gt;
+Signed-off-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+(cherry picked from commit 82ee2fe4b42d9988c59ae3f83bd56a54d54e8c76)
+---
+ src/openvpn/ssl.c                         | 26 +++++++++++++++++++----
+ src/openvpn/ssl_common.h                  | 15 +++++++------
+ src/openvpn/ssl_pkt.c                     |  7 +++---
+ src/openvpn/ssl_pkt.h                     | 12 +++++++++--
+ src/openvpn/tls_crypt.c                   | 24 ++++++++++++++++++++-
+ src/openvpn/tls_crypt.h                   |  7 +++++-
+ tests/unit_tests/openvpn/test_tls_crypt.c |  2 +-
+ 7 files changed, 75 insertions(+), 18 deletions(-)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 4fa7ea6fc45..5a0bf95aace 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -3884,6 +3887,15 @@ tls_pre_decrypt(struct tls_multi *multi,
+         }
+         else
+         {
++            bool initial_packet = false;
++            if (ks-&gt;state == S_PRE_START_SKIP)
++            {
++                /* When we are coming from the session_skip_to_pre_start
++                 * method, we allow this initial packet to setup the
++                 * tls-crypt-v2 peer specific key */
++                initial_packet = true;
++                ks-&gt;state = S_PRE_START;
++            }
+             /*
+              * Remote responding to our key renegotiation request?
+              */
+
+
+# ===== 应用成功的补丁块 3 =====
+
+From d3015bfd65348db629dab51e20a9d4e2f3b23493 Mon Sep 17 00:00:00 2001
+From: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Date: Tue, 1 Apr 2025 19:30:37 +0200
+Subject: [PATCH] Allow tls-crypt-v2 to be setup only on initial packet of a
+ session
+
+This fixes an internal server error condition that can be triggered by a
+malicous authenticated client, a very unlucky corruption of packets in
+transit or by an attacker that is able to inject a specially created
+packet at the right time and is able to observe the traffic to construct
+the packet.
+
+The error condition results in an ASSERT statement being triggered,
+
+NOTE: due to the security sensitive nature, this patch was prepared
+under embargo on the security@openvpn.net mailing list, and thus has
+no publically available "mailing list discussion before merge" URL.
+
+CVE: 2025-2704
+Change-Id: I07c1352204d308e5bde5f0b85e561a5dd0bc63c8
+Signed-off-by: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Acked-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+Message-Id: &lt;385d88f0-d7c9-4330-82ff-9f5931183afd@rfc2549.org&gt;
+Signed-off-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+(cherry picked from commit 82ee2fe4b42d9988c59ae3f83bd56a54d54e8c76)
+---
+ src/openvpn/ssl.c                         | 26 +++++++++++++++++++----
+ src/openvpn/ssl_common.h                  | 15 +++++++------
+ src/openvpn/ssl_pkt.c                     |  7 +++---
+ src/openvpn/ssl_pkt.h                     | 12 +++++++++--
+ src/openvpn/tls_crypt.c                   | 24 ++++++++++++++++++++-
+ src/openvpn/tls_crypt.h                   |  7 +++++-
+ tests/unit_tests/openvpn/test_tls_crypt.c |  2 +-
+ 7 files changed, 75 insertions(+), 18 deletions(-)
+
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 975d31fafb5..50228e786e0 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -612,7 +612,8 @@ tls_crypt_v2_verify_metadata(const struct tls_wrap_ctx *ctx,
+ bool
+ tls_crypt_v2_extract_client_key(struct buffer *buf,
+                                 struct tls_wrap_ctx *ctx,
+-                                const struct tls_options *opt)
++                                const struct tls_options *opt,
++                                bool initial_packet)
+ {
+     if (!ctx-&gt;tls_crypt_v2_server_key.cipher)
+     {
+
+
+# ===== 应用成功的补丁块 4 =====
+
+From d3015bfd65348db629dab51e20a9d4e2f3b23493 Mon Sep 17 00:00:00 2001
+From: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Date: Tue, 1 Apr 2025 19:30:37 +0200
+Subject: [PATCH] Allow tls-crypt-v2 to be setup only on initial packet of a
+ session
+
+This fixes an internal server error condition that can be triggered by a
+malicous authenticated client, a very unlucky corruption of packets in
+transit or by an attacker that is able to inject a specially created
+packet at the right time and is able to observe the traffic to construct
+the packet.
+
+The error condition results in an ASSERT statement being triggered,
+
+NOTE: due to the security sensitive nature, this patch was prepared
+under embargo on the security@openvpn.net mailing list, and thus has
+no publically available "mailing list discussion before merge" URL.
+
+CVE: 2025-2704
+Change-Id: I07c1352204d308e5bde5f0b85e561a5dd0bc63c8
+Signed-off-by: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Acked-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+Message-Id: &lt;385d88f0-d7c9-4330-82ff-9f5931183afd@rfc2549.org&gt;
+Signed-off-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+(cherry picked from commit 82ee2fe4b42d9988c59ae3f83bd56a54d54e8c76)
+---
+ src/openvpn/ssl.c                         | 26 +++++++++++++++++++----
+ src/openvpn/ssl_common.h                  | 15 +++++++------
+ src/openvpn/ssl_pkt.c                     |  7 +++---
+ src/openvpn/ssl_pkt.h                     | 12 +++++++++--
+ src/openvpn/tls_crypt.c                   | 24 ++++++++++++++++++++-
+ src/openvpn/tls_crypt.h                   |  7 +++++-
+ tests/unit_tests/openvpn/test_tls_crypt.c |  2 +-
+ 7 files changed, 75 insertions(+), 18 deletions(-)
+
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+index 8c87e2080a1..331c0c060a7 100644
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -207,11 +207,16 @@ void tls_crypt_v2_init_client_key(struct key_ctx_bi *key,
+  *              message.
+  * @param ctx   tls-wrap context to be initialized with the client key.
+  *
++ * @param initial_packet    whether this is the initial packet of the
++ *                          connection. Only in these scenarios unwrapping
++ *                          of a tls-crypt-v2 key is allowed
++ *
+  * @returns true if a key was successfully extracted.
+  */
+ bool tls_crypt_v2_extract_client_key(struct buffer *buf,
+                                      struct tls_wrap_ctx *ctx,
+-                                     const struct tls_options *opt);
++                                     const struct tls_options *opt,
++                                     bool initial_packet);
+ 
+ /**
+  * Generate a tls-crypt-v2 server key, and write to file.
+
+
+# ===== 应用成功的补丁块 5 =====
+
+From d3015bfd65348db629dab51e20a9d4e2f3b23493 Mon Sep 17 00:00:00 2001
+From: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Date: Tue, 1 Apr 2025 19:30:37 +0200
+Subject: [PATCH] Allow tls-crypt-v2 to be setup only on initial packet of a
+ session
+
+This fixes an internal server error condition that can be triggered by a
+malicous authenticated client, a very unlucky corruption of packets in
+transit or by an attacker that is able to inject a specially created
+packet at the right time and is able to observe the traffic to construct
+the packet.
+
+The error condition results in an ASSERT statement being triggered,
+
+NOTE: due to the security sensitive nature, this patch was prepared
+under embargo on the security@openvpn.net mailing list, and thus has
+no publically available "mailing list discussion before merge" URL.
+
+CVE: 2025-2704
+Change-Id: I07c1352204d308e5bde5f0b85e561a5dd0bc63c8
+Signed-off-by: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Acked-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+Message-Id: &lt;385d88f0-d7c9-4330-82ff-9f5931183afd@rfc2549.org&gt;
+Signed-off-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+(cherry picked from commit 82ee2fe4b42d9988c59ae3f83bd56a54d54e8c76)
+---
+ src/openvpn/ssl.c                         | 26 +++++++++++++++++++----
+ src/openvpn/ssl_common.h                  | 15 +++++++------
+ src/openvpn/ssl_pkt.c                     |  7 +++---
+ src/openvpn/ssl_pkt.h                     | 12 +++++++++--
+ src/openvpn/tls_crypt.c                   | 24 ++++++++++++++++++++-
+ src/openvpn/tls_crypt.h                   |  7 +++++-
+ tests/unit_tests/openvpn/test_tls_crypt.c |  2 +-
+ 7 files changed, 75 insertions(+), 18 deletions(-)
+
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
+index 465543a740e..3eac04cf9ce 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -533,7 +533,7 @@ tls_crypt_v2_wrap_unwrap_max_metadata(void **state)
+         .mode = TLS_WRAP_CRYPT,
+         .tls_crypt_v2_server_key = ctx-&gt;server_keys.encrypt,
+     };
+-    assert_true(tls_crypt_v2_extract_client_key(&ctx-&gt;wkc, &wrap_ctx, NULL));
++    assert_true(tls_crypt_v2_extract_client_key(&ctx-&gt;wkc, &wrap_ctx, NULL, true));
+     tls_wrap_free(&wrap_ctx);
+ }
+ 
+</pre>
+              </div>
+            </div>
+            
+            <div id="remaining-patch" class="tab-content">
+              <h3>未应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From d3015bfd65348db629dab51e20a9d4e2f3b23493 Mon Sep 17 00:00:00 2001
+From: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Date: Tue, 1 Apr 2025 19:30:37 +0200
+Subject: [PATCH] Allow tls-crypt-v2 to be setup only on initial packet of a
+ session
+
+This fixes an internal server error condition that can be triggered by a
+malicous authenticated client, a very unlucky corruption of packets in
+transit or by an attacker that is able to inject a specially created
+packet at the right time and is able to observe the traffic to construct
+the packet.
+
+The error condition results in an ASSERT statement being triggered,
+
+NOTE: due to the security sensitive nature, this patch was prepared
+under embargo on the security@openvpn.net mailing list, and thus has
+no publically available "mailing list discussion before merge" URL.
+
+CVE: 2025-2704
+Change-Id: I07c1352204d308e5bde5f0b85e561a5dd0bc63c8
+Signed-off-by: Arne Schwabe &lt;arne@rfc2549.org&gt;
+Acked-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+Message-Id: &lt;385d88f0-d7c9-4330-82ff-9f5931183afd@rfc2549.org&gt;
+Signed-off-by: Gert Doering &lt;gert@greenie.muc.de&gt;
+(cherry picked from commit 82ee2fe4b42d9988c59ae3f83bd56a54d54e8c76)
+---
+ src/openvpn/ssl.c                         | 26 +++++++++++++++++++----
+ src/openvpn/ssl_common.h                  | 15 +++++++------
+ src/openvpn/ssl_pkt.c                     |  7 +++---
+ src/openvpn/ssl_pkt.h                     | 12 +++++++++--
+ src/openvpn/tls_crypt.c                   | 24 ++++++++++++++++++++-
+ src/openvpn/tls_crypt.h                   |  7 +++++-
+ tests/unit_tests/openvpn/test_tls_crypt.c |  2 +-
+ 7 files changed, 75 insertions(+), 18 deletions(-)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 4fa7ea6fc45..5a0bf95aace 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2598,7 +2601,7 @@ session_move_pre_start(const struct tls_session *session,
+     }
+     INCR_GENERATED;
+ 
+-    ks-&gt;state = S_PRE_START;
++    ks-&gt;state = skip_initial_send ? S_PRE_START_SKIP : S_PRE_START;
+ 
+     struct gc_arena gc = gc_new();
+     dmsg(D_TLS_DEBUG, "TLS: Initial Handshake, sid=%s",
+@@ -3801,7 +3804,7 @@ tls_pre_decrypt(struct tls_multi *multi,
+         }
+ 
+         if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id), from,
+-                               session-&gt;opt))
++                               session-&gt;opt, true))
+         {
+             goto error;
+         }
+@@ -3871,7 +3874,7 @@ tls_pre_decrypt(struct tls_multi *multi,
+         if (op == P_CONTROL_SOFT_RESET_V1 && ks-&gt;state &gt;= S_GENERATED_KEYS)
+         {
+             if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id),
+-                                   from, session-&gt;opt))
++                                   from, session-&gt;opt, false))
+             {
+                 goto error;
+             }
+@@ -3893,8 +3905,14 @@ tls_pre_decrypt(struct tls_multi *multi,
+             }
+ 
+             if (!read_control_auth(buf, tls_session_get_tls_wrap(session, key_id),
+-                                   from, session-&gt;opt))
++                                   from, session-&gt;opt, initial_packet))
+             {
++                /* if an initial packet in read_control_auth, we rather
++                 * error out than anything else */
++                if (initial_packet)
++                {
++                    multi-&gt;n_hard_errors++;
++                }
+                 goto error;
+             }
+ 
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 085256347ec..8b6ae3f2430 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -80,22 +80,25 @@
+ #define S_INITIAL         1     /**&lt; Initial \c key_state state after
+                                  *   initialization by \c key_state_init()
+                                  *   before start of three-way handshake. */
+-#define S_PRE_START       2     /**&lt; Waiting for the remote OpenVPN peer
++#define S_PRE_START_SKIP  2     /**&lt; Waiting for the remote OpenVPN peer
+                                  *   to acknowledge during the initial
+                                  *   three-way handshake. */
+-#define S_START           3     /**&lt; Three-way handshake is complete,
++#define S_PRE_START       3     /**&lt; Waiting for the remote OpenVPN peer
++                                 *   to acknowledge during the initial
++                                 *   three-way handshake. */
++#define S_START           4     /**&lt; Three-way handshake is complete,
+                                  *   start of key exchange. */
+-#define S_SENT_KEY        4     /**&lt; Local OpenVPN process has sent its
++#define S_SENT_KEY        5     /**&lt; Local OpenVPN process has sent its
+                                  *   part of the key material. */
+-#define S_GOT_KEY         5     /**&lt; Local OpenVPN process has received
++#define S_GOT_KEY         6     /**&lt; Local OpenVPN process has received
+                                  *   the remote's part of the key
+                                  *   material. */
+-#define S_ACTIVE          6     /**&lt; Operational \c key_state state
++#define S_ACTIVE          7     /**&lt; Operational \c key_state state
+                                  *   immediately after negotiation has
+                                  *   completed while still within the
+                                  *   handshake window.  Deferred auth and
+                                  *   client connect can still be pending. */
+-#define S_GENERATED_KEYS  7     /**&lt; The data channel keys have been generated
++#define S_GENERATED_KEYS  8     /**&lt; The data channel keys have been generated
+                                  *  The TLS session is fully authenticated
+                                  *  when reaching this state. */
+ 
+diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+index 689cd7f99f9..41299f462db 100644
+--- a/src/openvpn/ssl_pkt.c
++++ b/src/openvpn/ssl_pkt.c
+@@ -200,7 +200,8 @@ bool
+ read_control_auth(struct buffer *buf,
+                   struct tls_wrap_ctx *ctx,
+                   const struct link_socket_actual *from,
+-                  const struct tls_options *opt)
++                  const struct tls_options *opt,
++                  bool initial_packet)
+ {
+     struct gc_arena gc = gc_new();
+     bool ret = false;
+@@ -208,7 +209,7 @@ read_control_auth(struct buffer *buf,
+     const uint8_t opcode = *(BPTR(buf)) &gt;&gt; P_OPCODE_SHIFT;
+     if ((opcode == P_CONTROL_HARD_RESET_CLIENT_V3
+          || opcode == P_CONTROL_WKC_V1)
+-        && !tls_crypt_v2_extract_client_key(buf, ctx, opt))
++        && !tls_crypt_v2_extract_client_key(buf, ctx, opt, initial_packet))
+     {
+         msg(D_TLS_ERRORS,
+             "TLS Error: can not extract tls-crypt-v2 client key from %s",
+@@ -373,7 +374,7 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+      * into newbuf or just setting newbuf to point to the start of control
+      * message */
+     bool status = read_control_auth(&state-&gt;newbuf, &state-&gt;tls_wrap_tmp,
+-                                    from, NULL);
++                                    from, NULL, true);
+ 
+     if (!status)
+     {
+diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
+index c8a27fba9d7..2033da61ff7 100644
+--- a/src/openvpn/ssl_pkt.h
++++ b/src/openvpn/ssl_pkt.h
+@@ -207,14 +207,22 @@ write_control_auth(struct tls_session *session,
+                    bool prepend_ack);
+ 
+ 
+-/*
++
++/**
+  * Read a control channel authentication record.
++ * @param buf               buffer that holds the incoming packet
++ * @param ctx               control channel security context
++ * @param from              incoming link socket address
++ * @param opt               tls options struct for the session
++ * @param initial_packet    whether this is the initial packet for the connection
++ * @return                  if the packet was successfully processed
+  */
+ bool
+ read_control_auth(struct buffer *buf,
+                   struct tls_wrap_ctx *ctx,
+                   const struct link_socket_actual *from,
+-                  const struct tls_options *opt);
++                  const struct tls_options *opt,
++                  bool initial_packet);
+ 
+ 
+ /**
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 975d31fafb5..50228e786e0 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -641,6 +642,27 @@ tls_crypt_v2_extract_client_key(struct buffer *buf,
+         return false;
+     }
+ 
++    if (!initial_packet)
++    {
++        /* This might be a harmless resend of the packet but it is better to
++         * just ignore the WKC part than trying to setup tls-crypt keys again.
++         *
++         * A CONTROL_WKC_V1 packets has a normal packet part and an appended
++         * wrapped control key. These are authenticated individually. We already
++         * set up tls-crypt with the wrapped key, so we are ignoring this part
++         * of the message but we return the normal packet part as the normal
++         * part of the message might have been corrupted earlier and discarded
++         * and this is resend. So return the normal part of the packet,
++         * basically transforming the CONTROL_WKC_V1 into a normal CONTROL_V1
++         * packet*/
++        msg(D_TLS_ERRORS, "control channel security already setup ignoring "
++            "wrapped key part of packet.");
++
++        /* Remove client key from buffer so tls-crypt code can unwrap message */
++        ASSERT(buf_inc_len(buf, -(BLEN(&wrapped_client_key))));
++        return true;
++    }
++
+     ctx-&gt;tls_crypt_v2_metadata = alloc_buf(TLS_CRYPT_V2_MAX_METADATA_LEN);
+     if (!tls_crypt_v2_unwrap_client_key(&ctx-&gt;original_wrap_keydata,
+                                         &ctx-&gt;tls_crypt_v2_metadata,
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+                <div class="card">
+                  <h2>应用成功的补丁块</h2>
+                  <table>
+                    <tr>
+                      <th>块索引</th>
+                      <th>修改文件</th>
+                      <th>修改位置</th>
+                      <th>操作</th>
+                    </tr>
+                    
+                    <tr>
+                      <td>1</td>
+                      <td>src/openvpn/ssl.c</td>
+                      <td>848-848</td>
+                      <td><a href="applied_chunk_1.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>2</td>
+                      <td>src/openvpn/ssl.c</td>
+                      <td>3884-3887</td>
+                      <td><a href="applied_chunk_2.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>3</td>
+                      <td>src/openvpn/tls_crypt.c</td>
+                      <td>612-612</td>
+                      <td><a href="applied_chunk_3.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>4</td>
+                      <td>src/openvpn/tls_crypt.h</td>
+                      <td>207-207</td>
+                      <td><a href="applied_chunk_4.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>5</td>
+                      <td>tests/unit_tests/openvpn/test_tls_crypt.c</td>
+                      <td>533-533</td>
+                      <td><a href="applied_chunk_5.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+                  </table>
+                </div>
+                
+            <div class="card">
+              <h2>剩余补丁</h2>
+              <p>有 <strong class="info">10</strong> 个块未成功应用，已生成剩余补丁:</p>
+              <p><code>/home/elpsy/workspace/sow/patch-backport/workspace/OpenVPN/openvpn/d3015b/chunk_patches/remaining_chunks_20250612_180640.patch</code></p>
+              <p><a href="remaining_patch.diff" target="_blank">查看剩余补丁</a></p>
+            </div>
+            
+        <style>
+        .code-container {
+          max-height: 500px;
+          overflow-y: auto;
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          border: 1px solid #eee;
+        }
+        
+        .code-block {
+          padding: 15px;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: monospace;
+          font-size: 13px;
+          line-height: 1.4;
+        }
+        
+        /* 为补丁内容添加语法高亮 */
+        .code-block .add {
+          background-color: #e6ffed;
+          color: #22863a;
+        }
+        
+        .code-block .remove {
+          background-color: #ffeef0;
+          color: #cb2431;
+        }
+        
+        .code-block .hunk {
+          color: #0366d6;
+          background-color: #f1f8ff;
+        }
+        
+        .code-block .header {
+          color: #6f42c1;
+          font-weight: bold;
+        }
+        </style>
+        
+        <script>
+        // 对补丁内容应用简单的语法高亮
+        document.addEventListener('DOMContentLoaded', function() {
+          const codeBlocks = document.querySelectorAll('.code-block');
+          codeBlocks.forEach(function(block) {
+            let html = block.innerHTML;
+            
+            // 替换添加的行
+            html = html.replace(/^(\+[^+].*)/gm, '<span class="add">$1</span>');
+            
+            // 替换删除的行
+            html = html.replace(/^(-[^-].*)/gm, '<span class="remove">$1</span>');
+            
+            // 替换区块头
+            html = html.replace(/^(@@.*@@)/gm, '<span class="hunk">$1</span>');
+            
+            // 替换diff头 - 修复无效转义序列
+            html = html.replace(/^(diff --git.*|index.*|---.*|\+\+\+.*)/gm, '<span class="header">$1</span>');
+            
+            block.innerHTML = html;
+          });
+        });
+        </script>
+        
+    
+  </div>
+</body>
+</html>

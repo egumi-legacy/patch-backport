@@ -1,0 +1,33 @@
+From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia <124304+nessita@users.noreply.github.com>
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia <124304+nessita@users.noreply.github.com>
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/django/utils/ipv6.py b/django/utils/ipv6.py
+index 88dd6ecb4b84..de41a97f7210 100644
+--- a/django/utils/ipv6.py
++++ b/django/utils/ipv6.py
+@@ -24,7 +37,7 @@ def clean_ipv6_address(
+     Return a compressed IPv6 address or the same value.
+     """
+     try:
+-        addr = ipaddress.IPv6Address(int(ipaddress.IPv6Address(ip_str)))
++        addr = _ipv6_address_from_str(ip_str, max_length)
+     except ValueError:
+         raise ValidationError(error_message, code="invalid")
+ 

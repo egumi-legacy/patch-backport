@@ -72,11 +72,19 @@ class DirectApplyModule(BaseModule):
                 apply_result = self._apply_patch(context, patch_path, branch_name)
                 
                 # 更新结果
+                message = '补丁应用失败'
+                if apply_result['success']:
+                    if apply_result.get('already_applied', False):
+                        message = '补丁已经应用过，无需再次应用'
+                    else:
+                        message = '补丁直接应用成功'
+                
                 context.direct_apply_result = {
                     'success': apply_result['success'],
-                    'message': '补丁直接应用成功' if apply_result['success'] else '补丁应用失败',
+                    'message': message,
                     'error': apply_result.get('error'),
                     'patch_path': str(patch_path),
+                    'already_applied': apply_result.get('already_applied', False),
                     'timestamp': datetime.now().isoformat()
                 }
 
@@ -297,7 +305,24 @@ class DirectApplyModule(BaseModule):
                 result['error'] = f"补丁文件不存在: {absolute_patch_path}"
                 result['error_type'] = 'file_not_found'
                 return result
-
+            
+            # 首先检查补丁是否可以被反向应用，如果可以，说明已经应用过
+            check_reverse_apply = subprocess.run(
+                ['git', 'apply', '--check', '--reverse', str(absolute_patch_path)],
+                cwd=context.config.repo_path,
+                capture_output=True,
+                text=True
+            )
+            
+            if check_reverse_apply.returncode == 0:
+                # 补丁可以被反向应用，说明已经应用过
+                logger.info(f"补丁 {patch_path.name} 可以被反向应用，说明已经应用过，标记为成功")
+                result['success'] = True
+                result['output'] = "补丁已经应用过，无需再次应用"
+                result['already_applied'] = True
+                return result
+            
+            # 尝试正常应用补丁
             apply_process = subprocess.run(
                 ['git', 'am', str(absolute_patch_path)],
                 cwd=context.config.repo_path,

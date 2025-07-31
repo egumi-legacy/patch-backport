@@ -1,0 +1,31 @@
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+
+diff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c
+index 61d53d39f3b9..714c7ecedca8 100644
+--- a/fs/ntfs3/record.c
++++ b/fs/ntfs3/record.c
+@@ -209,11 +210,11 @@ struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr)
+ 		off = le16_to_cpu(rec->attr_off);
+ 
+ 		if (used > total)
+-			return NULL;
++			goto out;
+ 
+ 		if (off >= used || off < MFTRECORD_FIXUP_OFFSET_1 ||
+ 		    !IS_ALIGNED(off, 8)) {
+-			return NULL;
++			goto out;
+ 		}
+ 
+ 		/* Skip non-resident records. */

@@ -1,0 +1,338 @@
+2025-06-12 15:46:18.904 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_154618.log
+2025-06-12 15:46:18.904 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-12 15:46:18.904 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-stable/commit/79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch
+2025-06-12 15:46:18.905 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-12 15:46:18.905 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-12 15:46:18.907 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-12 15:46:18.907 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-12 15:46:18.907 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.12-rc7']
+2025-06-12 15:46:18.907 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.12-rc7
+2025-06-12 15:46:18.908 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch
+2025-06-12 15:46:18.910 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-12 15:46:18.911 | INFO     | modules.direct_apply:_download_patch:240 - 上游补丁文件已存在: workspace/linux/kernel-stable/79990c/patches/upstream_79990c.patch
+2025-06-12 15:46:18.911 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-12 15:46:18.911 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/patches/upstream_79990c.patch
+2025-06-12 15:46:19.227 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_v6.12-rc7
+2025-06-12 15:46:19.850 | ERROR    | modules.direct_apply:_apply_patch:315 - 补丁应用失败: error: patch failed: drivers/net/ethernet/intel/ice/ice_sriov.c:193
+error: drivers/net/ethernet/intel/ice/ice_sriov.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-12 15:46:20.318 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_v6.12-rc7
+2025-06-12 15:46:20.319 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-12 15:46:20.319 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/patches/upstream_79990c.patch
+2025-06-12 15:46:20.319 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/patches/upstream_79990c.patch
+2025-06-12 15:46:20.320 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 104 行内容
+2025-06-12 15:46:20.320 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: drivers/net/ethernet/intel/ice/ice_sriov.c
+2025-06-12 15:46:20.321 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/net/ethernet/intel/ice/ice_sriov.c @@ -36,6 +36,7 @@ (modification)
+2025-06-12 15:46:20.321 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/net/ethernet/intel/ice/ice_sriov.c @@ -193,10 +194,6 @@ (modification)
+2025-06-12 15:46:20.321 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: drivers/net/ethernet/intel/ice/ice_vf_lib.c
+2025-06-12 15:46:20.322 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/net/ethernet/intel/ice/ice_vf_lib.c @@ -1036,6 +1036,14 @@ (modification)
+2025-06-12 15:46:20.322 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
+2025-06-12 15:46:20.322 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/net/ethernet/intel/ice/ice_vf_lib_private.h @@ -24,6 +24,7 @@ (modification)
+2025-06-12 15:46:20.322 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 4 个修改块
+2025-06-12 15:46:20.323 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 4 个块
+2025-06-12 15:46:20.323 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/patches/upstream_79990c.patch
+2025-06-12 15:46:20.324 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/chunk_001_20250612_154620.patch (修改文件: drivers/net/ethernet/intel/ice/ice_sriov.c)
+2025-06-12 15:46:20.325 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/chunk_002_20250612_154620.patch (修改文件: drivers/net/ethernet/intel/ice/ice_sriov.c)
+2025-06-12 15:46:20.325 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/chunk_003_20250612_154620.patch (修改文件: drivers/net/ethernet/intel/ice/ice_vf_lib.c)
+2025-06-12 15:46:20.326 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/chunk_004_20250612_154620.patch (修改文件: drivers/net/ethernet/intel/ice/ice_vf_lib_private.h)
+2025-06-12 15:46:20.327 | INFO     | modules.chunk_analyzer:execute:60 - 已为 4 个块创建单独的补丁文件
+2025-06-12 15:46:20.327 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-12 15:46:20.327 | INFO     | modules.chunk_analyzer:execute:66 - From 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c Mon Sep 17 00:00:00 2001
+From: Marcin Szycik <marcin.szycik@linux.intel.com>
+Date: Mon, 24 Feb 2025 11:06:41 -0800
+Subject: [PATCH] ice: Fix deinitializing VF in error path
+
+If ice_ena_vfs() fails after calling ice_create_vf_entries(), it frees
+all VFs without removing them from snapshot PF-VF mailbox list, leading
+to list corruption.
+
+Reproducer:
+  devlink dev eswitch set $PF1_PCI mode switchdev
+  ip l s $PF1 up
+  ip l s $PF1 promisc on
+  sleep 1
+  echo 1 > /sys/class/net/$PF1/device/sriov_numvfs
+  sleep 1
+  echo 1 > /sys/class/net/$PF1/device/sriov_numvfs
+
+Trace (minimized):
+  list_add corruption. next->prev should be prev (ffff8882e241c6f0), but was 0000000000000000. (next=ffff888455da1330).
+  kernel BUG at lib/list_debug.c:29!
+  RIP: 0010:__list_add_valid_or_report+0xa6/0x100
+   ice_mbx_init_vf_info+0xa7/0x180 [ice]
+   ice_initialize_vf_entry+0x1fa/0x250 [ice]
+   ice_sriov_configure+0x8d7/0x1520 [ice]
+   ? __percpu_ref_switch_mode+0x1b1/0x5d0
+   ? __pfx_ice_sriov_configure+0x10/0x10 [ice]
+
+Sometimes a KASAN report can be seen instead with a similar stack trace:
+  BUG: KASAN: use-after-free in __list_add_valid_or_report+0xf1/0x100
+
+VFs are added to this list in ice_mbx_init_vf_info(), but only removed
+in ice_free_vfs(). Move the removing to ice_free_vf_entries(), which is
+also being called in other places where VFs are being removed (including
+ice_free_vfs() itself).
+
+Fixes: 8cd8a6b17d27 ("ice: move VF overflow message count into struct ice_mbx_vf_info")
+Reported-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
+Closes: https://lore.kernel.org/intel-wired-lan/PH0PR11MB50138B635F2E5CEB7075325D961F2@PH0PR11MB5013.namprd11.prod.outlook.com
+Reviewed-by: Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@linux.intel.com>
+Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Tested-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://patch.msgid.link/20250224190647.3601930-2-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
+index b83f99c01d91..8aabf7749aa5 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sriov.c
++++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
+@@ -36,6 +36,7 @@ static void ice_free_vf_entries(struct ice_pf *pf)
+ 
+ 	hash_for_each_safe(vfs->table, bkt, tmp, vf, entry) {
+ 		hash_del_rcu(&vf->entry);
++		ice_deinitialize_vf_entry(vf);
+ 		ice_put_vf(vf);
+ 	}
+ }
+
+2025-06-12 15:46:20.328 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-12 15:46:20.328 | INFO     | modules.chunk_analyzer:execute:66 - From 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c Mon Sep 17 00:00:00 2001
+From: Marcin Szycik <marcin.szycik@linux.intel.com>
+Date: Mon, 24 Feb 2025 11:06:41 -0800
+Subject: [PATCH] ice: Fix deinitializing VF in error path
+
+If ice_ena_vfs() fails after calling ice_create_vf_entries(), it frees
+all VFs without removing them from snapshot PF-VF mailbox list, leading
+to list corruption.
+
+Reproducer:
+  devlink dev eswitch set $PF1_PCI mode switchdev
+  ip l s $PF1 up
+  ip l s $PF1 promisc on
+  sleep 1
+  echo 1 > /sys/class/net/$PF1/device/sriov_numvfs
+  sleep 1
+  echo 1 > /sys/class/net/$PF1/device/sriov_numvfs
+
+Trace (minimized):
+  list_add corruption. next->prev should be prev (ffff8882e241c6f0), but was 0000000000000000. (next=ffff888455da1330).
+  kernel BUG at lib/list_debug.c:29!
+  RIP: 0010:__list_add_valid_or_report+0xa6/0x100
+   ice_mbx_init_vf_info+0xa7/0x180 [ice]
+   ice_initialize_vf_entry+0x1fa/0x250 [ice]
+   ice_sriov_configure+0x8d7/0x1520 [ice]
+   ? __percpu_ref_switch_mode+0x1b1/0x5d0
+   ? __pfx_ice_sriov_configure+0x10/0x10 [ice]
+
+Sometimes a KASAN report can be seen instead with a similar stack trace:
+  BUG: KASAN: use-after-free in __list_add_valid_or_report+0xf1/0x100
+
+VFs are added to this list in ice_mbx_init_vf_info(), but only removed
+in ice_free_vfs(). Move the removing to ice_free_vf_entries(), which is
+also being called in other places where VFs are being removed (including
+ice_free_vfs() itself).
+
+Fixes: 8cd8a6b17d27 ("ice: move VF overflow message count into struct ice_mbx_vf_info")
+Reported-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
+Closes: https://lore.kernel.org/intel-wired-lan/PH0PR11MB50138B635F2E5CEB7075325D961F2@PH0PR11MB5013.namprd11.prod.outlook.com
+Reviewed-by: Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@linux.intel.com>
+Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Tested-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://patch.msgid.link/20250224190647.3601930-2-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
+index b83f99c01d91..8aabf7749aa5 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sriov.c
++++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
+@@ -193,10 +194,6 @@ void ice_free_vfs(struct ice_pf *pf)
+ 			wr32(hw, GLGEN_VFLRSTAT(reg_idx), BIT(bit_idx));
+ 		}
+ 
+-		/* clear malicious info since the VF is getting released */
+-		if (!ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
+-			list_del(&vf->mbx_info.list_entry);
+-
+ 		mutex_unlock(&vf->cfg_lock);
+ 	}
+ 
+
+2025-06-12 15:46:20.328 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-12 15:46:20.329 | INFO     | modules.chunk_analyzer:execute:66 - From 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c Mon Sep 17 00:00:00 2001
+From: Marcin Szycik <marcin.szycik@linux.intel.com>
+Date: Mon, 24 Feb 2025 11:06:41 -0800
+Subject: [PATCH] ice: Fix deinitializing VF in error path
+
+If ice_ena_vfs() fails after calling ice_create_vf_entries(), it frees
+all VFs without removing them from snapshot PF-VF mailbox list, leading
+to list corruption.
+
+Reproducer:
+  devlink dev eswitch set $PF1_PCI mode switchdev
+  ip l s $PF1 up
+  ip l s $PF1 promisc on
+  sleep 1
+  echo 1 > /sys/class/net/$PF1/device/sriov_numvfs
+  sleep 1
+  echo 1 > /sys/class/net/$PF1/device/sriov_numvfs
+
+Trace (minimized):
+  list_add corruption. next->prev should be prev (ffff8882e241c6f0), but was 0000000000000000. (next=ffff888455da1330).
+  kernel BUG at lib/list_debug.c:29!
+  RIP: 0010:__list_add_valid_or_report+0xa6/0x100
+   ice_mbx_init_vf_info+0xa7/0x180 [ice]
+   ice_initialize_vf_entry+0x1fa/0x250 [ice]
+   ice_sriov_configure+0x8d7/0x1520 [ice]
+   ? __percpu_ref_switch_mode+0x1b1/0x5d0
+   ? __pfx_ice_sriov_configure+0x10/0x10 [ice]
+
+Sometimes a KASAN report can be seen instead with a similar stack trace:
+  BUG: KASAN: use-after-free in __list_add_valid_or_report+0xf1/0x100
+
+VFs are added to this list in ice_mbx_init_vf_info(), but only removed
+in ice_free_vfs(). Move the removing to ice_free_vf_entries(), which is
+also being called in other places where VFs are being removed (including
+ice_free_vfs() itself).
+
+Fixes: 8cd8a6b17d27 ("ice: move VF overflow message count into struct ice_mbx_vf_info")
+Reported-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
+Closes: https://lore.kernel.org/intel-wired-lan/PH0PR11MB50138B635F2E5CEB7075325D961F2@PH0PR11MB5013.namprd11.prod.outlook.com
+Reviewed-by: Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@linux.intel.com>
+Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Tested-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://patch.msgid.link/20250224190647.3601930-2-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+index c7c0c2f50c26..815ad0bfe832 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+@@ -1036,6 +1036,14 @@ void ice_initialize_vf_entry(struct ice_vf *vf)
+ 	mutex_init(&vf->cfg_lock);
+ }
+ 
++void ice_deinitialize_vf_entry(struct ice_vf *vf)
++{
++	struct ice_pf *pf = vf->pf;
++
++	if (!ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
++		list_del(&vf->mbx_info.list_entry);
++}
++
+ /**
+  * ice_dis_vf_qs - Disable the VF queues
+  * @vf: pointer to the VF structure
+
+2025-06-12 15:46:20.329 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-06-12 15:46:20.329 | INFO     | modules.chunk_analyzer:execute:66 - From 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c Mon Sep 17 00:00:00 2001
+From: Marcin Szycik <marcin.szycik@linux.intel.com>
+Date: Mon, 24 Feb 2025 11:06:41 -0800
+Subject: [PATCH] ice: Fix deinitializing VF in error path
+
+If ice_ena_vfs() fails after calling ice_create_vf_entries(), it frees
+all VFs without removing them from snapshot PF-VF mailbox list, leading
+to list corruption.
+
+Reproducer:
+  devlink dev eswitch set $PF1_PCI mode switchdev
+  ip l s $PF1 up
+  ip l s $PF1 promisc on
+  sleep 1
+  echo 1 > /sys/class/net/$PF1/device/sriov_numvfs
+  sleep 1
+  echo 1 > /sys/class/net/$PF1/device/sriov_numvfs
+
+Trace (minimized):
+  list_add corruption. next->prev should be prev (ffff8882e241c6f0), but was 0000000000000000. (next=ffff888455da1330).
+  kernel BUG at lib/list_debug.c:29!
+  RIP: 0010:__list_add_valid_or_report+0xa6/0x100
+   ice_mbx_init_vf_info+0xa7/0x180 [ice]
+   ice_initialize_vf_entry+0x1fa/0x250 [ice]
+   ice_sriov_configure+0x8d7/0x1520 [ice]
+   ? __percpu_ref_switch_mode+0x1b1/0x5d0
+   ? __pfx_ice_sriov_configure+0x10/0x10 [ice]
+
+Sometimes a KASAN report can be seen instead with a similar stack trace:
+  BUG: KASAN: use-after-free in __list_add_valid_or_report+0xf1/0x100
+
+VFs are added to this list in ice_mbx_init_vf_info(), but only removed
+in ice_free_vfs(). Move the removing to ice_free_vf_entries(), which is
+also being called in other places where VFs are being removed (including
+ice_free_vfs() itself).
+
+Fixes: 8cd8a6b17d27 ("ice: move VF overflow message count into struct ice_mbx_vf_info")
+Reported-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
+Closes: https://lore.kernel.org/intel-wired-lan/PH0PR11MB50138B635F2E5CEB7075325D961F2@PH0PR11MB5013.namprd11.prod.outlook.com
+Reviewed-by: Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@linux.intel.com>
+Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Tested-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://patch.msgid.link/20250224190647.3601930-2-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h b/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
+index 0c7e77c0a09f..5392b0404986 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
++++ b/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
+@@ -24,6 +24,7 @@
+ #endif
+ 
+ void ice_initialize_vf_entry(struct ice_vf *vf);
++void ice_deinitialize_vf_entry(struct ice_vf *vf);
+ void ice_dis_vf_qs(struct ice_vf *vf);
+ int ice_check_vf_init(struct ice_vf *vf);
+ enum virtchnl_status_code ice_err_to_virt_err(int err);
+-- 
+2.25.1
+
+
+2025-06-12 15:46:20.330 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/4 个块补丁: chunk_001_20250612_154620.patch
+2025-06-12 15:46:20.334 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_001_20250612_154620.patch
+2025-06-12 15:46:20.334 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/4 个块补丁: chunk_002_20250612_154620.patch
+2025-06-12 15:46:20.341 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_002_20250612_154620.patch 应用失败: error: patch failed: drivers/net/ethernet/intel/ice/ice_sriov.c:193
+error: drivers/net/ethernet/intel/ice/ice_sriov.c: patch does not apply
+
+2025-06-12 15:46:20.342 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/4 个块补丁: chunk_003_20250612_154620.patch
+2025-06-12 15:46:20.346 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_003_20250612_154620.patch
+2025-06-12 15:46:20.346 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 4/4 个块补丁: chunk_004_20250612_154620.patch
+2025-06-12 15:46:20.350 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_004_20250612_154620.patch
+2025-06-12 15:46:20.351 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-06-12 15:46:20.351 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 4
+2025-06-12 15:46:20.351 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 3
+2025-06-12 15:46:20.351 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 1
+2025-06-12 15:46:20.352 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 3 个块补丁，总共 4 个
+2025-06-12 15:46:20.353 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/remaining_chunks_20250612_154620.patch
+2025-06-12 15:46:20.353 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/remaining_chunks_20250612_154620.patch
+2025-06-12 15:46:20.353 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/remaining_chunks_20250612_154620.patch
+2025-06-12 15:46:20.354 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.03秒
+2025-06-12 15:46:20.354 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/metrics_79990c_20250612_154620.json
+2025-06-12 15:46:20.355 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620
+2025-06-12 15:46:20.356 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620
+2025-06-12 15:46:20.356 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620/patches
+2025-06-12 15:46:20.356 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620/patches
+2025-06-12 15:46:20.357 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620/patches/original_patch.txt
+2025-06-12 15:46:20.357 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620
+2025-06-12 15:46:20.358 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620/patches/applied_chunk_1.txt
+2025-06-12 15:46:20.359 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620/patches/applied_chunk_2.txt
+2025-06-12 15:46:20.360 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620/patches/applied_chunk_3.txt
+2025-06-12 15:46:20.361 | INFO     | modules.chunk_analyzer:_get_patch_content:1282 - 已将合并的补丁块内容保存到: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620/patches/all_applied_chunks.txt
+2025-06-12 15:46:20.361 | INFO     | modules.chunk_analyzer:_get_patch_content:1286 - 从context获取应用成功的补丁内容
+2025-06-12 15:46:20.361 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620
+2025-06-12 15:46:20.362 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620/patches/remaining_patch.txt
+2025-06-12 15:46:20.362 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/remaining_chunks_20250612_154620.patch
+2025-06-12 15:46:20.363 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/linux/kernel-stable/79990c/evaluations/chunk_analyzer/details_79990c_20250612_154620
+2025-06-12 15:46:20.367 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-12 15:46:20.368 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/patches/upstream_79990c.patch
+2025-06-12 15:46:20.368 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/patches/upstream_79990c.patch
+2025-06-12 15:46:20.368 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-12 15:46:20.368 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-12 15:46:20.464 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-12 15:46:21.032 | INFO     | __main__:clean_config:2107 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

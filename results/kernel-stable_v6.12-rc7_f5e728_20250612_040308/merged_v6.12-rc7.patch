@@ -1,0 +1,65 @@
+From 6acd3786a1213cae2181fa5c205bf7f5352db3a9 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 12 Jun 2025 04:03:08 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A5?=
+ =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ drivers/video/fbdev/hyperv_fb.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index 7fdb5edd7e2e..eedf6938597e 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -952,7 +952,7 @@ static phys_addr_t hvfb_get_phymem(struct hv_device *hdev,
+ }
+ 
+ /* Release contiguous physical memory */
+-static void hvfb_release_phymem(struct hv_device *hdev,
++static void hvfb_release_phymem(struct device *device,
+ 				phys_addr_t paddr, unsigned int size)
+ {
+ 	unsigned int order = get_order(size);
+@@ -960,7 +960,7 @@ static void hvfb_release_phymem(struct hv_device *hdev,
+ 	if (order <= MAX_PAGE_ORDER)
+ 		__free_pages(pfn_to_page(paddr >> PAGE_SHIFT), order);
+ 	else
+-		dma_free_coherent(&hdev->device,
++		dma_free_coherent(device,
+ 				  round_up(size, PAGE_SIZE),
+ 				  phys_to_virt(paddr),
+ 				  paddr);
+@@ -1074,7 +1074,7 @@ static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)
+ }
+ 
+ /* Release the framebuffer */
+-static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)
++static void hvfb_putmem(struct fb_info *info)
+ {
+ 	struct hvfb_par *par = info->par;
+ 
+@@ -1197,7 +1197,7 @@ static int hvfb_probe(struct hv_device *hdev,
+ 
+ error:
+ 	fb_deferred_io_cleanup(info);
+-	hvfb_putmem(hdev, info);
++	hvfb_putmem(info);
+ error2:
+ 	vmbus_close(hdev->channel);
+ error1:
+@@ -1226,7 +1226,7 @@ static void hvfb_remove(struct hv_device *hdev)
+ 	vmbus_close(hdev->channel);
+ 	hv_set_drvdata(hdev, NULL);
+ 
+-	hvfb_putmem(hdev, info);
++	hvfb_putmem(info);
+ 	framebuffer_release(info);
+ }
+ 
+-- 
+2.25.1
+

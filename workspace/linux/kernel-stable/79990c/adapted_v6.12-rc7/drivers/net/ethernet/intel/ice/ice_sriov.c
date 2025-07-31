@@ -193,6 +193,9 @@ void ice_free_vfs(struct ice_pf *pf)
 			wr32(hw, GLGEN_VFLRSTAT(reg_idx), BIT(bit_idx));
 		}
 
+		/* clear malicious info since the VF is getting released */
+		list_del(&vf->mbx_info.list_entry);
+
 		mutex_unlock(&vf->cfg_lock);
 	}
 

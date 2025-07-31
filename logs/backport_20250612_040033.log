@@ -1,0 +1,471 @@
+2025-06-12 04:00:33.522 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_040033.log
+2025-06-12 04:00:33.523 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-12 04:00:33.523 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-stable/commit/743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch
+2025-06-12 04:00:33.524 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-12 04:00:33.524 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-12 04:00:33.525 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-12 04:00:33.526 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-12 04:00:33.526 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.12-rc7']
+2025-06-12 04:00:33.526 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.12-rc7
+2025-06-12 04:00:33.527 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: 743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch
+2025-06-12 04:00:33.527 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-12 04:00:33.528 | INFO     | modules.direct_apply:_download_patch:245 - 上游补丁文件不存在，下载补丁
+2025-06-12 04:00:33.529 | INFO     | patch_utils:_download_github_patch:232 - GitHub patch URL parts: ['https:', '', 'github.com', 'linux', 'kernel-stable', 'commit', '743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch']
+2025-06-12 04:00:33.529 | INFO     | patch_utils:_download_github_patch:240 - 使用GitHub Commit API下载patch: https://api.github.com/repos/linux/kernel-stable/commits/743eb6c68d3534e01e73d316ddcaa7334c0e29d3
+2025-06-12 04:00:38.566 | ERROR    | patch_utils:_download_github_patch:260 - 使用GitHub API下载patch失败: HTTPSConnectionPool(host='api.github.com', port=443): Max retries exceeded with url: /repos/linux/kernel-stable/commits/743eb6c68d3534e01e73d316ddcaa7334c0e29d3 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')))
+2025-06-12 04:00:38.567 | INFO     | patch_utils:_download_direct_patch:396 - 直接下载补丁文件: https://github.com/linux/kernel-stable/commit/743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch
+2025-06-12 04:00:43.953 | ERROR    | patch_utils:_download_direct_patch:427 - 直接下载patch失败: Exceeded 30 redirects.
+2025-06-12 04:00:43.953 | WARNING  | modules.direct_apply:_download_patch:258 - 补丁下载出错: 无法下载补丁: https://github.com/linux/kernel-stable/commit/743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch - Exceeded 30 redirects.
+2025-06-12 04:00:43.954 | INFO     | modules.direct_apply:_download_patch:261 - 尝试从本地仓库生成补丁
+2025-06-12 04:00:43.954 | INFO     | patch_utils:generate_patch_from_git:452 - 尝试从本地仓库生成补丁: 743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch
+2025-06-12 04:00:43.965 | INFO     | patch_utils:generate_patch_from_git:483 - 成功从本地仓库生成补丁: workspace/linux/kernel-stable/743eb6/patches/upstream_743eb6.patch
+2025-06-12 04:00:43.965 | INFO     | modules.direct_apply:_download_patch:269 - 成功从本地仓库生成补丁: workspace/linux/kernel-stable/743eb6/patches/upstream_743eb6.patch
+2025-06-12 04:00:43.965 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-12 04:00:43.966 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/patches/upstream_743eb6.patch
+2025-06-12 04:00:44.160 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_v6.12-rc7
+2025-06-12 04:00:44.922 | ERROR    | modules.direct_apply:_apply_patch:315 - 补丁应用失败: error: patch failed: sound/soc/sof/sof-audio.c:46
+error: sound/soc/sof/sof-audio.c: patch does not apply
+error: patch failed: sound/soc/sof/topology.c:2356
+error: sound/soc/sof/topology.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-12 04:00:45.404 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_v6.12-rc7
+2025-06-12 04:00:45.405 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-12 04:00:45.405 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/patches/upstream_743eb6.patch
+2025-06-12 04:00:45.405 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/patches/upstream_743eb6.patch
+2025-06-12 04:00:45.406 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 104 行内容
+2025-06-12 04:00:45.406 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: sound/soc/sof/sof-audio.c
+2025-06-12 04:00:45.407 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: sound/soc/sof/sof-audio.c @@ -46,7 +46,6 @@ (modification)
+2025-06-12 04:00:45.407 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: sound/soc/sof/sof-audio.c @@ -59,8 +58,6 @@ (modification)
+2025-06-12 04:00:45.407 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: sound/soc/sof/sof-audio.c @@ -109,8 +106,9 @@ (modification)
+2025-06-12 04:00:45.408 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: sound/soc/sof/topology.c
+2025-06-12 04:00:45.408 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: sound/soc/sof/topology.c @@ -2356,23 +2356,29 @@ (modification)
+2025-06-12 04:00:45.408 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: sound/soc/sof/topology.c @@ -2396,6 +2402,7 @@ (modification)
+2025-06-12 04:00:45.409 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 5 个修改块
+2025-06-12 04:00:45.409 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 5 个块
+2025-06-12 04:00:45.410 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/patches/upstream_743eb6.patch
+2025-06-12 04:00:45.410 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_001_20250612_040045.patch (修改文件: sound/soc/sof/sof-audio.c)
+2025-06-12 04:00:45.411 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_002_20250612_040045.patch (修改文件: sound/soc/sof/sof-audio.c)
+2025-06-12 04:00:45.411 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_003_20250612_040045.patch (修改文件: sound/soc/sof/sof-audio.c)
+2025-06-12 04:00:45.412 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_004_20250612_040045.patch (修改文件: sound/soc/sof/topology.c)
+2025-06-12 04:00:45.412 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_005_20250612_040045.patch (修改文件: sound/soc/sof/topology.c)
+2025-06-12 04:00:45.413 | INFO     | modules.chunk_analyzer:execute:60 - 已为 5 个块创建单独的补丁文件
+2025-06-12 04:00:45.413 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-12 04:00:45.413 | INFO     | modules.chunk_analyzer:execute:66 - From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/sof-audio.c b/sound/soc/sof/sof-audio.c
+index 9163975c9c3f..e693dcb475e4 100644
+--- a/sound/soc/sof/sof-audio.c
++++ b/sound/soc/sof/sof-audio.c
+@@ -46,7 +46,6 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
+ {
+ 	const struct sof_ipc_tplg_ops *tplg_ops = sof_ipc_get_ops(sdev, tplg);
+ 	struct snd_sof_pipeline *spipe = swidget->spipe;
+-	struct snd_sof_widget *pipe_widget;
+ 	int err = 0;
+ 	int ret;
+ 
+
+2025-06-12 04:00:45.414 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-12 04:00:45.414 | INFO     | modules.chunk_analyzer:execute:66 - From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/sof-audio.c b/sound/soc/sof/sof-audio.c
+index 9163975c9c3f..e693dcb475e4 100644
+--- a/sound/soc/sof/sof-audio.c
++++ b/sound/soc/sof/sof-audio.c
+@@ -59,8 +58,6 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
+ 	if (--swidget->use_count)
+ 		return 0;
+ 
+-	pipe_widget = swidget->spipe->pipe_widget;
+-
+ 	/* reset route setup status for all routes that contain this widget */
+ 	sof_reset_route_setup_status(sdev, swidget);
+ 
+
+2025-06-12 04:00:45.414 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-12 04:00:45.415 | INFO     | modules.chunk_analyzer:execute:66 - From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/sof-audio.c b/sound/soc/sof/sof-audio.c
+index 9163975c9c3f..e693dcb475e4 100644
+--- a/sound/soc/sof/sof-audio.c
++++ b/sound/soc/sof/sof-audio.c
+@@ -109,8 +106,9 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
+ 	 * free the scheduler widget (same as pipe_widget) associated with the current swidget.
+ 	 * skip for static pipelines
+ 	 */
+-	if (swidget->dynamic_pipeline_widget && swidget->id != snd_soc_dapm_scheduler) {
+-		ret = sof_widget_free_unlocked(sdev, pipe_widget);
++	if (swidget->spipe && swidget->dynamic_pipeline_widget &&
++	    swidget->id != snd_soc_dapm_scheduler) {
++		ret = sof_widget_free_unlocked(sdev, swidget->spipe->pipe_widget);
+ 		if (ret < 0 && !err)
+ 			err = ret;
+ 	}
+
+2025-06-12 04:00:45.415 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-06-12 04:00:45.415 | INFO     | modules.chunk_analyzer:execute:66 - From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index 25fb0d1443b6..915c2e88e32b 100644
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2356,23 +2356,29 @@ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,
+ 	if (WIDGET_IS_DAI(w->id)) {
+ 		struct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);
+ 		struct snd_sof_widget *swidget;
+-		struct snd_sof_dai dai;
++		struct snd_sof_dai *sdai;
+ 		int ret;
+ 
+ 		swidget = kzalloc(sizeof(*swidget), GFP_KERNEL);
+ 		if (!swidget)
+ 			return -ENOMEM;
+ 
+-		memset(&dai, 0, sizeof(dai));
++		sdai = kzalloc(sizeof(*sdai), GFP_KERNEL);
++		if (!sdai) {
++			kfree(swidget);
++			return -ENOMEM;
++		}
+ 
+-		ret = sof_connect_dai_widget(scomp, w, tw, &dai);
++		ret = sof_connect_dai_widget(scomp, w, tw, sdai);
+ 		if (ret) {
+ 			kfree(swidget);
++			kfree(sdai);
+ 			return ret;
+ 		}
+ 
+ 		swidget->scomp = scomp;
+ 		swidget->widget = w;
++		swidget->private = sdai;
+ 		mutex_init(&swidget->setup_mutex);
+ 		w->dobj.private = swidget;
+ 		list_add(&swidget->list, &sdev->widget_list);
+
+2025-06-12 04:00:45.416 | INFO     | modules.chunk_analyzer:execute:62 - 第 5 个补丁文件为：
+2025-06-12 04:00:45.416 | INFO     | modules.chunk_analyzer:execute:66 - From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index 25fb0d1443b6..915c2e88e32b 100644
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2396,6 +2402,7 @@ static int sof_dspless_widget_unload(struct snd_soc_component *scomp,
+ 
+ 		/* remove and free swidget object */
+ 		list_del(&swidget->list);
++		kfree(swidget->private);
+ 		kfree(swidget);
+ 	}
+ 
+-- 
+2.25.1
+
+
+2025-06-12 04:00:45.416 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/5 个块补丁: chunk_001_20250612_040045.patch
+2025-06-12 04:00:45.424 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:375 - 块补丁 chunk_001_20250612_040045.patch 可以反向应用，可能已经被应用过
+2025-06-12 04:00:45.425 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/5 个块补丁: chunk_002_20250612_040045.patch
+2025-06-12 04:00:45.432 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:375 - 块补丁 chunk_002_20250612_040045.patch 可以反向应用，可能已经被应用过
+2025-06-12 04:00:45.432 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/5 个块补丁: chunk_003_20250612_040045.patch
+2025-06-12 04:00:45.438 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:375 - 块补丁 chunk_003_20250612_040045.patch 可以反向应用，可能已经被应用过
+2025-06-12 04:00:45.438 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 4/5 个块补丁: chunk_004_20250612_040045.patch
+2025-06-12 04:00:45.448 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_004_20250612_040045.patch 应用失败: error: patch failed: sound/soc/sof/topology.c:2356
+error: sound/soc/sof/topology.c: patch does not apply
+
+2025-06-12 04:00:45.448 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 5/5 个块补丁: chunk_005_20250612_040045.patch
+2025-06-12 04:00:45.456 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:375 - 块补丁 chunk_005_20250612_040045.patch 可以反向应用，可能已经被应用过
+2025-06-12 04:00:45.457 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-06-12 04:00:45.457 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 5
+2025-06-12 04:00:45.457 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 4
+2025-06-12 04:00:45.458 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 1
+2025-06-12 04:00:45.458 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 4 个块补丁，总共 5 个
+2025-06-12 04:00:45.459 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/remaining_chunks_20250612_040045.patch
+2025-06-12 04:00:45.460 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/remaining_chunks_20250612_040045.patch
+2025-06-12 04:00:45.461 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/remaining_chunks_20250612_040045.patch
+2025-06-12 04:00:45.461 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.06秒
+2025-06-12 04:00:45.462 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/metrics_743eb6_20250612_040045.json
+2025-06-12 04:00:45.464 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045
+2025-06-12 04:00:45.465 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045
+2025-06-12 04:00:45.465 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045/patches
+2025-06-12 04:00:45.466 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045/patches
+2025-06-12 04:00:45.466 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045/patches/original_patch.txt
+2025-06-12 04:00:45.467 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045
+2025-06-12 04:00:45.467 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045/patches/applied_chunk_1.txt
+2025-06-12 04:00:45.468 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045/patches/applied_chunk_2.txt
+2025-06-12 04:00:45.468 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045/patches/applied_chunk_3.txt
+2025-06-12 04:00:45.469 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045/patches/applied_chunk_4.txt
+2025-06-12 04:00:45.469 | INFO     | modules.chunk_analyzer:_get_patch_content:1282 - 已将合并的补丁块内容保存到: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045/patches/all_applied_chunks.txt
+2025-06-12 04:00:45.469 | INFO     | modules.chunk_analyzer:_get_patch_content:1286 - 从context获取应用成功的补丁内容
+2025-06-12 04:00:45.470 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045
+2025-06-12 04:00:45.471 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045/patches/remaining_patch.txt
+2025-06-12 04:00:45.471 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/remaining_chunks_20250612_040045.patch
+2025-06-12 04:00:45.472 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/linux/kernel-stable/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_040045
+2025-06-12 04:00:45.477 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-12 04:00:45.477 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/patches/upstream_743eb6.patch
+2025-06-12 04:00:45.478 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/patches/upstream_743eb6.patch
+2025-06-12 04:00:45.478 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-12 04:00:46.393 | WARNING  | git_operations:get_commit_content:143 - GitHub API获取提交内容失败: 404, {"message":"Not Found","documentation_url":"https://docs.github.com/rest/commits/commits#get-a-commit","status":"404"}
+2025-06-12 04:00:46.394 | INFO     | git_operations:get_commit_content:144 - 尝试使用本地Git仓库获取提交内容...
+2025-06-12 04:00:46.398 | ERROR    | git_operations:_get_commit_content_local:238 - 从本地Git仓库获取提交内容失败: fatal: ambiguous argument '743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch': unknown revision or path not in the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'
+
+2025-06-12 04:00:47.161 | WARNING  | git_operations:get_commit_content:143 - GitHub API获取提交内容失败: 404, {"message":"Not Found","documentation_url":"https://docs.github.com/rest/commits/commits#get-a-commit","status":"404"}
+2025-06-12 04:00:47.161 | INFO     | git_operations:get_commit_content:144 - 尝试使用本地Git仓库获取提交内容...
+2025-06-12 04:00:47.165 | ERROR    | git_operations:_get_commit_content_local:238 - 从本地Git仓库获取提交内容失败: fatal: ambiguous argument '743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch': unknown revision or path not in the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'
+
+2025-06-12 04:00:47.166 | WARNING  | git_operations:get_file_before_commit:471 - 提交内容中没有父提交信息，尝试使用本地Git仓库获取
+2025-06-12 04:00:47.170 | ERROR    | git_operations:get_file_before_commit:518 - 获取父提交失败: fatal: ambiguous argument '743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch': unknown revision or path not in the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'
+
+2025-06-12 04:00:47.171 | WARNING  | patch_processor:run:226 - 无法获取提交前的文件内容
+2025-06-12 04:00:47.171 | INFO     | git_operations:get_file_contents_from_ref:264 - 获取内容中：[]
+2025-06-12 04:00:47.171 | INFO     | git_operations:_get_file_contents_local:300 - 本地获取文件内容为: []
+2025-06-12 04:00:47.172 | WARNING  | patch_processor:run:253 - 无法获取目标版本 v6.12-rc7 的文件内容
+2025-06-12 04:00:47.172 | WARNING  | patch_processor:run:267 - 无法生成差异文件: newer文件夹存在=False, v6.12-rc7文件夹存在=False
+2025-06-12 04:00:47.335 | ERROR    | modules.llm_adapter:_get_context_diff:885 - 获取上下文差异失败: stdout and stderr arguments may not be used with capture_output.
+2025-06-12 04:00:47.336 | ERROR    | modules.llm_adapter:_get_context_diff:886 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 859, in _get_context_diff
+    subprocess.run(['git', 'branch', '-D', temp_branch], cwd=repo_path,
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 543, in run
+    raise ValueError('stdout and stderr arguments may not be used '
+ValueError: stdout and stderr arguments may not be used with capture_output.
+
+2025-06-12 04:00:47.337 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-12 04:00:47.426 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-12 04:00:48.507 | ERROR    | llm_assistant:call_llm:177 - Error calling OpenAI: Error code: 400 - {'error': {'message': 'currently model qwen-plus is not support', 'type': 'error'}}
+2025-06-12 04:00:48.508 | ERROR    | llm_assistant:call_llm:182 - No response from OpenAI
+2025-06-12 04:00:48.508 | INFO     | llm_assistant:run:298 - ---responses in run: [{'prompt': [{'role': 'system', 'content': 'You are a senior software engineer who is best in the world at fixing vulnerabilities and patch porting between versions.\nUsers will give you 1. a patch based on a newer version 2. the diff info between the newer version and and older version. \nAnd you will generate a fix patch to the older version in the form of git diff based on the provided INSTRUCTION.\nINSTRUCTION:\nOnly reterun the final result after patch and diff information are entered. When all the information is entered, it will be identified with \u200d\u200d```===end===\u200d\u200d```\nOnly respond with the patch info, do not add any comments or change the indentation.\nThe patch should have no errors, it should compile and user should be able to use the fixed code as a direct replacement of the vulnerable code. The code should not introduce any new dependencies or use API calls that are not present in the code.\nIf you can generate a backport patch for the patch, do a brief change impact analysis to assess how these modifications might affect the overall system, considering both immediate and potential long-term compatibility issues.\nLow: Code diff will be applied to the code base and automatically merged without review.\nMedium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.\nHigh: Code diff will be offered as a suggestion to the developer to review and then apply to the code base. There are likely other changes that need to be done by the developer before the change can be implemented.\nPlease provide a response only in the following format:\n\nA. Commit message:\n<brief summary of the diff>\n\nB. Change summary:\n<description of the changes made in the diff>\n\nC. Compatibility Risk:\n<Low, Medium, High>\n\nD. Fixed Code:\n<original patch info with now backported>\n\n'}, {'role': 'system', 'content': "1. a patch based on a newer version: \nFrom 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001\nFrom: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>\nDate: Tue, 13 Feb 2024 12:12:41 +0200\nSubject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI\n widget->private\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\nFor dspless mode, we need to allocate and store an 'sdai'\nstructure. The existing code allocate the data on the stack and does\nnot set the widget->private pointer.\n\nThis minor change should not have any impact on existing DAIs, even\nwhen the DSP is used.\n\nSigned-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>\nReviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>\nReviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>\nSigned-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>\nLink: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\n\ndiff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c\nindex 25fb0d1443b6..915c2e88e32b 100644\n--- a/sound/soc/sof/topology.c\n+++ b/sound/soc/sof/topology.c\n@@ -2356,23 +2356,29 @@ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,\n \tif (WIDGET_IS_DAI(w->id)) {\n \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n \t\tstruct snd_sof_widget *swidget;\n-\t\tstruct snd_sof_dai dai;\n+\t\tstruct snd_sof_dai *sdai;\n \t\tint ret;\n \n \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n \t\tif (!swidget)\n \t\t\treturn -ENOMEM;\n \n-\t\tmemset(&dai, 0, sizeof(dai));\n+\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n+\t\tif (!sdai) {\n+\t\t\tkfree(swidget);\n+\t\t\treturn -ENOMEM;\n+\t\t}\n \n-\t\tret = sof_connect_dai_widget(scomp, w, tw, &dai);\n+\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n \t\tif (ret) {\n \t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n \t\t\treturn ret;\n \t\t}\n \n \t\tswidget->scomp = scomp;\n \t\tswidget->widget = w;\n+\t\tswidget->private = sdai;\n \t\tmutex_init(&swidget->setup_mutex);\n \t\tw->dobj.private = swidget;\n \t\tlist_add(&swidget->list, &sdev->widget_list);\n"}, {'role': 'system', 'content': "2. the diff info between the newer version and and older version: \nFrom 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001\nFrom: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>\nDate: Tue, 13 Feb 2024 12:12:41 +0200\nSubject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI\n widget->private\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\nFor dspless mode, we need to allocate and store an 'sdai'\nstructure. The existing code allocate the data on the stack and does\nnot set the widget->private pointer.\n\nThis minor change should not have any impact on existing DAIs, even\nwhen the DSP is used.\n\nSigned-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>\nReviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>\nReviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>\nSigned-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>\nLink: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\n\ndiff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c\nindex 25fb0d1443b6..915c2e88e32b 100644\n--- a/sound/soc/sof/topology.c\n+++ b/sound/soc/sof/topology.c\n@@ -2356,23 +2356,29 @@ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,\n \tif (WIDGET_IS_DAI(w->id)) {\n \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n \t\tstruct snd_sof_widget *swidget;\n-\t\tstruct snd_sof_dai dai;\n+\t\tstruct snd_sof_dai *sdai;\n \t\tint ret;\n \n \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n \t\tif (!swidget)\n \t\t\treturn -ENOMEM;\n \n-\t\tmemset(&dai, 0, sizeof(dai));\n+\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n+\t\tif (!sdai) {\n+\t\t\tkfree(swidget);\n+\t\t\treturn -ENOMEM;\n+\t\t}\n \n-\t\tret = sof_connect_dai_widget(scomp, w, tw, &dai);\n+\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n \t\tif (ret) {\n \t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n \t\t\treturn ret;\n \t\t}\n \n \t\tswidget->scomp = scomp;\n \t\tswidget->widget = w;\n+\t\tswidget->private = sdai;\n \t\tmutex_init(&swidget->setup_mutex);\n \t\tw->dobj.private = swidget;\n \t\tlist_add(&swidget->list, &sdev->widget_list);\n\n===end==="}, {'role': 'user', 'content': 'Please return the final result.'}], 'response': '', 'request_token': 0, 'response_token': 0}]
+2025-06-12 04:00:48.509 | INFO     | modules.llm_adapter:_call_llm:973 - llm.run() result:{'openai_responses': [''], 'request_tokens': [0], 'response_tokens': [0]}
+2025-06-12 04:00:48.510 | INFO     | modules.llm_adapter:_parse_llm_response:1055 - 原始LLM响应(前100字符): ...
+2025-06-12 04:00:48.510 | WARNING  | modules.llm_adapter:_parse_llm_response:1093 - 未找到任何已知补丁格式，返回完整响应
+2025-06-12 04:00:48.511 | INFO     | modules.llm_adapter:_save_llm_response:1224 - LLM响应已保存到: workspace/linux/kernel-stable/743eb6/llm_output/output_v6.12-rc7_qwen-plus.patch
+2025-06-12 04:00:48.512 | INFO     | modules.llm_adapter:_save_llm_response:1225 - 原始LLM响应已保存到: workspace/linux/kernel-stable/743eb6/llm_output/raw_output_v6.12-rc7_qwen-plus.patch
+2025-06-12 04:00:48.512 | INFO     | modules.llm_adapter:execute:97 - ==================================================
+2025-06-12 04:00:48.512 | INFO     | modules.llm_adapter:execute:98 - LLM适配器执行完成 - 摘要
+2025-06-12 04:00:48.512 | INFO     | modules.llm_adapter:execute:99 - 提示模式: 标准模式
+2025-06-12 04:00:48.513 | INFO     | modules.llm_adapter:execute:100 - 提示类型: 标准上下文差异
+2025-06-12 04:00:48.513 | INFO     | modules.llm_adapter:execute:101 - 函数上下文统计: 总尝试: 0, 成功: 0, 回退: 0
+2025-06-12 04:00:48.513 | INFO     | modules.llm_adapter:execute:105 - 执行时间: 3.03 秒
+2025-06-12 04:00:48.514 | INFO     | modules.llm_adapter:execute:106 - 生成的补丁保存到: workspace/linux/kernel-stable/743eb6/llm_output/output_v6.12-rc7_qwen-plus.patch
+2025-06-12 04:00:48.514 | INFO     | modules.llm_adapter:execute:107 - ==================================================
+2025-06-12 04:00:48.515 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-stable/743eb6/evaluations/llm_adapter/metrics_743eb6_20250612_040048.json
+2025-06-12 04:00:48.515 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-12 04:00:48.516 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/linux/kernel-stable/743eb6/llm_output/output_v6.12-rc7_qwen-plus.patch
+2025-06-12 04:00:48.516 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_v6.12-rc7_20250612_040048
+2025-06-12 04:00:49.203 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+
+2025-06-12 04:00:49.204 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-06-12 04:00:49.204 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_v6.12-rc7_20250612_040048
+2025-06-12 04:00:49.396 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-06-12 04:00:49.397 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-06-12 04:00:49.398 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/linux/kernel-stable/743eb6/metrics/patch_adapter_metrics.json
+2025-06-12 04:00:49.399 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 15.87秒
+2025-06-12 04:00:49.399 | INFO     | __main__:_merge_patches:1087 - 开始合并补丁...
+2025-06-12 04:00:49.400 | INFO     | __main__:_merge_patches:1122 - chunk_results2:
+2025-06-12 04:00:49.401 | INFO     | __main__:_merge_patches:1124 - chunk_patches: [PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_001_20250612_040045.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_002_20250612_040045.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_003_20250612_040045.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_005_20250612_040045.patch')]
+2025-06-12 04:00:49.401 | INFO     | __main__:_merge_patches:1126 - Chunk分析器应用了 4/5 个chunks
+2025-06-12 04:00:49.402 | INFO     | __main__:_combine_patch_files:1255 - 创建临时测试分支: patch_merge_6fd7362e
+2025-06-12 04:00:50.049 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_001_20250612_040045.patch
+2025-06-12 04:00:50.050 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_001_20250612_040045.patch
+2025-06-12 04:00:50.053 | INFO     | __main__:_combine_patch_files:1304 - 应用补丁失败，返回码: 1
+2025-06-12 04:00:50.054 | INFO     | __main__:_combine_patch_files:1306 - 错误输出: error: patch failed: sound/soc/sof/sof-audio.c:46
+error: sound/soc/sof/sof-audio.c: patch does not apply
+
+2025-06-12 04:00:50.054 | WARNING  | __main__:_combine_patch_files:1309 - 应用补丁 /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_001_20250612_040045.patch 失败: error: patch failed: sound/soc/sof/sof-audio.c:46
+error: sound/soc/sof/sof-audio.c: patch does not apply
+
+2025-06-12 04:00:50.176 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_002_20250612_040045.patch
+2025-06-12 04:00:50.177 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_002_20250612_040045.patch
+2025-06-12 04:00:50.181 | INFO     | __main__:_combine_patch_files:1304 - 应用补丁失败，返回码: 1
+2025-06-12 04:00:50.181 | INFO     | __main__:_combine_patch_files:1306 - 错误输出: error: patch failed: sound/soc/sof/sof-audio.c:59
+error: sound/soc/sof/sof-audio.c: patch does not apply
+
+2025-06-12 04:00:50.182 | WARNING  | __main__:_combine_patch_files:1309 - 应用补丁 /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_002_20250612_040045.patch 失败: error: patch failed: sound/soc/sof/sof-audio.c:59
+error: sound/soc/sof/sof-audio.c: patch does not apply
+
+2025-06-12 04:00:50.306 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_003_20250612_040045.patch
+2025-06-12 04:00:50.306 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_003_20250612_040045.patch
+2025-06-12 04:00:50.311 | INFO     | __main__:_combine_patch_files:1304 - 应用补丁失败，返回码: 1
+2025-06-12 04:00:50.312 | INFO     | __main__:_combine_patch_files:1306 - 错误输出: error: patch failed: sound/soc/sof/sof-audio.c:109
+error: sound/soc/sof/sof-audio.c: patch does not apply
+
+2025-06-12 04:00:50.312 | WARNING  | __main__:_combine_patch_files:1309 - 应用补丁 /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_003_20250612_040045.patch 失败: error: patch failed: sound/soc/sof/sof-audio.c:109
+error: sound/soc/sof/sof-audio.c: patch does not apply
+
+2025-06-12 04:00:50.451 | INFO     | __main__:_combine_patch_files:1289 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_005_20250612_040045.patch
+2025-06-12 04:00:50.452 | INFO     | __main__:_combine_patch_files:1292 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_005_20250612_040045.patch
+2025-06-12 04:00:50.457 | INFO     | __main__:_combine_patch_files:1304 - 应用补丁失败，返回码: 1
+2025-06-12 04:00:50.457 | INFO     | __main__:_combine_patch_files:1306 - 错误输出: error: patch failed: sound/soc/sof/topology.c:2396
+error: sound/soc/sof/topology.c: patch does not apply
+
+2025-06-12 04:00:50.457 | WARNING  | __main__:_combine_patch_files:1309 - 应用补丁 /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/743eb6/chunk_patches/chunk_005_20250612_040045.patch 失败: error: patch failed: sound/soc/sof/topology.c:2396
+error: sound/soc/sof/topology.c: patch does not apply
+
+2025-06-12 04:00:50.661 | WARNING  | __main__:_combine_patch_files:1347 - 合并后没有任何更改
+2025-06-12 04:00:50.662 | INFO     | __main__:_combine_patch_files:1425 - 清理临时分支: patch_merge_6fd7362e
+2025-06-12 04:00:50.850 | INFO     | __main__:_merge_patches:1208 - 只合并chunk补丁到: workspace/linux/kernel-stable/743eb6/patches/merged_v6.12-rc7.patch
+2025-06-12 04:00:50.850 | INFO     | __main__:_process_mode1:392 - 成功合并补丁到: workspace/linux/kernel-stable/743eb6/patches/merged_v6.12-rc7.patch
+2025-06-12 04:00:50.851 | INFO     | __main__:_save_results:751 - 已复制最终补丁到结果目录: results/kernel-stable_v6.12-rc7_743eb6_20250612_040050/merged_v6.12-rc7.patch
+2025-06-12 04:00:50.852 | INFO     | __main__:_save_results:889 - 结果已保存到: results/kernel-stable_v6.12-rc7_743eb6_20250612_040050/result.json
+2025-06-12 04:00:50.852 | INFO     | __main__:_print_summary:931 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-06-12 04:00:50.853 | INFO     | __main__:_print_summary:954 - ==================================================
+2025-06-12 04:00:50.853 | INFO     | __main__:_print_summary:955 - 处理摘要 - 提交: 743eb6
+2025-06-12 04:00:50.853 | INFO     | __main__:_print_summary:956 - 适配状态: 适配失败 (方法: failed)
+2025-06-12 04:00:50.853 | INFO     | __main__:_print_summary:971 - 块分析统计:
+2025-06-12 04:00:50.854 | INFO     | __main__:_print_summary:972 - - 总块数: 5
+2025-06-12 04:00:50.854 | INFO     | __main__:_print_summary:973 - - 冲突块数: 1
+2025-06-12 04:00:50.854 | INFO     | __main__:_print_summary:974 - - 成功适配块数: 0
+2025-06-12 04:00:50.854 | INFO     | __main__:_print_summary:975 - - 适配失败块数: 1
+2025-06-12 04:00:50.855 | INFO     | __main__:_print_summary:976 - - 编译失败块数: 0
+2025-06-12 04:00:50.855 | INFO     | __main__:_print_summary:980 - 总执行时间: 15.87秒
+2025-06-12 04:00:50.855 | INFO     | __main__:_print_summary:985 - ==================================================
+2025-06-12 04:00:50.856 | INFO     | __main__:run:335 - 处理完成
+2025-06-12 04:00:50.857 | INFO     | __main__:process_multiple_commits:1941 - 
+============================================================
+2025-06-12 04:00:50.857 | INFO     | __main__:process_multiple_commits:1942 - 完成处理 6 个commit
+2025-06-12 04:00:50.857 | INFO     | __main__:process_multiple_commits:1943 - 总耗时: 68.59秒
+2025-06-12 04:00:50.858 | INFO     | __main__:process_multiple_commits:1944 - 成功数量: 1/6 (16.67%)
+2025-06-12 04:00:50.858 | INFO     | __main__:process_multiple_commits:1945 - ============================================================
+2025-06-12 04:00:50.858 | INFO     | __main__:_print_mode1_statistics:1572 - ============================================================
+2025-06-12 04:00:50.859 | INFO     | __main__:_print_mode1_statistics:1573 - 模式1处理统计 - 多个commit
+2025-06-12 04:00:50.859 | INFO     | __main__:_print_mode1_statistics:1574 - ============================================================
+2025-06-12 04:00:50.859 | INFO     | __main__:_print_mode1_statistics:1575 - 总提交数: 6
+2025-06-12 04:00:50.860 | INFO     | __main__:_print_mode1_statistics:1576 - 成功处理数: 1
+2025-06-12 04:00:50.860 | INFO     | __main__:_print_mode1_statistics:1577 - 直接应用成功: 1
+2025-06-12 04:00:50.861 | INFO     | __main__:_print_mode1_statistics:1578 - 需要适配数量: 5
+2025-06-12 04:00:50.861 | INFO     | __main__:_print_mode1_statistics:1579 - 适配成功数量: 0
+2025-06-12 04:00:50.861 | INFO     | __main__:_print_mode1_statistics:1580 - 适配失败数量: 5
+2025-06-12 04:00:50.862 | INFO     | __main__:_print_mode1_statistics:1581 - 总体成功率: 16.67%
+2025-06-12 04:00:50.862 | INFO     | __main__:_print_mode1_statistics:1582 - 适配成功率: 0.00%
+2025-06-12 04:00:50.862 | INFO     | __main__:_print_mode1_statistics:1586 - 
+提交详情:
+2025-06-12 04:00:50.863 | INFO     | __main__:_print_mode1_statistics:1591 -   - ea2f45: 失败 (方法: 无, 耗时: 11.51秒)
+2025-06-12 04:00:50.863 | INFO     | __main__:_print_mode1_statistics:1591 -   - f5e728: 失败 (方法: 无, 耗时: 10.61秒)
+2025-06-12 04:00:50.863 | INFO     | __main__:_print_mode1_statistics:1591 -   - 929c81: 失败 (方法: 无, 耗时: 7.93秒)
+2025-06-12 04:00:50.864 | INFO     | __main__:_print_mode1_statistics:1591 -   - 6fd601: 成功 (方法: direct_apply, 耗时: 7.94秒)
+2025-06-12 04:00:50.864 | INFO     | __main__:_print_mode1_statistics:1591 -   - f9618f: 失败 (方法: 无, 耗时: 7.80秒)
+2025-06-12 04:00:50.864 | INFO     | __main__:_print_mode1_statistics:1591 -   - 743eb6: 失败 (方法: 无, 耗时: 15.87秒)
+2025-06-12 04:00:50.865 | INFO     | __main__:_print_mode1_statistics:1594 - 
+失败的提交:
+2025-06-12 04:00:50.865 | INFO     | __main__:_print_mode1_statistics:1596 -   - ea2f45: None
+2025-06-12 04:00:50.865 | INFO     | __main__:_print_mode1_statistics:1596 -   - f5e728: None
+2025-06-12 04:00:50.866 | INFO     | __main__:_print_mode1_statistics:1596 -   - 929c81: None
+2025-06-12 04:00:50.866 | INFO     | __main__:_print_mode1_statistics:1596 -   - f9618f: None
+2025-06-12 04:00:50.866 | INFO     | __main__:_print_mode1_statistics:1596 -   - 743eb6: None
+2025-06-12 04:00:50.867 | INFO     | __main__:_print_mode1_statistics:1598 - ============================================================
+2025-06-12 04:00:50.871 | INFO     | __main__:_print_mode1_statistics:1633 - 统计结果已保存到: statistics/kernel-stable_mode1_multi_commits_stats_20250612_040050.json
+2025-06-12 04:00:50.876 | INFO     | __main__:clean_config:2107 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

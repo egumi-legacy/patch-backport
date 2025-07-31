@@ -105,7 +105,10 @@ class ChunkAnalyzerModule(BaseModule):
             if len(applied_chunks) == len(chunks) and len(chunks) > 0:
                 # 所有块都应用成功
                 context.chunk_analyzer_result['success'] = True
-                logger.info("所有补丁块应用成功，标记为完全成功")
+                # 设置适配状态，使后续模块可以跳过
+                context.need_adapt = True
+                context.adapt_success = True
+                logger.info("所有补丁块应用成功，标记为完全成功，后续模块可跳过")
             else:
                 context.chunk_analyzer_result['success'] = False
                 
@@ -315,7 +318,7 @@ class ChunkAnalyzerModule(BaseModule):
     
     def _apply_chunk_patches(self, chunk_patches: List[Path], context: ModuleContext) -> List[Path]:
         """
-        尝试应用每个独立的补丁块
+        在测试分支中尝试应用每个独立的补丁块，完成后删除测试分支
         
         Args:
             chunk_patches: 补丁块文件路径列表
@@ -340,56 +343,115 @@ class ChunkAnalyzerModule(BaseModule):
         context.chunks_detailed_info["adapt_succeeded_chunks"] = 0
         context.chunks_detailed_info["adapt_failed_chunks"] = 0
         
-        # 尝试应用每个chunk补丁
-        for i, patch_file in enumerate(chunk_patches):
-            # 确保使用补丁文件的绝对路径
-            abs_patch_file = Path(patch_file).absolute()
-            logger.info(f"尝试应用第 {i+1}/{len(chunk_patches)} 个块补丁: {patch_file.name}")
+        # 创建测试分支
+        import uuid
+        test_branch = f"test_chunk_apply_{uuid.uuid4().hex[:8]}"
+        
+        # 确定目标版本
+        target_version = context.config.target_version
+        if isinstance(target_version, list):
+            target_version = target_version[0]  # 取第一个元素作为字符串
+        
+        try:
+            # 先切换到目标版本
+            logger.info(f"切换到目标版本: {target_version}")
+            checkout_result = subprocess.run(
+                ['git', 'checkout', target_version],
+                cwd=repo_path,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            if checkout_result.returncode != 0:
+                raise ValueError(f"切换到目标版本失败: {checkout_result.stderr}")
             
-            try:
-                # 应用补丁（允许模糊匹配）
-                result = subprocess.run(
-                    ['git', 'apply', '--ignore-whitespace', '--allow-overlap', str(abs_patch_file)],
-                    cwd=repo_path,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True
-                )
+            # 创建测试分支
+            logger.info(f"创建测试分支: {test_branch}")
+            branch_result = subprocess.run(
+                ['git', 'checkout', '-b', test_branch],
+                cwd=repo_path,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            if branch_result.returncode != 0:
+                raise ValueError(f"创建测试分支失败: {branch_result.stderr}")
+            
+            # 清理工作区
+            subprocess.run(['git', 'reset', '--hard', 'HEAD'], cwd=repo_path)
+            subprocess.run(['git', 'clean', '-fd'], cwd=repo_path)
+            
+            # 尝试应用每个chunk补丁
+            for i, patch_file in enumerate(chunk_patches):
+                # 确保使用补丁文件的绝对路径
+                abs_patch_file = Path(patch_file).absolute()
+                logger.info(f"尝试应用第 {i+1}/{len(chunk_patches)} 个块补丁: {patch_file.name}")
                 
-                if result.returncode == 0:
-                    logger.info(f"成功应用块补丁: {patch_file.name}")
-                    applied_patches.append(patch_file)
-                    context.chunks_detailed_info["no_conflict_chunks"] += 1
-                else:
-                    error = result.stderr
-                    # 尝试反向应用，如果能反向应用，说明可能已经修改过了
-                    reverse_result = subprocess.run(
-                        ['git', 'apply', '--ignore-whitespace', '--allow-overlap', '--reverse', str(abs_patch_file)],
+                try:
+                    # 应用补丁（允许模糊匹配）
+                    result = subprocess.run(
+                        ['git', 'apply', '--ignore-whitespace', '--allow-overlap', str(abs_patch_file)],
                         cwd=repo_path,
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE,
                         text=True
                     )
                     
-                    if reverse_result.returncode == 0:
-                        logger.warning(f"块补丁 {patch_file.name} 可以反向应用，可能已经被应用过")
+                    if result.returncode == 0:
+                        logger.info(f"成功应用块补丁: {patch_file.name}")
                         applied_patches.append(patch_file)
                         context.chunks_detailed_info["no_conflict_chunks"] += 1
                     else:
-                        logger.warning(f"块补丁 {patch_file.name} 应用失败: {error}")
-                        # 这里记录一个失败的块
-                        context.chunks_detailed_info["adapt_failed_chunks"] += 1
+                        error = result.stderr
+                        # 尝试反向应用，如果能反向应用，说明可能已经修改过了
+                        reverse_result = subprocess.run(
+                            ['git', 'apply', '--ignore-whitespace', '--allow-overlap', '--reverse', str(abs_patch_file)],
+                            cwd=repo_path,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            text=True
+                        )
+                        
+                        if reverse_result.returncode == 0:
+                            logger.warning(f"块补丁 {patch_file.name} 可以反向应用，可能已经被应用过")
+                            applied_patches.append(patch_file)
+                            context.chunks_detailed_info["no_conflict_chunks"] += 1
+                        else:
+                            logger.warning(f"块补丁 {patch_file.name} 应用失败: {error}")
+                            # 这里记录一个失败的块
+                            context.chunks_detailed_info["adapt_failed_chunks"] += 1
+                
+                except Exception as e:
+                    logger.error(f"应用块补丁 {patch_file.name} 时出错: {e}")
+                    # 这里记录一个失败的块
+                    context.chunks_detailed_info["adapt_failed_chunks"] += 1
             
+            # 输出统计信息
+            logger.info(f"块补丁应用统计信息:")
+            logger.info(f"- 总块数: {context.chunks_detailed_info['total_chunks']}")
+            logger.info(f"- 无冲突块数: {context.chunks_detailed_info['no_conflict_chunks']}")
+            logger.info(f"- 适配失败块数: {context.chunks_detailed_info['adapt_failed_chunks']}")
+            
+        finally:
+            # 清理：切换回目标版本并删除测试分支
+            try:
+                logger.info(f"切换回目标版本: {target_version}")
+                subprocess.run(
+                    ['git', 'checkout', target_version],
+                    cwd=repo_path,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
+                
+                logger.info(f"删除测试分支: {test_branch}")
+                subprocess.run(
+                    ['git', 'branch', '-D', test_branch],
+                    cwd=repo_path,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
             except Exception as e:
-                logger.error(f"应用块补丁 {patch_file.name} 时出错: {e}")
-                # 这里记录一个失败的块
-                context.chunks_detailed_info["adapt_failed_chunks"] += 1
-        
-        # 输出统计信息
-        logger.info(f"块补丁应用统计信息:")
-        logger.info(f"- 总块数: {context.chunks_detailed_info['total_chunks']}")
-        logger.info(f"- 无冲突块数: {context.chunks_detailed_info['no_conflict_chunks']}")
-        logger.info(f"- 适配失败块数: {context.chunks_detailed_info['adapt_failed_chunks']}")
+                logger.warning(f"清理测试分支时发生错误: {e}")
         
         return applied_patches
     

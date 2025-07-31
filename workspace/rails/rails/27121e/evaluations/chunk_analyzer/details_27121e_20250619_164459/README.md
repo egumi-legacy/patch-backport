@@ -1,0 +1,45 @@
+# chunk_analyzer 模块评估信息
+
+## 基本信息
+
+- 模块名称: chunk_analyzer
+- 模块类型: ModuleType.CHUNK_ANALYZER
+- 提交SHA: 27121e80f6dbb260f5a9f0452cd8411cb681f075.patch
+- 目标版本: v7.0.7
+- 执行时间: 2025-06-19 16:44:59
+
+## 处理结果
+
+- 状态: 成功
+- 成功次数: 1
+- 总尝试次数: 1
+- 执行时间: 0.371875
+- 总块数: 2
+- 成功应用块数: 1
+- 成功率: 50.00%
+- 剩余补丁路径: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/chunk_patches/remaining_chunks_20250619_164459.patch
+
+## 目录内容说明
+
+- summary.json: 评估信息摘要
+- report.html: HTML格式评估报告
+
+## 补丁分块文件
+
+- original_patch.diff: 原始补丁文件
+- remaining_patch.diff: 剩余未应用补丁文件（如果有）
+- applied_chunk_*.diff: 成功应用的补丁块
+- applied_chunks.json: 成功应用的补丁块详细信息
+
+## 补丁内容文本文件
+
+- patches/original_patch.txt: 原始补丁内容
+- patches/remaining_patch.txt: 剩余未应用补丁内容
+- patches/applied_chunk_*.txt: 单个成功应用的补丁块内容
+- patches/all_applied_chunks.txt: 所有成功应用的补丁块内容
+
+## 实际应用补丁文件
+
+- 精确补丁文件 (*_precise.patch): 使用git diff命令从实际提交中生成的精确补丁
+- 特定文件补丁 (*_specific.patch): 使用git show命令从实际提交中获取特定文件的变更
+- 实际提交补丁 (*_actual.patch): 实际提交生成的完整补丁

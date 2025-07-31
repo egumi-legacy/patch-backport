@@ -1,6 +1,7 @@
 import os
 import json
 from qwen_client import QWen_Client
+from doubao_client import Doubao_Client
 from loguru import logger
 import dotenv
 from pathlib import Path
@@ -29,11 +30,16 @@ class LLMAssistant:
         if not _api_key or not _base_url:
             raise ValueError("请确保设置了环境变量 OPENAI_API_KEY 和 OPENAI_BASE_URL")
 
-        # 初始化API客户端
-        self.client = QWen_Client(_api_key, _base_url)
+        self.model = config.model
+        # 动态选择client
+        if 'doubao' in self.model:
+            self.client = Doubao_Client(_api_key, _base_url)
+        elif 'qwen' in self.model:
+            self.client = QWen_Client(_api_key, _base_url)
+        else:
+            raise ValueError(f"暂不支持的模型: {self.model}")
         
         # 从配置获取其他非敏感信息
-        self.model = config.model
         self.response_file = config.response_file
         self.prompt_template_file = config.prompt_template_file
         self.prompt_id = config.prompt_id

@@ -1,0 +1,80 @@
+2025-06-19 16:43:40.660 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250619_164340.log
+2025-06-19 16:43:40.661 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-19 16:43:40.662 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/rails/rails/commit/b0fe99fa854ec8ff4498e75779b458392d1560ef.patch
+2025-06-19 16:43:40.664 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-19 16:43:40.668 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-19 16:43:40.671 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-19 16:43:40.673 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-19 16:43:40.674 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v7.0.7']
+2025-06-19 16:43:40.676 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v7.0.7
+2025-06-19 16:43:40.677 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: b0fe99fa854ec8ff4498e75779b458392d1560ef.patch
+2025-06-19 16:43:40.678 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-19 16:43:40.681 | INFO     | modules.direct_apply:_download_patch:253 - 上游补丁文件不存在，下载补丁
+2025-06-19 16:43:40.687 | INFO     | patch_utils:_download_github_patch:232 - GitHub patch URL parts: ['https:', '', 'github.com', 'rails', 'rails', 'commit', 'b0fe99fa854ec8ff4498e75779b458392d1560ef.patch']
+2025-06-19 16:43:40.688 | INFO     | patch_utils:_download_github_patch:240 - 使用GitHub Commit API下载patch: https://api.github.com/repos/rails/rails/commits/b0fe99fa854ec8ff4498e75779b458392d1560ef
+2025-06-19 16:43:42.203 | ERROR    | patch_utils:_download_github_patch:260 - 使用GitHub API下载patch失败: HTTPSConnectionPool(host='api.github.com', port=443): Max retries exceeded with url: /repos/rails/rails/commits/b0fe99fa854ec8ff4498e75779b458392d1560ef (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')))
+2025-06-19 16:43:42.205 | INFO     | patch_utils:_download_direct_patch:396 - 直接下载补丁文件: https://github.com/rails/rails/commit/b0fe99fa854ec8ff4498e75779b458392d1560ef.patch
+2025-06-19 16:43:49.529 | ERROR    | patch_utils:_download_direct_patch:427 - 直接下载patch失败: Exceeded 30 redirects.
+2025-06-19 16:43:49.530 | WARNING  | modules.direct_apply:_download_patch:266 - 补丁下载出错: 无法下载补丁: https://github.com/rails/rails/commit/b0fe99fa854ec8ff4498e75779b458392d1560ef.patch - Exceeded 30 redirects.
+2025-06-19 16:43:49.531 | INFO     | modules.direct_apply:_download_patch:269 - 尝试从本地仓库生成补丁
+2025-06-19 16:43:49.532 | INFO     | patch_utils:generate_patch_from_git:452 - 尝试从本地仓库生成补丁: b0fe99fa854ec8ff4498e75779b458392d1560ef.patch
+2025-06-19 16:43:49.550 | INFO     | patch_utils:generate_patch_from_git:483 - 成功从本地仓库生成补丁: workspace/rails/rails/b0fe99/patches/upstream_b0fe99.patch
+2025-06-19 16:43:49.552 | INFO     | modules.direct_apply:_download_patch:277 - 成功从本地仓库生成补丁: workspace/rails/rails/b0fe99/patches/upstream_b0fe99.patch
+2025-06-19 16:43:49.553 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-19 16:43:49.553 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/b0fe99/patches/upstream_b0fe99.patch
+2025-06-19 16:43:49.641 | INFO     | modules.direct_apply:_prepare_test_branch:400 - 创建测试分支: test_patch_v7.0.7
+2025-06-19 16:43:49.793 | INFO     | modules.direct_apply:_apply_patch:336 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/b0fe99/patches/upstream_b0fe99.patch
+2025-06-19 16:43:49.811 | INFO     | modules.direct_apply:_move_to_cache:139 - 源目录: workspace/rails/rails/b0fe99
+2025-06-19 16:43:49.812 | INFO     | modules.direct_apply:_move_to_cache:147 - 目标目录: workspace/rails/rails_cache
+2025-06-19 16:43:49.812 | INFO     | modules.direct_apply:_move_to_cache:158 - 已将成功的commit文件夹移动到缓存: workspace/rails/rails_cache
+2025-06-19 16:43:49.854 | INFO     | modules.direct_apply:_cleanup_test_branch:492 - 清理测试分支: test_patch_v7.0.7
+2025-06-19 16:43:49.856 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/rails/rails/b0fe99/evaluations/direct_apply/metrics_b0fe99_20250619_164349.json
+2025-06-19 16:43:49.856 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: ChunkAnalyzerModule
+2025-06-19 16:43:49.857 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-06-19 16:43:49.857 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-06-19 16:43:49.858 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 9.18秒
+2025-06-19 16:43:49.858 | INFO     | __main__:_merge_patches:1101 - 开始合并补丁...
+2025-06-19 16:43:49.859 | WARNING  | __main__:_merge_patches:1109 - 没有找到任何可合并的补丁结果
+2025-06-19 16:43:49.859 | ERROR    | __main__:_save_results:765 - 复制补丁文件时出错: [Errno 2] No such file or directory: '/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/b0fe99/patches/upstream_b0fe99.patch'
+2025-06-19 16:43:49.860 | INFO     | __main__:_save_results:896 - 结果已保存到: results/rails_v7.0.7_b0fe99_20250619_164349/result.json
+2025-06-19 16:43:49.861 | INFO     | __main__:_print_summary:938 - context.patch_adapter_result: []
+2025-06-19 16:43:49.861 | INFO     | __main__:_print_summary:965 - ==================================================
+2025-06-19 16:43:49.861 | INFO     | __main__:_print_summary:966 - 处理摘要 - 提交: b0fe99
+2025-06-19 16:43:49.862 | INFO     | __main__:_print_summary:967 - 适配状态: 无需适配 (直接应用成功) (方法: direct_apply)
+2025-06-19 16:43:49.862 | INFO     | __main__:_print_summary:982 - 块分析统计:
+2025-06-19 16:43:49.862 | INFO     | __main__:_print_summary:983 - - 总块数: 0
+2025-06-19 16:43:49.863 | INFO     | __main__:_print_summary:984 - - 冲突块数: 0
+2025-06-19 16:43:49.863 | INFO     | __main__:_print_summary:985 - - 成功适配块数: 0
+2025-06-19 16:43:49.864 | INFO     | __main__:_print_summary:986 - - 适配失败块数: 0
+2025-06-19 16:43:49.864 | INFO     | __main__:_print_summary:987 - - 编译失败块数: 0
+2025-06-19 16:43:49.864 | INFO     | __main__:_print_summary:991 - 总执行时间: 9.18秒
+2025-06-19 16:43:49.866 | INFO     | __main__:_print_summary:996 - ==================================================
+2025-06-19 16:43:49.866 | INFO     | __main__:run:335 - 处理完成
+2025-06-19 16:43:49.868 | INFO     | __main__:process_multiple_commits:2015 - 
+============================================================
+2025-06-19 16:43:49.868 | INFO     | __main__:process_multiple_commits:2016 - 完成处理 3 个commit
+2025-06-19 16:43:49.869 | INFO     | __main__:process_multiple_commits:2017 - 总耗时: 51.74秒
+2025-06-19 16:43:49.869 | INFO     | __main__:process_multiple_commits:2018 - 成功数量: 2/3 (66.67%)
+2025-06-19 16:43:49.870 | INFO     | __main__:process_multiple_commits:2019 - ============================================================
+2025-06-19 16:43:49.870 | INFO     | __main__:_print_mode1_statistics:1646 - ============================================================
+2025-06-19 16:43:49.870 | INFO     | __main__:_print_mode1_statistics:1647 - 模式1处理统计 - 多个commit
+2025-06-19 16:43:49.871 | INFO     | __main__:_print_mode1_statistics:1648 - ============================================================
+2025-06-19 16:43:49.871 | INFO     | __main__:_print_mode1_statistics:1649 - 总提交数: 3
+2025-06-19 16:43:49.872 | INFO     | __main__:_print_mode1_statistics:1650 - 成功处理数: 2
+2025-06-19 16:43:49.872 | INFO     | __main__:_print_mode1_statistics:1651 - 直接应用成功: 2
+2025-06-19 16:43:49.873 | INFO     | __main__:_print_mode1_statistics:1652 - 需要适配数量: 1
+2025-06-19 16:43:49.873 | INFO     | __main__:_print_mode1_statistics:1653 - 适配成功数量: 0
+2025-06-19 16:43:49.874 | INFO     | __main__:_print_mode1_statistics:1654 - 适配失败数量: 1
+2025-06-19 16:43:49.874 | INFO     | __main__:_print_mode1_statistics:1655 - 总体成功率: 66.67%
+2025-06-19 16:43:49.874 | INFO     | __main__:_print_mode1_statistics:1656 - 适配成功率: 0.00%
+2025-06-19 16:43:49.875 | INFO     | __main__:_print_mode1_statistics:1660 - 
+提交详情:
+2025-06-19 16:43:49.875 | INFO     | __main__:_print_mode1_statistics:1665 -   - 27121e: 失败 (方法: 无, 耗时: 33.02秒)
+2025-06-19 16:43:49.876 | INFO     | __main__:_print_mode1_statistics:1665 -   - b1241f: 成功 (方法: direct_apply, 耗时: 8.62秒)
+2025-06-19 16:43:49.876 | INFO     | __main__:_print_mode1_statistics:1665 -   - b0fe99: 成功 (方法: direct_apply, 耗时: 9.18秒)
+2025-06-19 16:43:49.876 | INFO     | __main__:_print_mode1_statistics:1668 - 
+失败的提交:
+2025-06-19 16:43:49.877 | INFO     | __main__:_print_mode1_statistics:1670 -   - 27121e: None
+2025-06-19 16:43:49.877 | INFO     | __main__:_print_mode1_statistics:1672 - ============================================================
+2025-06-19 16:43:49.879 | INFO     | __main__:_print_mode1_statistics:1707 - 统计结果已保存到: statistics/rails_mode1_multi_commits_stats_20250619_164349.json
+2025-06-19 16:43:49.885 | INFO     | __main__:clean_config:2181 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

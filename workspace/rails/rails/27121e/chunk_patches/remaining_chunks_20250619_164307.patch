@@ -1,0 +1,35 @@
+From 27121e80f6dbb260f5a9f0452cd8411cb681f075 Mon Sep 17 00:00:00 2001
+From: John Hawthorn <john@hawthorn.email>
+Date: Thu, 10 Oct 2024 20:41:33 -0700
+Subject: [PATCH] Avoid backtracking in filtered_query_string
+
+Thanks scyoon for the patch
+
+CVE-2024-41128
+
+diff --git a/actionpack/lib/action_dispatch/http/filter_redirect.rb b/actionpack/lib/action_dispatch/http/filter_redirect.rb
+index 5785fd61f5..ed9e81f7a3 100644
+--- a/actionpack/lib/action_dispatch/http/filter_redirect.rb
++++ b/actionpack/lib/action_dispatch/http/filter_redirect.rb
+@@ -37,9 +37,16 @@ def location_filter_match?
+       def parameter_filtered_location
+         uri = URI.parse(location)
+         unless uri.query.nil? || uri.query.empty?
+-          uri.query.gsub!(FilterParameters::PAIR_RE) do
+-            request.parameter_filter.filter($1 => $2).first.join("=")
++          parts = uri.query.split(/([&;])/)
++          filtered_parts = parts.map do |part|
++            if part.include?("=")
++              key, value = part.split("=", 2)
++              request.parameter_filter.filter(key => value).first.join("=")
++            else
++              part
++            end
+           end
++          uri.query = filtered_parts.join("")
+         end
+         uri.to_s
+       rescue URI::Error
+-- 
+2.25.1
+

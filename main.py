@@ -492,6 +492,7 @@ class PatchBackportTool:
             llm_success = bool(context.llm_output and context.llm_output.get('apply_result') and context.llm_output.get('apply_result').get('success'))
             patch_adapter_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
             compilation_success = bool(context.compilation_result and context.compilation_result.get('success'))
+            chunk_analyzer_success = bool(context.chunk_analyzer_result and context.chunk_analyzer_result.get('success'))
             
             if llm_success:
                 llm_success_count += 1
@@ -499,7 +500,12 @@ class PatchBackportTool:
                 patch_adapter_success_count += 1
             if compilation_success:
                 compiler_success_count += 1
-            if direct_success or llm_success or patch_adapter_success or compilation_success:
+            # 添加chunk_analyzer成功的统计
+            chunk_analyzer_count = 0
+            if chunk_analyzer_success:
+                chunk_analyzer_count += 1
+                
+            if direct_success or llm_success or patch_adapter_success or compilation_success or chunk_analyzer_success:
                 successful_commits += 1
             else:
                 failed_commits.append({
@@ -513,10 +519,11 @@ class PatchBackportTool:
                                      llm_success_count, 
                                      patch_adapter_success_count, 
                                      compiler_success_count, 
-                                     failed_commits)
+                                     failed_commits,
+                                     chunk_analyzer_count)
         
         return commits_results
-    
+
     def _print_multi_version_summary(self, version_results):
         """打印多个版本的汇总结果"""
         logger.info("=" * 80)
@@ -931,11 +938,15 @@ class PatchBackportTool:
         logger.info(f"context.patch_adapter_result: {context.patch_adapter_result}")
         patch_adapter_success = bool(context.patch_adapter_result and context.patch_adapter_result.get('success'))
         compilation_success = bool(context.compilation_result and context.compilation_result.get('success'))
+        chunk_analyzer_success = bool(context.chunk_analyzer_result and context.chunk_analyzer_result.get('success'))
         
         # 确定适配状态
         if direct_success:
             adaptation_status = "无需适配 (直接应用成功)"
             method = "direct_apply"
+        elif chunk_analyzer_success:
+            adaptation_status = "适配成功"
+            method = "chunk_analyzer"
         elif llm_success or patch_adapter_success or compilation_success:
             adaptation_status = "适配成功"
             if llm_success:
@@ -984,13 +995,14 @@ class PatchBackportTool:
         
         logger.info("=" * 50)
 
-    def _print_mode2_statistics(self, total, direct_success_count, llm_success_count, patch_adapter_success_count, compiler_success_count, failed_commits):
+    def _print_mode2_statistics(self, total, direct_success_count, llm_success_count, patch_adapter_success_count, compiler_success_count, failed_commits, chunk_analyzer_count=0):
         """打印模式2的统计信息"""
         # 从上下文中提取处理方法信息 (不使用不存在的self.processed_commits属性)
         direct_apply_count = 0
         patch_adapter_count = 0
         llm_adapter_count = 0
         compiler_count = 0
+        chunk_analyzer_count = chunk_analyzer_count
         failed_count = len(failed_commits)
         
         # 从result.json文件中获取详细信息
@@ -1020,7 +1032,7 @@ class PatchBackportTool:
         
         # 计算适配成功率（排除直接应用成功的情况）
         adapt_required = total - direct_success_count
-        adapt_successful = compiler_success_count
+        adapt_successful = chunk_analyzer_count + llm_success_count + patch_adapter_success_count + compiler_success_count
         adapt_success_rate = (adapt_successful / adapt_required) * 100 if adapt_required > 0 else 0
         
         logger.info("=" * 60)
@@ -1030,6 +1042,7 @@ class PatchBackportTool:
         logger.info(f"直接应用成功: {direct_success_count}")
         logger.info(f"需要适配数量: {adapt_required}")
         logger.info(f"适配成功数量: {adapt_successful}")
+        logger.info(f"- 块分析器成功: {chunk_analyzer_count}")
         logger.info(f"- LLM适配成功: {llm_success_count}")
         logger.info(f"- 补丁适配成功: {patch_adapter_success_count}")
         logger.info(f"- 编译成功: {compiler_success_count}")
@@ -1060,6 +1073,7 @@ class PatchBackportTool:
             'direct_apply_success': direct_success_count,
             'adaptation_required': adapt_required,
             'adaptation_successful': adapt_successful,
+            'chunk_analyzer_success': chunk_analyzer_count,
             'patch_adapter_success': patch_adapter_success_count,
             'llm_adapter_success': llm_success_count,
             'compiler_success': compiler_success_count,
@@ -1258,7 +1272,22 @@ class PatchBackportTool:
             target_version_str = target_version
             if isinstance(target_version_str, list):
                 target_version_str = target_version_str[0]
+            
+            # 先检查当前分支状态
+            status_result = subprocess.run(
+                ['git', 'status', '--porcelain'],
+                cwd=repo_path,
+                capture_output=True,
+                text=True
+            )
+            if status_result.stdout.strip():
+                logger.warning(f"工作区不干净，有未提交的更改:\n{status_result.stdout}")
+                # 强制清理工作区
+                subprocess.run(['git', 'reset', '--hard', 'HEAD'], cwd=repo_path)
+                subprocess.run(['git', 'clean', '-fd'], cwd=repo_path)
+                logger.info("已强制清理工作区")
                 
+            # 切换到目标版本
             result = subprocess.run(
                 ['git', 'checkout', target_version_str],
                 cwd=repo_path,
@@ -1280,11 +1309,23 @@ class PatchBackportTool:
                 logger.error(f"创建临时分支失败: {result.stderr}")
                 return ""
             
-            # 清理工作区
+            # 再次确保工作区干净
             subprocess.run(['git', 'reset', '--hard', 'HEAD'], cwd=repo_path)
             subprocess.run(['git', 'clean', '-fd'], cwd=repo_path)
             
+            # 检查补丁内容
+            for patch_path in valid_patches:
+                try:
+                    with open(patch_path, 'r', encoding='utf-8') as f:
+                        patch_content = f.read()
+                    logger.info(f"补丁 {patch_path.name} 大小: {len(patch_content)} 字节")
+                    if len(patch_content) < 10:
+                        logger.warning(f"补丁 {patch_path.name} 内容过短，可能无效")
+                except Exception as e:
+                    logger.warning(f"读取补丁 {patch_path} 失败: {e}")
+            
             # 依次应用每个补丁
+            successful_patches = []
             for patch_path in valid_patches:
                 logger.info(f"应用补丁: {patch_path}")
                 
@@ -1300,40 +1341,73 @@ class PatchBackportTool:
                 # 打印应用结果以便调试
                 if result.returncode == 0:
                     logger.info(f"成功应用补丁: {patch_path}")
+                    successful_patches.append(patch_path)
                 else:
                     logger.info(f"应用补丁失败，返回码: {result.returncode}")
                     if result.stderr:
                         logger.info(f"错误输出: {result.stderr}")
-                
-                if result.returncode != 0:
-                    logger.warning(f"应用补丁 {patch_path} 失败: {result.stderr}")
-                    # 尝试使用 -3way 选项来处理冲突
-                    result = subprocess.run(
-                        ['git', 'apply', '--ignore-whitespace', '--3way', str(patch_path)],
+                    
+                    # 检查是否是因为补丁已经应用过
+                    check_already_applied = subprocess.run(
+                        ['git', 'apply', '--check', '--reverse', str(patch_path)],
                         cwd=repo_path,
                         capture_output=True,
                         text=True
                     )
                     
-                    if result.returncode != 0:
-                        logger.error(f"尝试3way应用补丁 {patch_path} 也失败: {result.stderr}")
-                        # 中止合并
-                        subprocess.run(['git', 'reset', '--hard', 'HEAD'], cwd=repo_path)
+                    if check_already_applied.returncode == 0:
+                        logger.info(f"补丁 {patch_path.name} 已经应用过，跳过")
+                        successful_patches.append(patch_path)
                         continue
+                
+                    # 尝试使用 --reject 选项来应用补丁，忽略冲突
+                    logger.info(f"尝试使用 --reject 选项应用补丁: {patch_path}")
+                    reject_result = subprocess.run(
+                        ['git', 'apply', '--ignore-whitespace', '--reject', str(patch_path)],
+                        cwd=repo_path,
+                        capture_output=True,
+                        text=True
+                    )
+                    
+                    if reject_result.returncode == 0:
+                        logger.info(f"使用 --reject 选项成功应用补丁: {patch_path}")
+                        successful_patches.append(patch_path)
                     else:
-                        # 检查是否有冲突
-                        result = subprocess.run(
-                            ['git', 'diff', '--name-only', '--diff-filter=U'],
+                        logger.warning(f"使用 --reject 选项应用补丁 {patch_path} 失败: {reject_result.stderr}")
+                        
+                        # 尝试使用 -3way 选项来处理冲突
+                        logger.info(f"尝试使用 -3way 选项应用补丁: {patch_path}")
+                        way3_result = subprocess.run(
+                            ['git', 'apply', '--ignore-whitespace', '--3way', str(patch_path)],
                             cwd=repo_path,
                             capture_output=True,
                             text=True
                         )
                         
-                        if result.stdout.strip():
-                            logger.error(f"应用补丁 {patch_path} 时有未解决的冲突")
-                            # 中止合并
+                        if way3_result.returncode == 0:
+                            logger.info(f"使用 -3way 选项成功应用补丁: {patch_path}")
+                            successful_patches.append(patch_path)
+                        else:
+                            logger.error(f"尝试3way应用补丁 {patch_path} 也失败: {way3_result.stderr}")
+                            # 检查是否有冲突文件
+                            conflict_check = subprocess.run(
+                                ['git', 'diff', '--name-only', '--diff-filter=U'],
+                                cwd=repo_path,
+                                capture_output=True,
+                                text=True
+                            )
+                            
+                            if conflict_check.stdout.strip():
+                                logger.error(f"应用补丁 {patch_path} 时有未解决的冲突: {conflict_check.stdout}")
+                            
+                            # 重置工作区，继续下一个补丁
                             subprocess.run(['git', 'reset', '--hard', 'HEAD'], cwd=repo_path)
-                            continue
+                            subprocess.run(['git', 'clean', '-fd'], cwd=repo_path)
+            
+            # 如果没有成功应用的补丁，返回空
+            if not successful_patches:
+                logger.warning("没有成功应用的补丁")
+                return ""
             
             # 检查是否有更改
             result = subprocess.run(
@@ -1351,7 +1425,7 @@ class PatchBackportTool:
             subprocess.run(['git', 'add', '-A'], cwd=repo_path)
             
             # 创建提交
-            commit_msg = f"合并补丁：{len(valid_patches)}个补丁文件"
+            commit_msg = f"合并补丁：{len(successful_patches)}/{len(valid_patches)}个补丁文件"
             result = subprocess.run(
                 ['git', 'commit', '-m', commit_msg],
                 cwd=repo_path,
@@ -2171,12 +2245,14 @@ def main():
         #                     help="补丁URL或commit hash（命名参数）")
         parser.add_argument('--target', '-t', type=str, required=False,
                         help="目标版本，可以是tag或commit hash (必填)")
+        parser.add_argument('--commit-file', '-f', type=str, required=False,
+                        help="包含commit URL或hash的文件，每行一个")
         
         # 先解析参数，不检查未知参数，用于处理URL中可能包含的特殊字符
         args, unknown = parser.parse_known_args()
         
         # 检查是否在未知参数中有完整的URL，如果有可能是commit参数
-        if unknown and args.commit_pos is None:
+        if unknown and args.commit_pos is None and args.commit_file is None:
             # 尝试找出看起来像URL的参数
             valid_commits = []
             for arg in unknown:
@@ -2203,8 +2279,27 @@ def main():
             print(f"加载配置文件失败: {e}")
             sys.exit(1)
 
+        # 从文件中读取commit
+        commits = []
+        if args.commit_file:
+            try:
+                with open(args.commit_file, 'r') as f:
+                    file_commits = [line.strip() for line in f if line.strip()]
+                    if file_commits:
+                        commits.extend(file_commits)
+                        logger.info(f"从文件 {args.commit_file} 读取了 {len(file_commits)} 个commit")
+            except Exception as e:
+                logger.error(f"从文件读取commit失败: {e}")
+                sys.exit(1)
+        # 如果同时提供了命令行commit，也加入列表
+        elif args.commit_pos:
+            if isinstance(args.commit_pos, list):
+                commits.extend(args.commit_pos)
+            else:
+                commits.append(args.commit_pos)
+
         # 确保有commits或配置中已有patch_url
-        if args.mode == 1 and not (args.commit_pos or config_data['mode1'].get('patch_url')):
+        if args.mode == 1 and not (commits or config_data['mode1'].get('patch_url')):
             print("错误: 模式1下必须指定补丁URL或commit hash")
             sys.exit(1)
             
@@ -2290,12 +2385,7 @@ def main():
         # 根据模式处理
         if args.mode == 1:
             # 如果有commit参数，处理它们
-            if args.commit_pos:
-                # 将输入的单个字符串转为列表
-                commits = args.commit_pos
-                if isinstance(commits, str):
-                    commits = [commits]
-                
+            if commits:
                 # 如果只有一个commit，使用单个处理流程
                 if len(commits) == 1:
                     process_single_commit(commits[0], config_data, repo_path, config_path)

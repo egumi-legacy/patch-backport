@@ -1,0 +1,84 @@
+From 0494c76eb65c260f790edf100d8fcd914e8af822 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 12 Jun 2025 16:07:23 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A4?=
+ =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ fs/libfs.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
+
+diff --git a/fs/libfs.c b/fs/libfs.c
+index 46966fd8bcf9..013cd9105eff 100644
+--- a/fs/libfs.c
++++ b/fs/libfs.c
+@@ -241,9 +241,15 @@ const struct inode_operations simple_dir_inode_operations = {
+ };
+ EXPORT_SYMBOL(simple_dir_inode_operations);
+ 
+-/* 0 is '.', 1 is '..', so always start with offset 2 or more */
++/* simple_offset_add() never assigns these to a dentry */
+ enum {
+-	DIR_OFFSET_MIN	= 2,
++	DIR_OFFSET_EOD		= S32_MAX,
++};
++
++/* simple_offset_add() allocation range */
++enum {
++	DIR_OFFSET_MIN		= 2,
++	DIR_OFFSET_MAX		= DIR_OFFSET_EOD - 1,
+ };
+ 
+ static void offset_set(struct dentry *dentry, long offset)
+@@ -287,7 +293,8 @@ int simple_offset_add(struct offset_ctx *octx, struct dentry *dentry)
+ 		return -EBUSY;
+ 
+ 	ret = mtree_alloc_cyclic(&octx->mt, &offset, dentry, DIR_OFFSET_MIN,
+-				 LONG_MAX, &octx->next_offset, GFP_KERNEL);
++				 DIR_OFFSET_MAX, &octx->next_offset,
++				 GFP_KERNEL);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -498,7 +505,7 @@ static struct dentry *offset_find_next(struct offset_ctx *octx, loff_t offset)
+ 	struct dentry *child, *found = NULL;
+ 
+ 	rcu_read_lock();
+-	child = mas_find(&mas, LONG_MAX);
++	child = mas_find(&mas, DIR_OFFSET_MAX);
+ 	if (!child)
+ 		goto out;
+ 	spin_lock(&child->d_lock);
+@@ -519,7 +526,7 @@ static bool offset_dir_emit(struct dir_context *ctx, struct dentry *dentry)
+ 			  inode->i_ino, fs_umode_to_dtype(inode->i_mode));
+ }
+ 
+-static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx, long last_index)
++static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx)
+ {
+ 	struct offset_ctx *octx = inode->i_op->get_offset_ctx(inode);
+ 	struct dentry *dentry;
+@@ -527,7 +534,7 @@ static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx, lon
+ 	while (true) {
+ 		dentry = offset_find_next(octx, ctx->pos);
+ 		if (!dentry)
+-			return;
++			goto out_eod;
+ 
+ 		if (dentry2offset(dentry) >= last_index) {
+ 			dput(dentry);
+@@ -561,6 +568,8 @@ static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx, lon
+  *
+  * On return, @ctx->pos contains an offset that will read the next entry
+  * in this directory when offset_readdir() is called again with @ctx.
++ * Caller places this value in the d_off field of the last entry in the
++ * user's buffer.
+  *
+  * Return values:
+  *   %0 - Complete
+-- 
+2.25.1
+

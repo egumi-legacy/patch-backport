@@ -1,0 +1,33 @@
+From bf0d5fa4cd8932a24c341aacd3acf120a121b470 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 12 Jun 2025 17:30:19 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A5/?=
+ =?UTF-8?q?5=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ sound/soc/sof/topology.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index b3fca5fd87d6..1e464a3bb4f6 100644
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2413,9 +2413,10 @@ static int sof_dspless_widget_unload(struct snd_soc_component *scomp,
+ 		if (!swidget)
+ 			return 0;
+ 
+-		/* remove and free swidget object */
+-		list_del(&swidget->list);
++		/* Free sdai and remove swidget object */
+ 		kfree(swidget->private);
++		list_del(&swidget->list);
++		kfree(swidget);
+ 		kfree(swidget);
+ 	}
+ 
+-- 
+2.25.1
+

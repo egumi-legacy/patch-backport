@@ -1,0 +1,97 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "chunks_info": {
+      "total_chunks": 1,
+      "no_conflict_chunks": 0,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 1,
+      "compilation_failed_chunks": 0
+    },
+    "method": "failed",
+    "timestamp": "2025-06-19T16:53:28.999983"
+  },
+  "to_adapt_commit": {
+    "sha": "f4dc83d8926509d0958ec21fcdbc2e7df3d32ce2.patch",
+    "patch_url": "https://github.com/rails/rails/commit/f4dc83d8926509d0958ec21fcdbc2e7df3d32ce2",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/f4dc83/patches/upstream_f4dc83.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "v7.0.7",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: actionpack/lib/action_controller/metal/http_authentication.rb:513\nerror: actionpack/lib/action_controller/metal/http_authentication.rb: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/f4dc83/patches/upstream_f4dc83.patch",
+      "already_applied": false,
+      "timestamp": "2025-06-19T16:53:06.880287"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/f4dc83/patches/upstream_f4dc83.patch",
+      "total_chunks": 1,
+      "applied_chunks": 0,
+      "applied_chunk_patches": [],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/f4dc83/chunk_patches/remaining_chunks_20250619_165307.patch",
+      "timestamp": "2025-06-19T16:53:07.435060",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/actionpack/lib/action_controller/metal/http_authentication.rb b/actionpack/lib/action_controller/metal/http_authentication.rb\nindex 017e7a3a2f..bb60ffdeba 100644\n--- a/actionpack/lib/action_controller/metal/http_authentication.rb\n+++ b/actionpack/lib/action_controller/metal/http_authentication.rb\n@@ -513,14 +513,11 @@ def rewrite_param_values(array_params)\n         array_params.each { |param| (param[1] || +\"\").gsub! %r/^\"|\"$/, \"\" }\n       end\n \n-      WHITESPACED_AUTHN_PAIR_DELIMITERS = /\\s*#{AUTHN_PAIR_DELIMITERS}\\s*/\n-      private_constant :WHITESPACED_AUTHN_PAIR_DELIMITERS\n-\n       # This method takes an authorization body and splits up the key-value pairs by\n       # the standardized `:`, `;`, or `\\t` delimiters defined in\n       # `AUTHN_PAIR_DELIMITERS`.\n       def raw_params(auth)\n-        _raw_params = auth.sub(TOKEN_REGEX, \"\").split(WHITESPACED_AUTHN_PAIR_DELIMITERS)\n+        _raw_params = auth.sub(TOKEN_REGEX, \"\").split(AUTHN_PAIR_DELIMITERS).map(&:strip)\n         _raw_params.reject!(&:empty?)\n \n         if !_raw_params.first&.start_with?(TOKEN_KEY)",
+      "prompt": {
+        "patch_content": "From f4dc83d8926509d0958ec21fcdbc2e7df3d32ce2 Mon Sep 17 00:00:00 2001\nFrom: John Hawthorn <john@hawthorn.email>\nDate: Thu, 10 Oct 2024 20:32:00 -0700\nSubject: [PATCH] Avoid backtracking in Token#raw_params\n\nThanks to scyoon for the patch\n\n[CVE-2024-47887]\n\ndiff --git a/actionpack/lib/action_controller/metal/http_authentication.rb b/actionpack/lib/action_controller/metal/http_authentication.rb\nindex 017e7a3a2f..bb60ffdeba 100644\n--- a/actionpack/lib/action_controller/metal/http_authentication.rb\n+++ b/actionpack/lib/action_controller/metal/http_authentication.rb\n@@ -513,14 +513,11 @@ def rewrite_param_values(array_params)\n         array_params.each { |param| (param[1] || +\"\").gsub! %r/^\"|\"$/, \"\" }\n       end\n \n-      WHITESPACED_AUTHN_PAIR_DELIMITERS = /\\s*#{AUTHN_PAIR_DELIMITERS}\\s*/\n-      private_constant :WHITESPACED_AUTHN_PAIR_DELIMITERS\n-\n       # This method takes an authorization body and splits up the key-value pairs by\n       # the standardized `:`, `;`, or `\\t` delimiters defined in\n       # `AUTHN_PAIR_DELIMITERS`.\n       def raw_params(auth)\n-        _raw_params = auth.sub(TOKEN_REGEX, \"\").split(WHITESPACED_AUTHN_PAIR_DELIMITERS)\n+        _raw_params = auth.sub(TOKEN_REGEX, \"\").split(AUTHN_PAIR_DELIMITERS).map(&:strip)\n         _raw_params.reject!(&:empty?)\n \n         if !_raw_params.first&.start_with?(TOKEN_KEY)\n-- \n2.25.1\n\n",
+        "target_version": "v7.0.7",
+        "context_diff": "From f4dc83d8926509d0958ec21fcdbc2e7df3d32ce2 Mon Sep 17 00:00:00 2001\nFrom: John Hawthorn <john@hawthorn.email>\nDate: Thu, 10 Oct 2024 20:32:00 -0700\nSubject: [PATCH] Avoid backtracking in Token#raw_params\n\nThanks to scyoon for the patch\n\n[CVE-2024-47887]\n\ndiff --git a/actionpack/lib/action_controller/metal/http_authentication.rb b/actionpack/lib/action_controller/metal/http_authentication.rb\nindex 017e7a3a2f..bb60ffdeba 100644\n--- a/actionpack/lib/action_controller/metal/http_authentication.rb\n+++ b/actionpack/lib/action_controller/metal/http_authentication.rb\n@@ -513,14 +513,11 @@ def rewrite_param_values(array_params)\n         array_params.each { |param| (param[1] || +\"\").gsub! %r/^\"|\"$/, \"\" }\n       end\n \n-      WHITESPACED_AUTHN_PAIR_DELIMITERS = /\\s*#{AUTHN_PAIR_DELIMITERS}\\s*/\n-      private_constant :WHITESPACED_AUTHN_PAIR_DELIMITERS\n-\n       # This method takes an authorization body and splits up the key-value pairs by\n       # the standardized `:`, `;`, or `\\t` delimiters defined in\n       # `AUTHN_PAIR_DELIMITERS`.\n       def raw_params(auth)\n-        _raw_params = auth.sub(TOKEN_REGEX, \"\").split(WHITESPACED_AUTHN_PAIR_DELIMITERS)\n+        _raw_params = auth.sub(TOKEN_REGEX, \"\").split(AUTHN_PAIR_DELIMITERS).map(&:strip)\n         _raw_params.reject!(&:empty?)\n \n         if !_raw_params.first&.start_with?(TOKEN_KEY)\n-- \n2.25.1\n\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/rails/rails/f4dc83/llm_output/output_v7.0.7_qwen-plus.patch",
+      "timestamp": "2025-06-19T16:53:28.678194",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/f4dc83/patches/upstream_f4dc83.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-19T16:53:06.321390",
+    "end_time": "2025-06-19T16:53:28.996158",
+    "total_seconds": 22.674768,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "patch_content": "From f4dc83d8926509d0958ec21fcdbc2e7df3d32ce2 Mon Sep 17 00:00:00 2001\nFrom: John Hawthorn <john@hawthorn.email>\nDate: Thu, 10 Oct 2024 20:32:00 -0700\nSubject: [PATCH] Avoid backtracking in Token#raw_params\n\nThanks to scyoon for the patch\n\n[CVE-2024-47887]\n\ndiff --git a/actionpack/lib/action_controller/metal/http_authentication.rb b/actionpack/lib/action_controller/metal/http_authentication.rb\nindex 017e7a3a2f..bb60ffdeba 100644\n--- a/actionpack/lib/action_controller/metal/http_authentication.rb\n+++ b/actionpack/lib/action_controller/metal/http_authentication.rb\n@@ -513,14 +513,11 @@ def rewrite_param_values(array_params)\n         array_params.each { |param| (param[1] || +\"\").gsub! %r/^\"|\"$/, \"\" }\n       end\n \n-      WHITESPACED_AUTHN_PAIR_DELIMITERS = /\\s*#{AUTHN_PAIR_DELIMITERS}\\s*/\n-      private_constant :WHITESPACED_AUTHN_PAIR_DELIMITERS\n-\n       # This method takes an authorization body and splits up the key-value pairs by\n       # the standardized `:`, `;`, or `\\t` delimiters defined in\n       # `AUTHN_PAIR_DELIMITERS`.\n       def raw_params(auth)\n-        _raw_params = auth.sub(TOKEN_REGEX, \"\").split(WHITESPACED_AUTHN_PAIR_DELIMITERS)\n+        _raw_params = auth.sub(TOKEN_REGEX, \"\").split(AUTHN_PAIR_DELIMITERS).map(&:strip)\n         _raw_params.reject!(&:empty?)\n \n         if !_raw_params.first&.start_with?(TOKEN_KEY)\n-- \n2.25.1\n\n",
+    "llm_output": "diff --git a/actionpack/lib/action_controller/metal/http_authentication.rb b/actionpack/lib/action_controller/metal/http_authentication.rb\nindex 017e7a3a2f..bb60ffdeba 100644\n--- a/actionpack/lib/action_controller/metal/http_authentication.rb\n+++ b/actionpack/lib/action_controller/metal/http_authentication.rb\n@@ -513,14 +513,11 @@ def rewrite_param_values(array_params)\n         array_params.each { |param| (param[1] || +\"\").gsub! %r/^\"|\"$/, \"\" }\n       end\n \n-      WHITESPACED_AUTHN_PAIR_DELIMITERS = /\\s*#{AUTHN_PAIR_DELIMITERS}\\s*/\n-      private_constant :WHITESPACED_AUTHN_PAIR_DELIMITERS\n-\n       # This method takes an authorization body and splits up the key-value pairs by\n       # the standardized `:`, `;`, or `\\t` delimiters defined in\n       # `AUTHN_PAIR_DELIMITERS`.\n       def raw_params(auth)\n-        _raw_params = auth.sub(TOKEN_REGEX, \"\").split(WHITESPACED_AUTHN_PAIR_DELIMITERS)\n+        _raw_params = auth.sub(TOKEN_REGEX, \"\").split(AUTHN_PAIR_DELIMITERS).map(&:strip)\n         _raw_params.reject!(&:empty?)\n \n         if !_raw_params.first&.start_with?(TOKEN_KEY)",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": false,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "v7.0.7",
+      "commit_sha": "f4dc83d8926509d0958ec21fcdbc2e7df3d32ce2.patch",
+      "timestamp": "2025-06-19T16:53:29.000024",
+      "execution_path": "failed (no successful modules)",
+      "adaptation_method": "unknown"
+    }
+  }
+}

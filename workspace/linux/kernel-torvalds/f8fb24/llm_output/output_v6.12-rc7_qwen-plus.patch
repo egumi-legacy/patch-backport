@@ -1,0 +1,3 @@
+scsi: ufs: core: Backport fix for use-after-free in init error and remove paths
+
+This patch backports the fix to prevent a use-after-free situation during driver initialization or removal by managing resources more carefully using devres. The ufshcd_dealloc_host() function is removed, and its functionality is replaced with devm_add_action_or_reset(). This ensures that all allocated resources are cleaned up automatically when the device is released.

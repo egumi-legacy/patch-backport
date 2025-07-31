@@ -1,0 +1,98 @@
+From 9c26e51313ad06755ee4df0ff685b9e8c39cffd1 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 12 Jun 2025 18:11:35 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A5/?=
+ =?UTF-8?q?5=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ src/openvpn/ssl.c                         | 12 ++++++++++++
+ src/openvpn/tls_crypt.c                   |  3 ++-
+ src/openvpn/tls_crypt.h                   |  7 ++++++-
+ tests/unit_tests/openvpn/test_tls_crypt.c |  2 +-
+ 4 files changed, 21 insertions(+), 3 deletions(-)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index d66299fb..dde8038d 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -769,6 +769,9 @@ state_name(int state)
+         case S_INITIAL:
+             return "S_INITIAL";
+ 
++        case S_PRE_START_SKIP:
++            return "S_PRE_START_SKIP";
++
+         case S_PRE_START:
+             return "S_PRE_START";
+ 
+@@ -3559,6 +3562,15 @@ tls_pre_decrypt(struct tls_multi *multi,
+         }
+         else
+         {
++            bool initial_packet = false;
++            if (ks->state == S_PRE_START_SKIP)
++            {
++                /* When we are coming from the session_skip_to_pre_start
++                 * method, we allow this initial packet to setup the
++                 * tls-crypt-v2 peer specific key */
++                initial_packet = true;
++                ks->state = S_PRE_START;
++            }
+             /*
+              * Remote responding to our key renegotiation request?
+              */
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 663f5e16..b0dd6b9a 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -569,7 +569,8 @@ cleanup:
+ bool
+ tls_crypt_v2_extract_client_key(struct buffer *buf,
+                                 struct tls_wrap_ctx *ctx,
+-                                const struct tls_options *opt)
++                                const struct tls_options *opt,
++                                bool initial_packet)
+ {
+     if (!ctx->tls_crypt_v2_server_key.cipher)
+     {
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+index 81d0a10e..a85bba3d 100644
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -196,11 +196,16 @@ void tls_crypt_v2_init_client_key(struct key_ctx_bi *key,
+  *              message.
+  * @param ctx   tls-wrap context to be initialized with the client key.
+  *
++ * @param initial_packet    whether this is the initial packet of the
++ *                          connection. Only in these scenarios unwrapping
++ *                          of a tls-crypt-v2 key is allowed
++ *
+  * @returns true if a key was successfully extracted.
+  */
+ bool tls_crypt_v2_extract_client_key(struct buffer *buf,
+                                      struct tls_wrap_ctx *ctx,
+-                                     const struct tls_options *opt);
++                                     const struct tls_options *opt,
++                                     bool initial_packet);
+ 
+ /**
+  * Generate a tls-crypt-v2 server key, and write to file.
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
+index 3e604d67..3d16dd5a 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -456,7 +456,7 @@ tls_crypt_v2_wrap_unwrap_max_metadata(void **state)
+         .mode = TLS_WRAP_CRYPT,
+         .tls_crypt_v2_server_key = ctx->server_keys.encrypt,
+     };
+-    assert_true(tls_crypt_v2_extract_client_key(&ctx->wkc, &wrap_ctx, NULL));
++    assert_true(tls_crypt_v2_extract_client_key(&ctx->wkc, &wrap_ctx, NULL, true));
+     tls_wrap_free(&wrap_ctx);
+ }
+ 
+-- 
+2.25.1
+

@@ -1175,6 +1175,7 @@ class SplitDateTimeField(MultiValueField):
 class GenericIPAddressField(CharField):
     def __init__(self, *, protocol='both', unpack_ipv4=False, **kwargs):
         self.unpack_ipv4 = unpack_ipv4
+        kwargs.setdefault('max_length', 39)
         self.default_validators = validators.ip_address_validators(protocol, unpack_ipv4)[0]
         super().__init__(**kwargs)
 

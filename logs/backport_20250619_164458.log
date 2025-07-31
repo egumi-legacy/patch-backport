@@ -1,0 +1,165 @@
+2025-06-19 16:44:58.303 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250619_164458.log
+2025-06-19 16:44:58.304 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-19 16:44:58.305 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/rails/rails/commit/27121e80f6dbb260f5a9f0452cd8411cb681f075.patch
+2025-06-19 16:44:58.306 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-19 16:44:58.307 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-19 16:44:58.312 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-19 16:44:58.313 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-19 16:44:58.314 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v7.0.7']
+2025-06-19 16:44:58.315 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v7.0.7
+2025-06-19 16:44:58.316 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: 27121e80f6dbb260f5a9f0452cd8411cb681f075.patch
+2025-06-19 16:44:58.316 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-19 16:44:58.317 | INFO     | modules.direct_apply:_download_patch:248 - 上游补丁文件已存在: workspace/rails/rails/27121e/patches/upstream_27121e.patch
+2025-06-19 16:44:58.318 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-19 16:44:58.318 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/patches/upstream_27121e.patch
+2025-06-19 16:44:58.436 | INFO     | modules.direct_apply:_prepare_test_branch:400 - 创建测试分支: test_patch_v7.0.7
+2025-06-19 16:44:58.703 | ERROR    | modules.direct_apply:_apply_patch:340 - 补丁应用失败: error: patch failed: actionpack/lib/action_dispatch/http/filter_redirect.rb:37
+error: actionpack/lib/action_dispatch/http/filter_redirect.rb: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-19 16:44:58.912 | INFO     | modules.direct_apply:_cleanup_test_branch:492 - 清理测试分支: test_patch_v7.0.7
+2025-06-19 16:44:58.913 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-19 16:44:58.914 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/patches/upstream_27121e.patch
+2025-06-19 16:44:58.916 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:178 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/patches/upstream_27121e.patch
+2025-06-19 16:44:58.918 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:183 - 补丁文件包含 61 行内容
+2025-06-19 16:44:58.920 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: actionpack/lib/action_dispatch/http/filter_parameters.rb
+2025-06-19 16:44:58.923 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: actionpack/lib/action_dispatch/http/filter_parameters.rb @@ -68,12 +68,17 @@ (modification)
+2025-06-19 16:44:58.926 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: actionpack/lib/action_dispatch/http/filter_redirect.rb
+2025-06-19 16:44:58.928 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: actionpack/lib/action_dispatch/http/filter_redirect.rb @@ -37,9 +37,16 @@ (modification)
+2025-06-19 16:44:58.931 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:269 - 补丁分解完成，共找到 2 个修改块
+2025-06-19 16:44:58.933 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 2 个块
+2025-06-19 16:44:58.934 | INFO     | modules.chunk_analyzer:_create_chunk_patches:288 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/patches/upstream_27121e.patch
+2025-06-19 16:44:58.937 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/chunk_patches/chunk_001_20250619_164458.patch (修改文件: actionpack/lib/action_dispatch/http/filter_parameters.rb)
+2025-06-19 16:44:58.938 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/chunk_patches/chunk_002_20250619_164458.patch (修改文件: actionpack/lib/action_dispatch/http/filter_redirect.rb)
+2025-06-19 16:44:58.939 | INFO     | modules.chunk_analyzer:execute:60 - 已为 2 个块创建单独的补丁文件
+2025-06-19 16:44:58.942 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-19 16:44:58.944 | INFO     | modules.chunk_analyzer:execute:66 - From 27121e80f6dbb260f5a9f0452cd8411cb681f075 Mon Sep 17 00:00:00 2001
+From: John Hawthorn <john@hawthorn.email>
+Date: Thu, 10 Oct 2024 20:41:33 -0700
+Subject: [PATCH] Avoid backtracking in filtered_query_string
+
+Thanks scyoon for the patch
+
+CVE-2024-41128
+
+diff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb
+index f954f2a55c..5cd409dbab 100644
+--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb
++++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb
+@@ -68,12 +68,17 @@ def parameter_filter_for(filters) # :doc:
+         ActiveSupport::ParameterFilter.new(filters)
+       end
+ 
+-      KV_RE   = "[^&;=]+"
+-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}
+       def filtered_query_string # :doc:
+-        query_string.gsub(PAIR_RE) do |_|
+-          parameter_filter.filter($1 => $2).first.join("=")
++        parts = query_string.split(/([&;])/)
++        filtered_parts = parts.map do |part|
++          if part.include?("=")
++            key, value = part.split("=", 2)
++            parameter_filter.filter(key => value).first.join("=")
++          else
++            part
++          end
+         end
++        filtered_parts.join("")
+       end
+     end
+   end
+
+2025-06-19 16:44:58.947 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-19 16:44:58.948 | INFO     | modules.chunk_analyzer:execute:66 - From 27121e80f6dbb260f5a9f0452cd8411cb681f075 Mon Sep 17 00:00:00 2001
+From: John Hawthorn <john@hawthorn.email>
+Date: Thu, 10 Oct 2024 20:41:33 -0700
+Subject: [PATCH] Avoid backtracking in filtered_query_string
+
+Thanks scyoon for the patch
+
+CVE-2024-41128
+
+diff --git a/actionpack/lib/action_dispatch/http/filter_redirect.rb b/actionpack/lib/action_dispatch/http/filter_redirect.rb
+index 5785fd61f5..ed9e81f7a3 100644
+--- a/actionpack/lib/action_dispatch/http/filter_redirect.rb
++++ b/actionpack/lib/action_dispatch/http/filter_redirect.rb
+@@ -37,9 +37,16 @@ def location_filter_match?
+       def parameter_filtered_location
+         uri = URI.parse(location)
+         unless uri.query.nil? || uri.query.empty?
+-          uri.query.gsub!(FilterParameters::PAIR_RE) do
+-            request.parameter_filter.filter($1 => $2).first.join("=")
++          parts = uri.query.split(/([&;])/)
++          filtered_parts = parts.map do |part|
++            if part.include?("=")
++              key, value = part.split("=", 2)
++              request.parameter_filter.filter(key => value).first.join("=")
++            else
++              part
++            end
+           end
++          uri.query = filtered_parts.join("")
+         end
+         uri.to_s
+       rescue URI::Error
+-- 
+2.25.1
+
+
+2025-06-19 16:44:58.950 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:357 - 切换到目标版本: v7.0.7
+2025-06-19 16:44:59.028 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:369 - 创建测试分支: test_chunk_apply_93dfd97d
+2025-06-19 16:44:59.183 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 1/2 个块补丁: chunk_001_20250619_164458.patch
+2025-06-19 16:44:59.197 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_001_20250619_164458.patch
+2025-06-19 16:44:59.198 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 2/2 个块补丁: chunk_002_20250619_164458.patch
+2025-06-19 16:44:59.226 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:420 - 块补丁 chunk_002_20250619_164458.patch 应用失败: error: patch failed: actionpack/lib/action_dispatch/http/filter_redirect.rb:37
+error: actionpack/lib/action_dispatch/http/filter_redirect.rb: patch does not apply
+
+2025-06-19 16:44:59.227 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:430 - 块补丁应用统计信息:
+2025-06-19 16:44:59.227 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:431 - - 总块数: 2
+2025-06-19 16:44:59.228 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:432 - - 无冲突块数: 1
+2025-06-19 16:44:59.229 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:433 - - 适配失败块数: 1
+2025-06-19 16:44:59.229 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:438 - 切换回目标版本: v7.0.7
+2025-06-19 16:44:59.269 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:446 - 删除测试分支: test_chunk_apply_93dfd97d
+2025-06-19 16:44:59.281 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 1 个块补丁，总共 2 个
+2025-06-19 16:44:59.283 | INFO     | modules.chunk_analyzer:_create_remaining_patch:527 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/chunk_patches/remaining_chunks_20250619_164459.patch
+2025-06-19 16:44:59.284 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/chunk_patches/remaining_chunks_20250619_164459.patch
+2025-06-19 16:44:59.285 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/chunk_patches/remaining_chunks_20250619_164459.patch
+2025-06-19 16:44:59.286 | INFO     | modules.chunk_analyzer:execute:117 - 补丁分块分析完成，耗时: 0.37秒
+2025-06-19 16:44:59.287 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/rails/rails/27121e/evaluations/chunk_analyzer/metrics_27121e_20250619_164459.json
+2025-06-19 16:44:59.290 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:917 - 找到当前评估会话目录: workspace/rails/rails/27121e/evaluations/chunk_analyzer/details_27121e_20250619_164459
+2025-06-19 16:44:59.291 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/rails/rails/27121e/evaluations/chunk_analyzer/details_27121e_20250619_164459
+2025-06-19 16:44:59.293 | WARNING  | modules.chunk_analyzer:_get_patch_content:1207 - 补丁目录不存在: workspace/rails/rails/27121e/evaluations/chunk_analyzer/details_27121e_20250619_164459/patches
+2025-06-19 16:44:59.293 | INFO     | modules.chunk_analyzer:_get_patch_content:1212 - 成功创建补丁目录: workspace/rails/rails/27121e/evaluations/chunk_analyzer/details_27121e_20250619_164459/patches
+2025-06-19 16:44:59.295 | INFO     | modules.chunk_analyzer:_get_patch_content:1230 - 已将原始补丁内容保存到: workspace/rails/rails/27121e/evaluations/chunk_analyzer/details_27121e_20250619_164459/patches/original_patch.txt
+2025-06-19 16:44:59.295 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/rails/rails/27121e/evaluations/chunk_analyzer/details_27121e_20250619_164459
+2025-06-19 16:44:59.297 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/rails/rails/27121e/evaluations/chunk_analyzer/details_27121e_20250619_164459/patches/applied_chunk_1.txt
+2025-06-19 16:44:59.298 | INFO     | modules.chunk_analyzer:_get_patch_content:1344 - 已将合并的补丁块内容保存到: workspace/rails/rails/27121e/evaluations/chunk_analyzer/details_27121e_20250619_164459/patches/all_applied_chunks.txt
+2025-06-19 16:44:59.298 | INFO     | modules.chunk_analyzer:_get_patch_content:1348 - 从context获取应用成功的补丁内容
+2025-06-19 16:44:59.299 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/rails/rails/27121e/evaluations/chunk_analyzer/details_27121e_20250619_164459
+2025-06-19 16:44:59.300 | INFO     | modules.chunk_analyzer:_get_patch_content:1399 - 已将剩余补丁内容保存到: workspace/rails/rails/27121e/evaluations/chunk_analyzer/details_27121e_20250619_164459/patches/remaining_patch.txt
+2025-06-19 16:44:59.300 | INFO     | modules.chunk_analyzer:_get_patch_content:1403 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/chunk_patches/remaining_chunks_20250619_164459.patch
+2025-06-19 16:44:59.302 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/rails/rails/27121e/evaluations/chunk_analyzer/details_27121e_20250619_164459
+2025-06-19 16:44:59.306 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-19 16:44:59.307 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/patches/upstream_27121e.patch
+2025-06-19 16:44:59.308 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/patches/upstream_27121e.patch
+2025-06-19 16:44:59.309 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-19 16:44:59.396 | ERROR    | modules.llm_adapter:_get_context_diff:885 - 获取上下文差异失败: stdout and stderr arguments may not be used with capture_output.
+2025-06-19 16:44:59.400 | ERROR    | modules.llm_adapter:_get_context_diff:886 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 836, in _get_context_diff
+    subprocess.run(['git', 'apply', '--ignore-whitespace', patch_path],
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'apply', '--ignore-whitespace', '/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/27121e/chunk_patches/chunk_001_20250619_164458.patch']' returned non-zero exit status 1.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 859, in _get_context_diff
+    subprocess.run(['git', 'branch', '-D', temp_branch], cwd=repo_path,
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 543, in run
+    raise ValueError('stdout and stderr arguments may not be used '
+ValueError: stdout and stderr arguments may not be used with capture_output.
+
+2025-06-19 16:44:59.401 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-19 16:44:59.603 | INFO     | llm_assistant:run:284 - +++++++++++++++++++++++++++++++++++
+2025-06-19 16:45:04.831 | INFO     | __main__:clean_config:2181 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

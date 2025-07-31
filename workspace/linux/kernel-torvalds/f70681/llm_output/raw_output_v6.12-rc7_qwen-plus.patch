@@ -1,0 +1,51 @@
+A. Commit message:
+```
+libfs: Fix duplicate directory entry in offset_dir_lookup
+
+Backported fix for an issue where concurrent unlink operations during
+directory listing could result in duplicate directory entries.
+
+The root cause is in the offset_dir_lookup function, which uses mas_find
+to determine the starting position for getdents calls. This can lead to
+duplicate entries if a file is unlinked between calls. The fix replaces
+mas_find with mas_find_rev to ensure the correct starting position.
+
+This patch backports the fix to the older version of fs/libfs.c.
+```
+
+B. Change summary:
+- Analyzed the original patch and identified that the `offset_dir_lookup` function needs modification.
+- Replaced `mas_find(&mas, DIR_OFFSET_MAX)` with `mas_find_rev(&mas, DIR_OFFSET_MIN)` to correctly handle the starting position for directory traversal.
+- Verified that no additional dependencies or API changes are required for this backport.
+
+C. Compatibility Risk:
+Low - The change is localized to a single function (`offset_dir_lookup`) and does not introduce new dependencies or modify core functionality outside of fixing the bug.
+
+D. Fixed Code:
+```diff
+diff --git a/fs/libfs.c b/fs/libfs.c
+--- a/fs/libfs.c
++++ b/fs/libfs.c
+@@ -487,18 +487,18 @@ static noinline_for_stack struct dentry *
+ offset_dir_lookup(struct dentry *parent, loff_t offset)
+ {
+ 	struct inode *inode = d_inode(parent);
+ 	struct offset_ctx *octx = inode->i_op->get_offset_ctx(inode);
+ 	struct dentry *child, *found = NULL;
+ 
+ 	MA_STATE(mas, &octx->mt, offset, offset);
+ 
+ 	if (offset == DIR_OFFSET_FIRST)
+ 		found = find_positive_dentry(parent, NULL, false);
+ 	else {
+ 		rcu_read_lock();
+-		child = mas_find(&mas, DIR_OFFSET_MAX);
++		child = mas_find_rev(&mas, DIR_OFFSET_MIN);
+ 		found = find_positive_dentry(parent, child, false);
+ 		rcu_read_unlock();
+ 	}
+ 	return found;
+ }
+```
+
+This backported patch ensures that the older version of `fs/libfs.c` resolves the issue of duplicate directory entries caused by concurrent unlink operations during directory traversal.

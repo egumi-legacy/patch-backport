@@ -809,55 +809,55 @@ class LLMAdapterModule(BaseModule):
                 clean_diff_content = html.unescape(diff_file.read_text(encoding='utf-8', errors='replace'))
                 return clean_diff_content
                 
-            # 检查是否有已应用的chunk
-            applied_chunks = False
-            if context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks', 0) > 0:
-                applied_chunks = True
+            # # 检查是否有已应用的chunk
+            # applied_chunks = False
+            # if context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks', 0) > 0:
+            #     applied_chunks = True
                 
-            if applied_chunks:
-                # 创建一个临时分支，应用所有成功的chunk
-                temp_branch = f"temp_llm_diff_{uuid.uuid4().hex[:8]}"
-                repo_path = Path(context.config.repo_path)
+            # if applied_chunks:
+            #     # 创建一个临时分支，应用所有成功的chunk
+            #     temp_branch = f"temp_llm_diff_{uuid.uuid4().hex[:8]}"
+            #     repo_path = Path(context.config.repo_path)
                 
-                try:
-                    # 切换到目标版本
-                    target_version = context.config.target_version
-                    if isinstance(target_version, list):
-                        target_version = target_version[0]
+            #     try:
+            #         # 切换到目标版本
+            #         target_version = context.config.target_version
+            #         if isinstance(target_version, list):
+            #             target_version = target_version[0]
                     
-                    # 创建临时分支
-                    subprocess.run(['git', 'checkout', '-b', temp_branch, target_version], 
-                                   cwd=repo_path, check=True, capture_output=True)
+            #         # 创建临时分支
+            #         subprocess.run(['git', 'checkout', '-b', temp_branch, target_version], 
+            #                        cwd=repo_path, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     
-                    # 应用所有成功的chunk补丁
-                    if 'applied_chunk_patches' in context.chunk_analyzer_result:
-                        for patch_path in context.chunk_analyzer_result['applied_chunk_patches']:
-                            if patch_path:
-                                subprocess.run(['git', 'apply', '--ignore-whitespace', patch_path], 
-                                              cwd=repo_path, check=True, capture_output=True)
+            #         # 应用所有成功的chunk补丁
+            #         if 'applied_chunk_patches' in context.chunk_analyzer_result:
+            #             for patch_path in context.chunk_analyzer_result['applied_chunk_patches']:
+            #                 if patch_path:
+            #                     subprocess.run(['git', 'apply', '--ignore-whitespace', patch_path], 
+            #                                   cwd=repo_path, check=True, capture_output=True)
                     
-                    # 初始化PatchProcessor，使用ModuleContext中的参数
-                    from patch_processor import PatchProcessor
-                    patch_processor = PatchProcessor(context)
+            #         # 初始化PatchProcessor，使用ModuleContext中的参数
+            #         from patch_processor import PatchProcessor
+            #         patch_processor = PatchProcessor(context)
                     
-                    # 修改patch_processor的源分支为我们的临时分支
-                    patch_processor.source_branch = temp_branch
+            #         # 修改patch_processor的源分支为我们的临时分支
+            #         patch_processor.source_branch = temp_branch
                     
-                    # 运行生成diff
-                    result = patch_processor.run()
+            #         # 运行生成diff
+            #         result = patch_processor.run()
                     
-                    # 保存diff到文件
-                    if result and 'diff_content' in result:
-                        diff_content = result['diff_content']
-                        diff_file.write_text(diff_content, encoding='utf-8')
-                        return diff_content
+            #         # 保存diff到文件
+            #         if result and 'diff_content' in result:
+            #             diff_content = result['diff_content']
+            #             diff_file.write_text(diff_content, encoding='utf-8')
+            #             return diff_content
                     
-                finally:
-                    # 清理临时分支
-                    subprocess.run(['git', 'checkout', target_version], cwd=repo_path, 
-                                   capture_output=True)
-                    subprocess.run(['git', 'branch', '-D', temp_branch], cwd=repo_path, 
-                                   capture_output=True, stderr=subprocess.PIPE)
+            #     finally:
+            #         # 清理临时分支
+            #         subprocess.run(['git', 'checkout', target_version], cwd=repo_path, 
+            #                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            #         subprocess.run(['git', 'branch', '-D', temp_branch], cwd=repo_path, 
+            #                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             
             # 如果没有应用的chunk或上面的流程失败，回退到原始方法
             from patch_processor import PatchProcessor
@@ -880,7 +880,7 @@ class LLMAdapterModule(BaseModule):
                 return diff_content
                 
             return patch_content
-            
+
         except Exception as e:
             logger.error(f"获取上下文差异失败: {e}")
             logger.error(traceback.format_exc())

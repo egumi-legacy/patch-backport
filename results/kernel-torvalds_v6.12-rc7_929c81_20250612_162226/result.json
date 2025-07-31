@@ -1,0 +1,83 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "chunks_info": {
+      "total_chunks": 2,
+      "no_conflict_chunks": 2,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 0,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-12T16:22:26.690118"
+  },
+  "to_adapt_commit": {
+    "sha": "929c81ade6355b87097a2a4886c10750e68626cf.patch",
+    "patch_url": "https://github.com/linux/kernel-torvalds/commit/929c81ade6355b87097a2a4886c10750e68626cf.patch",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/929c81/chunk_patches/chunk_001_20250612_162225.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "v6.12-rc7",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/video/fbdev/core/fbmem.c:544\nerror: drivers/video/fbdev/core/fbmem.c: patch does not apply\nerror: patch failed: include/linux/fb.h:601\nerror: include/linux/fb.h: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/929c81/patches/upstream_929c81.patch",
+      "timestamp": "2025-06-12T16:22:25.424397"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/929c81/patches/upstream_929c81.patch",
+      "total_chunks": 2,
+      "applied_chunks": 2,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/929c81/chunk_patches/chunk_001_20250612_162225.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/929c81/chunk_patches/chunk_002_20250612_162225.patch"
+      ],
+      "remaining_patch": null,
+      "timestamp": "2025-06-12T16:22:25.596218",
+      "success": true
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/929c81/chunk_patches/chunk_001_20250612_162225.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-12T16:22:24.344551",
+    "end_time": "2025-06-12T16:22:25.611638",
+    "total_seconds": 1.267087,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "patch_content": "From 929c81ade6355b87097a2a4886c10750e68626cf Mon Sep 17 00:00:00 2001\nFrom: =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>\nDate: Fri, 30 Aug 2024 11:45:57 +0200\nSubject: [PATCH] fbdev: Introduce devm_register_framebuffer()\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\nIntroduce a device-managed variant of register_framebuffer() which\nautomatically unregisters the framebuffer on device destruction.\nThis can simplify the error handling and resource management in drivers.\n\nSigned-off-by: Thomas Wei\u00dfschuh <linux@weissschuh.net>\nSigned-off-by: Helge Deller <deller@gmx.de>\n\ndiff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c\nindex 4c4ad0a86a50..3c568cff2913 100644\n--- a/drivers/video/fbdev/core/fbmem.c\n+++ b/drivers/video/fbdev/core/fbmem.c\n@@ -544,6 +544,36 @@ unregister_framebuffer(struct fb_info *fb_info)\n }\n EXPORT_SYMBOL(unregister_framebuffer);\n \n+static void devm_unregister_framebuffer(void *data)\n+{\n+\tstruct fb_info *info = data;\n+\n+\tunregister_framebuffer(info);\n+}\n+\n+/**\n+ *\tdevm_register_framebuffer - resource-managed frame buffer device registration\n+ *\t@dev: device the framebuffer belongs to\n+ *\t@fb_info: frame buffer info structure\n+ *\n+ *\tRegisters a frame buffer device @fb_info to device @dev.\n+ *\n+ *\tReturns negative errno on error, or zero for success.\n+ *\n+ */\n+int\n+devm_register_framebuffer(struct device *dev, struct fb_info *fb_info)\n+{\n+\tint ret;\n+\n+\tret = register_framebuffer(fb_info);\n+\tif (ret)\n+\t\treturn ret;\n+\n+\treturn devm_add_action_or_reset(dev, devm_unregister_framebuffer, fb_info);\n+}\n+EXPORT_SYMBOL(devm_register_framebuffer);\n+\n /**\n  *\tfb_set_suspend - low level driver signals suspend\n  *\t@info: framebuffer affected\n",
+    "llm_output": null,
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "v6.12-rc7",
+      "commit_sha": "929c81ade6355b87097a2a4886c10750e68626cf.patch",
+      "timestamp": "2025-06-12T16:22:26.690136",
+      "execution_path": "chunk_analyzer (all chunks)"
+    }
+  }
+}

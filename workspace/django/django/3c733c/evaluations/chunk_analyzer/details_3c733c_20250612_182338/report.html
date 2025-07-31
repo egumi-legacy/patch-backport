@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>chunk_analyzer 模块评估报告 - 3c733c</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+    h1, h2, h3 { color: #2c3e50; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 20px; }
+    .success { color: #27ae60; }
+    .error { color: #e74c3c; }
+    .info { color: #3498db; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    th { background-color: #f8f9fa; }
+    tr:hover { background-color: #f5f5f5; }
+    pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    .progress-container { width: 100%; background-color: #f1f1f1; border-radius: 5px; }
+    .progress-bar { height: 20px; border-radius: 5px; }
+    .success-bg { background-color: #4CAF50; }
+    .pending-bg { background-color: #2196F3; }
+    .error-bg { background-color: #f44336; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+    .tag-success { background-color: #e8f5e9; color: #2e7d32; }
+    .tag-error { background-color: #ffebee; color: #c62828; }
+    .tag-pending { background-color: #e3f2fd; color: #1565c0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>chunk_analyzer 模块评估报告</h1>
+    
+    <div class="card">
+      <h2>基本信息</h2>
+      <table>
+        <tr>
+          <td width="150"><strong>模块名称</strong></td>
+          <td>chunk_analyzer</td>
+        </tr>
+        <tr>
+          <td><strong>模块类型</strong></td>
+          <td>ModuleType.CHUNK_ANALYZER</td>
+        </tr>
+        <tr>
+          <td><strong>提交SHA</strong></td>
+          <td>3c733c78d6f8e50296d6e248968b6516c92a53ca.patch</td>
+        </tr>
+        <tr>
+          <td><strong>目标版本</strong></td>
+          <td>5.1</td>
+        </tr>
+        <tr>
+          <td><strong>执行时间</strong></td>
+          <td>2025-06-12T18:23:38.324964</td>
+        </tr>
+        <tr>
+          <td><strong>状态</strong></td>
+          <td>
+            <span class="tag tag-success">成功</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输入信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>原始补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/django/django/3c733c/patches/upstream_3c733c.patch</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>代码仓库路径</strong></td>
+                  <td>/home/elpsy/.cache/port-patch/django</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输出信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>状态</strong></td>
+                  <td>成功</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总尝试次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>执行时间</strong></td>
+                  <td>0.201247</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总块数</strong></td>
+                  <td>10</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功应用块数</strong></td>
+                  <td>7</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功率</strong></td>
+                  <td>70.00%</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>剩余补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/django/django/3c733c/chunk_patches/remaining_chunks_20250612_182338.patch</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    
+        <div class="card">
+          <h2>补丁块应用统计</h2>
+          
+          <div class="progress-container">
+            <div class="progress-bar success-bg" style="width: 70%"></div>
+          </div>
+          <p>
+            成功应用 <strong class="success">7</strong> 个块，
+            总共 <strong>10</strong> 个块
+            (成功率: <strong>70.0%</strong>)
+          </p>
+        </div>
+        
+        <div class="card">
+          <h2>补丁内容详情</h2>
+          <div class="tabs">
+            <div class="tab-header">
+              <button class="tab-button active" onclick="openTab(event, 'original-patch')">原始补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'applied-patches')">应用成功的补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'remaining-patch')">未应用成功的补丁</button>
+            </div>
+            
+            <div id="original-patch" class="tab-content" style="display:block;">
+              <h3>原始补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From 3c733c78d6f8e50296d6e248968b6516c92a53ca Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 19 Aug 2024 14:47:38 -0300
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45231 -- Avoided server error on
+ password reset when email sending fails.
+
+On successful submission of a password reset request, an email is sent
+to the accounts known to the system. If sending this email fails (due to
+email backend misconfiguration, service provider outage, network issues,
+etc.), an attacker might exploit this by detecting which password reset
+requests succeed and which ones generate a 500 error response.
+
+Thanks to Thibaut Spriet for the report, and to Mariusz Felisiak, Adam
+Johnson, and Sarah Boyce for the reviews.
+---
+ django/contrib/auth/forms.py   |  9 ++++++++-
+ docs/ref/logging.txt           | 12 ++++++++++++
+ docs/releases/4.2.16.txt       | 11 +++++++++++
+ docs/releases/5.0.9.txt        | 11 +++++++++++
+ docs/releases/5.1.1.txt        | 11 +++++++++++
+ docs/topics/auth/default.txt   |  4 +++-
+ tests/auth_tests/test_forms.py | 21 +++++++++++++++++++++
+ tests/mail/custombackend.py    |  6 ++++++
+ 8 files changed, 83 insertions(+), 2 deletions(-)
+
+diff --git a/django/contrib/auth/forms.py b/django/contrib/auth/forms.py
+index a11668944a82..edf672a6e516 100644
+--- a/django/contrib/auth/forms.py
++++ b/django/contrib/auth/forms.py
+@@ -1,3 +1,4 @@
++import logging
+ import unicodedata
+ 
+ from django import forms
+@@ -16,6 +17,7 @@
+ from django.utils.translation import gettext_lazy as _
+ 
+ UserModel = get_user_model()
++logger = logging.getLogger("django.contrib.auth")
+ 
+ 
+ def _unicode_ci_compare(s1, s2):
+@@ -418,7 +420,12 @@ def send_mail(
+             html_email = loader.render_to_string(html_email_template_name, context)
+             email_message.attach_alternative(html_email, "text/html")
+ 
+-        email_message.send()
++        try:
++            email_message.send()
++        except Exception:
++            logger.exception(
++                "Failed to send password reset email to %s", context["user"].pk
++            )
+ 
+     def get_users(self, email):
+         """Given an email, return matching user(s) who should receive a reset.
+diff --git a/docs/ref/logging.txt b/docs/ref/logging.txt
+index 8a7e58997ebd..24ab5d97f379 100644
+--- a/docs/ref/logging.txt
++++ b/docs/ref/logging.txt
+@@ -209,6 +209,18 @@ Django development server. This logger generates an ``INFO`` message upon
+ detecting a modification in a source code file and may produce ``WARNING``
+ messages during filesystem inspection and event subscription processes.
+ 
++.. _django-contrib-auth-logger:
++
++``django.contrib.auth``
++~~~~~~~~~~~~~~~~~~~~~~~
++
++.. versionadded:: 4.2.16
++
++Log messages related to :doc:`contrib/auth`, particularly ``ERROR`` messages
++are generated when a :class:`~django.contrib.auth.forms.PasswordResetForm` is
++successfully submitted but the password reset email cannot be delivered due to
++a mail sending exception.
++
+ .. _django-contrib-gis-logger:
+ 
+ ``django.contrib.gis``
+diff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt
+index 2a84186867c5..963036345c5b 100644
+--- a/docs/releases/4.2.16.txt
++++ b/docs/releases/4.2.16.txt
+@@ -13,3 +13,14 @@ CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html
+ :tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
+ denial-of-service attack via very large inputs with a specific sequence of
+ characters.
++
++CVE-2024-45231: Potential user email enumeration via response status on password reset
++======================================================================================
++
++Due to unhandled email sending failures, the
++:class:`~django.contrib.auth.forms.PasswordResetForm` class allowed remote
++attackers to enumerate user emails by issuing password reset requests and
++observing the outcomes.
++
++To mitigate this risk, exceptions occurring during password reset email sending
++are now handled and logged using the :ref:`django-contrib-auth-logger` logger.
+diff --git a/docs/releases/5.0.9.txt b/docs/releases/5.0.9.txt
+index 50e94ea3f2ec..52595ae4ffdb 100644
+--- a/docs/releases/5.0.9.txt
++++ b/docs/releases/5.0.9.txt
+@@ -13,3 +13,14 @@ CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html
+ :tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
+ denial-of-service attack via very large inputs with a specific sequence of
+ characters.
++
++CVE-2024-45231: Potential user email enumeration via response status on password reset
++======================================================================================
++
++Due to unhandled email sending failures, the
++:class:`~django.contrib.auth.forms.PasswordResetForm` class allowed remote
++attackers to enumerate user emails by issuing password reset requests and
++observing the outcomes.
++
++To mitigate this risk, exceptions occurring during password reset email sending
++are now handled and logged using the :ref:`django-contrib-auth-logger` logger.
+diff --git a/docs/releases/5.1.1.txt b/docs/releases/5.1.1.txt
+index dd249291004d..8c0468d7271a 100644
+--- a/docs/releases/5.1.1.txt
++++ b/docs/releases/5.1.1.txt
+@@ -14,6 +14,17 @@ CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html
+ denial-of-service attack via very large inputs with a specific sequence of
+ characters.
+ 
++CVE-2024-45231: Potential user email enumeration via response status on password reset
++======================================================================================
++
++Due to unhandled email sending failures, the
++:class:`~django.contrib.auth.forms.PasswordResetForm` class allowed remote
++attackers to enumerate user emails by issuing password reset requests and
++observing the outcomes.
++
++To mitigate this risk, exceptions occurring during password reset email sending
++are now handled and logged using the :ref:`django-contrib-auth-logger` logger.
++
+ Bugfixes
+ ========
+ 
+diff --git a/docs/topics/auth/default.txt b/docs/topics/auth/default.txt
+index 15af779dfe00..4b40cb16f251 100644
+--- a/docs/topics/auth/default.txt
++++ b/docs/topics/auth/default.txt
+@@ -1752,7 +1752,9 @@ provides several built-in forms located in :mod:`django.contrib.auth.forms`:
+     .. method:: send_mail(subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None)
+ 
+         Uses the arguments to send an ``EmailMultiAlternatives``.
+-        Can be overridden to customize how the email is sent to the user.
++        Can be overridden to customize how the email is sent to the user. If
++        you choose to override this method, be mindful of handling potential
++        exceptions raised due to email sending failures.
+ 
+         :param subject_template_name: the template for the subject.
+         :param email_template_name: the template for the email body.
+diff --git a/tests/auth_tests/test_forms.py b/tests/auth_tests/test_forms.py
+index 13f86b6b7708..9463f07d572b 100644
+--- a/tests/auth_tests/test_forms.py
++++ b/tests/auth_tests/test_forms.py
+@@ -1351,6 +1351,27 @@ def test_save_html_email_template_name(self):
+             )
+         )
+ 
++    @override_settings(EMAIL_BACKEND="mail.custombackend.FailingEmailBackend")
++    def test_save_send_email_exceptions_are_catched_and_logged(self):
++        (user, username, email) = self.create_dummy_user()
++        form = PasswordResetForm({"email": email})
++        self.assertTrue(form.is_valid())
++
++        with self.assertLogs("django.contrib.auth", level=0) as cm:
++            form.save()
++
++        self.assertEqual(len(mail.outbox), 0)
++        self.assertEqual(len(cm.output), 1)
++        errors = cm.output[0].split("\n")
++        pk = user.pk
++        self.assertEqual(
++            errors[0],
++            f"ERROR:django.contrib.auth:Failed to send password reset email to {pk}",
++        )
++        self.assertEqual(
++            errors[-1], "ValueError: FailingEmailBackend is doomed to fail."
++        )
++
+     @override_settings(AUTH_USER_MODEL="auth_tests.CustomEmailField")
+     def test_custom_email_field(self):
+         email = "test@mail.com"
+diff --git a/tests/mail/custombackend.py b/tests/mail/custombackend.py
+index 14e7f077ba70..c63f1c07b5bd 100644
+--- a/tests/mail/custombackend.py
++++ b/tests/mail/custombackend.py
+@@ -12,3 +12,9 @@ def send_messages(self, email_messages):
+         # Messages are stored in an instance variable for testing.
+         self.test_outbox.extend(email_messages)
+         return len(email_messages)
++
++
++class FailingEmailBackend(BaseEmailBackend):
++
++    def send_messages(self, email_messages):
++        raise ValueError("FailingEmailBackend is doomed to fail.")
+</pre>
+              </div>
+            </div>
+            
+            <div id="applied-patches" class="tab-content">
+              <h3>应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">
+
+# ===== 应用成功的补丁块 1 =====
+
+From 3c733c78d6f8e50296d6e248968b6516c92a53ca Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 19 Aug 2024 14:47:38 -0300
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45231 -- Avoided server error on
+ password reset when email sending fails.
+
+On successful submission of a password reset request, an email is sent
+to the accounts known to the system. If sending this email fails (due to
+email backend misconfiguration, service provider outage, network issues,
+etc.), an attacker might exploit this by detecting which password reset
+requests succeed and which ones generate a 500 error response.
+
+Thanks to Thibaut Spriet for the report, and to Mariusz Felisiak, Adam
+Johnson, and Sarah Boyce for the reviews.
+---
+ django/contrib/auth/forms.py   |  9 ++++++++-
+ docs/ref/logging.txt           | 12 ++++++++++++
+ docs/releases/4.2.16.txt       | 11 +++++++++++
+ docs/releases/5.0.9.txt        | 11 +++++++++++
+ docs/releases/5.1.1.txt        | 11 +++++++++++
+ docs/topics/auth/default.txt   |  4 +++-
+ tests/auth_tests/test_forms.py | 21 +++++++++++++++++++++
+ tests/mail/custombackend.py    |  6 ++++++
+ 8 files changed, 83 insertions(+), 2 deletions(-)
+
+diff --git a/django/contrib/auth/forms.py b/django/contrib/auth/forms.py
+index a11668944a82..edf672a6e516 100644
+--- a/django/contrib/auth/forms.py
++++ b/django/contrib/auth/forms.py
+@@ -1,3 +1,4 @@
++import logging
+ import unicodedata
+ 
+ from django import forms
+
+
+# ===== 应用成功的补丁块 2 =====
+
+From 3c733c78d6f8e50296d6e248968b6516c92a53ca Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 19 Aug 2024 14:47:38 -0300
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45231 -- Avoided server error on
+ password reset when email sending fails.
+
+On successful submission of a password reset request, an email is sent
+to the accounts known to the system. If sending this email fails (due to
+email backend misconfiguration, service provider outage, network issues,
+etc.), an attacker might exploit this by detecting which password reset
+requests succeed and which ones generate a 500 error response.
+
+Thanks to Thibaut Spriet for the report, and to Mariusz Felisiak, Adam
+Johnson, and Sarah Boyce for the reviews.
+---
+ django/contrib/auth/forms.py   |  9 ++++++++-
+ docs/ref/logging.txt           | 12 ++++++++++++
+ docs/releases/4.2.16.txt       | 11 +++++++++++
+ docs/releases/5.0.9.txt        | 11 +++++++++++
+ docs/releases/5.1.1.txt        | 11 +++++++++++
+ docs/topics/auth/default.txt   |  4 +++-
+ tests/auth_tests/test_forms.py | 21 +++++++++++++++++++++
+ tests/mail/custombackend.py    |  6 ++++++
+ 8 files changed, 83 insertions(+), 2 deletions(-)
+
+diff --git a/django/contrib/auth/forms.py b/django/contrib/auth/forms.py
+index a11668944a82..edf672a6e516 100644
+--- a/django/contrib/auth/forms.py
++++ b/django/contrib/auth/forms.py
+@@ -16,6 +17,7 @@
+ from django.utils.translation import gettext_lazy as _
+ 
+ UserModel = get_user_model()
++logger = logging.getLogger("django.contrib.auth")
+ 
+ 
+ def _unicode_ci_compare(s1, s2):
+
+
+# ===== 应用成功的补丁块 3 =====
+
+From 3c733c78d6f8e50296d6e248968b6516c92a53ca Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 19 Aug 2024 14:47:38 -0300
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45231 -- Avoided server error on
+ password reset when email sending fails.
+
+On successful submission of a password reset request, an email is sent
+to the accounts known to the system. If sending this email fails (due to
+email backend misconfiguration, service provider outage, network issues,
+etc.), an attacker might exploit this by detecting which password reset
+requests succeed and which ones generate a 500 error response.
+
+Thanks to Thibaut Spriet for the report, and to Mariusz Felisiak, Adam
+Johnson, and Sarah Boyce for the reviews.
+---
+ django/contrib/auth/forms.py   |  9 ++++++++-
+ docs/ref/logging.txt           | 12 ++++++++++++
+ docs/releases/4.2.16.txt       | 11 +++++++++++
+ docs/releases/5.0.9.txt        | 11 +++++++++++
+ docs/releases/5.1.1.txt        | 11 +++++++++++
+ docs/topics/auth/default.txt   |  4 +++-
+ tests/auth_tests/test_forms.py | 21 +++++++++++++++++++++
+ tests/mail/custombackend.py    |  6 ++++++
+ 8 files changed, 83 insertions(+), 2 deletions(-)
+
+diff --git a/django/contrib/auth/forms.py b/django/contrib/auth/forms.py
+index a11668944a82..edf672a6e516 100644
+--- a/django/contrib/auth/forms.py
++++ b/django/contrib/auth/forms.py
+@@ -418,7 +420,12 @@ def send_mail(
+             html_email = loader.render_to_string(html_email_template_name, context)
+             email_message.attach_alternative(html_email, "text/html")
+ 
+-        email_message.send()
++        try:
++            email_message.send()
++        except Exception:
++            logger.exception(
++                "Failed to send password reset email to %s", context["user"].pk
++            )
+ 
+     def get_users(self, email):
+         """Given an email, return matching user(s) who should receive a reset.
+
+
+# ===== 应用成功的补丁块 4 =====
+
+From 3c733c78d6f8e50296d6e248968b6516c92a53ca Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 19 Aug 2024 14:47:38 -0300
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45231 -- Avoided server error on
+ password reset when email sending fails.
+
+On successful submission of a password reset request, an email is sent
+to the accounts known to the system. If sending this email fails (due to
+email backend misconfiguration, service provider outage, network issues,
+etc.), an attacker might exploit this by detecting which password reset
+requests succeed and which ones generate a 500 error response.
+
+Thanks to Thibaut Spriet for the report, and to Mariusz Felisiak, Adam
+Johnson, and Sarah Boyce for the reviews.
+---
+ django/contrib/auth/forms.py   |  9 ++++++++-
+ docs/ref/logging.txt           | 12 ++++++++++++
+ docs/releases/4.2.16.txt       | 11 +++++++++++
+ docs/releases/5.0.9.txt        | 11 +++++++++++
+ docs/releases/5.1.1.txt        | 11 +++++++++++
+ docs/topics/auth/default.txt   |  4 +++-
+ tests/auth_tests/test_forms.py | 21 +++++++++++++++++++++
+ tests/mail/custombackend.py    |  6 ++++++
+ 8 files changed, 83 insertions(+), 2 deletions(-)
+
+diff --git a/docs/ref/logging.txt b/docs/ref/logging.txt
+index 8a7e58997ebd..24ab5d97f379 100644
+--- a/docs/ref/logging.txt
++++ b/docs/ref/logging.txt
+@@ -209,6 +209,18 @@ Django development server. This logger generates an ``INFO`` message upon
+ detecting a modification in a source code file and may produce ``WARNING``
+ messages during filesystem inspection and event subscription processes.
+ 
++.. _django-contrib-auth-logger:
++
++``django.contrib.auth``
++~~~~~~~~~~~~~~~~~~~~~~~
++
++.. versionadded:: 4.2.16
++
++Log messages related to :doc:`contrib/auth`, particularly ``ERROR`` messages
++are generated when a :class:`~django.contrib.auth.forms.PasswordResetForm` is
++successfully submitted but the password reset email cannot be delivered due to
++a mail sending exception.
++
+ .. _django-contrib-gis-logger:
+ 
+ ``django.contrib.gis``
+
+
+# ===== 应用成功的补丁块 5 =====
+
+From 3c733c78d6f8e50296d6e248968b6516c92a53ca Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 19 Aug 2024 14:47:38 -0300
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45231 -- Avoided server error on
+ password reset when email sending fails.
+
+On successful submission of a password reset request, an email is sent
+to the accounts known to the system. If sending this email fails (due to
+email backend misconfiguration, service provider outage, network issues,
+etc.), an attacker might exploit this by detecting which password reset
+requests succeed and which ones generate a 500 error response.
+
+Thanks to Thibaut Spriet for the report, and to Mariusz Felisiak, Adam
+Johnson, and Sarah Boyce for the reviews.
+---
+ django/contrib/auth/forms.py   |  9 ++++++++-
+ docs/ref/logging.txt           | 12 ++++++++++++
+ docs/releases/4.2.16.txt       | 11 +++++++++++
+ docs/releases/5.0.9.txt        | 11 +++++++++++
+ docs/releases/5.1.1.txt        | 11 +++++++++++
+ docs/topics/auth/default.txt   |  4 +++-
+ tests/auth_tests/test_forms.py | 21 +++++++++++++++++++++
+ tests/mail/custombackend.py    |  6 ++++++
+ 8 files changed, 83 insertions(+), 2 deletions(-)
+
+diff --git a/docs/topics/auth/default.txt b/docs/topics/auth/default.txt
+index 15af779dfe00..4b40cb16f251 100644
+--- a/docs/topics/auth/default.txt
++++ b/docs/topics/auth/default.txt
+@@ -1752,7 +1752,9 @@ provides several built-in forms located in :mod:`django.contrib.auth.forms`:
+     .. method:: send_mail(subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None)
+ 
+         Uses the arguments to send an ``EmailMultiAlternatives``.
+-        Can be overridden to customize how the email is sent to the user.
++        Can be overridden to customize how the email is sent to the user. If
++        you choose to override this method, be mindful of handling potential
++        exceptions raised due to email sending failures.
+ 
+         :param subject_template_name: the template for the subject.
+         :param email_template_name: the template for the email body.
+
+
+# ===== 应用成功的补丁块 6 =====
+
+From 3c733c78d6f8e50296d6e248968b6516c92a53ca Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 19 Aug 2024 14:47:38 -0300
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45231 -- Avoided server error on
+ password reset when email sending fails.
+
+On successful submission of a password reset request, an email is sent
+to the accounts known to the system. If sending this email fails (due to
+email backend misconfiguration, service provider outage, network issues,
+etc.), an attacker might exploit this by detecting which password reset
+requests succeed and which ones generate a 500 error response.
+
+Thanks to Thibaut Spriet for the report, and to Mariusz Felisiak, Adam
+Johnson, and Sarah Boyce for the reviews.
+---
+ django/contrib/auth/forms.py   |  9 ++++++++-
+ docs/ref/logging.txt           | 12 ++++++++++++
+ docs/releases/4.2.16.txt       | 11 +++++++++++
+ docs/releases/5.0.9.txt        | 11 +++++++++++
+ docs/releases/5.1.1.txt        | 11 +++++++++++
+ docs/topics/auth/default.txt   |  4 +++-
+ tests/auth_tests/test_forms.py | 21 +++++++++++++++++++++
+ tests/mail/custombackend.py    |  6 ++++++
+ 8 files changed, 83 insertions(+), 2 deletions(-)
+
+diff --git a/tests/auth_tests/test_forms.py b/tests/auth_tests/test_forms.py
+index 13f86b6b7708..9463f07d572b 100644
+--- a/tests/auth_tests/test_forms.py
++++ b/tests/auth_tests/test_forms.py
+@@ -1351,6 +1351,27 @@ def test_save_html_email_template_name(self):
+             )
+         )
+ 
++    @override_settings(EMAIL_BACKEND="mail.custombackend.FailingEmailBackend")
++    def test_save_send_email_exceptions_are_catched_and_logged(self):
++        (user, username, email) = self.create_dummy_user()
++        form = PasswordResetForm({"email": email})
++        self.assertTrue(form.is_valid())
++
++        with self.assertLogs("django.contrib.auth", level=0) as cm:
++            form.save()
++
++        self.assertEqual(len(mail.outbox), 0)
++        self.assertEqual(len(cm.output), 1)
++        errors = cm.output[0].split("\n")
++        pk = user.pk
++        self.assertEqual(
++            errors[0],
++            f"ERROR:django.contrib.auth:Failed to send password reset email to {pk}",
++        )
++        self.assertEqual(
++            errors[-1], "ValueError: FailingEmailBackend is doomed to fail."
++        )
++
+     @override_settings(AUTH_USER_MODEL="auth_tests.CustomEmailField")
+     def test_custom_email_field(self):
+         email = "test@mail.com"
+
+
+# ===== 应用成功的补丁块 7 =====
+
+From 3c733c78d6f8e50296d6e248968b6516c92a53ca Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 19 Aug 2024 14:47:38 -0300
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45231 -- Avoided server error on
+ password reset when email sending fails.
+
+On successful submission of a password reset request, an email is sent
+to the accounts known to the system. If sending this email fails (due to
+email backend misconfiguration, service provider outage, network issues,
+etc.), an attacker might exploit this by detecting which password reset
+requests succeed and which ones generate a 500 error response.
+
+Thanks to Thibaut Spriet for the report, and to Mariusz Felisiak, Adam
+Johnson, and Sarah Boyce for the reviews.
+---
+ django/contrib/auth/forms.py   |  9 ++++++++-
+ docs/ref/logging.txt           | 12 ++++++++++++
+ docs/releases/4.2.16.txt       | 11 +++++++++++
+ docs/releases/5.0.9.txt        | 11 +++++++++++
+ docs/releases/5.1.1.txt        | 11 +++++++++++
+ docs/topics/auth/default.txt   |  4 +++-
+ tests/auth_tests/test_forms.py | 21 +++++++++++++++++++++
+ tests/mail/custombackend.py    |  6 ++++++
+ 8 files changed, 83 insertions(+), 2 deletions(-)
+
+diff --git a/tests/mail/custombackend.py b/tests/mail/custombackend.py
+index 14e7f077ba70..c63f1c07b5bd 100644
+--- a/tests/mail/custombackend.py
++++ b/tests/mail/custombackend.py
+@@ -12,3 +12,9 @@ def send_messages(self, email_messages):
+         # Messages are stored in an instance variable for testing.
+         self.test_outbox.extend(email_messages)
+         return len(email_messages)
++
++
++class FailingEmailBackend(BaseEmailBackend):
++
++    def send_messages(self, email_messages):
++        raise ValueError("FailingEmailBackend is doomed to fail.")
+</pre>
+              </div>
+            </div>
+            
+            <div id="remaining-patch" class="tab-content">
+              <h3>未应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From 3c733c78d6f8e50296d6e248968b6516c92a53ca Mon Sep 17 00:00:00 2001
+From: Natalia &lt;124304+nessita@users.noreply.github.com&gt;
+Date: Mon, 19 Aug 2024 14:47:38 -0300
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45231 -- Avoided server error on
+ password reset when email sending fails.
+
+On successful submission of a password reset request, an email is sent
+to the accounts known to the system. If sending this email fails (due to
+email backend misconfiguration, service provider outage, network issues,
+etc.), an attacker might exploit this by detecting which password reset
+requests succeed and which ones generate a 500 error response.
+
+Thanks to Thibaut Spriet for the report, and to Mariusz Felisiak, Adam
+Johnson, and Sarah Boyce for the reviews.
+---
+ django/contrib/auth/forms.py   |  9 ++++++++-
+ docs/ref/logging.txt           | 12 ++++++++++++
+ docs/releases/4.2.16.txt       | 11 +++++++++++
+ docs/releases/5.0.9.txt        | 11 +++++++++++
+ docs/releases/5.1.1.txt        | 11 +++++++++++
+ docs/topics/auth/default.txt   |  4 +++-
+ tests/auth_tests/test_forms.py | 21 +++++++++++++++++++++
+ tests/mail/custombackend.py    |  6 ++++++
+ 8 files changed, 83 insertions(+), 2 deletions(-)
+
+diff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt
+index 2a84186867c5..963036345c5b 100644
+--- a/docs/releases/4.2.16.txt
++++ b/docs/releases/4.2.16.txt
+@@ -13,3 +13,14 @@ CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html
+ :tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
+ denial-of-service attack via very large inputs with a specific sequence of
+ characters.
++
++CVE-2024-45231: Potential user email enumeration via response status on password reset
++======================================================================================
++
++Due to unhandled email sending failures, the
++:class:`~django.contrib.auth.forms.PasswordResetForm` class allowed remote
++attackers to enumerate user emails by issuing password reset requests and
++observing the outcomes.
++
++To mitigate this risk, exceptions occurring during password reset email sending
++are now handled and logged using the :ref:`django-contrib-auth-logger` logger.
+diff --git a/docs/releases/5.0.9.txt b/docs/releases/5.0.9.txt
+index 50e94ea3f2ec..52595ae4ffdb 100644
+--- a/docs/releases/5.0.9.txt
++++ b/docs/releases/5.0.9.txt
+@@ -13,3 +13,14 @@ CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html
+ :tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
+ denial-of-service attack via very large inputs with a specific sequence of
+ characters.
++
++CVE-2024-45231: Potential user email enumeration via response status on password reset
++======================================================================================
++
++Due to unhandled email sending failures, the
++:class:`~django.contrib.auth.forms.PasswordResetForm` class allowed remote
++attackers to enumerate user emails by issuing password reset requests and
++observing the outcomes.
++
++To mitigate this risk, exceptions occurring during password reset email sending
++are now handled and logged using the :ref:`django-contrib-auth-logger` logger.
+diff --git a/docs/releases/5.1.1.txt b/docs/releases/5.1.1.txt
+index dd249291004d..8c0468d7271a 100644
+--- a/docs/releases/5.1.1.txt
++++ b/docs/releases/5.1.1.txt
+@@ -14,6 +14,17 @@ CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html
+ denial-of-service attack via very large inputs with a specific sequence of
+ characters.
+ 
++CVE-2024-45231: Potential user email enumeration via response status on password reset
++======================================================================================
++
++Due to unhandled email sending failures, the
++:class:`~django.contrib.auth.forms.PasswordResetForm` class allowed remote
++attackers to enumerate user emails by issuing password reset requests and
++observing the outcomes.
++
++To mitigate this risk, exceptions occurring during password reset email sending
++are now handled and logged using the :ref:`django-contrib-auth-logger` logger.
++
+ Bugfixes
+ ========
+ 
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+                <div class="card">
+                  <h2>应用成功的补丁块</h2>
+                  <table>
+                    <tr>
+                      <th>块索引</th>
+                      <th>修改文件</th>
+                      <th>修改位置</th>
+                      <th>操作</th>
+                    </tr>
+                    
+                    <tr>
+                      <td>1</td>
+                      <td>django/contrib/auth/forms.py</td>
+                      <td>1-1</td>
+                      <td><a href="applied_chunk_1.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>2</td>
+                      <td>django/contrib/auth/forms.py</td>
+                      <td>16-17</td>
+                      <td><a href="applied_chunk_2.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>3</td>
+                      <td>django/contrib/auth/forms.py</td>
+                      <td>418-420</td>
+                      <td><a href="applied_chunk_3.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>4</td>
+                      <td>docs/ref/logging.txt</td>
+                      <td>209-209</td>
+                      <td><a href="applied_chunk_4.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>5</td>
+                      <td>docs/topics/auth/default.txt</td>
+                      <td>1752-1752</td>
+                      <td><a href="applied_chunk_5.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>6</td>
+                      <td>tests/auth_tests/test_forms.py</td>
+                      <td>1351-1351</td>
+                      <td><a href="applied_chunk_6.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>7</td>
+                      <td>tests/mail/custombackend.py</td>
+                      <td>12-12</td>
+                      <td><a href="applied_chunk_7.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+                  </table>
+                </div>
+                
+            <div class="card">
+              <h2>剩余补丁</h2>
+              <p>有 <strong class="info">3</strong> 个块未成功应用，已生成剩余补丁:</p>
+              <p><code>/home/elpsy/workspace/sow/patch-backport/workspace/django/django/3c733c/chunk_patches/remaining_chunks_20250612_182338.patch</code></p>
+              <p><a href="remaining_patch.diff" target="_blank">查看剩余补丁</a></p>
+            </div>
+            
+        <style>
+        .code-container {
+          max-height: 500px;
+          overflow-y: auto;
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          border: 1px solid #eee;
+        }
+        
+        .code-block {
+          padding: 15px;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: monospace;
+          font-size: 13px;
+          line-height: 1.4;
+        }
+        
+        /* 为补丁内容添加语法高亮 */
+        .code-block .add {
+          background-color: #e6ffed;
+          color: #22863a;
+        }
+        
+        .code-block .remove {
+          background-color: #ffeef0;
+          color: #cb2431;
+        }
+        
+        .code-block .hunk {
+          color: #0366d6;
+          background-color: #f1f8ff;
+        }
+        
+        .code-block .header {
+          color: #6f42c1;
+          font-weight: bold;
+        }
+        </style>
+        
+        <script>
+        // 对补丁内容应用简单的语法高亮
+        document.addEventListener('DOMContentLoaded', function() {
+          const codeBlocks = document.querySelectorAll('.code-block');
+          codeBlocks.forEach(function(block) {
+            let html = block.innerHTML;
+            
+            // 替换添加的行
+            html = html.replace(/^(\+[^+].*)/gm, '<span class="add">$1</span>');
+            
+            // 替换删除的行
+            html = html.replace(/^(-[^-].*)/gm, '<span class="remove">$1</span>');
+            
+            // 替换区块头
+            html = html.replace(/^(@@.*@@)/gm, '<span class="hunk">$1</span>');
+            
+            // 替换diff头 - 修复无效转义序列
+            html = html.replace(/^(diff --git.*|index.*|---.*|\+\+\+.*)/gm, '<span class="header">$1</span>');
+            
+            block.innerHTML = html;
+          });
+        });
+        </script>
+        
+    
+  </div>
+</body>
+</html>

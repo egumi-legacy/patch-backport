@@ -1,0 +1,67 @@
+From d3015bfd65348db629dab51e20a9d4e2f3b23493 Mon Sep 17 00:00:00 2001
+From: Arne Schwabe <arne@rfc2549.org>
+Date: Tue, 1 Apr 2025 19:30:37 +0200
+Subject: [PATCH] Allow tls-crypt-v2 to be setup only on initial packet of a
+ session
+
+This fixes an internal server error condition that can be triggered by a
+malicous authenticated client, a very unlucky corruption of packets in
+transit or by an attacker that is able to inject a specially created
+packet at the right time and is able to observe the traffic to construct
+the packet.
+
+The error condition results in an ASSERT statement being triggered,
+
+NOTE: due to the security sensitive nature, this patch was prepared
+under embargo on the security@openvpn.net mailing list, and thus has
+no publically available "mailing list discussion before merge" URL.
+
+CVE: 2025-2704
+Change-Id: I07c1352204d308e5bde5f0b85e561a5dd0bc63c8
+Signed-off-by: Arne Schwabe <arne@rfc2549.org>
+Acked-by: Gert Doering <gert@greenie.muc.de>
+Message-Id: <385d88f0-d7c9-4330-82ff-9f5931183afd@rfc2549.org>
+Signed-off-by: Gert Doering <gert@greenie.muc.de>
+(cherry picked from commit 82ee2fe4b42d9988c59ae3f83bd56a54d54e8c76)
+---
+ src/openvpn/ssl.c                         | 26 +++++++++++++++++++----
+ src/openvpn/ssl_common.h                  | 15 +++++++------
+ src/openvpn/ssl_pkt.c                     |  7 +++---
+ src/openvpn/ssl_pkt.h                     | 12 +++++++++--
+ src/openvpn/tls_crypt.c                   | 24 ++++++++++++++++++++-
+ src/openvpn/tls_crypt.h                   |  7 +++++-
+ tests/unit_tests/openvpn/test_tls_crypt.c |  2 +-
+ 7 files changed, 75 insertions(+), 18 deletions(-)
+
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 975d31fafb5..50228e786e0 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -641,6 +642,27 @@ tls_crypt_v2_extract_client_key(struct buffer *buf,
+         return false;
+     }
+ 
++    if (!initial_packet)
++    {
++        /* This might be a harmless resend of the packet but it is better to
++         * just ignore the WKC part than trying to setup tls-crypt keys again.
++         *
++         * A CONTROL_WKC_V1 packets has a normal packet part and an appended
++         * wrapped control key. These are authenticated individually. We already
++         * set up tls-crypt with the wrapped key, so we are ignoring this part
++         * of the message but we return the normal packet part as the normal
++         * part of the message might have been corrupted earlier and discarded
++         * and this is resend. So return the normal part of the packet,
++         * basically transforming the CONTROL_WKC_V1 into a normal CONTROL_V1
++         * packet*/
++        msg(D_TLS_ERRORS, "control channel security already setup ignoring "
++            "wrapped key part of packet.");
++
++        /* Remove client key from buffer so tls-crypt code can unwrap message */
++        ASSERT(buf_inc_len(buf, -(BLEN(&wrapped_client_key))));
++        return true;
++    }
++
+     ctx->tls_crypt_v2_metadata = alloc_buf(TLS_CRYPT_V2_MAX_METADATA_LEN);
+     if (!tls_crypt_v2_unwrap_client_key(&ctx->original_wrap_keydata,
+                                         &ctx->tls_crypt_v2_metadata,

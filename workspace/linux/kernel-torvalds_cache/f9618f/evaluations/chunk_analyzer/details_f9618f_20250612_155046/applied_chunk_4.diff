@@ -1,0 +1,41 @@
+From f9618ff105a0f6f5a6beed3edc557ea6a7d26df6 Mon Sep 17 00:00:00 2001
+From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:43 +0200
+Subject: [PATCH] ASoC: SOF: topology: Parse DAI type token for dspless mode
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Starting with LunarLake, the dspless mode can handle SoundWire/ALH,
+DMIC and SSPs, so we need to identify the dai type from topology.
+
+Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-12-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index 915c2e88e32b..bcdb499c96a0 100644
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2369,6 +2372,15 @@ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,
+ 			return -ENOMEM;
+ 		}
+ 
++		ret = sof_parse_tokens(scomp, &sdai->type, dai_tokens, ARRAY_SIZE(dai_tokens),
++				       priv->array, le32_to_cpu(priv->size));
++		if (ret < 0) {
++			dev_err(scomp->dev, "Failed to parse DAI tokens for %s\n", tw->name);
++			kfree(swidget);
++			kfree(sdai);
++			return ret;
++		}
++
+ 		ret = sof_connect_dai_widget(scomp, w, tw, sdai);
+ 		if (ret) {
+ 			kfree(swidget);
+-- 
+2.25.1
+

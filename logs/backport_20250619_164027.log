@@ -1,0 +1,46 @@
+2025-06-19 16:40:27.888 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250619_164027.log
+2025-06-19 16:40:27.888 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-19 16:40:27.889 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/rails/rails/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd.patch
+2025-06-19 16:40:27.890 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-19 16:40:27.891 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-19 16:40:27.897 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-19 16:40:27.898 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-19 16:40:27.899 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.1.4.1']
+2025-06-19 16:40:27.900 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.1.4.1
+2025-06-19 16:40:27.901 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: fb493bebae1a9b83e494fe7edbf01f6167d606fd.patch
+2025-06-19 16:40:27.901 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-19 16:40:27.902 | INFO     | modules.direct_apply:_download_patch:248 - 上游补丁文件已存在: workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-19 16:40:27.903 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-19 16:40:27.903 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-19 16:40:28.983 | INFO     | modules.direct_apply:_prepare_test_branch:400 - 创建测试分支: test_patch_v6.1.4.1
+2025-06-19 16:40:29.724 | INFO     | modules.direct_apply:_apply_patch:336 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-19 16:40:29.753 | INFO     | modules.direct_apply:_move_to_cache:139 - 源目录: workspace/rails/rails/fb493b
+2025-06-19 16:40:29.754 | INFO     | modules.direct_apply:_move_to_cache:147 - 目标目录: workspace/rails/rails_cache
+2025-06-19 16:40:29.757 | INFO     | modules.direct_apply:_move_to_cache:158 - 已将成功的commit文件夹移动到缓存: workspace/rails/rails_cache
+2025-06-19 16:40:29.846 | INFO     | modules.direct_apply:_cleanup_test_branch:492 - 清理测试分支: test_patch_v6.1.4.1
+2025-06-19 16:40:29.849 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/rails/rails/fb493b/evaluations/direct_apply/metrics_fb493b_20250619_164029.json
+2025-06-19 16:40:29.850 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: ChunkAnalyzerModule
+2025-06-19 16:40:29.851 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-06-19 16:40:29.853 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-06-19 16:40:29.854 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 1.95秒
+2025-06-19 16:40:29.855 | INFO     | __main__:_merge_patches:1101 - 开始合并补丁...
+2025-06-19 16:40:29.855 | WARNING  | __main__:_merge_patches:1109 - 没有找到任何可合并的补丁结果
+2025-06-19 16:40:29.859 | ERROR    | __main__:_save_results:765 - 复制补丁文件时出错: [Errno 2] No such file or directory: '/home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch'
+2025-06-19 16:40:29.862 | INFO     | __main__:_save_results:896 - 结果已保存到: results/rails_v6.1.4.1_fb493b_20250619_164029/result.json
+2025-06-19 16:40:29.862 | INFO     | __main__:_print_summary:938 - context.patch_adapter_result: []
+2025-06-19 16:40:29.864 | INFO     | __main__:_print_summary:965 - ==================================================
+2025-06-19 16:40:29.865 | INFO     | __main__:_print_summary:966 - 处理摘要 - 提交: fb493b
+2025-06-19 16:40:29.866 | INFO     | __main__:_print_summary:967 - 适配状态: 无需适配 (直接应用成功) (方法: direct_apply)
+2025-06-19 16:40:29.867 | INFO     | __main__:_print_summary:982 - 块分析统计:
+2025-06-19 16:40:29.868 | INFO     | __main__:_print_summary:983 - - 总块数: 0
+2025-06-19 16:40:29.869 | INFO     | __main__:_print_summary:984 - - 冲突块数: 0
+2025-06-19 16:40:29.870 | INFO     | __main__:_print_summary:985 - - 成功适配块数: 0
+2025-06-19 16:40:29.870 | INFO     | __main__:_print_summary:986 - - 适配失败块数: 0
+2025-06-19 16:40:29.871 | INFO     | __main__:_print_summary:987 - - 编译失败块数: 0
+2025-06-19 16:40:29.872 | INFO     | __main__:_print_summary:991 - 总执行时间: 1.95秒
+2025-06-19 16:40:29.873 | INFO     | __main__:_print_summary:996 - ==================================================
+2025-06-19 16:40:29.874 | INFO     | __main__:run:335 - 处理完成
+2025-06-19 16:40:29.875 | INFO     | __main__:process_single_commit:2219 - ============================================================
+2025-06-19 16:40:29.876 | INFO     | __main__:process_single_commit:2220 - 单个commit处理完成: fb493bebae1a9b83e494fe7edbf01f6167d606fd
+2025-06-19 16:40:29.877 | INFO     | __main__:process_single_commit:2221 - ============================================================
+2025-06-19 16:40:29.887 | INFO     | __main__:clean_config:2181 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

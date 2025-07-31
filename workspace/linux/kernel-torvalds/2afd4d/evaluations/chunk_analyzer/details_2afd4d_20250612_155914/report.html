@@ -1,0 +1,2520 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>chunk_analyzer 模块评估报告 - 2afd4d</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+    h1, h2, h3 { color: #2c3e50; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 20px; }
+    .success { color: #27ae60; }
+    .error { color: #e74c3c; }
+    .info { color: #3498db; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    th { background-color: #f8f9fa; }
+    tr:hover { background-color: #f5f5f5; }
+    pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    .progress-container { width: 100%; background-color: #f1f1f1; border-radius: 5px; }
+    .progress-bar { height: 20px; border-radius: 5px; }
+    .success-bg { background-color: #4CAF50; }
+    .pending-bg { background-color: #2196F3; }
+    .error-bg { background-color: #f44336; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+    .tag-success { background-color: #e8f5e9; color: #2e7d32; }
+    .tag-error { background-color: #ffebee; color: #c62828; }
+    .tag-pending { background-color: #e3f2fd; color: #1565c0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>chunk_analyzer 模块评估报告</h1>
+    
+    <div class="card">
+      <h2>基本信息</h2>
+      <table>
+        <tr>
+          <td width="150"><strong>模块名称</strong></td>
+          <td>chunk_analyzer</td>
+        </tr>
+        <tr>
+          <td><strong>模块类型</strong></td>
+          <td>ModuleType.CHUNK_ANALYZER</td>
+        </tr>
+        <tr>
+          <td><strong>提交SHA</strong></td>
+          <td>2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e.patch</td>
+        </tr>
+        <tr>
+          <td><strong>目标版本</strong></td>
+          <td>v6.12-rc7</td>
+        </tr>
+        <tr>
+          <td><strong>执行时间</strong></td>
+          <td>2025-06-12T15:59:14.046398</td>
+        </tr>
+        <tr>
+          <td><strong>状态</strong></td>
+          <td>
+            <span class="tag tag-success">成功</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输入信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>原始补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/patches/upstream_2afd4d.patch</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>代码仓库路径</strong></td>
+                  <td>/home/elpsy/.cache/port-patch/linux_kernel-torvalds</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输出信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>状态</strong></td>
+                  <td>成功</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总尝试次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>执行时间</strong></td>
+                  <td>0.317738</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总块数</strong></td>
+                  <td>41</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功应用块数</strong></td>
+                  <td>38</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功率</strong></td>
+                  <td>92.68%</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>剩余补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/remaining_chunks_20250612_155914.patch</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    
+        <div class="card">
+          <h2>补丁块应用统计</h2>
+          
+          <div class="progress-container">
+            <div class="progress-bar success-bg" style="width: 92%"></div>
+          </div>
+          <p>
+            成功应用 <strong class="success">38</strong> 个块，
+            总共 <strong>41</strong> 个块
+            (成功率: <strong>92.7%</strong>)
+          </p>
+        </div>
+        
+        <div class="card">
+          <h2>补丁内容详情</h2>
+          <div class="tabs">
+            <div class="tab-header">
+              <button class="tab-button active" onclick="openTab(event, 'original-patch')">原始补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'applied-patches')">应用成功的补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'remaining-patch')">未应用成功的补丁</button>
+            </div>
+            
+            <div id="original-patch" class="tab-content" style="display:block;">
+              <h3>原始补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
+index 8d789b017fa9..795cf8e75d2e 100644
+--- a/fs/ntfs3/attrib.c
++++ b/fs/ntfs3/attrib.c
+@@ -787,7 +787,8 @@ int attr_set_size(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 		if (err)
+ 			goto out;
+ 
+-		attr = mi_find_attr(mi, NULL, type, name, name_len, &le-&gt;id);
++		attr = mi_find_attr(ni, mi, NULL, type, name, name_len,
++				    &le-&gt;id);
+ 		if (!attr) {
+ 			err = -EINVAL;
+ 			goto bad_inode;
+@@ -1181,7 +1182,7 @@ int attr_data_get_block(struct ntfs_inode *ni, CLST vcn, CLST clen, CLST *lcn,
+ 			goto out;
+ 		}
+ 
+-		attr = mi_find_attr(mi, NULL, ATTR_DATA, NULL, 0, &le-&gt;id);
++		attr = mi_find_attr(ni, mi, NULL, ATTR_DATA, NULL, 0, &le-&gt;id);
+ 		if (!attr) {
+ 			err = -EINVAL;
+ 			goto out;
+@@ -1796,7 +1797,7 @@ int attr_allocate_frame(struct ntfs_inode *ni, CLST frame, size_t compr_size,
+ 				goto out;
+ 			}
+ 
+-			attr = mi_find_attr(mi, NULL, ATTR_DATA, NULL, 0,
++			attr = mi_find_attr(ni, mi, NULL, ATTR_DATA, NULL, 0,
+ 					    &le-&gt;id);
+ 			if (!attr) {
+ 				err = -EINVAL;
+@@ -2041,8 +2042,8 @@ int attr_collapse_range(struct ntfs_inode *ni, u64 vbo, u64 bytes)
+ 				}
+ 
+ 				/* Look for required attribute. */
+-				attr = mi_find_attr(mi, NULL, ATTR_DATA, NULL,
+-						    0, &le-&gt;id);
++				attr = mi_find_attr(ni, mi, NULL, ATTR_DATA,
++						    NULL, 0, &le-&gt;id);
+ 				if (!attr) {
+ 					err = -EINVAL;
+ 					goto out;
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -75,7 +75,7 @@ struct ATTR_STD_INFO *ni_std(struct ntfs_inode *ni)
+ {
+ 	const struct ATTRIB *attr;
+ 
+-	attr = mi_find_attr(&ni-&gt;mi, NULL, ATTR_STD, NULL, 0, NULL);
++	attr = mi_find_attr(ni, &ni-&gt;mi, NULL, ATTR_STD, NULL, 0, NULL);
+ 	return attr ? resident_data_ex(attr, sizeof(struct ATTR_STD_INFO)) :
+ 		      NULL;
+ }
+@@ -89,7 +89,7 @@ struct ATTR_STD_INFO5 *ni_std5(struct ntfs_inode *ni)
+ {
+ 	const struct ATTRIB *attr;
+ 
+-	attr = mi_find_attr(&ni-&gt;mi, NULL, ATTR_STD, NULL, 0, NULL);
++	attr = mi_find_attr(ni, &ni-&gt;mi, NULL, ATTR_STD, NULL, 0, NULL);
+ 
+ 	return attr ? resident_data_ex(attr, sizeof(struct ATTR_STD_INFO5)) :
+ 		      NULL;
+@@ -201,7 +201,8 @@ struct ATTRIB *ni_find_attr(struct ntfs_inode *ni, struct ATTRIB *attr,
+ 			*mi = &ni-&gt;mi;
+ 
+ 		/* Look for required attribute in primary record. */
+-		return mi_find_attr(&ni-&gt;mi, attr, type, name, name_len, NULL);
++		return mi_find_attr(ni, &ni-&gt;mi, attr, type, name, name_len,
++				    NULL);
+ 	}
+ 
+ 	/* First look for list entry of required type. */
+@@ -217,7 +218,7 @@ struct ATTRIB *ni_find_attr(struct ntfs_inode *ni, struct ATTRIB *attr,
+ 		return NULL;
+ 
+ 	/* Look for required attribute. */
+-	attr = mi_find_attr(m, NULL, type, name, name_len, &le-&gt;id);
++	attr = mi_find_attr(ni, m, NULL, type, name, name_len, &le-&gt;id);
+ 
+ 	if (!attr)
+ 		goto out;
+@@ -259,7 +260,7 @@ struct ATTRIB *ni_enum_attr_ex(struct ntfs_inode *ni, struct ATTRIB *attr,
+ 		if (mi)
+ 			*mi = &ni-&gt;mi;
+ 		/* Enum attributes in primary record. */
+-		return mi_enum_attr(&ni-&gt;mi, attr);
++		return mi_enum_attr(ni, &ni-&gt;mi, attr);
+ 	}
+ 
+ 	/* Get next list entry. */
+@@ -275,7 +276,7 @@ struct ATTRIB *ni_enum_attr_ex(struct ntfs_inode *ni, struct ATTRIB *attr,
+ 		*mi = mi2;
+ 
+ 	/* Find attribute in loaded record. */
+-	return rec_find_attr_le(mi2, le2);
++	return rec_find_attr_le(ni, mi2, le2);
+ }
+ 
+ /*
+@@ -293,7 +294,8 @@ struct ATTRIB *ni_load_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 	if (!ni-&gt;attr_list.size) {
+ 		if (pmi)
+ 			*pmi = &ni-&gt;mi;
+-		return mi_find_attr(&ni-&gt;mi, NULL, type, name, name_len, NULL);
++		return mi_find_attr(ni, &ni-&gt;mi, NULL, type, name, name_len,
++				    NULL);
+ 	}
+ 
+ 	le = al_find_ex(ni, NULL, type, name, name_len, NULL);
+@@ -319,7 +321,7 @@ struct ATTRIB *ni_load_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 	if (pmi)
+ 		*pmi = mi;
+ 
+-	attr = mi_find_attr(mi, NULL, type, name, name_len, &le-&gt;id);
++	attr = mi_find_attr(ni, mi, NULL, type, name, name_len, &le-&gt;id);
+ 	if (!attr)
+ 		return NULL;
+ 
+@@ -398,7 +400,8 @@ int ni_remove_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 	int diff;
+ 
+ 	if (base_only || type == ATTR_LIST || !ni-&gt;attr_list.size) {
+-		attr = mi_find_attr(&ni-&gt;mi, NULL, type, name, name_len, id);
++		attr = mi_find_attr(ni, &ni-&gt;mi, NULL, type, name, name_len,
++				    id);
+ 		if (!attr)
+ 			return -ENOENT;
+ 
+@@ -437,7 +440,7 @@ int ni_remove_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 
+ 		al_remove_le(ni, le);
+ 
+-		attr = mi_find_attr(mi, NULL, type, name, name_len, id);
++		attr = mi_find_attr(ni, mi, NULL, type, name, name_len, id);
+ 		if (!attr)
+ 			return -ENOENT;
+ 
+@@ -485,7 +488,7 @@ ni_ins_new_attr(struct ntfs_inode *ni, struct mft_inode *mi,
+ 		name = le-&gt;name;
+ 	}
+ 
+-	attr = mi_insert_attr(mi, type, name, name_len, asize, name_off);
++	attr = mi_insert_attr(ni, mi, type, name, name_len, asize, name_off);
+ 	if (!attr) {
+ 		if (le_added)
+ 			al_remove_le(ni, le);
+@@ -673,7 +676,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)
+ 	if (err)
+ 		return err;
+ 
+-	attr_list = mi_find_attr(&ni-&gt;mi, NULL, ATTR_LIST, NULL, 0, NULL);
++	attr_list = mi_find_attr(ni, &ni-&gt;mi, NULL, ATTR_LIST, NULL, 0, NULL);
+ 	if (!attr_list)
+ 		return 0;
+ 
+@@ -695,7 +698,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)
+ 		if (!mi)
+ 			return 0;
+ 
+-		attr = mi_find_attr(mi, NULL, le-&gt;type, le_name(le),
++		attr = mi_find_attr(ni, mi, NULL, le-&gt;type, le_name(le),
+ 				    le-&gt;name_len, &le-&gt;id);
+ 		if (!attr)
+ 			return 0;
+@@ -731,7 +734,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)
+ 			goto out;
+ 		}
+ 
+-		attr = mi_find_attr(mi, NULL, le-&gt;type, le_name(le),
++		attr = mi_find_attr(ni, mi, NULL, le-&gt;type, le_name(le),
+ 				    le-&gt;name_len, &le-&gt;id);
+ 		if (!attr) {
+ 			/* Should never happened, 'cause already checked. */
+@@ -740,7 +743,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)
+ 		asize = le32_to_cpu(attr-&gt;size);
+ 
+ 		/* Insert into primary record. */
+-		attr_ins = mi_insert_attr(&ni-&gt;mi, le-&gt;type, le_name(le),
++		attr_ins = mi_insert_attr(ni, &ni-&gt;mi, le-&gt;type, le_name(le),
+ 					  le-&gt;name_len, asize,
+ 					  le16_to_cpu(attr-&gt;name_off));
+ 		if (!attr_ins) {
+@@ -768,7 +771,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)
+ 		if (!mi)
+ 			continue;
+ 
+-		attr = mi_find_attr(mi, NULL, le-&gt;type, le_name(le),
++		attr = mi_find_attr(ni, mi, NULL, le-&gt;type, le_name(le),
+ 				    le-&gt;name_len, &le-&gt;id);
+ 		if (!attr)
+ 			continue;
+@@ -831,7 +834,7 @@ int ni_create_attr_list(struct ntfs_inode *ni)
+ 	free_b = 0;
+ 	attr = NULL;
+ 
+-	for (; (attr = mi_enum_attr(&ni-&gt;mi, attr)); le = Add2Ptr(le, sz)) {
++	for (; (attr = mi_enum_attr(ni, &ni-&gt;mi, attr)); le = Add2Ptr(le, sz)) {
+ 		sz = le_size(attr-&gt;name_len);
+ 		le-&gt;type = attr-&gt;type;
+ 		le-&gt;size = cpu_to_le16(sz);
+@@ -886,7 +889,7 @@ int ni_create_attr_list(struct ntfs_inode *ni)
+ 		u32 asize = le32_to_cpu(b-&gt;size);
+ 		u16 name_off = le16_to_cpu(b-&gt;name_off);
+ 
+-		attr = mi_insert_attr(mi, b-&gt;type, Add2Ptr(b, name_off),
++		attr = mi_insert_attr(ni, mi, b-&gt;type, Add2Ptr(b, name_off),
+ 				      b-&gt;name_len, asize, name_off);
+ 		if (!attr)
+ 			goto out;
+@@ -909,7 +912,7 @@ int ni_create_attr_list(struct ntfs_inode *ni)
+ 			goto out;
+ 	}
+ 
+-	attr = mi_insert_attr(&ni-&gt;mi, ATTR_LIST, NULL, 0,
++	attr = mi_insert_attr(ni, &ni-&gt;mi, ATTR_LIST, NULL, 0,
+ 			      lsize + SIZEOF_RESIDENT, SIZEOF_RESIDENT);
+ 	if (!attr)
+ 		goto out;
+@@ -993,13 +996,13 @@ static int ni_ins_attr_ext(struct ntfs_inode *ni, struct ATTR_LIST_ENTRY *le,
+ 		mi = rb_entry(node, struct mft_inode, node);
+ 
+ 		if (is_mft_data &&
+-		    (mi_enum_attr(mi, NULL) ||
++		    (mi_enum_attr(ni, mi, NULL) ||
+ 		     vbo &lt;= ((u64)mi-&gt;rno &lt;&lt; sbi-&gt;record_bits))) {
+ 			/* We can't accept this record 'cause MFT's bootstrapping. */
+ 			continue;
+ 		}
+ 		if (is_mft &&
+-		    mi_find_attr(mi, NULL, ATTR_DATA, NULL, 0, NULL)) {
++		    mi_find_attr(ni, mi, NULL, ATTR_DATA, NULL, 0, NULL)) {
+ 			/*
+ 			 * This child record already has a ATTR_DATA.
+ 			 * So it can't accept any other records.
+@@ -1008,7 +1011,7 @@ static int ni_ins_attr_ext(struct ntfs_inode *ni, struct ATTR_LIST_ENTRY *le,
+ 		}
+ 
+ 		if ((type != ATTR_NAME || name_len) &&
+-		    mi_find_attr(mi, NULL, type, name, name_len, NULL)) {
++		    mi_find_attr(ni, mi, NULL, type, name, name_len, NULL)) {
+ 			/* Only indexed attributes can share same record. */
+ 			continue;
+ 		}
+@@ -1157,7 +1160,7 @@ static int ni_insert_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 	/* Estimate the result of moving all possible attributes away. */
+ 	attr = NULL;
+ 
+-	while ((attr = mi_enum_attr(&ni-&gt;mi, attr))) {
++	while ((attr = mi_enum_attr(ni, &ni-&gt;mi, attr))) {
+ 		if (attr-&gt;type == ATTR_STD)
+ 			continue;
+ 		if (attr-&gt;type == ATTR_LIST)
+@@ -1175,7 +1178,7 @@ static int ni_insert_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 	attr = NULL;
+ 
+ 	for (;;) {
+-		attr = mi_enum_attr(&ni-&gt;mi, attr);
++		attr = mi_enum_attr(ni, &ni-&gt;mi, attr);
+ 		if (!attr) {
+ 			/* We should never be here 'cause we have already check this case. */
+ 			err = -EINVAL;
+@@ -1259,7 +1262,7 @@ static int ni_expand_mft_list(struct ntfs_inode *ni)
+ 	for (node = rb_first(&ni-&gt;mi_tree); node; node = rb_next(node)) {
+ 		mi = rb_entry(node, struct mft_inode, node);
+ 
+-		attr = mi_enum_attr(mi, NULL);
++		attr = mi_enum_attr(ni, mi, NULL);
+ 
+ 		if (!attr) {
+ 			mft_min = mi-&gt;rno;
+@@ -1280,7 +1283,7 @@ static int ni_expand_mft_list(struct ntfs_inode *ni)
+ 		ni_remove_mi(ni, mi_new);
+ 	}
+ 
+-	attr = mi_find_attr(&ni-&gt;mi, NULL, ATTR_DATA, NULL, 0, NULL);
++	attr = mi_find_attr(ni, &ni-&gt;mi, NULL, ATTR_DATA, NULL, 0, NULL);
+ 	if (!attr) {
+ 		err = -EINVAL;
+ 		goto out;
+@@ -1397,7 +1400,7 @@ int ni_expand_list(struct ntfs_inode *ni)
+ 			continue;
+ 
+ 		/* Find attribute in primary record. */
+-		attr = rec_find_attr_le(&ni-&gt;mi, le);
++		attr = rec_find_attr_le(ni, &ni-&gt;mi, le);
+ 		if (!attr) {
+ 			err = -EINVAL;
+ 			goto out;
+@@ -3344,7 +3347,7 @@ int ni_write_inode(struct inode *inode, int sync, const char *hint)
+ 		if (!mi-&gt;dirty)
+ 			continue;
+ 
+-		is_empty = !mi_enum_attr(mi, NULL);
++		is_empty = !mi_enum_attr(ni, mi, NULL);
+ 
+ 		if (is_empty)
+ 			clear_rec_inuse(mi-&gt;mrec);
+diff --git a/fs/ntfs3/ntfs_fs.h b/fs/ntfs3/ntfs_fs.h
+index cd8e8374bb5a..382820464dee 100644
+--- a/fs/ntfs3/ntfs_fs.h
++++ b/fs/ntfs3/ntfs_fs.h
+@@ -745,23 +745,24 @@ int mi_get(struct ntfs_sb_info *sbi, CLST rno, struct mft_inode **mi);
+ void mi_put(struct mft_inode *mi);
+ int mi_init(struct mft_inode *mi, struct ntfs_sb_info *sbi, CLST rno);
+ int mi_read(struct mft_inode *mi, bool is_mft);
+-struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr);
+-// TODO: id?
+-struct ATTRIB *mi_find_attr(struct mft_inode *mi, struct ATTRIB *attr,
+-			    enum ATTR_TYPE type, const __le16 *name,
+-			    u8 name_len, const __le16 *id);
+-static inline struct ATTRIB *rec_find_attr_le(struct mft_inode *rec,
++struct ATTRIB *mi_enum_attr(struct ntfs_inode *ni, struct mft_inode *mi,
++			    struct ATTRIB *attr);
++struct ATTRIB *mi_find_attr(struct ntfs_inode *ni, struct mft_inode *mi,
++			    struct ATTRIB *attr, enum ATTR_TYPE type,
++			    const __le16 *name, u8 name_len, const __le16 *id);
++static inline struct ATTRIB *rec_find_attr_le(struct ntfs_inode *ni,
++					      struct mft_inode *rec,
+ 					      struct ATTR_LIST_ENTRY *le)
+ {
+-	return mi_find_attr(rec, NULL, le-&gt;type, le_name(le), le-&gt;name_len,
++	return mi_find_attr(ni, rec, NULL, le-&gt;type, le_name(le), le-&gt;name_len,
+ 			    &le-&gt;id);
+ }
+ int mi_write(struct mft_inode *mi, int wait);
+ int mi_format_new(struct mft_inode *mi, struct ntfs_sb_info *sbi, CLST rno,
+ 		  __le16 flags, bool is_mft);
+-struct ATTRIB *mi_insert_attr(struct mft_inode *mi, enum ATTR_TYPE type,
+-			      const __le16 *name, u8 name_len, u32 asize,
+-			      u16 name_off);
++struct ATTRIB *mi_insert_attr(struct ntfs_inode *ni, struct mft_inode *mi,
++			      enum ATTR_TYPE type, const __le16 *name,
++			      u8 name_len, u32 asize, u16 name_off);
+ 
+ bool mi_remove_attr(struct ntfs_inode *ni, struct mft_inode *mi,
+ 		    struct ATTRIB *attr);
+diff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c
+index 61d53d39f3b9..714c7ecedca8 100644
+--- a/fs/ntfs3/record.c
++++ b/fs/ntfs3/record.c
+@@ -31,7 +31,7 @@ static inline int compare_attr(const struct ATTRIB *left, enum ATTR_TYPE type,
+  *
+  * Return: Unused attribute id that is less than mrec-&gt;next_attr_id.
+  */
+-static __le16 mi_new_attt_id(struct mft_inode *mi)
++static __le16 mi_new_attt_id(struct ntfs_inode *ni, struct mft_inode *mi)
+ {
+ 	u16 free_id, max_id, t16;
+ 	struct MFT_REC *rec = mi-&gt;mrec;
+@@ -52,7 +52,7 @@ static __le16 mi_new_attt_id(struct mft_inode *mi)
+ 	attr = NULL;
+ 
+ 	for (;;) {
+-		attr = mi_enum_attr(mi, attr);
++		attr = mi_enum_attr(ni, mi, attr);
+ 		if (!attr) {
+ 			rec-&gt;next_attr_id = cpu_to_le16(max_id + 1);
+ 			mi-&gt;dirty = true;
+@@ -195,7 +195,8 @@ int mi_read(struct mft_inode *mi, bool is_mft)
+  * NOTE: mi-&gt;mrec - memory of size sbi-&gt;record_size
+  * here we sure that mi-&gt;mrec-&gt;total == sbi-&gt;record_size (see mi_read)
+  */
+-struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr)
++struct ATTRIB *mi_enum_attr(struct ntfs_inode *ni, struct mft_inode *mi,
++			    struct ATTRIB *attr)
+ {
+ 	const struct MFT_REC *rec = mi-&gt;mrec;
+ 	u32 used = le32_to_cpu(rec-&gt;used);
+@@ -209,11 +210,11 @@ struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr)
+ 		off = le16_to_cpu(rec-&gt;attr_off);
+ 
+ 		if (used &gt; total)
+-			return NULL;
++			goto out;
+ 
+ 		if (off &gt;= used || off &lt; MFTRECORD_FIXUP_OFFSET_1 ||
+ 		    !IS_ALIGNED(off, 8)) {
+-			return NULL;
++			goto out;
+ 		}
+ 
+ 		/* Skip non-resident records. */
+@@ -243,7 +244,7 @@ struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr)
+ 	 */
+ 	if (off + 8 &gt; used) {
+ 		static_assert(ALIGN(sizeof(enum ATTR_TYPE), 8) == 8);
+-		return NULL;
++		goto out;
+ 	}
+ 
+ 	if (attr-&gt;type == ATTR_END) {
+@@ -254,112 +255,116 @@ struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr)
+ 	/* 0x100 is last known attribute for now. */
+ 	t32 = le32_to_cpu(attr-&gt;type);
+ 	if (!t32 || (t32 & 0xf) || (t32 &gt; 0x100))
+-		return NULL;
++		goto out;
+ 
+ 	/* attributes in record must be ordered by type */
+ 	if (t32 &lt; prev_type)
+-		return NULL;
++		goto out;
+ 
+ 	asize = le32_to_cpu(attr-&gt;size);
+ 
+ 	if (!IS_ALIGNED(asize, 8))
+-		return NULL;
++		goto out;
+ 
+ 	/* Check overflow and boundary. */
+ 	if (off + asize &lt; off || off + asize &gt; used)
+-		return NULL;
++		goto out;
+ 
+ 	/* Can we use the field attr-&gt;non_res. */
+ 	if (off + 9 &gt; used)
+-		return NULL;
++		goto out;
+ 
+ 	/* Check size of attribute. */
+ 	if (!attr-&gt;non_res) {
+ 		/* Check resident fields. */
+ 		if (asize &lt; SIZEOF_RESIDENT)
+-			return NULL;
++			goto out;
+ 
+ 		t16 = le16_to_cpu(attr-&gt;res.data_off);
+ 		if (t16 &gt; asize)
+-			return NULL;
++			goto out;
+ 
+ 		if (le32_to_cpu(attr-&gt;res.data_size) &gt; asize - t16)
+-			return NULL;
++			goto out;
+ 
+ 		t32 = sizeof(short) * attr-&gt;name_len;
+ 		if (t32 && le16_to_cpu(attr-&gt;name_off) + t32 &gt; t16)
+-			return NULL;
++			goto out;
+ 
+ 		return attr;
+ 	}
+ 
+ 	/* Check nonresident fields. */
+ 	if (attr-&gt;non_res != 1)
+-		return NULL;
++		goto out;
+ 
+ 	/* Can we use memory including attr-&gt;nres.valid_size? */
+ 	if (asize &lt; SIZEOF_NONRESIDENT)
+-		return NULL;
++		goto out;
+ 
+ 	t16 = le16_to_cpu(attr-&gt;nres.run_off);
+ 	if (t16 &gt; asize)
+-		return NULL;
++		goto out;
+ 
+ 	t32 = sizeof(short) * attr-&gt;name_len;
+ 	if (t32 && le16_to_cpu(attr-&gt;name_off) + t32 &gt; t16)
+-		return NULL;
++		goto out;
+ 
+ 	/* Check start/end vcn. */
+ 	if (le64_to_cpu(attr-&gt;nres.svcn) &gt; le64_to_cpu(attr-&gt;nres.evcn) + 1)
+-		return NULL;
++		goto out;
+ 
+ 	data_size = le64_to_cpu(attr-&gt;nres.data_size);
+ 	if (le64_to_cpu(attr-&gt;nres.valid_size) &gt; data_size)
+-		return NULL;
++		goto out;
+ 
+ 	alloc_size = le64_to_cpu(attr-&gt;nres.alloc_size);
+ 	if (data_size &gt; alloc_size)
+-		return NULL;
++		goto out;
+ 
+ 	t32 = mi-&gt;sbi-&gt;cluster_mask;
+ 	if (alloc_size & t32)
+-		return NULL;
++		goto out;
+ 
+ 	if (!attr-&gt;nres.svcn && is_attr_ext(attr)) {
+ 		/* First segment of sparse/compressed attribute */
+ 		/* Can we use memory including attr-&gt;nres.total_size? */
+ 		if (asize &lt; SIZEOF_NONRESIDENT_EX)
+-			return NULL;
++			goto out;
+ 
+ 		tot_size = le64_to_cpu(attr-&gt;nres.total_size);
+ 		if (tot_size & t32)
+-			return NULL;
++			goto out;
+ 
+ 		if (tot_size &gt; alloc_size)
+-			return NULL;
++			goto out;
+ 	} else {
+ 		if (attr-&gt;nres.c_unit)
+-			return NULL;
++			goto out;
+ 
+ 		if (alloc_size &gt; mi-&gt;sbi-&gt;volume.size)
+-			return NULL;
++			goto out;
+ 	}
+ 
+ 	return attr;
++
++out:
++	_ntfs_bad_inode(&ni-&gt;vfs_inode);
++	return NULL;
+ }
+ 
+ /*
+  * mi_find_attr - Find the attribute by type and name and id.
+  */
+-struct ATTRIB *mi_find_attr(struct mft_inode *mi, struct ATTRIB *attr,
+-			    enum ATTR_TYPE type, const __le16 *name,
+-			    u8 name_len, const __le16 *id)
++struct ATTRIB *mi_find_attr(struct ntfs_inode *ni, struct mft_inode *mi,
++			    struct ATTRIB *attr, enum ATTR_TYPE type,
++			    const __le16 *name, u8 name_len, const __le16 *id)
+ {
+ 	u32 type_in = le32_to_cpu(type);
+ 	u32 atype;
+ 
+ next_attr:
+-	attr = mi_enum_attr(mi, attr);
++	attr = mi_enum_attr(ni, mi, attr);
+ 	if (!attr)
+ 		return NULL;
+ 
+@@ -467,9 +472,9 @@ int mi_format_new(struct mft_inode *mi, struct ntfs_sb_info *sbi, CLST rno,
+  *
+  * Return: Not full constructed attribute or NULL if not possible to create.
+  */
+-struct ATTRIB *mi_insert_attr(struct mft_inode *mi, enum ATTR_TYPE type,
+-			      const __le16 *name, u8 name_len, u32 asize,
+-			      u16 name_off)
++struct ATTRIB *mi_insert_attr(struct ntfs_inode *ni, struct mft_inode *mi,
++			      enum ATTR_TYPE type, const __le16 *name,
++			      u8 name_len, u32 asize, u16 name_off)
+ {
+ 	size_t tail;
+ 	struct ATTRIB *attr;
+@@ -488,7 +493,7 @@ struct ATTRIB *mi_insert_attr(struct mft_inode *mi, enum ATTR_TYPE type,
+ 	 * at which we should insert it.
+ 	 */
+ 	attr = NULL;
+-	while ((attr = mi_enum_attr(mi, attr))) {
++	while ((attr = mi_enum_attr(ni, mi, attr))) {
+ 		int diff = compare_attr(attr, type, name, name_len, upcase);
+ 
+ 		if (diff &lt; 0)
+@@ -508,7 +513,7 @@ struct ATTRIB *mi_insert_attr(struct mft_inode *mi, enum ATTR_TYPE type,
+ 		tail = used - PtrOffset(rec, attr);
+ 	}
+ 
+-	id = mi_new_attt_id(mi);
++	id = mi_new_attt_id(ni, mi);
+ 
+ 	memmove(Add2Ptr(attr, asize), attr, tail);
+ 	memset(attr, 0, asize);
+-- 
+2.25.1
+
+</pre>
+              </div>
+            </div>
+            
+            <div id="applied-patches" class="tab-content">
+              <h3>应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">
+
+# ===== 应用成功的补丁块 1 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
+index 8d789b017fa9..795cf8e75d2e 100644
+--- a/fs/ntfs3/attrib.c
++++ b/fs/ntfs3/attrib.c
+@@ -787,7 +787,8 @@ int attr_set_size(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 		if (err)
+ 			goto out;
+ 
+-		attr = mi_find_attr(mi, NULL, type, name, name_len, &le-&gt;id);
++		attr = mi_find_attr(ni, mi, NULL, type, name, name_len,
++				    &le-&gt;id);
+ 		if (!attr) {
+ 			err = -EINVAL;
+ 			goto bad_inode;
+
+
+# ===== 应用成功的补丁块 2 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
+index 8d789b017fa9..795cf8e75d2e 100644
+--- a/fs/ntfs3/attrib.c
++++ b/fs/ntfs3/attrib.c
+@@ -1181,7 +1182,7 @@ int attr_data_get_block(struct ntfs_inode *ni, CLST vcn, CLST clen, CLST *lcn,
+ 			goto out;
+ 		}
+ 
+-		attr = mi_find_attr(mi, NULL, ATTR_DATA, NULL, 0, &le-&gt;id);
++		attr = mi_find_attr(ni, mi, NULL, ATTR_DATA, NULL, 0, &le-&gt;id);
+ 		if (!attr) {
+ 			err = -EINVAL;
+ 			goto out;
+
+
+# ===== 应用成功的补丁块 3 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
+index 8d789b017fa9..795cf8e75d2e 100644
+--- a/fs/ntfs3/attrib.c
++++ b/fs/ntfs3/attrib.c
+@@ -1796,7 +1797,7 @@ int attr_allocate_frame(struct ntfs_inode *ni, CLST frame, size_t compr_size,
+ 				goto out;
+ 			}
+ 
+-			attr = mi_find_attr(mi, NULL, ATTR_DATA, NULL, 0,
++			attr = mi_find_attr(ni, mi, NULL, ATTR_DATA, NULL, 0,
+ 					    &le-&gt;id);
+ 			if (!attr) {
+ 				err = -EINVAL;
+
+
+# ===== 应用成功的补丁块 4 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
+index 8d789b017fa9..795cf8e75d2e 100644
+--- a/fs/ntfs3/attrib.c
++++ b/fs/ntfs3/attrib.c
+@@ -2041,8 +2042,8 @@ int attr_collapse_range(struct ntfs_inode *ni, u64 vbo, u64 bytes)
+ 				}
+ 
+ 				/* Look for required attribute. */
+-				attr = mi_find_attr(mi, NULL, ATTR_DATA, NULL,
+-						    0, &le-&gt;id);
++				attr = mi_find_attr(ni, mi, NULL, ATTR_DATA,
++						    NULL, 0, &le-&gt;id);
+ 				if (!attr) {
+ 					err = -EINVAL;
+ 					goto out;
+
+
+# ===== 应用成功的补丁块 5 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -75,7 +75,7 @@ struct ATTR_STD_INFO *ni_std(struct ntfs_inode *ni)
+ {
+ 	const struct ATTRIB *attr;
+ 
+-	attr = mi_find_attr(&ni-&gt;mi, NULL, ATTR_STD, NULL, 0, NULL);
++	attr = mi_find_attr(ni, &ni-&gt;mi, NULL, ATTR_STD, NULL, 0, NULL);
+ 	return attr ? resident_data_ex(attr, sizeof(struct ATTR_STD_INFO)) :
+ 		      NULL;
+ }
+
+
+# ===== 应用成功的补丁块 6 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -89,7 +89,7 @@ struct ATTR_STD_INFO5 *ni_std5(struct ntfs_inode *ni)
+ {
+ 	const struct ATTRIB *attr;
+ 
+-	attr = mi_find_attr(&ni-&gt;mi, NULL, ATTR_STD, NULL, 0, NULL);
++	attr = mi_find_attr(ni, &ni-&gt;mi, NULL, ATTR_STD, NULL, 0, NULL);
+ 
+ 	return attr ? resident_data_ex(attr, sizeof(struct ATTR_STD_INFO5)) :
+ 		      NULL;
+
+
+# ===== 应用成功的补丁块 7 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -201,7 +201,8 @@ struct ATTRIB *ni_find_attr(struct ntfs_inode *ni, struct ATTRIB *attr,
+ 			*mi = &ni-&gt;mi;
+ 
+ 		/* Look for required attribute in primary record. */
+-		return mi_find_attr(&ni-&gt;mi, attr, type, name, name_len, NULL);
++		return mi_find_attr(ni, &ni-&gt;mi, attr, type, name, name_len,
++				    NULL);
+ 	}
+ 
+ 	/* First look for list entry of required type. */
+
+
+# ===== 应用成功的补丁块 8 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -217,7 +218,7 @@ struct ATTRIB *ni_find_attr(struct ntfs_inode *ni, struct ATTRIB *attr,
+ 		return NULL;
+ 
+ 	/* Look for required attribute. */
+-	attr = mi_find_attr(m, NULL, type, name, name_len, &le-&gt;id);
++	attr = mi_find_attr(ni, m, NULL, type, name, name_len, &le-&gt;id);
+ 
+ 	if (!attr)
+ 		goto out;
+
+
+# ===== 应用成功的补丁块 9 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -259,7 +260,7 @@ struct ATTRIB *ni_enum_attr_ex(struct ntfs_inode *ni, struct ATTRIB *attr,
+ 		if (mi)
+ 			*mi = &ni-&gt;mi;
+ 		/* Enum attributes in primary record. */
+-		return mi_enum_attr(&ni-&gt;mi, attr);
++		return mi_enum_attr(ni, &ni-&gt;mi, attr);
+ 	}
+ 
+ 	/* Get next list entry. */
+
+
+# ===== 应用成功的补丁块 10 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -275,7 +276,7 @@ struct ATTRIB *ni_enum_attr_ex(struct ntfs_inode *ni, struct ATTRIB *attr,
+ 		*mi = mi2;
+ 
+ 	/* Find attribute in loaded record. */
+-	return rec_find_attr_le(mi2, le2);
++	return rec_find_attr_le(ni, mi2, le2);
+ }
+ 
+ /*
+
+
+# ===== 应用成功的补丁块 11 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -293,7 +294,8 @@ struct ATTRIB *ni_load_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 	if (!ni-&gt;attr_list.size) {
+ 		if (pmi)
+ 			*pmi = &ni-&gt;mi;
+-		return mi_find_attr(&ni-&gt;mi, NULL, type, name, name_len, NULL);
++		return mi_find_attr(ni, &ni-&gt;mi, NULL, type, name, name_len,
++				    NULL);
+ 	}
+ 
+ 	le = al_find_ex(ni, NULL, type, name, name_len, NULL);
+
+
+# ===== 应用成功的补丁块 12 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -319,7 +321,7 @@ struct ATTRIB *ni_load_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 	if (pmi)
+ 		*pmi = mi;
+ 
+-	attr = mi_find_attr(mi, NULL, type, name, name_len, &le-&gt;id);
++	attr = mi_find_attr(ni, mi, NULL, type, name, name_len, &le-&gt;id);
+ 	if (!attr)
+ 		return NULL;
+ 
+
+
+# ===== 应用成功的补丁块 13 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -398,7 +400,8 @@ int ni_remove_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 	int diff;
+ 
+ 	if (base_only || type == ATTR_LIST || !ni-&gt;attr_list.size) {
+-		attr = mi_find_attr(&ni-&gt;mi, NULL, type, name, name_len, id);
++		attr = mi_find_attr(ni, &ni-&gt;mi, NULL, type, name, name_len,
++				    id);
+ 		if (!attr)
+ 			return -ENOENT;
+ 
+
+
+# ===== 应用成功的补丁块 14 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -437,7 +440,7 @@ int ni_remove_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 
+ 		al_remove_le(ni, le);
+ 
+-		attr = mi_find_attr(mi, NULL, type, name, name_len, id);
++		attr = mi_find_attr(ni, mi, NULL, type, name, name_len, id);
+ 		if (!attr)
+ 			return -ENOENT;
+ 
+
+
+# ===== 应用成功的补丁块 15 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -485,7 +488,7 @@ ni_ins_new_attr(struct ntfs_inode *ni, struct mft_inode *mi,
+ 		name = le-&gt;name;
+ 	}
+ 
+-	attr = mi_insert_attr(mi, type, name, name_len, asize, name_off);
++	attr = mi_insert_attr(ni, mi, type, name, name_len, asize, name_off);
+ 	if (!attr) {
+ 		if (le_added)
+ 			al_remove_le(ni, le);
+
+
+# ===== 应用成功的补丁块 16 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -673,7 +676,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)
+ 	if (err)
+ 		return err;
+ 
+-	attr_list = mi_find_attr(&ni-&gt;mi, NULL, ATTR_LIST, NULL, 0, NULL);
++	attr_list = mi_find_attr(ni, &ni-&gt;mi, NULL, ATTR_LIST, NULL, 0, NULL);
+ 	if (!attr_list)
+ 		return 0;
+ 
+
+
+# ===== 应用成功的补丁块 17 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -695,7 +698,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)
+ 		if (!mi)
+ 			return 0;
+ 
+-		attr = mi_find_attr(mi, NULL, le-&gt;type, le_name(le),
++		attr = mi_find_attr(ni, mi, NULL, le-&gt;type, le_name(le),
+ 				    le-&gt;name_len, &le-&gt;id);
+ 		if (!attr)
+ 			return 0;
+
+
+# ===== 应用成功的补丁块 18 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -731,7 +734,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)
+ 			goto out;
+ 		}
+ 
+-		attr = mi_find_attr(mi, NULL, le-&gt;type, le_name(le),
++		attr = mi_find_attr(ni, mi, NULL, le-&gt;type, le_name(le),
+ 				    le-&gt;name_len, &le-&gt;id);
+ 		if (!attr) {
+ 			/* Should never happened, 'cause already checked. */
+
+
+# ===== 应用成功的补丁块 19 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -740,7 +743,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)
+ 		asize = le32_to_cpu(attr-&gt;size);
+ 
+ 		/* Insert into primary record. */
+-		attr_ins = mi_insert_attr(&ni-&gt;mi, le-&gt;type, le_name(le),
++		attr_ins = mi_insert_attr(ni, &ni-&gt;mi, le-&gt;type, le_name(le),
+ 					  le-&gt;name_len, asize,
+ 					  le16_to_cpu(attr-&gt;name_off));
+ 		if (!attr_ins) {
+
+
+# ===== 应用成功的补丁块 20 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -768,7 +771,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)
+ 		if (!mi)
+ 			continue;
+ 
+-		attr = mi_find_attr(mi, NULL, le-&gt;type, le_name(le),
++		attr = mi_find_attr(ni, mi, NULL, le-&gt;type, le_name(le),
+ 				    le-&gt;name_len, &le-&gt;id);
+ 		if (!attr)
+ 			continue;
+
+
+# ===== 应用成功的补丁块 21 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -831,7 +834,7 @@ int ni_create_attr_list(struct ntfs_inode *ni)
+ 	free_b = 0;
+ 	attr = NULL;
+ 
+-	for (; (attr = mi_enum_attr(&ni-&gt;mi, attr)); le = Add2Ptr(le, sz)) {
++	for (; (attr = mi_enum_attr(ni, &ni-&gt;mi, attr)); le = Add2Ptr(le, sz)) {
+ 		sz = le_size(attr-&gt;name_len);
+ 		le-&gt;type = attr-&gt;type;
+ 		le-&gt;size = cpu_to_le16(sz);
+
+
+# ===== 应用成功的补丁块 22 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -886,7 +889,7 @@ int ni_create_attr_list(struct ntfs_inode *ni)
+ 		u32 asize = le32_to_cpu(b-&gt;size);
+ 		u16 name_off = le16_to_cpu(b-&gt;name_off);
+ 
+-		attr = mi_insert_attr(mi, b-&gt;type, Add2Ptr(b, name_off),
++		attr = mi_insert_attr(ni, mi, b-&gt;type, Add2Ptr(b, name_off),
+ 				      b-&gt;name_len, asize, name_off);
+ 		if (!attr)
+ 			goto out;
+
+
+# ===== 应用成功的补丁块 23 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -909,7 +912,7 @@ int ni_create_attr_list(struct ntfs_inode *ni)
+ 			goto out;
+ 	}
+ 
+-	attr = mi_insert_attr(&ni-&gt;mi, ATTR_LIST, NULL, 0,
++	attr = mi_insert_attr(ni, &ni-&gt;mi, ATTR_LIST, NULL, 0,
+ 			      lsize + SIZEOF_RESIDENT, SIZEOF_RESIDENT);
+ 	if (!attr)
+ 		goto out;
+
+
+# ===== 应用成功的补丁块 24 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -993,13 +996,13 @@ static int ni_ins_attr_ext(struct ntfs_inode *ni, struct ATTR_LIST_ENTRY *le,
+ 		mi = rb_entry(node, struct mft_inode, node);
+ 
+ 		if (is_mft_data &&
+-		    (mi_enum_attr(mi, NULL) ||
++		    (mi_enum_attr(ni, mi, NULL) ||
+ 		     vbo &lt;= ((u64)mi-&gt;rno &lt;&lt; sbi-&gt;record_bits))) {
+ 			/* We can't accept this record 'cause MFT's bootstrapping. */
+ 			continue;
+ 		}
+ 		if (is_mft &&
+-		    mi_find_attr(mi, NULL, ATTR_DATA, NULL, 0, NULL)) {
++		    mi_find_attr(ni, mi, NULL, ATTR_DATA, NULL, 0, NULL)) {
+ 			/*
+ 			 * This child record already has a ATTR_DATA.
+ 			 * So it can't accept any other records.
+
+
+# ===== 应用成功的补丁块 25 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -1008,7 +1011,7 @@ static int ni_ins_attr_ext(struct ntfs_inode *ni, struct ATTR_LIST_ENTRY *le,
+ 		}
+ 
+ 		if ((type != ATTR_NAME || name_len) &&
+-		    mi_find_attr(mi, NULL, type, name, name_len, NULL)) {
++		    mi_find_attr(ni, mi, NULL, type, name, name_len, NULL)) {
+ 			/* Only indexed attributes can share same record. */
+ 			continue;
+ 		}
+
+
+# ===== 应用成功的补丁块 26 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -1157,7 +1160,7 @@ static int ni_insert_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 	/* Estimate the result of moving all possible attributes away. */
+ 	attr = NULL;
+ 
+-	while ((attr = mi_enum_attr(&ni-&gt;mi, attr))) {
++	while ((attr = mi_enum_attr(ni, &ni-&gt;mi, attr))) {
+ 		if (attr-&gt;type == ATTR_STD)
+ 			continue;
+ 		if (attr-&gt;type == ATTR_LIST)
+
+
+# ===== 应用成功的补丁块 27 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -1175,7 +1178,7 @@ static int ni_insert_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ 	attr = NULL;
+ 
+ 	for (;;) {
+-		attr = mi_enum_attr(&ni-&gt;mi, attr);
++		attr = mi_enum_attr(ni, &ni-&gt;mi, attr);
+ 		if (!attr) {
+ 			/* We should never be here 'cause we have already check this case. */
+ 			err = -EINVAL;
+
+
+# ===== 应用成功的补丁块 28 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -1259,7 +1262,7 @@ static int ni_expand_mft_list(struct ntfs_inode *ni)
+ 	for (node = rb_first(&ni-&gt;mi_tree); node; node = rb_next(node)) {
+ 		mi = rb_entry(node, struct mft_inode, node);
+ 
+-		attr = mi_enum_attr(mi, NULL);
++		attr = mi_enum_attr(ni, mi, NULL);
+ 
+ 		if (!attr) {
+ 			mft_min = mi-&gt;rno;
+
+
+# ===== 应用成功的补丁块 29 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -1280,7 +1283,7 @@ static int ni_expand_mft_list(struct ntfs_inode *ni)
+ 		ni_remove_mi(ni, mi_new);
+ 	}
+ 
+-	attr = mi_find_attr(&ni-&gt;mi, NULL, ATTR_DATA, NULL, 0, NULL);
++	attr = mi_find_attr(ni, &ni-&gt;mi, NULL, ATTR_DATA, NULL, 0, NULL);
+ 	if (!attr) {
+ 		err = -EINVAL;
+ 		goto out;
+
+
+# ===== 应用成功的补丁块 30 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -1397,7 +1400,7 @@ int ni_expand_list(struct ntfs_inode *ni)
+ 			continue;
+ 
+ 		/* Find attribute in primary record. */
+-		attr = rec_find_attr_le(&ni-&gt;mi, le);
++		attr = rec_find_attr_le(ni, &ni-&gt;mi, le);
+ 		if (!attr) {
+ 			err = -EINVAL;
+ 			goto out;
+
+
+# ===== 应用成功的补丁块 31 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -3344,7 +3347,7 @@ int ni_write_inode(struct inode *inode, int sync, const char *hint)
+ 		if (!mi-&gt;dirty)
+ 			continue;
+ 
+-		is_empty = !mi_enum_attr(mi, NULL);
++		is_empty = !mi_enum_attr(ni, mi, NULL);
+ 
+ 		if (is_empty)
+ 			clear_rec_inuse(mi-&gt;mrec);
+
+
+# ===== 应用成功的补丁块 32 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/ntfs_fs.h b/fs/ntfs3/ntfs_fs.h
+index cd8e8374bb5a..382820464dee 100644
+--- a/fs/ntfs3/ntfs_fs.h
++++ b/fs/ntfs3/ntfs_fs.h
+@@ -745,23 +745,24 @@ int mi_get(struct ntfs_sb_info *sbi, CLST rno, struct mft_inode **mi);
+ void mi_put(struct mft_inode *mi);
+ int mi_init(struct mft_inode *mi, struct ntfs_sb_info *sbi, CLST rno);
+ int mi_read(struct mft_inode *mi, bool is_mft);
+-struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr);
+-// TODO: id?
+-struct ATTRIB *mi_find_attr(struct mft_inode *mi, struct ATTRIB *attr,
+-			    enum ATTR_TYPE type, const __le16 *name,
+-			    u8 name_len, const __le16 *id);
+-static inline struct ATTRIB *rec_find_attr_le(struct mft_inode *rec,
++struct ATTRIB *mi_enum_attr(struct ntfs_inode *ni, struct mft_inode *mi,
++			    struct ATTRIB *attr);
++struct ATTRIB *mi_find_attr(struct ntfs_inode *ni, struct mft_inode *mi,
++			    struct ATTRIB *attr, enum ATTR_TYPE type,
++			    const __le16 *name, u8 name_len, const __le16 *id);
++static inline struct ATTRIB *rec_find_attr_le(struct ntfs_inode *ni,
++					      struct mft_inode *rec,
+ 					      struct ATTR_LIST_ENTRY *le)
+ {
+-	return mi_find_attr(rec, NULL, le-&gt;type, le_name(le), le-&gt;name_len,
++	return mi_find_attr(ni, rec, NULL, le-&gt;type, le_name(le), le-&gt;name_len,
+ 			    &le-&gt;id);
+ }
+ int mi_write(struct mft_inode *mi, int wait);
+ int mi_format_new(struct mft_inode *mi, struct ntfs_sb_info *sbi, CLST rno,
+ 		  __le16 flags, bool is_mft);
+-struct ATTRIB *mi_insert_attr(struct mft_inode *mi, enum ATTR_TYPE type,
+-			      const __le16 *name, u8 name_len, u32 asize,
+-			      u16 name_off);
++struct ATTRIB *mi_insert_attr(struct ntfs_inode *ni, struct mft_inode *mi,
++			      enum ATTR_TYPE type, const __le16 *name,
++			      u8 name_len, u32 asize, u16 name_off);
+ 
+ bool mi_remove_attr(struct ntfs_inode *ni, struct mft_inode *mi,
+ 		    struct ATTRIB *attr);
+
+
+# ===== 应用成功的补丁块 33 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c
+index 61d53d39f3b9..714c7ecedca8 100644
+--- a/fs/ntfs3/record.c
++++ b/fs/ntfs3/record.c
+@@ -31,7 +31,7 @@ static inline int compare_attr(const struct ATTRIB *left, enum ATTR_TYPE type,
+  *
+  * Return: Unused attribute id that is less than mrec-&gt;next_attr_id.
+  */
+-static __le16 mi_new_attt_id(struct mft_inode *mi)
++static __le16 mi_new_attt_id(struct ntfs_inode *ni, struct mft_inode *mi)
+ {
+ 	u16 free_id, max_id, t16;
+ 	struct MFT_REC *rec = mi-&gt;mrec;
+
+
+# ===== 应用成功的补丁块 34 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c
+index 61d53d39f3b9..714c7ecedca8 100644
+--- a/fs/ntfs3/record.c
++++ b/fs/ntfs3/record.c
+@@ -52,7 +52,7 @@ static __le16 mi_new_attt_id(struct mft_inode *mi)
+ 	attr = NULL;
+ 
+ 	for (;;) {
+-		attr = mi_enum_attr(mi, attr);
++		attr = mi_enum_attr(ni, mi, attr);
+ 		if (!attr) {
+ 			rec-&gt;next_attr_id = cpu_to_le16(max_id + 1);
+ 			mi-&gt;dirty = true;
+
+
+# ===== 应用成功的补丁块 35 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c
+index 61d53d39f3b9..714c7ecedca8 100644
+--- a/fs/ntfs3/record.c
++++ b/fs/ntfs3/record.c
+@@ -195,7 +195,8 @@ int mi_read(struct mft_inode *mi, bool is_mft)
+  * NOTE: mi-&gt;mrec - memory of size sbi-&gt;record_size
+  * here we sure that mi-&gt;mrec-&gt;total == sbi-&gt;record_size (see mi_read)
+  */
+-struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr)
++struct ATTRIB *mi_enum_attr(struct ntfs_inode *ni, struct mft_inode *mi,
++			    struct ATTRIB *attr)
+ {
+ 	const struct MFT_REC *rec = mi-&gt;mrec;
+ 	u32 used = le32_to_cpu(rec-&gt;used);
+
+
+# ===== 应用成功的补丁块 36 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c
+index 61d53d39f3b9..714c7ecedca8 100644
+--- a/fs/ntfs3/record.c
++++ b/fs/ntfs3/record.c
+@@ -467,9 +472,9 @@ int mi_format_new(struct mft_inode *mi, struct ntfs_sb_info *sbi, CLST rno,
+  *
+  * Return: Not full constructed attribute or NULL if not possible to create.
+  */
+-struct ATTRIB *mi_insert_attr(struct mft_inode *mi, enum ATTR_TYPE type,
+-			      const __le16 *name, u8 name_len, u32 asize,
+-			      u16 name_off)
++struct ATTRIB *mi_insert_attr(struct ntfs_inode *ni, struct mft_inode *mi,
++			      enum ATTR_TYPE type, const __le16 *name,
++			      u8 name_len, u32 asize, u16 name_off)
+ {
+ 	size_t tail;
+ 	struct ATTRIB *attr;
+
+
+# ===== 应用成功的补丁块 37 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c
+index 61d53d39f3b9..714c7ecedca8 100644
+--- a/fs/ntfs3/record.c
++++ b/fs/ntfs3/record.c
+@@ -488,7 +493,7 @@ struct ATTRIB *mi_insert_attr(struct mft_inode *mi, enum ATTR_TYPE type,
+ 	 * at which we should insert it.
+ 	 */
+ 	attr = NULL;
+-	while ((attr = mi_enum_attr(mi, attr))) {
++	while ((attr = mi_enum_attr(ni, mi, attr))) {
+ 		int diff = compare_attr(attr, type, name, name_len, upcase);
+ 
+ 		if (diff &lt; 0)
+
+
+# ===== 应用成功的补丁块 38 =====
+
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c
+index 61d53d39f3b9..714c7ecedca8 100644
+--- a/fs/ntfs3/record.c
++++ b/fs/ntfs3/record.c
+@@ -508,7 +513,7 @@ struct ATTRIB *mi_insert_attr(struct mft_inode *mi, enum ATTR_TYPE type,
+ 		tail = used - PtrOffset(rec, attr);
+ 	}
+ 
+-	id = mi_new_attt_id(mi);
++	id = mi_new_attt_id(ni, mi);
+ 
+ 	memmove(Add2Ptr(attr, asize), attr, tail);
+ 	memset(attr, 0, asize);
+-- 
+2.25.1
+
+</pre>
+              </div>
+            </div>
+            
+            <div id="remaining-patch" class="tab-content">
+              <h3>未应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov &lt;almaz.alexandrovich@paragon-software.com&gt;
+
+diff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c
+index 61d53d39f3b9..714c7ecedca8 100644
+--- a/fs/ntfs3/record.c
++++ b/fs/ntfs3/record.c
+@@ -209,11 +210,11 @@ struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr)
+ 		off = le16_to_cpu(rec-&gt;attr_off);
+ 
+ 		if (used &gt; total)
+-			return NULL;
++			goto out;
+ 
+ 		if (off &gt;= used || off &lt; MFTRECORD_FIXUP_OFFSET_1 ||
+ 		    !IS_ALIGNED(off, 8)) {
+-			return NULL;
++			goto out;
+ 		}
+ 
+ 		/* Skip non-resident records. */
+@@ -243,7 +244,7 @@ struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr)
+ 	 */
+ 	if (off + 8 &gt; used) {
+ 		static_assert(ALIGN(sizeof(enum ATTR_TYPE), 8) == 8);
+-		return NULL;
++		goto out;
+ 	}
+ 
+ 	if (attr-&gt;type == ATTR_END) {
+@@ -254,112 +255,116 @@ struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr)
+ 	/* 0x100 is last known attribute for now. */
+ 	t32 = le32_to_cpu(attr-&gt;type);
+ 	if (!t32 || (t32 & 0xf) || (t32 &gt; 0x100))
+-		return NULL;
++		goto out;
+ 
+ 	/* attributes in record must be ordered by type */
+ 	if (t32 &lt; prev_type)
+-		return NULL;
++		goto out;
+ 
+ 	asize = le32_to_cpu(attr-&gt;size);
+ 
+ 	if (!IS_ALIGNED(asize, 8))
+-		return NULL;
++		goto out;
+ 
+ 	/* Check overflow and boundary. */
+ 	if (off + asize &lt; off || off + asize &gt; used)
+-		return NULL;
++		goto out;
+ 
+ 	/* Can we use the field attr-&gt;non_res. */
+ 	if (off + 9 &gt; used)
+-		return NULL;
++		goto out;
+ 
+ 	/* Check size of attribute. */
+ 	if (!attr-&gt;non_res) {
+ 		/* Check resident fields. */
+ 		if (asize &lt; SIZEOF_RESIDENT)
+-			return NULL;
++			goto out;
+ 
+ 		t16 = le16_to_cpu(attr-&gt;res.data_off);
+ 		if (t16 &gt; asize)
+-			return NULL;
++			goto out;
+ 
+ 		if (le32_to_cpu(attr-&gt;res.data_size) &gt; asize - t16)
+-			return NULL;
++			goto out;
+ 
+ 		t32 = sizeof(short) * attr-&gt;name_len;
+ 		if (t32 && le16_to_cpu(attr-&gt;name_off) + t32 &gt; t16)
+-			return NULL;
++			goto out;
+ 
+ 		return attr;
+ 	}
+ 
+ 	/* Check nonresident fields. */
+ 	if (attr-&gt;non_res != 1)
+-		return NULL;
++		goto out;
+ 
+ 	/* Can we use memory including attr-&gt;nres.valid_size? */
+ 	if (asize &lt; SIZEOF_NONRESIDENT)
+-		return NULL;
++		goto out;
+ 
+ 	t16 = le16_to_cpu(attr-&gt;nres.run_off);
+ 	if (t16 &gt; asize)
+-		return NULL;
++		goto out;
+ 
+ 	t32 = sizeof(short) * attr-&gt;name_len;
+ 	if (t32 && le16_to_cpu(attr-&gt;name_off) + t32 &gt; t16)
+-		return NULL;
++		goto out;
+ 
+ 	/* Check start/end vcn. */
+ 	if (le64_to_cpu(attr-&gt;nres.svcn) &gt; le64_to_cpu(attr-&gt;nres.evcn) + 1)
+-		return NULL;
++		goto out;
+ 
+ 	data_size = le64_to_cpu(attr-&gt;nres.data_size);
+ 	if (le64_to_cpu(attr-&gt;nres.valid_size) &gt; data_size)
+-		return NULL;
++		goto out;
+ 
+ 	alloc_size = le64_to_cpu(attr-&gt;nres.alloc_size);
+ 	if (data_size &gt; alloc_size)
+-		return NULL;
++		goto out;
+ 
+ 	t32 = mi-&gt;sbi-&gt;cluster_mask;
+ 	if (alloc_size & t32)
+-		return NULL;
++		goto out;
+ 
+ 	if (!attr-&gt;nres.svcn && is_attr_ext(attr)) {
+ 		/* First segment of sparse/compressed attribute */
+ 		/* Can we use memory including attr-&gt;nres.total_size? */
+ 		if (asize &lt; SIZEOF_NONRESIDENT_EX)
+-			return NULL;
++			goto out;
+ 
+ 		tot_size = le64_to_cpu(attr-&gt;nres.total_size);
+ 		if (tot_size & t32)
+-			return NULL;
++			goto out;
+ 
+ 		if (tot_size &gt; alloc_size)
+-			return NULL;
++			goto out;
+ 	} else {
+ 		if (attr-&gt;nres.c_unit)
+-			return NULL;
++			goto out;
+ 
+ 		if (alloc_size &gt; mi-&gt;sbi-&gt;volume.size)
+-			return NULL;
++			goto out;
+ 	}
+ 
+ 	return attr;
++
++out:
++	_ntfs_bad_inode(&ni-&gt;vfs_inode);
++	return NULL;
+ }
+ 
+ /*
+  * mi_find_attr - Find the attribute by type and name and id.
+  */
+-struct ATTRIB *mi_find_attr(struct mft_inode *mi, struct ATTRIB *attr,
+-			    enum ATTR_TYPE type, const __le16 *name,
+-			    u8 name_len, const __le16 *id)
++struct ATTRIB *mi_find_attr(struct ntfs_inode *ni, struct mft_inode *mi,
++			    struct ATTRIB *attr, enum ATTR_TYPE type,
++			    const __le16 *name, u8 name_len, const __le16 *id)
+ {
+ 	u32 type_in = le32_to_cpu(type);
+ 	u32 atype;
+ 
+ next_attr:
+-	attr = mi_enum_attr(mi, attr);
++	attr = mi_enum_attr(ni, mi, attr);
+ 	if (!attr)
+ 		return NULL;
+ 
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+                <div class="card">
+                  <h2>应用成功的补丁块</h2>
+                  <table>
+                    <tr>
+                      <th>块索引</th>
+                      <th>修改文件</th>
+                      <th>修改位置</th>
+                      <th>操作</th>
+                    </tr>
+                    
+                    <tr>
+                      <td>1</td>
+                      <td>fs/ntfs3/attrib.c</td>
+                      <td>787-787</td>
+                      <td><a href="applied_chunk_1.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>2</td>
+                      <td>fs/ntfs3/attrib.c</td>
+                      <td>1181-1182</td>
+                      <td><a href="applied_chunk_2.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>3</td>
+                      <td>fs/ntfs3/attrib.c</td>
+                      <td>1796-1797</td>
+                      <td><a href="applied_chunk_3.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>4</td>
+                      <td>fs/ntfs3/attrib.c</td>
+                      <td>2041-2042</td>
+                      <td><a href="applied_chunk_4.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>5</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>75-75</td>
+                      <td><a href="applied_chunk_5.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>6</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>89-89</td>
+                      <td><a href="applied_chunk_6.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>7</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>201-201</td>
+                      <td><a href="applied_chunk_7.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>8</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>217-218</td>
+                      <td><a href="applied_chunk_8.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>9</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>259-260</td>
+                      <td><a href="applied_chunk_9.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>10</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>275-276</td>
+                      <td><a href="applied_chunk_10.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>11</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>293-294</td>
+                      <td><a href="applied_chunk_11.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>12</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>319-321</td>
+                      <td><a href="applied_chunk_12.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>13</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>398-400</td>
+                      <td><a href="applied_chunk_13.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>14</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>437-440</td>
+                      <td><a href="applied_chunk_14.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>15</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>485-488</td>
+                      <td><a href="applied_chunk_15.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>16</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>673-676</td>
+                      <td><a href="applied_chunk_16.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>17</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>695-698</td>
+                      <td><a href="applied_chunk_17.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>18</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>731-734</td>
+                      <td><a href="applied_chunk_18.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>19</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>740-743</td>
+                      <td><a href="applied_chunk_19.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>20</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>768-771</td>
+                      <td><a href="applied_chunk_20.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>21</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>831-834</td>
+                      <td><a href="applied_chunk_21.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>22</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>886-889</td>
+                      <td><a href="applied_chunk_22.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>23</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>909-912</td>
+                      <td><a href="applied_chunk_23.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>24</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>993-996</td>
+                      <td><a href="applied_chunk_24.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>25</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>1008-1011</td>
+                      <td><a href="applied_chunk_25.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>26</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>1157-1160</td>
+                      <td><a href="applied_chunk_26.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>27</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>1175-1178</td>
+                      <td><a href="applied_chunk_27.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>28</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>1259-1262</td>
+                      <td><a href="applied_chunk_28.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>29</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>1280-1283</td>
+                      <td><a href="applied_chunk_29.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>30</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>1397-1400</td>
+                      <td><a href="applied_chunk_30.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>31</td>
+                      <td>fs/ntfs3/frecord.c</td>
+                      <td>3344-3347</td>
+                      <td><a href="applied_chunk_31.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>32</td>
+                      <td>fs/ntfs3/ntfs_fs.h</td>
+                      <td>745-745</td>
+                      <td><a href="applied_chunk_32.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>33</td>
+                      <td>fs/ntfs3/record.c</td>
+                      <td>31-31</td>
+                      <td><a href="applied_chunk_33.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>34</td>
+                      <td>fs/ntfs3/record.c</td>
+                      <td>52-52</td>
+                      <td><a href="applied_chunk_34.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>35</td>
+                      <td>fs/ntfs3/record.c</td>
+                      <td>195-195</td>
+                      <td><a href="applied_chunk_35.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>36</td>
+                      <td>fs/ntfs3/record.c</td>
+                      <td>467-472</td>
+                      <td><a href="applied_chunk_36.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>37</td>
+                      <td>fs/ntfs3/record.c</td>
+                      <td>488-493</td>
+                      <td><a href="applied_chunk_37.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>38</td>
+                      <td>fs/ntfs3/record.c</td>
+                      <td>508-513</td>
+                      <td><a href="applied_chunk_38.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+                  </table>
+                </div>
+                
+            <div class="card">
+              <h2>剩余补丁</h2>
+              <p>有 <strong class="info">3</strong> 个块未成功应用，已生成剩余补丁:</p>
+              <p><code>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/remaining_chunks_20250612_155914.patch</code></p>
+              <p><a href="remaining_patch.diff" target="_blank">查看剩余补丁</a></p>
+            </div>
+            
+        <style>
+        .code-container {
+          max-height: 500px;
+          overflow-y: auto;
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          border: 1px solid #eee;
+        }
+        
+        .code-block {
+          padding: 15px;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: monospace;
+          font-size: 13px;
+          line-height: 1.4;
+        }
+        
+        /* 为补丁内容添加语法高亮 */
+        .code-block .add {
+          background-color: #e6ffed;
+          color: #22863a;
+        }
+        
+        .code-block .remove {
+          background-color: #ffeef0;
+          color: #cb2431;
+        }
+        
+        .code-block .hunk {
+          color: #0366d6;
+          background-color: #f1f8ff;
+        }
+        
+        .code-block .header {
+          color: #6f42c1;
+          font-weight: bold;
+        }
+        </style>
+        
+        <script>
+        // 对补丁内容应用简单的语法高亮
+        document.addEventListener('DOMContentLoaded', function() {
+          const codeBlocks = document.querySelectorAll('.code-block');
+          codeBlocks.forEach(function(block) {
+            let html = block.innerHTML;
+            
+            // 替换添加的行
+            html = html.replace(/^(\+[^+].*)/gm, '<span class="add">$1</span>');
+            
+            // 替换删除的行
+            html = html.replace(/^(-[^-].*)/gm, '<span class="remove">$1</span>');
+            
+            // 替换区块头
+            html = html.replace(/^(@@.*@@)/gm, '<span class="hunk">$1</span>');
+            
+            // 替换diff头 - 修复无效转义序列
+            html = html.replace(/^(diff --git.*|index.*|---.*|\+\+\+.*)/gm, '<span class="header">$1</span>');
+            
+            block.innerHTML = html;
+          });
+        });
+        </script>
+        
+    
+  </div>
+</body>
+</html>

@@ -1,0 +1,126 @@
+
+
+# ===== 应用成功的补丁块 1 =====
+
+From 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                            | 17 ++++++++++-------
+ docs/ref/templates/builtins.txt                 | 11 +++++++++++
+ docs/releases/4.2.16.txt                        |  7 ++++++-
+ docs/releases/5.0.9.txt                         |  7 ++++++-
+ docs/releases/5.1.1.txt                         |  7 +++++++
+ .../template_tests/filter_tests/test_urlize.py  |  5 +++++
+ tests/utils_tests/test_html.py                  |  1 +
+ 7 files changed, 46 insertions(+), 9 deletions(-)
+
+diff --git a/django/utils/html.py b/django/utils/html.py
+index e5ad5646fa77..d9513fc75848 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -428,14 +428,17 @@ def trim_punctuation(self, word):
+                 potential_entity = middle[amp:]
+                 escaped = html.unescape(potential_entity)
+                 if escaped == potential_entity or escaped.endswith(";"):
+-                    rstripped = middle.rstrip(";")
+-                    amount_stripped = len(middle) - len(rstripped)
+-                    if amp > -1 and amount_stripped > 1:
+-                        # Leave a trailing semicolon as might be an entity.
+-                        trail = middle[len(rstripped) + 1 :] + trail
+-                        middle = rstripped + ";"
++                    rstripped = middle.rstrip(self.trailing_punctuation_chars)
++                    trail_start = len(rstripped)
++                    amount_trailing_semicolons = len(middle) - len(middle.rstrip(";"))
++                    if amp > -1 and amount_trailing_semicolons > 1:
++                        # Leave up to most recent semicolon as might be an entity.
++                        recent_semicolon = middle[trail_start:].index(";")
++                        middle_semicolon_index = recent_semicolon + trail_start + 1
++                        trail = middle[middle_semicolon_index:] + trail
++                        middle = rstripped + middle[trail_start:middle_semicolon_index]
+                     else:
+-                        trail = middle[len(rstripped) :] + trail
++                        trail = middle[trail_start:] + trail
+                         middle = rstripped
+                     trimmed_something = True
+ 
+
+
+# ===== 应用成功的补丁块 2 =====
+
+From 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                            | 17 ++++++++++-------
+ docs/ref/templates/builtins.txt                 | 11 +++++++++++
+ docs/releases/4.2.16.txt                        |  7 ++++++-
+ docs/releases/5.0.9.txt                         |  7 ++++++-
+ docs/releases/5.1.1.txt                         |  7 +++++++
+ .../template_tests/filter_tests/test_urlize.py  |  5 +++++
+ tests/utils_tests/test_html.py                  |  1 +
+ 7 files changed, 46 insertions(+), 9 deletions(-)
+
+diff --git a/docs/ref/templates/builtins.txt b/docs/ref/templates/builtins.txt
+index 3e2d63800a66..86841b3dbd38 100644
+--- a/docs/ref/templates/builtins.txt
++++ b/docs/ref/templates/builtins.txt
+@@ -2932,6 +2932,17 @@ Django's built-in :tfilter:`escape` filter. The default value for
+     email addresses that contain single quotes (``'``), things won't work as
+     expected. Apply this filter only to plain text.
+ 
++.. warning::
++
++    Using ``urlize`` or ``urlizetrunc`` can incur a performance penalty, which
++    can become severe when applied to user controlled values such as content
++    stored in a :class:`~django.db.models.TextField`. You can use
++    :tfilter:`truncatechars` to add a limit to such inputs:
++
++    .. code-block:: html+django
++
++        {{ value|truncatechars:500|urlize }}
++
+ .. templatefilter:: urlizetrunc
+ 
+ ``urlizetrunc``
+
+
+# ===== 应用成功的补丁块 3 =====
+
+From 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                            | 17 ++++++++++-------
+ docs/ref/templates/builtins.txt                 | 11 +++++++++++
+ docs/releases/4.2.16.txt                        |  7 ++++++-
+ docs/releases/5.0.9.txt                         |  7 ++++++-
+ docs/releases/5.1.1.txt                         |  7 +++++++
+ .../template_tests/filter_tests/test_urlize.py  |  5 +++++
+ tests/utils_tests/test_html.py                  |  1 +
+ 7 files changed, 46 insertions(+), 9 deletions(-)
+
+diff --git a/tests/utils_tests/test_html.py b/tests/utils_tests/test_html.py
+index 10ba621dd5fc..9bee483dc7ff 100644
+--- a/tests/utils_tests/test_html.py
++++ b/tests/utils_tests/test_html.py
+@@ -375,6 +375,7 @@ def test_urlize_unchanged_inputs(self):
+             "&:" + ";" * 100_000,
+             "&.;" * 100_000,
+             ".;" * 100_000,
++            "&" + ";:" * 100_000,
+         )
+         for value in tests:
+             with self.subTest(value=value):

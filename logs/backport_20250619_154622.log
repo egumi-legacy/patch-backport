@@ -1,0 +1,318 @@
+2025-06-19 15:46:22.303 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250619_154622.log
+2025-06-19 15:46:22.303 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-19 15:46:22.304 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/django/django/commit/e88f7376fe68dbf4ebaf11fad1513ce700b45860.patch
+2025-06-19 15:46:22.305 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-19 15:46:22.306 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-19 15:46:22.309 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-19 15:46:22.309 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-19 15:46:22.310 | INFO     | __main__:_process_mode1:358 - 目标版本: ['3.2.7']
+2025-06-19 15:46:22.310 | INFO     | __main__:_process_mode1:365 - 开始处理版本: 3.2.7
+2025-06-19 15:46:22.311 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: e88f7376fe68dbf4ebaf11fad1513ce700b45860.patch
+2025-06-19 15:46:22.311 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-19 15:46:22.312 | INFO     | modules.direct_apply:_download_patch:248 - 上游补丁文件已存在: workspace/django/django/e88f73/patches/upstream_e88f73.patch
+2025-06-19 15:46:22.312 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-19 15:46:22.312 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/patches/upstream_e88f73.patch
+2025-06-19 15:46:22.375 | INFO     | modules.direct_apply:_prepare_test_branch:400 - 创建测试分支: test_patch_3.2.7
+2025-06-19 15:46:22.678 | ERROR    | modules.direct_apply:_apply_patch:340 - 补丁应用失败: error: patch failed: django/utils/text.py:1
+error: django/utils/text.py: patch does not apply
+error: docs/releases/4.2.20.txt: does not exist in index
+error: patch failed: tests/template_tests/filter_tests/test_wordwrap.py:78
+error: tests/template_tests/filter_tests/test_wordwrap.py: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-19 15:46:22.936 | INFO     | modules.direct_apply:_cleanup_test_branch:492 - 清理测试分支: test_patch_3.2.7
+2025-06-19 15:46:22.937 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-19 15:46:22.938 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/patches/upstream_e88f73.patch
+2025-06-19 15:46:22.939 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:178 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/patches/upstream_e88f73.patch
+2025-06-19 15:46:22.941 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:183 - 补丁文件包含 94 行内容
+2025-06-19 15:46:22.943 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: django/utils/text.py
+2025-06-19 15:46:22.946 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: django/utils/text.py @@ -1,6 +1,7 @@ (modification)
+2025-06-19 15:46:22.947 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: django/utils/text.py @@ -97,24 +98,15 @@ (modification)
+2025-06-19 15:46:22.948 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: docs/releases/4.2.20.txt
+2025-06-19 15:46:22.949 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: docs/releases/4.2.20.txt @@ -5,3 +5,9 @@ (modification)
+2025-06-19 15:46:22.950 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: tests/template_tests/filter_tests/test_wordwrap.py
+2025-06-19 15:46:22.952 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: tests/template_tests/filter_tests/test_wordwrap.py @@ -78,3 +78,14 @@ (modification)
+2025-06-19 15:46:22.954 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:269 - 补丁分解完成，共找到 4 个修改块
+2025-06-19 15:46:22.955 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 4 个块
+2025-06-19 15:46:22.956 | INFO     | modules.chunk_analyzer:_create_chunk_patches:288 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/patches/upstream_e88f73.patch
+2025-06-19 15:46:22.958 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/chunk_patches/chunk_001_20250619_154622.patch (修改文件: django/utils/text.py)
+2025-06-19 15:46:22.960 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/chunk_patches/chunk_002_20250619_154622.patch (修改文件: django/utils/text.py)
+2025-06-19 15:46:22.962 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/chunk_patches/chunk_003_20250619_154622.patch (修改文件: docs/releases/4.2.20.txt)
+2025-06-19 15:46:22.964 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/chunk_patches/chunk_004_20250619_154622.patch (修改文件: tests/template_tests/filter_tests/test_wordwrap.py)
+2025-06-19 15:46:22.965 | INFO     | modules.chunk_analyzer:execute:60 - 已为 4 个块创建单独的补丁文件
+2025-06-19 15:46:22.965 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-19 15:46:22.966 | INFO     | modules.chunk_analyzer:execute:66 - From e88f7376fe68dbf4ebaf11fad1513ce700b45860 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Tue, 25 Feb 2025 09:40:54 +0100
+Subject: [PATCH] [4.2.x] Fixed CVE-2025-26699 -- Mitigated potential DoS in
+ wordwrap template filter.
+
+Thanks sw0rd1ight for the report.
+
+Backport of 55d89e25f4115c5674cdd9b9bcba2bb2bb6d820b from main.
+---
+ django/utils/text.py                          | 28 +++++++------------
+ docs/releases/4.2.20.txt                      |  6 ++++
+ .../filter_tests/test_wordwrap.py             | 11 ++++++++
+ 3 files changed, 27 insertions(+), 18 deletions(-)
+
+diff --git a/django/utils/text.py b/django/utils/text.py
+index e1b835e0e219..81ae88dc76d4 100644
+--- a/django/utils/text.py
++++ b/django/utils/text.py
+@@ -1,6 +1,7 @@
+ import gzip
+ import re
+ import secrets
++import textwrap
+ import unicodedata
+ from gzip import GzipFile
+ from gzip import compress as gzip_compress
+
+2025-06-19 15:46:22.968 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-19 15:46:22.971 | INFO     | modules.chunk_analyzer:execute:66 - From e88f7376fe68dbf4ebaf11fad1513ce700b45860 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Tue, 25 Feb 2025 09:40:54 +0100
+Subject: [PATCH] [4.2.x] Fixed CVE-2025-26699 -- Mitigated potential DoS in
+ wordwrap template filter.
+
+Thanks sw0rd1ight for the report.
+
+Backport of 55d89e25f4115c5674cdd9b9bcba2bb2bb6d820b from main.
+---
+ django/utils/text.py                          | 28 +++++++------------
+ docs/releases/4.2.20.txt                      |  6 ++++
+ .../filter_tests/test_wordwrap.py             | 11 ++++++++
+ 3 files changed, 27 insertions(+), 18 deletions(-)
+
+diff --git a/django/utils/text.py b/django/utils/text.py
+index e1b835e0e219..81ae88dc76d4 100644
+--- a/django/utils/text.py
++++ b/django/utils/text.py
+@@ -97,24 +98,15 @@ def wrap(text, width):
+     ``width``.
+     """
+ 
+-    def _generator():
+-        for line in text.splitlines(True):  # True keeps trailing linebreaks
+-            max_width = min((line.endswith("\n") and width + 1 or width), width)
+-            while len(line) > max_width:
+-                space = line[: max_width + 1].rfind(" ") + 1
+-                if space == 0:
+-                    space = line.find(" ") + 1
+-                    if space == 0:
+-                        yield line
+-                        line = ""
+-                        break
+-                yield "%s\n" % line[: space - 1]
+-                line = line[space:]
+-                max_width = min((line.endswith("\n") and width + 1 or width), width)
+-            if line:
+-                yield line
+-
+-    return "".join(_generator())
++    wrapper = textwrap.TextWrapper(
++        width=width,
++        break_long_words=False,
++        break_on_hyphens=False,
++    )
++    result = []
++    for line in text.splitlines(True):
++        result.extend(wrapper.wrap(line))
++    return "\n".join(result)
+ 
+ 
+ class Truncator(SimpleLazyObject):
+
+2025-06-19 15:46:22.973 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-19 15:46:22.974 | INFO     | modules.chunk_analyzer:execute:66 - From e88f7376fe68dbf4ebaf11fad1513ce700b45860 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Tue, 25 Feb 2025 09:40:54 +0100
+Subject: [PATCH] [4.2.x] Fixed CVE-2025-26699 -- Mitigated potential DoS in
+ wordwrap template filter.
+
+Thanks sw0rd1ight for the report.
+
+Backport of 55d89e25f4115c5674cdd9b9bcba2bb2bb6d820b from main.
+---
+ django/utils/text.py                          | 28 +++++++------------
+ docs/releases/4.2.20.txt                      |  6 ++++
+ .../filter_tests/test_wordwrap.py             | 11 ++++++++
+ 3 files changed, 27 insertions(+), 18 deletions(-)
+
+diff --git a/docs/releases/4.2.20.txt b/docs/releases/4.2.20.txt
+index c71fa05f43c5..5849fe2a42ed 100644
+--- a/docs/releases/4.2.20.txt
++++ b/docs/releases/4.2.20.txt
+@@ -5,3 +5,9 @@ Django 4.2.20 release notes
+ *March 6, 2025*
+ 
+ Django 4.2.20 fixes a security issue with severity "moderate" in 4.2.19.
++
++CVE-2025-26699: Potential denial-of-service vulnerability in ``django.utils.text.wrap()``
++=========================================================================================
++
++The ``wrap()`` and :tfilter:`wordwrap` template filter were subject to a
++potential denial-of-service attack when used with very long strings.
+
+2025-06-19 15:46:22.975 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-06-19 15:46:22.977 | INFO     | modules.chunk_analyzer:execute:66 - From e88f7376fe68dbf4ebaf11fad1513ce700b45860 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Tue, 25 Feb 2025 09:40:54 +0100
+Subject: [PATCH] [4.2.x] Fixed CVE-2025-26699 -- Mitigated potential DoS in
+ wordwrap template filter.
+
+Thanks sw0rd1ight for the report.
+
+Backport of 55d89e25f4115c5674cdd9b9bcba2bb2bb6d820b from main.
+---
+ django/utils/text.py                          | 28 +++++++------------
+ docs/releases/4.2.20.txt                      |  6 ++++
+ .../filter_tests/test_wordwrap.py             | 11 ++++++++
+ 3 files changed, 27 insertions(+), 18 deletions(-)
+
+diff --git a/tests/template_tests/filter_tests/test_wordwrap.py b/tests/template_tests/filter_tests/test_wordwrap.py
+index 88fbd274da94..4afa1dd234f1 100644
+--- a/tests/template_tests/filter_tests/test_wordwrap.py
++++ b/tests/template_tests/filter_tests/test_wordwrap.py
+@@ -78,3 +78,14 @@ def test_wrap_lazy_string(self):
+             "this is a long\nparagraph of\ntext that\nreally needs\nto be wrapped\n"
+             "I'm afraid",
+         )
++
++    def test_wrap_long_text(self):
++        long_text = (
++            "this is a long paragraph of text that really needs"
++            " to be wrapped I'm afraid " * 20_000
++        )
++        self.assertIn(
++            "this is a\nlong\nparagraph\nof text\nthat\nreally\nneeds to\nbe wrapped\n"
++            "I'm afraid",
++            wordwrap(long_text, 10),
++        )
+
+2025-06-19 15:46:22.978 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:357 - 切换到目标版本: 3.2.7
+2025-06-19 15:46:23.055 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:369 - 创建测试分支: test_chunk_apply_aec57da3
+2025-06-19 15:46:23.207 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 1/4 个块补丁: chunk_001_20250619_154622.patch
+2025-06-19 15:46:23.226 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:420 - 块补丁 chunk_001_20250619_154622.patch 应用失败: error: patch failed: django/utils/text.py:1
+error: django/utils/text.py: patch does not apply
+
+2025-06-19 15:46:23.227 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 2/4 个块补丁: chunk_002_20250619_154622.patch
+2025-06-19 15:46:23.246 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:420 - 块补丁 chunk_002_20250619_154622.patch 应用失败: error: patch failed: django/utils/text.py:97
+error: django/utils/text.py: patch does not apply
+
+2025-06-19 15:46:23.246 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 3/4 个块补丁: chunk_003_20250619_154622.patch
+2025-06-19 15:46:23.265 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:420 - 块补丁 chunk_003_20250619_154622.patch 应用失败: error: docs/releases/4.2.20.txt: No such file or directory
+
+2025-06-19 15:46:23.265 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 4/4 个块补丁: chunk_004_20250619_154622.patch
+2025-06-19 15:46:23.284 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:420 - 块补丁 chunk_004_20250619_154622.patch 应用失败: error: patch failed: tests/template_tests/filter_tests/test_wordwrap.py:78
+error: tests/template_tests/filter_tests/test_wordwrap.py: patch does not apply
+
+2025-06-19 15:46:23.285 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:430 - 块补丁应用统计信息:
+2025-06-19 15:46:23.286 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:431 - - 总块数: 4
+2025-06-19 15:46:23.286 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:432 - - 无冲突块数: 0
+2025-06-19 15:46:23.286 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:433 - - 适配失败块数: 4
+2025-06-19 15:46:23.287 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:438 - 切换回目标版本: 3.2.7
+2025-06-19 15:46:23.329 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:446 - 删除测试分支: test_chunk_apply_aec57da3
+2025-06-19 15:46:23.345 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 0 个块补丁，总共 4 个
+2025-06-19 15:46:23.349 | INFO     | modules.chunk_analyzer:_create_remaining_patch:527 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/chunk_patches/remaining_chunks_20250619_154623.patch
+2025-06-19 15:46:23.351 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 4 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/chunk_patches/remaining_chunks_20250619_154623.patch
+2025-06-19 15:46:23.354 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/chunk_patches/remaining_chunks_20250619_154623.patch
+2025-06-19 15:46:23.356 | INFO     | modules.chunk_analyzer:execute:117 - 补丁分块分析完成，耗时: 0.42秒
+2025-06-19 15:46:23.360 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/django/django/e88f73/evaluations/chunk_analyzer/metrics_e88f73_20250619_154623.json
+2025-06-19 15:46:23.366 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:917 - 找到当前评估会话目录: workspace/django/django/e88f73/evaluations/chunk_analyzer/details_e88f73_20250619_154623
+2025-06-19 15:46:23.367 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/django/django/e88f73/evaluations/chunk_analyzer/details_e88f73_20250619_154623
+2025-06-19 15:46:23.369 | WARNING  | modules.chunk_analyzer:_get_patch_content:1207 - 补丁目录不存在: workspace/django/django/e88f73/evaluations/chunk_analyzer/details_e88f73_20250619_154623/patches
+2025-06-19 15:46:23.370 | INFO     | modules.chunk_analyzer:_get_patch_content:1212 - 成功创建补丁目录: workspace/django/django/e88f73/evaluations/chunk_analyzer/details_e88f73_20250619_154623/patches
+2025-06-19 15:46:23.373 | INFO     | modules.chunk_analyzer:_get_patch_content:1230 - 已将原始补丁内容保存到: workspace/django/django/e88f73/evaluations/chunk_analyzer/details_e88f73_20250619_154623/patches/original_patch.txt
+2025-06-19 15:46:23.374 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/django/django/e88f73/evaluations/chunk_analyzer/details_e88f73_20250619_154623
+2025-06-19 15:46:23.377 | WARNING  | modules.chunk_analyzer:_get_patch_content:1351 - 未找到任何应用成功的补丁文件
+2025-06-19 15:46:23.378 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/django/django/e88f73/evaluations/chunk_analyzer/details_e88f73_20250619_154623
+2025-06-19 15:46:23.380 | INFO     | modules.chunk_analyzer:_get_patch_content:1399 - 已将剩余补丁内容保存到: workspace/django/django/e88f73/evaluations/chunk_analyzer/details_e88f73_20250619_154623/patches/remaining_patch.txt
+2025-06-19 15:46:23.381 | INFO     | modules.chunk_analyzer:_get_patch_content:1403 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/chunk_patches/remaining_chunks_20250619_154623.patch
+2025-06-19 15:46:23.383 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/django/django/e88f73/evaluations/chunk_analyzer/details_e88f73_20250619_154623
+2025-06-19 15:46:23.390 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-19 15:46:23.392 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/patches/upstream_e88f73.patch
+2025-06-19 15:46:23.393 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/e88f73/patches/upstream_e88f73.patch
+2025-06-19 15:46:23.394 | INFO     | modules.llm_adapter:_prepare_prompt_data:217 - 使用函数级上下文和完整文件内容的增强模式
+2025-06-19 15:46:23.396 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:261 - 补丁修改的文件: ['django/utils/text.py', 'docs/releases/4.2.20.txt', 'tests/template_tests/filter_tests/test_wordwrap.py']
+2025-06-19 15:46:23.397 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:264 - 尝试使用git show -W获取整个补丁的函数级上下文
+2025-06-19 15:46:23.397 | INFO     | modules.llm_adapter:_generate_function_level_patch:428 - 移除commit_sha的.patch后缀: e88f7376fe68dbf4ebaf11fad1513ce700b45860
+2025-06-19 15:46:23.398 | INFO     | modules.llm_adapter:_generate_function_level_patch:433 - 使用git show -W生成函数级别的补丁，commit_sha: e88f7376fe68dbf4ebaf11fad1513ce700b45860, repo_path: /home/elpsy/.cache/port-patch/django
+2025-06-19 15:46:23.428 | INFO     | modules.llm_adapter:_generate_function_level_patch:458 - 函数级别的补丁生成成功: workspace/django/django/e88f73/function_level_patch.diff
+2025-06-19 15:46:23.429 | INFO     | modules.llm_adapter:_generate_function_level_patch:459 - 补丁统计: 大小: 5.03 KB, 估计函数数量: 0, 生成耗时: 0.03 秒
+2025-06-19 15:46:23.430 | INFO     | modules.llm_adapter:_prepare_enhanced_prompt:267 - 成功生成函数级别的补丁，将使用函数级别的提示模板
+2025-06-19 15:46:23.548 | INFO     | modules.backtrack_apply:_map_file_paths:203 - 文件直接存在: django/utils/text.py
+2025-06-19 15:46:23.550 | INFO     | modules.llm_adapter:_get_file_content_from_target:1951 - 成功获取文件 django/utils/text.py 在目标版本 3.2.7 的内容，大小: 14307 字节
+2025-06-19 15:46:23.881 | ERROR    | modules.llm_adapter:_get_file_content_from_target:1975 - 获取目标版本文件内容时出错: Command '['git', 'checkout', '-b', 'temp_target_check_20250619_154623', '3.2.7']' returned non-zero exit status 128.
+2025-06-19 15:46:23.889 | ERROR    | modules.llm_adapter:_get_file_content_from_target:1976 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 1929, in _get_file_content_from_target
+    subprocess.run(
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'checkout', '-b', 'temp_target_check_20250619_154623', '3.2.7']' returned non-zero exit status 128.
+
+2025-06-19 15:46:24.052 | ERROR    | modules.llm_adapter:_get_file_content_from_target:1975 - 获取目标版本文件内容时出错: Command '['git', 'checkout', '-b', 'temp_target_check_20250619_154623', '3.2.7']' returned non-zero exit status 128.
+2025-06-19 15:46:24.053 | ERROR    | modules.llm_adapter:_get_file_content_from_target:1976 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 1929, in _get_file_content_from_target
+    subprocess.run(
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'checkout', '-b', 'temp_target_check_20250619_154623', '3.2.7']' returned non-zero exit status 128.
+
+2025-06-19 15:46:24.073 | INFO     | modules.llm_adapter:_call_llm:939 - 使用函数级别的补丁，切换到提示模板: backport-func
+2025-06-19 15:46:24.073 | INFO     | modules.llm_adapter:_call_llm:940 - 准备了 1 个旧版本文件内容
+2025-06-19 15:46:24.307 | INFO     | llm_assistant:run:284 - +++++++++++++++++++++++++++++++++++
+2025-06-19 15:46:25.018 | ERROR    | llm_assistant:call_llm:183 - Error calling OpenAI: Error code: 404 - {'error': {'code': 'InvalidEndpointOrModel.NotFound', 'message': 'The model or endpoint doubao-seed-1.6-thinking does not exist or you do not have access to it. Request id: 021750319184040ff292ddf8ed2b65ee368af5a42c6b3ab5f136b', 'param': '', 'type': 'NotFound'}}
+2025-06-19 15:46:25.019 | ERROR    | llm_assistant:call_llm:188 - No response from OpenAI
+2025-06-19 15:46:25.026 | INFO     | llm_assistant:run:304 - ---responses in run: [{'prompt': [{'role': 'system', 'content': 'You are an exceptionally skilled senior software engineer specializing in patch backporting between different software versions. Your task is to analyze a patch from a newer version and apply its functionality to older version files.\n\nUsers will provide you with:\n1. The complete content of the older version files that need to be modified\n2. A function-level patch showing the complete functions that were modified in the original patch\n\nThe function-level patch provides critical context about the entire functions being modified, not just the specific lines changed. This gives you a complete understanding of how the changes fit within their functional context.\n\nYour job is to generate a modified patch that will apply cleanly to the older version while preserving the functionality and intent of the original patch.\n\nINSTRUCTION:\n- Analyze both the older version files and the function-level patch carefully\n- Look for API changes, function signature changes, and structural differences between versions\n- Your backported patch should compile without errors on the older version\n- Maintain the same functionality as the original patch\n- Do not introduce any new dependencies or use API calls not present in the older version\n- Follow the same code style as the older version\n\nPlease provide your response in the following format:\n\nA. Commit message:\n<Brief summary of what the backported patch does>\n\nB. Change summary:\n<Detailed description of the changes made in the backport process>\n\nC. Compatibility Risk:\n<Low, Medium, or High - based on how invasive the changes are>\n\nD. Fixed Code:\n<The complete backported patch in git diff format>\n'}, {'role': 'system', 'content': 'Input 1: The complete content of the files from the older software version that need to be patched.\n\nFile: django/utils/text.py\n```py\nimport html.entities\nimport re\nimport unicodedata\nimport warnings\nfrom gzip import GzipFile\nfrom io import BytesIO\n\nfrom django.core.exceptions import SuspiciousFileOperation\nfrom django.utils.deprecation import RemovedInDjango40Warning\nfrom django.utils.functional import SimpleLazyObject, keep_lazy_text, lazy\nfrom django.utils.regex_helper import _lazy_re_compile\nfrom django.utils.translation import gettext as _, gettext_lazy, pgettext\n\n\n@keep_lazy_text\ndef capfirst(x):\n    """Capitalize the first letter of a string."""\n    return x and str(x)[0].upper() + str(x)[1:]\n\n\n# Set up regular expressions\nre_words = _lazy_re_compile(r\'<[^>]+?>|([^<>\\s]+)\', re.S)\nre_chars = _lazy_re_compile(r\'<[^>]+?>|(.)\', re.S)\nre_tag = _lazy_re_compile(r\'<(/)?(\\S+?)(?:(\\s*/)|\\s.*?)?>\', re.S)\nre_newlines = _lazy_re_compile(r\'\\r\\n|\\r\')  # Used in normalize_newlines\nre_camel_case = _lazy_re_compile(r\'(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))\')\n\n\n@keep_lazy_text\ndef wrap(text, width):\n    """\n    A word-wrap function that preserves existing line breaks. Expects that\n    existing line breaks are posix newlines.\n\n    Preserve all white space except added line breaks consume the space on\n    which they break the line.\n\n    Don\'t wrap long words, thus the output text may have lines longer than\n    ``width``.\n    """\n    def _generator():\n        for line in text.splitlines(True):  # True keeps trailing linebreaks\n            max_width = min((line.endswith(\'\\n\') and width + 1 or width), width)\n            while len(line) > max_width:\n                space = line[:max_width + 1].rfind(\' \') + 1\n                if space == 0:\n                    space = line.find(\' \') + 1\n                    if space == 0:\n                        yield line\n                        line = \'\'\n                        break\n                yield \'%s\\n\' % line[:space - 1]\n                line = line[space:]\n                max_width = min((line.endswith(\'\\n\') and width + 1 or width), width)\n            if line:\n                yield line\n    return \'\'.join(_generator())\n\n\nclass Truncator(SimpleLazyObject):\n    """\n    An object used to truncate text, either by characters or words.\n    """\n    def __init__(self, text):\n        super().__init__(lambda: str(text))\n\n    def add_truncation_text(self, text, truncate=None):\n        if truncate is None:\n            truncate = pgettext(\n                \'String to return when truncating text\',\n                \'%(truncated_text)s…\')\n        if \'%(truncated_text)s\' in truncate:\n            return truncate % {\'truncated_text\': text}\n        # The truncation text didn\'t contain the %(truncated_text)s string\n        # replacement argument so just append it to the text.\n        if text.endswith(truncate):\n            # But don\'t append the truncation text if the current text already\n            # ends in this.\n            return text\n        return \'%s%s\' % (text, truncate)\n\n    def chars(self, num, truncate=None, html=False):\n        """\n        Return the text truncated to be no longer than the specified number\n        of characters.\n\n        `truncate` specifies what should be used to notify that the string has\n        been truncated, defaulting to a translatable string of an ellipsis.\n        """\n        self._setup()\n        length = int(num)\n        text = unicodedata.normalize(\'NFC\', self._wrapped)\n\n        # Calculate the length to truncate to (max length - end_text length)\n        truncate_len = length\n        for char in self.add_truncation_text(\'\', truncate):\n            if not unicodedata.combining(char):\n                truncate_len -= 1\n                if truncate_len == 0:\n                    break\n        if html:\n            return self._truncate_html(length, truncate, text, truncate_len, False)\n        return self._text_chars(length, truncate, text, truncate_len)\n\n    def _text_chars(self, length, truncate, text, truncate_len):\n        """Truncate a string after a certain number of chars."""\n        s_len = 0\n        end_index = None\n        for i, char in enumerate(text):\n            if unicodedata.combining(char):\n                # Don\'t consider combining characters\n                # as adding to the string length\n                continue\n            s_len += 1\n            if end_index is None and s_len > truncate_len:\n                end_index = i\n            if s_len > length:\n                # Return the truncated string\n                return self.add_truncation_text(text[:end_index or 0],\n                                                truncate)\n\n        # Return the original string since no truncation was necessary\n        return text\n\n    def words(self, num, truncate=None, html=False):\n        """\n        Truncate a string after a certain number of words. `truncate` specifies\n        what should be used to notify that the string has been truncated,\n        defaulting to ellipsis.\n        """\n        self._setup()\n        length = int(num)\n        if html:\n            return self._truncate_html(length, truncate, self._wrapped, length, True)\n        return self._text_words(length, truncate)\n\n    def _text_words(self, length, truncate):\n        """\n        Truncate a string after a certain number of words.\n\n        Strip newlines in the string.\n        """\n        words = self._wrapped.split()\n        if len(words) > length:\n            words = words[:length]\n            return self.add_truncation_text(\' \'.join(words), truncate)\n        return \' \'.join(words)\n\n    def _truncate_html(self, length, truncate, text, truncate_len, words):\n        """\n        Truncate HTML to a certain number of chars (not counting tags and\n        comments), or, if words is True, then to a certain number of words.\n        Close opened tags if they were correctly closed in the given HTML.\n\n        Preserve newlines in the HTML.\n        """\n        if words and length <= 0:\n            return \'\'\n\n        html4_singlets = (\n            \'br\', \'col\', \'link\', \'base\', \'img\',\n            \'param\', \'area\', \'hr\', \'input\'\n        )\n\n        # Count non-HTML chars/words and keep note of open tags\n        pos = 0\n        end_text_pos = 0\n        current_len = 0\n        open_tags = []\n\n        regex = re_words if words else re_chars\n\n        while current_len <= length:\n            m = regex.search(text, pos)\n            if not m:\n                # Checked through whole string\n                break\n            pos = m.end(0)\n            if m[1]:\n                # It\'s an actual non-HTML word or char\n                current_len += 1\n                if current_len == truncate_len:\n                    end_text_pos = pos\n                continue\n            # Check for tag\n            tag = re_tag.match(m[0])\n            if not tag or current_len >= truncate_len:\n                # Don\'t worry about non tags or tags after our truncate point\n                continue\n            closing_tag, tagname, self_closing = tag.groups()\n            # Element names are always case-insensitive\n            tagname = tagname.lower()\n            if self_closing or tagname in html4_singlets:\n                pass\n            elif closing_tag:\n                # Check for match in open tags list\n                try:\n                    i = open_tags.index(tagname)\n                except ValueError:\n                    pass\n                else:\n                    # SGML: An end tag closes, back to the matching start tag,\n                    # all unclosed intervening start tags with omitted end tags\n                    open_tags = open_tags[i + 1:]\n            else:\n                # Add it to the start of the open tags list\n                open_tags.insert(0, tagname)\n\n        if current_len <= length:\n            return text\n        out = text[:end_text_pos]\n        truncate_text = self.add_truncation_text(\'\', truncate)\n        if truncate_text:\n            out += truncate_text\n        # Close any tags still open\n        for tag in open_tags:\n            out += \'</%s>\' % tag\n        # Return string\n        return out\n\n\n@keep_lazy_text\ndef get_valid_filename(name):\n    """\n    Return the given string converted to a string that can be used for a clean\n    filename. Remove leading and trailing spaces; convert other spaces to\n    underscores; and remove anything that is not an alphanumeric, dash,\n    underscore, or dot.\n    >>> get_valid_filename("john\'s portrait in 2004.jpg")\n    \'johns_portrait_in_2004.jpg\'\n    """\n    s = str(name).strip().replace(\' \', \'_\')\n    s = re.sub(r\'(?u)[^-\\w.]\', \'\', s)\n    if s in {\'\', \'.\', \'..\'}:\n        raise SuspiciousFileOperation("Could not derive file name from \'%s\'" % name)\n    return s\n\n\n@keep_lazy_text\ndef get_text_list(list_, last_word=gettext_lazy(\'or\')):\n    """\n    >>> get_text_list([\'a\', \'b\', \'c\', \'d\'])\n    \'a, b, c or d\'\n    >>> get_text_list([\'a\', \'b\', \'c\'], \'and\')\n    \'a, b and c\'\n    >>> get_text_list([\'a\', \'b\'], \'and\')\n    \'a and b\'\n    >>> get_text_list([\'a\'])\n    \'a\'\n    >>> get_text_list([])\n    \'\'\n    """\n    if not list_:\n        return \'\'\n    if len(list_) == 1:\n        return str(list_[0])\n    return \'%s %s %s\' % (\n        # Translators: This string is used as a separator between list elements\n        _(\', \').join(str(i) for i in list_[:-1]), str(last_word), str(list_[-1])\n    )\n\n\n@keep_lazy_text\ndef normalize_newlines(text):\n    """Normalize CRLF and CR newlines to just LF."""\n    return re_newlines.sub(\'\\n\', str(text))\n\n\n@keep_lazy_text\ndef phone2numeric(phone):\n    """Convert a phone number with letters into its numeric equivalent."""\n    char2number = {\n        \'a\': \'2\', \'b\': \'2\', \'c\': \'2\', \'d\': \'3\', \'e\': \'3\', \'f\': \'3\', \'g\': \'4\',\n        \'h\': \'4\', \'i\': \'4\', \'j\': \'5\', \'k\': \'5\', \'l\': \'5\', \'m\': \'6\', \'n\': \'6\',\n        \'o\': \'6\', \'p\': \'7\', \'q\': \'7\', \'r\': \'7\', \'s\': \'7\', \'t\': \'8\', \'u\': \'8\',\n        \'v\': \'8\', \'w\': \'9\', \'x\': \'9\', \'y\': \'9\', \'z\': \'9\',\n    }\n    return \'\'.join(char2number.get(c, c) for c in phone.lower())\n\n\n# From http://www.xhaus.com/alan/python/httpcomp.html#gzip\n# Used with permission.\ndef compress_string(s):\n    zbuf = BytesIO()\n    with GzipFile(mode=\'wb\', compresslevel=6, fileobj=zbuf, mtime=0) as zfile:\n        zfile.write(s)\n    return zbuf.getvalue()\n\n\nclass StreamingBuffer(BytesIO):\n    def read(self):\n        ret = self.getvalue()\n        self.seek(0)\n        self.truncate()\n        return ret\n\n\n# Like compress_string, but for iterators of strings.\ndef compress_sequence(sequence):\n    buf = StreamingBuffer()\n    with GzipFile(mode=\'wb\', compresslevel=6, fileobj=buf, mtime=0) as zfile:\n        # Output headers...\n        yield buf.read()\n        for item in sequence:\n            zfile.write(item)\n            data = buf.read()\n            if data:\n                yield data\n    yield buf.read()\n\n\n# Expression to match some_token and some_token="with spaces" (and similarly\n# for single-quoted strings).\nsmart_split_re = _lazy_re_compile(r"""\n    ((?:\n        [^\\s\'"]*\n        (?:\n            (?:"(?:[^"\\\\]|\\\\.)*" | \'(?:[^\'\\\\]|\\\\.)*\')\n            [^\\s\'"]*\n        )+\n    ) | \\S+)\n""", re.VERBOSE)\n\n\ndef smart_split(text):\n    r"""\n    Generator that splits a string by spaces, leaving quoted phrases together.\n    Supports both single and double quotes, and supports escaping quotes with\n    backslashes. In the output, strings will keep their initial and trailing\n    quote marks and escaped quotes will remain escaped (the results can then\n    be further processed with unescape_string_literal()).\n\n    >>> list(smart_split(r\'This is "a person\\\'s" test.\'))\n    [\'This\', \'is\', \'"a person\\\\\\\'s"\', \'test.\']\n    >>> list(smart_split(r"Another \'person\\\'s\' test."))\n    [\'Another\', "\'person\\\\\'s\'", \'test.\']\n    >>> list(smart_split(r\'A "\\"funky\\" style" test.\'))\n    [\'A\', \'"\\\\"funky\\\\" style"\', \'test.\']\n    """\n    for bit in smart_split_re.finditer(str(text)):\n        yield bit[0]\n\n\ndef _replace_entity(match):\n    text = match[1]\n    if text[0] == \'#\':\n        text = text[1:]\n        try:\n            if text[0] in \'xX\':\n                c = int(text[1:], 16)\n            else:\n                c = int(text)\n            return chr(c)\n        except ValueError:\n            return match[0]\n    else:\n        try:\n            return chr(html.entities.name2codepoint[text])\n        except KeyError:\n            return match[0]\n\n\n_entity_re = _lazy_re_compile(r"&(#?[xX]?(?:[0-9a-fA-F]+|\\w{1,8}));")\n\n\n@keep_lazy_text\ndef unescape_entities(text):\n    warnings.warn(\n        \'django.utils.text.unescape_entities() is deprecated in favor of \'\n        \'html.unescape().\',\n        RemovedInDjango40Warning, stacklevel=2,\n    )\n    return _entity_re.sub(_replace_entity, str(text))\n\n\n@keep_lazy_text\ndef unescape_string_literal(s):\n    r"""\n    Convert quoted string literals to unquoted strings with escaped quotes and\n    backslashes unquoted::\n\n        >>> unescape_string_literal(\'"abc"\')\n        \'abc\'\n        >>> unescape_string_literal("\'abc\'")\n        \'abc\'\n        >>> unescape_string_literal(\'"a \\"bc\\""\')\n        \'a "bc"\'\n        >>> unescape_string_literal("\'\\\'ab\\\' c\'")\n        "\'ab\' c"\n    """\n    if s[0] not in "\\"\'" or s[-1] != s[0]:\n        raise ValueError("Not a string literal: %r" % s)\n    quote = s[0]\n    return s[1:-1].replace(r\'\\%s\' % quote, quote).replace(r\'\\\\\', \'\\\\\')\n\n\n@keep_lazy_text\ndef slugify(value, allow_unicode=False):\n    """\n    Convert to ASCII if \'allow_unicode\' is False. Convert spaces or repeated\n    dashes to single dashes. Remove characters that aren\'t alphanumerics,\n    underscores, or hyphens. Convert to lowercase. Also strip leading and\n    trailing whitespace, dashes, and underscores.\n    """\n    value = str(value)\n    if allow_unicode:\n        value = unicodedata.normalize(\'NFKC\', value)\n    else:\n        value = unicodedata.normalize(\'NFKD\', value).encode(\'ascii\', \'ignore\').decode(\'ascii\')\n    value = re.sub(r\'[^\\w\\s-]\', \'\', value.lower())\n    return re.sub(r\'[-\\s]+\', \'-\', value).strip(\'-_\')\n\n\ndef camel_case_to_spaces(value):\n    """\n    Split CamelCase and convert to lowercase. Strip surrounding whitespace.\n    """\n    return re_camel_case.sub(r\' \\1\', value).strip().lower()\n\n\ndef _format_lazy(format_string, *args, **kwargs):\n    """\n    Apply str.format() on \'format_string\' where format_string, args,\n    and/or kwargs might be lazy.\n    """\n    return format_string.format(*args, **kwargs)\n\n\nformat_lazy = lazy(_format_lazy, str)\n\n```\n\n'}, {'role': 'system', 'content': 'Input 2: The function-level patch showing the complete functions that were modified in the original patch.\n\ncommit e88f7376fe68dbf4ebaf11fad1513ce700b45860\nAuthor: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>\nDate:   Tue Feb 25 09:40:54 2025 +0100\n\n    [4.2.x] Fixed CVE-2025-26699 -- Mitigated potential DoS in wordwrap template filter.\n    \n    Thanks sw0rd1ight for the report.\n    \n    Backport of 55d89e25f4115c5674cdd9b9bcba2bb2bb6d820b from main.\n\ndiff --git a/django/utils/text.py b/django/utils/text.py\nindex e1b835e0e2..81ae88dc76 100644\n--- a/django/utils/text.py\n+++ b/django/utils/text.py\n@@ -1,6 +1,7 @@\n import gzip\n import re\n import secrets\n+import textwrap\n import unicodedata\n from gzip import GzipFile\n from gzip import compress as gzip_compress\n@@ -87,34 +88,25 @@ re_camel_case = _lazy_re_compile(r"(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))")\n @keep_lazy_text\n def wrap(text, width):\n     """\n     A word-wrap function that preserves existing line breaks. Expects that\n     existing line breaks are posix newlines.\n \n     Preserve all white space except added line breaks consume the space on\n     which they break the line.\n \n     Don\'t wrap long words, thus the output text may have lines longer than\n     ``width``.\n     """\n \n-    def _generator():\n-        for line in text.splitlines(True):  # True keeps trailing linebreaks\n-            max_width = min((line.endswith("\\n") and width + 1 or width), width)\n-            while len(line) > max_width:\n-                space = line[: max_width + 1].rfind(" ") + 1\n-                if space == 0:\n-                    space = line.find(" ") + 1\n-                    if space == 0:\n-                        yield line\n-                        line = ""\n-                        break\n-                yield "%s\\n" % line[: space - 1]\n-                line = line[space:]\n-                max_width = min((line.endswith("\\n") and width + 1 or width), width)\n-            if line:\n-                yield line\n-\n-    return "".join(_generator())\n+    wrapper = textwrap.TextWrapper(\n+        width=width,\n+        break_long_words=False,\n+        break_on_hyphens=False,\n+    )\n+    result = []\n+    for line in text.splitlines(True):\n+        result.extend(wrapper.wrap(line))\n+    return "\\n".join(result)\n \n \n class Truncator(SimpleLazyObject):\ndiff --git a/docs/releases/4.2.20.txt b/docs/releases/4.2.20.txt\nindex c71fa05f43..5849fe2a42 100644\n--- a/docs/releases/4.2.20.txt\n+++ b/docs/releases/4.2.20.txt\n@@ -5,3 +5,9 @@ Django 4.2.20 release notes\n *March 6, 2025*\n \n Django 4.2.20 fixes a security issue with severity "moderate" in 4.2.19.\n+\n+CVE-2025-26699: Potential denial-of-service vulnerability in ``django.utils.text.wrap()``\n+=========================================================================================\n+\n+The ``wrap()`` and :tfilter:`wordwrap` template filter were subject to a\n+potential denial-of-service attack when used with very long strings.\ndiff --git a/tests/template_tests/filter_tests/test_wordwrap.py b/tests/template_tests/filter_tests/test_wordwrap.py\nindex 88fbd274da..4afa1dd234 100644\n--- a/tests/template_tests/filter_tests/test_wordwrap.py\n+++ b/tests/template_tests/filter_tests/test_wordwrap.py\n@@ -32,49 +32,60 @@ class WordwrapTests(SimpleTestCase):\n class FunctionTests(SimpleTestCase):\n     def test_wrap(self):\n         self.assertEqual(\n             wordwrap(\n                 "this is a long paragraph of text that really needs to be wrapped I\'m "\n                 "afraid",\n                 14,\n             ),\n             "this is a long\\nparagraph of\\ntext that\\nreally needs\\nto be wrapped\\n"\n             "I\'m afraid",\n         )\n \n     def test_indent(self):\n         self.assertEqual(\n             wordwrap(\n                 "this is a short paragraph of text.\\n  But this line should be "\n                 "indented",\n                 14,\n             ),\n             "this is a\\nshort\\nparagraph of\\ntext.\\n  But this\\nline should be\\n"\n             "indented",\n         )\n \n     def test_indent2(self):\n         self.assertEqual(\n             wordwrap(\n                 "this is a short paragraph of text.\\n  But this line should be "\n                 "indented",\n                 15,\n             ),\n             "this is a short\\nparagraph of\\ntext.\\n  But this line\\nshould be\\n"\n             "indented",\n         )\n \n     def test_non_string_input(self):\n         self.assertEqual(wordwrap(123, 2), "123")\n \n     def test_wrap_lazy_string(self):\n         self.assertEqual(\n             wordwrap(\n                 lazystr(\n                     "this is a long paragraph of text that really needs to be wrapped "\n                     "I\'m afraid"\n                 ),\n                 14,\n             ),\n             "this is a long\\nparagraph of\\ntext that\\nreally needs\\nto be wrapped\\n"\n             "I\'m afraid",\n         )\n+\n+    def test_wrap_long_text(self):\n+        long_text = (\n+            "this is a long paragraph of text that really needs"\n+            " to be wrapped I\'m afraid " * 20_000\n+        )\n+        self.assertIn(\n+            "this is a\\nlong\\nparagraph\\nof text\\nthat\\nreally\\nneeds to\\nbe wrapped\\n"\n+            "I\'m afraid",\n+            wordwrap(long_text, 10),\n+        )\n\n===end==='}, {'role': 'user', 'content': 'Please analyze the provided information and generate a backported patch for the older version.'}], 'response': '', 'request_token': 0, 'response_token': 0}]
+2025-06-19 15:46:25.034 | INFO     | modules.llm_adapter:_call_llm:973 - llm.run() result:{'openai_responses': [''], 'request_tokens': [0], 'response_tokens': [0]}
+2025-06-19 15:46:25.036 | INFO     | modules.llm_adapter:_parse_llm_response:1055 - 原始LLM响应(前100字符): ...
+2025-06-19 15:46:25.040 | WARNING  | modules.llm_adapter:_parse_llm_response:1093 - 未找到任何已知补丁格式，返回完整响应
+2025-06-19 15:46:25.043 | INFO     | modules.llm_adapter:_save_llm_response:1224 - LLM响应已保存到: workspace/django/django/e88f73/llm_output/output_3.2.7_doubao-seed-1.6-thinking.patch
+2025-06-19 15:46:25.045 | INFO     | modules.llm_adapter:_save_llm_response:1225 - 原始LLM响应已保存到: workspace/django/django/e88f73/llm_output/raw_output_3.2.7_doubao-seed-1.6-thinking.patch
+2025-06-19 15:46:25.046 | INFO     | modules.llm_adapter:execute:97 - ==================================================
+2025-06-19 15:46:25.047 | INFO     | modules.llm_adapter:execute:98 - LLM适配器执行完成 - 摘要
+2025-06-19 15:46:25.049 | INFO     | modules.llm_adapter:execute:99 - 提示模式: 增强模式
+2025-06-19 15:46:25.050 | INFO     | modules.llm_adapter:execute:100 - 提示类型: 函数级别补丁
+2025-06-19 15:46:25.051 | INFO     | modules.llm_adapter:execute:101 - 函数上下文统计: 总尝试: 0, 成功: 0, 回退: 0
+2025-06-19 15:46:25.052 | INFO     | modules.llm_adapter:execute:105 - 执行时间: 1.65 秒
+2025-06-19 15:46:25.054 | INFO     | modules.llm_adapter:execute:106 - 生成的补丁保存到: workspace/django/django/e88f73/llm_output/output_3.2.7_doubao-seed-1.6-thinking.patch
+2025-06-19 15:46:25.055 | INFO     | modules.llm_adapter:execute:107 - ==================================================
+2025-06-19 15:46:25.059 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/django/django/e88f73/evaluations/llm_adapter/metrics_e88f73_20250619_154625.json
+2025-06-19 15:46:25.060 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-19 15:46:25.063 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/django/django/e88f73/llm_output/output_3.2.7_doubao-seed-1.6-thinking.patch
+2025-06-19 15:46:25.065 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_3.2.7_20250619_154625
+2025-06-19 15:46:25.376 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+
+2025-06-19 15:46:25.377 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-06-19 15:46:25.378 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_3.2.7_20250619_154625
+2025-06-19 15:46:25.452 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-06-19 15:46:25.454 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-06-19 15:46:25.456 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/django/django/e88f73/metrics/patch_adapter_metrics.json
+2025-06-19 15:46:25.457 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 3.15秒
+2025-06-19 15:46:25.458 | INFO     | __main__:_merge_patches:1101 - 开始合并补丁...
+2025-06-19 15:46:25.459 | WARNING  | __main__:_merge_patches:1225 - 没有找到可合并的补丁
+2025-06-19 15:46:25.460 | INFO     | __main__:_save_results:758 - 已复制最终补丁到结果目录: results/django_3.2.7_e88f73_20250619_154625/upstream_e88f73.patch
+2025-06-19 15:46:25.462 | INFO     | __main__:_save_results:896 - 结果已保存到: results/django_3.2.7_e88f73_20250619_154625/result.json
+2025-06-19 15:46:25.463 | INFO     | __main__:_print_summary:938 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-06-19 15:46:25.463 | INFO     | __main__:_print_summary:965 - ==================================================
+2025-06-19 15:46:25.464 | INFO     | __main__:_print_summary:966 - 处理摘要 - 提交: e88f73
+2025-06-19 15:46:25.464 | INFO     | __main__:_print_summary:967 - 适配状态: 适配失败 (方法: failed)
+2025-06-19 15:46:25.465 | INFO     | __main__:_print_summary:982 - 块分析统计:
+2025-06-19 15:46:25.466 | INFO     | __main__:_print_summary:983 - - 总块数: 4
+2025-06-19 15:46:25.466 | INFO     | __main__:_print_summary:984 - - 冲突块数: 4
+2025-06-19 15:46:25.467 | INFO     | __main__:_print_summary:985 - - 成功适配块数: 0
+2025-06-19 15:46:25.468 | INFO     | __main__:_print_summary:986 - - 适配失败块数: 4
+2025-06-19 15:46:25.469 | INFO     | __main__:_print_summary:987 - - 编译失败块数: 0
+2025-06-19 15:46:25.471 | INFO     | __main__:_print_summary:991 - 总执行时间: 3.15秒
+2025-06-19 15:46:25.471 | INFO     | __main__:_print_summary:996 - ==================================================
+2025-06-19 15:46:25.472 | INFO     | __main__:run:335 - 处理完成
+2025-06-19 15:46:25.473 | INFO     | __main__:process_single_commit:2219 - ============================================================
+2025-06-19 15:46:25.474 | INFO     | __main__:process_single_commit:2220 - 单个commit处理完成: e88f7376fe68dbf4ebaf11fad1513ce700b45860
+2025-06-19 15:46:25.474 | INFO     | __main__:process_single_commit:2221 - ============================================================
+2025-06-19 15:46:25.482 | INFO     | __main__:clean_config:2181 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

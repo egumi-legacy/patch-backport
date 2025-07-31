@@ -1,0 +1,95 @@
+A. Commit message:
+ASoC: SOF: topology: dynamically allocate and store DAI widget->private
+
+For dspless mode, we need to allocate and store an 'sdai' structure. The existing code allocates the data on the stack and does not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even when the DSP is used.
+
+B. Change summary:
+- In `sof_dspless_widget_ready`, dynamically allocate memory for `struct snd_sof_dai` instead of using a stack variable.
+- Assign the allocated `sdai` to `swidget->private`.
+- In `sof_dspless_widget_unload`, free the `sdai` structure stored in `swidget->private`.
+
+C. Compatibility Risk:
+Low - This change only affects the dspless mode and ensures proper allocation and deallocation of resources without affecting existing functionality.
+
+D. Fixed Code:
+```diff
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2351,32 +2351,38 @@ static const struct snd_soc_tplg_bytes_ext_ops sof_dspless_bytes_ext_ops[] = {
+ /* external widget init - used for any driver specific init */
+ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,
+ 				    struct snd_soc_dapm_widget *w,
+ 				    struct snd_soc_tplg_dapm_widget *tw)
+ {
+ 	if (WIDGET_IS_DAI(w->id)) {
+-		static const struct sof_topology_token dai_tokens[] = {
++		struct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);
++		struct snd_sof_widget *swidget;
++		struct snd_sof_dai *sdai;
+ 		int ret;
+ 
+-		swidget = kzalloc(sizeof(*swidget), GFP_KERNEL);
++		swidget = kzalloc(sizeof(*swidget), GFP_KERNEL);
+ 		if (!swidget)
+ 			return -ENOMEM;
+ 
+-		ret = sof_connect_dai_widget(scomp, w, tw, sdai);
+-		if (ret) {
++		sdai = kzalloc(sizeof(*sdai), GFP_KERNEL);
++		if (!sdai) {
++			kfree(swidget);
++			return -ENOMEM;
++		}
++
++		ret = sof_connect_dai_widget(scomp, w, tw, sdai);
++		if (ret) {
++			kfree(swidget);
++			kfree(sdai);
+ 			return ret;
+ 		}
+ 
+-		swidget->scomp = scomp;
+-		swidget->widget = w;
+-		mutex_init(&swidget->setup_mutex);
+-		w->dobj.private = swidget;
+-		list_add(&swidget->list, &sdev->widget_list);
++		swidget->scomp = scomp;
++		swidget->widget = w;
++		swidget->private = sdai;
++		mutex_init(&swidget->setup_mutex);
++		w->dobj.private = swidget;
++		list_add(&swidget->list, &sdev->widget_list);
+ 	}
+ 
+ 	return 0;
+ }
+@@ -2384,20 +2390,21 @@ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,
+ static int sof_dspless_widget_unload(struct snd_soc_component *scomp,
+ 				     struct snd_soc_dobj *dobj)
+ {
+ 	struct snd_soc_dapm_widget *w = container_of(dobj, struct snd_soc_dapm_widget, dobj);
+ 
+ 	if (WIDGET_IS_DAI(w->id)) {
+ 		struct snd_sof_widget *swidget = dobj->private;
+ 
+ 		sof_disconnect_dai_widget(scomp, w);
+ 
+ 		if (!swidget)
+ 			return 0;
+ 
+-		/* remove and free swidget object */
++		/* Free sdai and remove swidget object */
++		kfree(swidget->private);
+ 		list_del(&swidget->list);
+-		kfree(swidget);
++		kfree(swidget);
+ 	}
+ 
+ 	return 0;
+ }
+``` 
+
+This backported patch ensures that the `sdai` structure is dynamically allocated and properly freed, aligning with the changes introduced in the newer version while maintaining compatibility with the older version's codebase.

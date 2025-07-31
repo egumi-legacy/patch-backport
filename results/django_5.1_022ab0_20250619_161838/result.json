@@ -1,0 +1,101 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "chunks_info": {
+      "total_chunks": 7,
+      "no_conflict_chunks": 3,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 4,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-19T16:18:38.964069"
+  },
+  "to_adapt_commit": {
+    "sha": "022ab0a75c76ab2ea31dfcc5f2cf5501e378d397.patch",
+    "patch_url": "https://github.com/django/django/commit/022ab0a75c76ab2ea31dfcc5f2cf5501e378d397.patch",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "workspace/django/django/022ab0/patches/merged_5.1.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "5.1",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: docs/releases/4.2.16.txt: does not exist in index\nerror: docs/releases/5.0.9.txt: does not exist in index\nerror: docs/releases/5.1.1.txt: does not exist in index\nerror: patch failed: tests/template_tests/filter_tests/test_urlize.py:321\nerror: tests/template_tests/filter_tests/test_urlize.py: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/django/django/022ab0/patches/upstream_022ab0.patch",
+      "already_applied": false,
+      "timestamp": "2025-06-19T16:18:04.972339"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/django/django/022ab0/patches/upstream_022ab0.patch",
+      "total_chunks": 7,
+      "applied_chunks": 3,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/django/django/022ab0/chunk_patches/chunk_001_20250619_161805.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/django/django/022ab0/chunk_patches/chunk_002_20250619_161805.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/django/django/022ab0/chunk_patches/chunk_007_20250619_161805.patch"
+      ],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/django/django/022ab0/chunk_patches/remaining_chunks_20250619_161805.patch",
+      "timestamp": "2025-06-19T16:18:05.735325",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt\nindex 985300438608..2a84186867c5 100644\n--- a/docs/releases/4.2.16.txt\n+++ b/docs/releases/4.2.16.txt\n@@ -7,4 +7,9 @@ Django 4.2.16 release notes\n Django 4.2.16 fixes one security issue with severity \"moderate\" and one\n security issue with severity \"low\" in 4.2.15.\n \n-...\n+CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``\n+===========================================================================================\n+\n+:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential\n+denial-of-service attack via very large inputs with a specific sequence of\n+characters.\ndiff --git a/tests/template_tests/filter_tests/test_urlize.py b/tests/template_tests/filter_tests/test_urlize.py\nindex c19103859ebe..546bd6c7d615 100644\n--- a/tests/template_tests/filter_tests/test_urlize.py\n+++ b/tests/template_tests/filter_tests/test_urlize.py\n@@ -321,6 +321,11 @@ def test_trailing_semicolon(self):\n             '<a href=\"http://example.com?x=\" rel=\"nofollow\">'\n             \"http://example.com?x=&amp;</a>;;\",\n         )\n+        self.assertEqual(\n+            urlize(\"http://example.com?x=&amp.;...;\", autoescape=False),\n+            '<a href=\"http://example.com?x=\" rel=\"nofollow\">'\n+            \"http://example.com?x=&amp</a>.;...;\",\n+        )\n \n     def test_brackets(self):\n         \"\"\"",
+      "prompt": {
+        "patch_content": "From 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397 Mon Sep 17 00:00:00 2001\nFrom: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>\nDate: Mon, 12 Aug 2024 15:17:57 +0200\nSubject: [PATCH] [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in\n urlize and urlizetrunc template filters.\n\nThanks MProgrammer (https://hackerone.com/mprogrammer) for the report.\n---\n django/utils/html.py                            | 17 ++++++++++-------\n docs/ref/templates/builtins.txt                 | 11 +++++++++++\n docs/releases/4.2.16.txt                        |  7 ++++++-\n docs/releases/5.0.9.txt                         |  7 ++++++-\n docs/releases/5.1.1.txt                         |  7 +++++++\n .../template_tests/filter_tests/test_urlize.py  |  5 +++++\n tests/utils_tests/test_html.py                  |  1 +\n 7 files changed, 46 insertions(+), 9 deletions(-)\n\ndiff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt\nindex 985300438608..2a84186867c5 100644\n--- a/docs/releases/4.2.16.txt\n+++ b/docs/releases/4.2.16.txt\n@@ -7,4 +7,9 @@ Django 4.2.16 release notes\n Django 4.2.16 fixes one security issue with severity \"moderate\" and one\n security issue with severity \"low\" in 4.2.15.\n \n-...\n+CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``\n+===========================================================================================\n+\n+:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential\n+denial-of-service attack via very large inputs with a specific sequence of\n+characters.\ndiff --git a/docs/releases/5.0.9.txt b/docs/releases/5.0.9.txt\nindex eb3dbe832d8d..50e94ea3f2ec 100644\n--- a/docs/releases/5.0.9.txt\n+++ b/docs/releases/5.0.9.txt\n@@ -7,4 +7,9 @@ Django 5.0.9 release notes\n Django 5.0.9 fixes one security issue with severity \"moderate\" and one security\n issue with severity \"low\" in 5.0.8.\n \n-...\n+CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``\n+===========================================================================================\n+\n+:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential\n+denial-of-service attack via very large inputs with a specific sequence of\n+characters.\ndiff --git a/docs/releases/5.1.1.txt b/docs/releases/5.1.1.txt\nindex 743f2753a8e7..dd249291004d 100644\n--- a/docs/releases/5.1.1.txt\n+++ b/docs/releases/5.1.1.txt\n@@ -7,6 +7,13 @@ Django 5.1.1 release notes\n Django 5.1.1 fixes one security issue with severity \"moderate\", one security\n issue with severity \"low\", and several bugs in 5.1.\n \n+CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``\n+===========================================================================================\n+\n+:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential\n+denial-of-service attack via very large inputs with a specific sequence of\n+characters.\n+\n Bugfixes\n ========\n \ndiff --git a/tests/template_tests/filter_tests/test_urlize.py b/tests/template_tests/filter_tests/test_urlize.py\nindex c19103859ebe..546bd6c7d615 100644\n--- a/tests/template_tests/filter_tests/test_urlize.py\n+++ b/tests/template_tests/filter_tests/test_urlize.py\n@@ -321,6 +321,11 @@ def test_trailing_semicolon(self):\n             '<a href=\"http://example.com?x=\" rel=\"nofollow\">'\n             \"http://example.com?x=&amp;</a>;;\",\n         )\n+        self.assertEqual(\n+            urlize(\"http://example.com?x=&amp.;...;\", autoescape=False),\n+            '<a href=\"http://example.com?x=\" rel=\"nofollow\">'\n+            \"http://example.com?x=&amp</a>.;...;\",\n+        )\n \n     def test_brackets(self):\n         \"\"\"\n",
+        "target_version": "5.1",
+        "context_diff": "From 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397 Mon Sep 17 00:00:00 2001\nFrom: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>\nDate: Mon, 12 Aug 2024 15:17:57 +0200\nSubject: [PATCH] [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in\n urlize and urlizetrunc template filters.\n\nThanks MProgrammer (https://hackerone.com/mprogrammer) for the report.\n---\n django/utils/html.py                            | 17 ++++++++++-------\n docs/ref/templates/builtins.txt                 | 11 +++++++++++\n docs/releases/4.2.16.txt                        |  7 ++++++-\n docs/releases/5.0.9.txt                         |  7 ++++++-\n docs/releases/5.1.1.txt                         |  7 +++++++\n .../template_tests/filter_tests/test_urlize.py  |  5 +++++\n tests/utils_tests/test_html.py                  |  1 +\n 7 files changed, 46 insertions(+), 9 deletions(-)\n\ndiff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt\nindex 985300438608..2a84186867c5 100644\n--- a/docs/releases/4.2.16.txt\n+++ b/docs/releases/4.2.16.txt\n@@ -7,4 +7,9 @@ Django 4.2.16 release notes\n Django 4.2.16 fixes one security issue with severity \"moderate\" and one\n security issue with severity \"low\" in 4.2.15.\n \n-...\n+CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``\n+===========================================================================================\n+\n+:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential\n+denial-of-service attack via very large inputs with a specific sequence of\n+characters.\ndiff --git a/docs/releases/5.0.9.txt b/docs/releases/5.0.9.txt\nindex eb3dbe832d8d..50e94ea3f2ec 100644\n--- a/docs/releases/5.0.9.txt\n+++ b/docs/releases/5.0.9.txt\n@@ -7,4 +7,9 @@ Django 5.0.9 release notes\n Django 5.0.9 fixes one security issue with severity \"moderate\" and one security\n issue with severity \"low\" in 5.0.8.\n \n-...\n+CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``\n+===========================================================================================\n+\n+:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential\n+denial-of-service attack via very large inputs with a specific sequence of\n+characters.\ndiff --git a/docs/releases/5.1.1.txt b/docs/releases/5.1.1.txt\nindex 743f2753a8e7..dd249291004d 100644\n--- a/docs/releases/5.1.1.txt\n+++ b/docs/releases/5.1.1.txt\n@@ -7,6 +7,13 @@ Django 5.1.1 release notes\n Django 5.1.1 fixes one security issue with severity \"moderate\", one security\n issue with severity \"low\", and several bugs in 5.1.\n \n+CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``\n+===========================================================================================\n+\n+:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential\n+denial-of-service attack via very large inputs with a specific sequence of\n+characters.\n+\n Bugfixes\n ========\n \ndiff --git a/tests/template_tests/filter_tests/test_urlize.py b/tests/template_tests/filter_tests/test_urlize.py\nindex c19103859ebe..546bd6c7d615 100644\n--- a/tests/template_tests/filter_tests/test_urlize.py\n+++ b/tests/template_tests/filter_tests/test_urlize.py\n@@ -321,6 +321,11 @@ def test_trailing_semicolon(self):\n             '<a href=\"http://example.com?x=\" rel=\"nofollow\">'\n             \"http://example.com?x=&amp;</a>;;\",\n         )\n+        self.assertEqual(\n+            urlize(\"http://example.com?x=&amp.;...;\", autoescape=False),\n+            '<a href=\"http://example.com?x=\" rel=\"nofollow\">'\n+            \"http://example.com?x=&amp</a>.;...;\",\n+        )\n \n     def test_brackets(self):\n         \"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/django/django/022ab0/llm_output/output_5.1_qwen-plus.patch",
+      "timestamp": "2025-06-19T16:18:37.158460",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "final_patch_path": "workspace/django/django/022ab0/patches/merged_5.1.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-19T16:18:03.317378",
+    "end_time": "2025-06-19T16:18:37.811065",
+    "total_seconds": 34.493687,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "patch_content": "From 973b0e4870d0777456bf28396ea1f01c5cce7e91 Mon Sep 17 00:00:00 2001\nFrom: elpsy <hewenkuan_work@foxmail.com>\nDate: Thu, 19 Jun 2025 16:18:38 +0800\nSubject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A3/?=\n =?UTF-8?q?3=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\n---\n django/utils/html.py            | 17 ++++++++++-------\n docs/ref/templates/builtins.txt | 11 +++++++++++\n tests/utils_tests/test_html.py  |  1 +\n 3 files changed, 22 insertions(+), 7 deletions(-)\n\ndiff --git a/django/utils/html.py b/django/utils/html.py\nindex 154c820d34..0719347281 100644\n--- a/django/utils/html.py\n+++ b/django/utils/html.py\n@@ -427,14 +427,17 @@ class Urlizer:\n                 potential_entity = middle[amp:]\n                 escaped = html.unescape(potential_entity)\n                 if escaped == potential_entity or escaped.endswith(\";\"):\n-                    rstripped = middle.rstrip(\";\")\n-                    amount_stripped = len(middle) - len(rstripped)\n-                    if amp > -1 and amount_stripped > 1:\n-                        # Leave a trailing semicolon as might be an entity.\n-                        trail = middle[len(rstripped) + 1 :] + trail\n-                        middle = rstripped + \";\"\n+                    rstripped = middle.rstrip(self.trailing_punctuation_chars)\n+                    trail_start = len(rstripped)\n+                    amount_trailing_semicolons = len(middle) - len(middle.rstrip(\";\"))\n+                    if amp > -1 and amount_trailing_semicolons > 1:\n+                        # Leave up to most recent semicolon as might be an entity.\n+                        recent_semicolon = middle[trail_start:].index(\";\")\n+                        middle_semicolon_index = recent_semicolon + trail_start + 1\n+                        trail = middle[middle_semicolon_index:] + trail\n+                        middle = rstripped + middle[trail_start:middle_semicolon_index]\n                     else:\n-                        trail = middle[len(rstripped) :] + trail\n+                        trail = middle[trail_start:] + trail\n                         middle = rstripped\n                     trimmed_something = True\n \ndiff --git a/docs/ref/templates/builtins.txt b/docs/ref/templates/builtins.txt\nindex 3e2d63800a..86841b3dbd 100644\n--- a/docs/ref/templates/builtins.txt\n+++ b/docs/ref/templates/builtins.txt\n@@ -2932,6 +2932,17 @@ Django's built-in :tfilter:`escape` filter. The default value for\n     email addresses that contain single quotes (``'``), things won't work as\n     expected. Apply this filter only to plain text.\n \n+.. warning::\n+\n+    Using ``urlize`` or ``urlizetrunc`` can incur a performance penalty, which\n+    can become severe when applied to user controlled values such as content\n+    stored in a :class:`~django.db.models.TextField`. You can use\n+    :tfilter:`truncatechars` to add a limit to such inputs:\n+\n+    .. code-block:: html+django\n+\n+        {{ value|truncatechars:500|urlize }}\n+\n .. templatefilter:: urlizetrunc\n \n ``urlizetrunc``\ndiff --git a/tests/utils_tests/test_html.py b/tests/utils_tests/test_html.py\nindex 82dbd58f12..035585ec10 100644\n--- a/tests/utils_tests/test_html.py\n+++ b/tests/utils_tests/test_html.py\n@@ -374,6 +374,7 @@ class TestUtilsHtml(SimpleTestCase):\n             \"&:\" + \";\" * 100_000,\n             \"&.;\" * 100_000,\n             \".;\" * 100_000,\n+            \"&\" + \";:\" * 100_000,\n         )\n         for value in tests:\n             with self.subTest(value=value):\n-- \n2.25.1\n\n",
+    "llm_output": "diff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt\nindex 985300438608..2a84186867c5 100644\n--- a/docs/releases/4.2.16.txt\n+++ b/docs/releases/4.2.16.txt\n@@ -7,4 +7,9 @@ Django 4.2.16 release notes\n Django 4.2.16 fixes one security issue with severity \"moderate\" and one\n security issue with severity \"low\" in 4.2.15.\n \n-...\n+CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``\n+===========================================================================================\n+\n+:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential\n+denial-of-service attack via very large inputs with a specific sequence of\n+characters.\ndiff --git a/tests/template_tests/filter_tests/test_urlize.py b/tests/template_tests/filter_tests/test_urlize.py\nindex c19103859ebe..546bd6c7d615 100644\n--- a/tests/template_tests/filter_tests/test_urlize.py\n+++ b/tests/template_tests/filter_tests/test_urlize.py\n@@ -321,6 +321,11 @@ def test_trailing_semicolon(self):\n             '<a href=\"http://example.com?x=\" rel=\"nofollow\">'\n             \"http://example.com?x=&amp;</a>;;\",\n         )\n+        self.assertEqual(\n+            urlize(\"http://example.com?x=&amp.;...;\", autoescape=False),\n+            '<a href=\"http://example.com?x=\" rel=\"nofollow\">'\n+            \"http://example.com?x=&amp</a>.;...;\",\n+        )\n \n     def test_brackets(self):\n         \"\"\"",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "5.1",
+      "commit_sha": "022ab0a75c76ab2ea31dfcc5f2cf5501e378d397.patch",
+      "timestamp": "2025-06-19T16:18:38.964113",
+      "execution_path": "chunk_analyzer (3/7 chunks)",
+      "adaptation_method": "unknown"
+    }
+  }
+}

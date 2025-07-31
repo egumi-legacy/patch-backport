@@ -1,26 +1,37 @@
-From db81e320895a7b33c8ef95cd2af1683440766943 Mon Sep 17 00:00:00 2001
+From 9214fff6b0c451e57e28fe813729a74cea29ce26 Mon Sep 17 00:00:00 2001
 From: elpsy <hewenkuan_work@foxmail.com>
-Date: Thu, 5 Jun 2025 17:44:28 +0800
+Date: Thu, 12 Jun 2025 15:47:27 +0800
 Subject: [PATCH] Applied adapted patch for v6.12-rc7
 
 ---
- drivers/net/ethernet/intel/ice/ice_sriov.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_vf_lib.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
-index 91cb393f616f..4e355e3cf855 100644
---- a/drivers/net/ethernet/intel/ice/ice_sriov.c
-+++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
-@@ -193,9 +193,6 @@ void ice_free_vfs(struct ice_pf *pf)
- 			wr32(hw, GLGEN_VFLRSTAT(reg_idx), BIT(bit_idx));
- 		}
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+index 8c434689e3f7..4b6c0ab2162b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+@@ -716,6 +716,20 @@ ice_vf_clear_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m)
+ 	return 0;
+ }
  
--		/* clear malicious info since the VF is getting released */
--		list_del(&vf->mbx_info.list_entry);
--
- 		mutex_unlock(&vf->cfg_lock);
- 	}
- 
++/**
++ * ice_reset_vf_mbx_cnt - reset VF mailbox counters
++ * @vf: pointer to the VF structure
++ */
++static void ice_reset_vf_mbx_cnt(struct ice_vf *vf)
++{
++	struct ice_pf *pf = vf->pf;
++
++	if (ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
++		ice_mbx_vf_clear_cnt_e830(&pf->hw, vf->vf_id);
++	else
++		ice_mbx_clear_malvf(&vf->mbx_info);
++}
++
+ /**
+  * ice_reset_all_vfs - reset all allocated VFs in one go
+  * @pf: pointer to the PF structure
 -- 
 2.25.1
 

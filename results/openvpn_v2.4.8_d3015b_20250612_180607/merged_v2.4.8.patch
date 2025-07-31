@@ -1,0 +1,46 @@
+From 3b423e08c2b72914e377ff80aaa03e119f0da878 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 12 Jun 2025 18:06:07 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A2/?=
+ =?UTF-8?q?2=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ src/openvpn/ssl.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 9696e9ba..80ca4b18 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -756,6 +756,9 @@ state_name(int state)
+         case S_INITIAL:
+             return "S_INITIAL";
+ 
++        case S_PRE_START_SKIP:
++            return "S_PRE_START_SKIP";
++
+         case S_PRE_START:
+             return "S_PRE_START";
+ 
+@@ -3656,6 +3659,15 @@ tls_pre_decrypt(struct tls_multi *multi,
+                 }
+                 else
+                 {
++            bool initial_packet = false;
++            if (ks->state == S_PRE_START_SKIP)
++            {
++                /* When we are coming from the session_skip_to_pre_start
++                 * method, we allow this initial packet to setup the
++                 * tls-crypt-v2 peer specific key */
++                initial_packet = true;
++                ks->state = S_PRE_START;
++            }
+                     /*
+                      * Remote responding to our key renegotiation request?
+                      */
+-- 
+2.25.1
+

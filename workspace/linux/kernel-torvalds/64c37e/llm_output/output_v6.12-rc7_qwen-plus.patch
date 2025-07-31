@@ -1,0 +1,7 @@
+kernel: Avoid uprobe registration on unstable mm_struct
+
+When registering vmas for uprobes, skip those in an mm that is marked as unstable.
+Modifying a vma in an unstable mm may cause issues if the mm isn't fully initialized.
+
+Additionally, during `dup_mmap()`, ensure that partially initialized mm_structs are
+marked as unstable to avoid potential races or unsafe accesses.

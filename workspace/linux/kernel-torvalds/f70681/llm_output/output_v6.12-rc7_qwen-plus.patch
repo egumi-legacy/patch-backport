@@ -1,0 +1,11 @@
+libfs: Fix duplicate directory entry in offset_dir_lookup
+
+Backported fix for an issue where concurrent unlink operations during
+directory listing could result in duplicate directory entries.
+
+The root cause is in the offset_dir_lookup function, which uses mas_find
+to determine the starting position for getdents calls. This can lead to
+duplicate entries if a file is unlinked between calls. The fix replaces
+mas_find with mas_find_rev to ensure the correct starting position.
+
+This patch backports the fix to the older version of fs/libfs.c.

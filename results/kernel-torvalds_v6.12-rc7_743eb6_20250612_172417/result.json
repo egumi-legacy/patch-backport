@@ -1,0 +1,102 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "chunks_info": {
+      "total_chunks": 5,
+      "no_conflict_chunks": 4,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 1,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-12T17:24:17.352876"
+  },
+  "to_adapt_commit": {
+    "sha": "743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch",
+    "patch_url": "https://github.com/linux/kernel-torvalds/commit/743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "workspace/linux/kernel-torvalds/743eb6/patches/merged_v6.12-rc7.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "v6.12-rc7",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: sound/soc/sof/sof-audio.c:46\nerror: sound/soc/sof/sof-audio.c: patch does not apply\nerror: patch failed: sound/soc/sof/topology.c:2356\nerror: sound/soc/sof/topology.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/patches/upstream_743eb6.patch",
+      "already_applied": false,
+      "timestamp": "2025-06-12T17:23:36.675517"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/patches/upstream_743eb6.patch",
+      "total_chunks": 5,
+      "applied_chunks": 4,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_001_20250612_172336.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_002_20250612_172336.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_003_20250612_172336.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_005_20250612_172336.patch"
+      ],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/remaining_chunks_20250612_172337.patch",
+      "timestamp": "2025-06-12T17:23:37.728912",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c\nindex 25fb0d1443b6..915c2e88e32b 100644\n--- a/sound/soc/sof/topology.c\n+++ b/sound/soc/sof/topology.c\n@@ -2354,25 +2354,43 @@\n \t\t\t\t    struct snd_soc_tplg_dapm_widget *tw)\n {\n \tif (WIDGET_IS_DAI(w->id)) {\n+\t\tstatic const struct sof_topology_token dai_tokens[] = {\n+\t\t\t{SOF_TKN_DAI_TYPE, SND_SOC_TPLG_TUPLE_TYPE_STRING, get_token_dai_type, 0}};\n \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n+\t\tstruct snd_soc_tplg_private *priv = &tw->priv;\n \t\tstruct snd_sof_widget *swidget;\n-\t\tstruct snd_sof_dai dai;\n+\t\tstruct snd_sof_dai *sdai;\n \t\tint ret;\n \n \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n \t\tif (!swidget)\n \t\t\treturn -ENOMEM;\n \n-\t\tmemset(&dai, 0, sizeof(dai));\n+\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n+\t\tif (!sdai) {\n+\t\t\tkfree(swidget);\n+\t\t\treturn -ENOMEM;\n+\t\t}\n+\n+\t\tret = sof_parse_tokens(scomp, &sdai->type, dai_tokens, ARRAY_SIZE(dai_tokens),\n+\t\t\t\t       priv->array, le32_to_cpu(priv->size));\n+\t\tif (ret < 0) {\n+\t\t\tdev_err(scomp->dev, \"Failed to parse DAI tokens for %s\\n\", tw->name);\n+\t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n+\t\t\treturn ret;\n+\t\t}\n+\n+\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n \t\tif (ret) {\n \t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n \t\t\treturn ret;\n \t\t}\n \n \t\tswidget->scomp = scomp;\n \t\tswidget->widget = w;\n+\t\tswidget->private = sdai;\n \t\tmutex_init(&swidget->setup_mutex);\n \t\tw->dobj.private = swidget;\n \t\tlist_add(&swidget->list, &sdev->widget_list);\n@@ -2396,6 +2415,7 @@\n \n \t\tlist_del(&swidget->list);\n+\t\tkfree(swidget->private);\n \t\tkfree(swidget);\n \t}\n \n@@ -2415,7 +2435,7 @@\n \treturn 0;\n }\n \n-static struct snd_soc_tplg_ops sof_dspless_tplg_ops = {\n+static const struct snd_soc_tplg_ops sof_dspless_tplg_ops = {\n \t.widget_ready\t= sof_dspless_widget_ready,\n \t.widget_unload\t= sof_dspless_widget_unload,",
+      "prompt": {
+        "patch_content": "From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001\nFrom: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>\nDate: Tue, 13 Feb 2024 12:12:41 +0200\nSubject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI\n widget->private\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\nFor dspless mode, we need to allocate and store an 'sdai'\nstructure. The existing code allocate the data on the stack and does\nnot set the widget->private pointer.\n\nThis minor change should not have any impact on existing DAIs, even\nwhen the DSP is used.\n\nSigned-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>\nReviewed-by: P\u00e9ter Ujfalusi <peter.ujfalusi@linux.intel.com>\nReviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>\nSigned-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>\nLink: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\n\ndiff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c\nindex 25fb0d1443b6..915c2e88e32b 100644\n--- a/sound/soc/sof/topology.c\n+++ b/sound/soc/sof/topology.c\n@@ -2356,23 +2356,29 @@ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,\n \tif (WIDGET_IS_DAI(w->id)) {\n \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n \t\tstruct snd_sof_widget *swidget;\n-\t\tstruct snd_sof_dai dai;\n+\t\tstruct snd_sof_dai *sdai;\n \t\tint ret;\n \n \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n \t\tif (!swidget)\n \t\t\treturn -ENOMEM;\n \n-\t\tmemset(&dai, 0, sizeof(dai));\n+\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n+\t\tif (!sdai) {\n+\t\t\tkfree(swidget);\n+\t\t\treturn -ENOMEM;\n+\t\t}\n \n-\t\tret = sof_connect_dai_widget(scomp, w, tw, &dai);\n+\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n \t\tif (ret) {\n \t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n \t\t\treturn ret;\n \t\t}\n \n \t\tswidget->scomp = scomp;\n \t\tswidget->widget = w;\n+\t\tswidget->private = sdai;\n \t\tmutex_init(&swidget->setup_mutex);\n \t\tw->dobj.private = swidget;\n \t\tlist_add(&swidget->list, &sdev->widget_list);\n",
+        "target_version": "v6.12-rc7",
+        "context_diff": "modified file: sound/soc/sof/sof-audio.c\n--- workspace/linux/kernel-torvalds/743eb6/newer/sound/soc/sof/sof-audio.c\n+++ workspace/linux/kernel-torvalds/743eb6/v6.12-rc7/sound/soc/sof/sof-audio.c\n@@ -3,7 +3,7 @@\n  // This file is provided under a dual BSD/GPLv2 license.  When using or\n  // redistributing this file, you may do so under either license.\n  //\n -// Copyright(c) 2019 Intel Corporation. All rights reserved.\n +// Copyright(c) 2019 Intel Corporation\n  //\n  // Author: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>\n  //\n@@ -46,7 +46,6 @@\n  {\n  \tconst struct sof_ipc_tplg_ops *tplg_ops = sof_ipc_get_ops(sdev, tplg);\n  \tstruct snd_sof_pipeline *spipe = swidget->spipe;\n -\tstruct snd_sof_widget *pipe_widget;\n  \tint err = 0;\n  \tint ret;\n  \n@@ -58,8 +57,6 @@\n  \tif (--swidget->use_count)\n  \t\treturn 0;\n -\n -\tpipe_widget = swidget->spipe->pipe_widget;\n  \n  \tsof_reset_route_setup_status(sdev, swidget);\n@@ -109,8 +106,9 @@\n  \t * free the scheduler widget (same as pipe_widget) associated with the current swidget.\n  \t * skip for static pipelines\n  \t */\n -\tif (swidget->dynamic_pipeline_widget && swidget->id != snd_soc_dapm_scheduler) {\n -\t\tret = sof_widget_free_unlocked(sdev, pipe_widget);\n +\tif (swidget->spipe && swidget->dynamic_pipeline_widget &&\n +\t    swidget->id != snd_soc_dapm_scheduler) {\n +\t\tret = sof_widget_free_unlocked(sdev, swidget->spipe->pipe_widget);\n  \t\tif (ret < 0 && !err)\n  \t\t\terr = ret;\n  \t}\n@@ -487,7 +485,7 @@\n  \t\t\tif (ret < 0) {\n  \t\t\t\tif (widget_ops[widget->id].ipc_unprepare &&\n -\t\t\t\t    swidget && swidget->prepared) {\n +\t\t\t\t    swidget && swidget->prepared && swidget->use_count == 0) {\n  \t\t\t\t\twidget_ops[widget->id].ipc_unprepare(swidget);\n  \t\t\t\t\tswidget->prepared = false;\n  \t\t\t\t}\n@@ -836,35 +834,48 @@\n  {\n  \tconst struct sof_ipc_pcm_ops *pcm_ops = sof_ipc_get_ops(sdev, pcm);\n  \tint ret;\n +\tint err = 0;\n  \n  \tif (spcm->prepared[substream->stream]) {\n  \t\tif (pcm_ops && pcm_ops->platform_stop_during_hw_free)\n  \t\t\tsnd_sof_pcm_platform_trigger(sdev, substream, SNDRV_PCM_TRIGGER_STOP);\n  \n -\t\t/* Send PCM_FREE IPC to reset pipeline */\n +\t\t/* free PCM in the DSP */\n  \t\tif (pcm_ops && pcm_ops->hw_free) {\n  \t\t\tret = pcm_ops->hw_free(sdev->component, substream);\n -\t\t\tif (ret < 0)\n -\t\t\t\treturn ret;\n +\t\t\tif (ret < 0) {\n +\t\t\t\tdev_err(sdev->dev, \"%s: pcm_ops hw_free failed %d\\n\",\n +\t\t\t\t\t__func__, ret);\n +\t\t\t\terr = ret;\n +\t\t\t}\n  \t\t}\n  \n  \t\tspcm->prepared[substream->stream] = false;\n +\t\tspcm->pending_stop[substream->stream] = false;\n  \t}\n  \n  \tret = snd_sof_pcm_platform_hw_free(sdev, substream);\n -\tif (ret < 0)\n -\t\treturn ret;\n +\tif (ret < 0) {\n +\t\tdev_err(sdev->dev, \"%s: platform hw free failed %d\\n\",\n +\t\t\t__func__, ret);\n +\t\tif (!err)\n +\t\t\terr = ret;\n +\t}\n  \n  \tif (free_widget_list) {\n  \t\tret = sof_widget_list_free(sdev, spcm, dir);\n -\t\tif (ret < 0)\n -\t\t\tdev_err(sdev->dev, \"failed to free widgets during suspend\\n\");\n -\t}\n -\n -\treturn ret;\n +\t\tif (ret < 0) {\n +\t\t\tdev_err(sdev->dev, \"%s: sof_widget_list_free failed %d\\n\",\n +\t\t\t\t__func__, ret);\n +\t\t\tif (!err)\n +\t\t\t\terr = ret;\n +\t\t}\n +\t}\n +\n +\treturn err;\n  }\n  \n  int sof_dai_get_mclk(struct snd_soc_pcm_runtime *rtd)\n  {\n -\treturn sof_dai_get_clk(rtd, SOF_DAI_CLK_INTEL_SSP_MCLK);\n +\treturn sof_dai_get_param(rtd, SOF_DAI_PARAM_INTEL_SSP_MCLK);\n  }\n  EXPORT_SYMBOL(sof_dai_get_mclk);\n  \n@@ -1002,6 +1013,16 @@\n   */\n  int sof_dai_get_bclk(struct snd_soc_pcm_runtime *rtd)\n  {\n -\treturn sof_dai_get_clk(rtd, SOF_DAI_CLK_INTEL_SSP_BCLK);\n +\treturn sof_dai_get_param(rtd, SOF_DAI_PARAM_INTEL_SSP_BCLK);\n  }\n  EXPORT_SYMBOL(sof_dai_get_bclk);\n +\n +/*\n + * Helper to get SSP TDM slot number from a pcm_runtime.\n + * Return 0 if not exist.\n + */\n +int sof_dai_get_tdm_slots(struct snd_soc_pcm_runtime *rtd)\n +{\n +\treturn sof_dai_get_param(rtd, SOF_DAI_PARAM_INTEL_SSP_TDM_SLOTS);\n +}\n +EXPORT_SYMBOL(sof_dai_get_tdm_slots);\n\n\"\"\"\"\"\"\nmodified file: sound/soc/sof/topology.c\n--- workspace/linux/kernel-torvalds/743eb6/newer/sound/soc/sof/topology.c\n+++ workspace/linux/kernel-torvalds/743eb6/v6.12-rc7/sound/soc/sof/topology.c\n@@ -3,7 +3,7 @@\n  // This file is provided under a dual BSD/GPLv2 license.  When using or\n  // redistributing this file, you may do so under either license.\n  //\n -// Copyright(c) 2018 Intel Corporation. All rights reserved.\n +// Copyright(c) 2018 Intel Corporation\n  //\n  // Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>\n  //\n@@ -1349,7 +1349,7 @@\n  \n  \tif (pin_binding[0]) {\n -\t\tpb = kmemdup(pin_binding, num_pins * sizeof(char *), GFP_KERNEL);\n +\t\tpb = kmemdup_array(pin_binding, num_pins, sizeof(char *), GFP_KERNEL);\n  \t\tif (!pb) {\n  \t\t\tret = -ENOMEM;\n  \t\t\tgoto err;\n@@ -1531,10 +1531,9 @@\n  \tif (ret < 0) {\n  \t\tdev_err(scomp->dev,\n -\t\t\t\"error: failed to add widget id %d type %d name : %s stream %s\\n\",\n -\t\t\ttw->shift, swidget->id, tw->name,\n -\t\t\tstrnlen(tw->sname, SNDRV_CTL_ELEM_ID_NAME_MAXLEN) > 0\n -\t\t\t\t? tw->sname : \"none\");\n +\t\t\t\"failed to add widget type %d name : %s stream %s\\n\",\n +\t\t\tswidget->id, tw->name, strnlen(tw->sname, SNDRV_CTL_ELEM_ID_NAME_MAXLEN) > 0\n +\t\t\t\t\t\t\t? tw->sname : \"none\");\n  \t\tgoto widget_free;\n  \t}\n  \n@@ -1890,9 +1889,9 @@\n  \t\treturn -ENOMEM;\n  \n  \tslink->num_hw_configs = le32_to_cpu(cfg->num_hw_configs);\n -\tslink->hw_configs = kmemdup(cfg->hw_config,\n -\t\t\t\t    sizeof(*slink->hw_configs) * slink->num_hw_configs,\n -\t\t\t\t    GFP_KERNEL);\n +\tslink->hw_configs = kmemdup_array(cfg->hw_config,\n +\t\t\t\t\t  slink->num_hw_configs, sizeof(*slink->hw_configs),\n +\t\t\t\t\t  GFP_KERNEL);\n  \tif (!slink->hw_configs) {\n  \t\tkfree(slink);\n  \t\treturn -ENOMEM;\n@@ -2051,6 +2050,8 @@\n  \tif (!slink)\n  \t\treturn 0;\n  \n +\tslink->link->platforms->name = NULL;\n +\n  \tkfree(slink->tuples);\n  \tlist_del(&slink->list);\n  \tkfree(slink->hw_configs);\n@@ -2279,7 +2280,7 @@\n  \t{SOF_TPLG_KCTL_BYTES_VOLATILE_RO, snd_sof_bytes_ext_volatile_get},\n  };\n  \n -static struct snd_soc_tplg_ops sof_tplg_ops = {\n +static const struct snd_soc_tplg_ops sof_tplg_ops = {\n  \t.control_load\t= sof_control_load,\n  \t.control_unload\t= sof_control_unload,\n@@ -2354,25 +2355,43 @@\n  \t\t\t\t    struct snd_soc_tplg_dapm_widget *tw)\n  {\n  \tif (WIDGET_IS_DAI(w->id)) {\n +\t\tstatic const struct sof_topology_token dai_tokens[] = {\n +\t\t\t{SOF_TKN_DAI_TYPE, SND_SOC_TPLG_TUPLE_TYPE_STRING, get_token_dai_type, 0}};\n  \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n +\t\tstruct snd_soc_tplg_private *priv = &tw->priv;\n  \t\tstruct snd_sof_widget *swidget;\n -\t\tstruct snd_sof_dai dai;\n +\t\tstruct snd_sof_dai *sdai;\n  \t\tint ret;\n  \n  \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n  \t\tif (!swidget)\n  \t\t\treturn -ENOMEM;\n  \n -\t\tmemset(&dai, 0, sizeof(dai));\n -\n -\t\tret = sof_connect_dai_widget(scomp, w, tw, &dai);\n +\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n +\t\tif (!sdai) {\n +\t\t\tkfree(swidget);\n +\t\t\treturn -ENOMEM;\n +\t\t}\n +\n +\t\tret = sof_parse_tokens(scomp, &sdai->type, dai_tokens, ARRAY_SIZE(dai_tokens),\n +\t\t\t\t       priv->array, le32_to_cpu(priv->size));\n +\t\tif (ret < 0) {\n +\t\t\tdev_err(scomp->dev, \"Failed to parse DAI tokens for %s\\n\", tw->name);\n +\t\t\tkfree(swidget);\n +\t\t\tkfree(sdai);\n +\t\t\treturn ret;\n +\t\t}\n +\n +\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n  \t\tif (ret) {\n  \t\t\tkfree(swidget);\n +\t\t\tkfree(sdai);\n  \t\t\treturn ret;\n  \t\t}\n  \n  \t\tswidget->scomp = scomp;\n  \t\tswidget->widget = w;\n +\t\tswidget->private = sdai;\n  \t\tmutex_init(&swidget->setup_mutex);\n  \t\tw->dobj.private = swidget;\n  \t\tlist_add(&swidget->list, &sdev->widget_list);\n@@ -2396,6 +2415,7 @@\n  \n  \t\tlist_del(&swidget->list);\n +\t\tkfree(swidget->private);\n  \t\tkfree(swidget);\n  \t}\n  \n@@ -2415,7 +2435,7 @@\n  \treturn 0;\n  }\n  \n -static struct snd_soc_tplg_ops sof_dspless_tplg_ops = {\n +static const struct snd_soc_tplg_ops sof_dspless_tplg_ops = {\n  \t.widget_ready\t= sof_dspless_widget_ready,\n  \t.widget_unload\t= sof_dspless_widget_unload,\n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/linux/kernel-torvalds/743eb6/llm_output/output_v6.12-rc7_qwen-plus.patch",
+      "timestamp": "2025-06-12T17:24:15.390297",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "final_patch_path": "workspace/linux/kernel-torvalds/743eb6/patches/merged_v6.12-rc7.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-12T17:23:35.413183",
+    "end_time": "2025-06-12T17:24:16.308606",
+    "total_seconds": 40.895423,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "patch_content": "",
+    "llm_output": "diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c\nindex 25fb0d1443b6..915c2e88e32b 100644\n--- a/sound/soc/sof/topology.c\n+++ b/sound/soc/sof/topology.c\n@@ -2354,25 +2354,43 @@\n \t\t\t\t    struct snd_soc_tplg_dapm_widget *tw)\n {\n \tif (WIDGET_IS_DAI(w->id)) {\n+\t\tstatic const struct sof_topology_token dai_tokens[] = {\n+\t\t\t{SOF_TKN_DAI_TYPE, SND_SOC_TPLG_TUPLE_TYPE_STRING, get_token_dai_type, 0}};\n \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n+\t\tstruct snd_soc_tplg_private *priv = &tw->priv;\n \t\tstruct snd_sof_widget *swidget;\n-\t\tstruct snd_sof_dai dai;\n+\t\tstruct snd_sof_dai *sdai;\n \t\tint ret;\n \n \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n \t\tif (!swidget)\n \t\t\treturn -ENOMEM;\n \n-\t\tmemset(&dai, 0, sizeof(dai));\n+\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n+\t\tif (!sdai) {\n+\t\t\tkfree(swidget);\n+\t\t\treturn -ENOMEM;\n+\t\t}\n+\n+\t\tret = sof_parse_tokens(scomp, &sdai->type, dai_tokens, ARRAY_SIZE(dai_tokens),\n+\t\t\t\t       priv->array, le32_to_cpu(priv->size));\n+\t\tif (ret < 0) {\n+\t\t\tdev_err(scomp->dev, \"Failed to parse DAI tokens for %s\\n\", tw->name);\n+\t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n+\t\t\treturn ret;\n+\t\t}\n+\n+\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n \t\tif (ret) {\n \t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n \t\t\treturn ret;\n \t\t}\n \n \t\tswidget->scomp = scomp;\n \t\tswidget->widget = w;\n+\t\tswidget->private = sdai;\n \t\tmutex_init(&swidget->setup_mutex);\n \t\tw->dobj.private = swidget;\n \t\tlist_add(&swidget->list, &sdev->widget_list);\n@@ -2396,6 +2415,7 @@\n \n \t\tlist_del(&swidget->list);\n+\t\tkfree(swidget->private);\n \t\tkfree(swidget);\n \t}\n \n@@ -2415,7 +2435,7 @@\n \treturn 0;\n }\n \n-static struct snd_soc_tplg_ops sof_dspless_tplg_ops = {\n+static const struct snd_soc_tplg_ops sof_dspless_tplg_ops = {\n \t.widget_ready\t= sof_dspless_widget_ready,\n \t.widget_unload\t= sof_dspless_widget_unload,",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "v6.12-rc7",
+      "commit_sha": "743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch",
+      "timestamp": "2025-06-12T17:24:17.352894",
+      "execution_path": "chunk_analyzer (4/5 chunks)",
+      "adaptation_method": "unknown"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+From ad866a1ca3e7d60da888d25d27e46a8adb2ed36e Mon Sep 17 00:00:00 2001
+From: Natalia <124304+nessita@users.noreply.github.com>
+Date: Mon, 6 Jan 2025 15:51:45 -0300
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-56374 -- Mitigated potential DoS in
+ IPv6 validation.
+
+Thanks Saravana Kumar for the report, and Sarah Boyce and Mariusz
+Felisiak for the reviews.
+
+Co-authored-by: Natalia <124304+nessita@users.noreply.github.com>
+---
+ django/db/models/fields/__init__.py           |  6 +--
+ django/forms/fields.py                        |  7 +++-
+ django/utils/ipv6.py                          | 19 +++++++--
+ docs/ref/forms/fields.txt                     | 13 +++++-
+ docs/releases/4.2.18.txt                      | 12 ++++++
+ .../field_tests/test_genericipaddressfield.py | 33 ++++++++++++++-
+ tests/utils_tests/test_ipv6.py                | 40 +++++++++++++++++--
+ 7 files changed, 116 insertions(+), 14 deletions(-)
+
+diff --git a/django/utils/ipv6.py b/django/utils/ipv6.py
+index 88dd6ecb4b84..de41a97f7210 100644
+--- a/django/utils/ipv6.py
++++ b/django/utils/ipv6.py
+@@ -41,7 +54,7 @@ def is_valid_ipv6_address(ip_str):
+     Return whether or not the `ip_str` string is a valid IPv6 address.
+     """
+     try:
+-        ipaddress.IPv6Address(ip_str)
++        _ipv6_address_from_str(ip_str)
+     except ValueError:
+         return False
+     return True

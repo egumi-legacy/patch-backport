@@ -1,0 +1,164 @@
+
+
+# ===== 应用成功的补丁块 1 =====
+
+From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/sof-audio.c b/sound/soc/sof/sof-audio.c
+index 9163975c9c3f..e693dcb475e4 100644
+--- a/sound/soc/sof/sof-audio.c
++++ b/sound/soc/sof/sof-audio.c
+@@ -46,7 +46,6 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
+ {
+ 	const struct sof_ipc_tplg_ops *tplg_ops = sof_ipc_get_ops(sdev, tplg);
+ 	struct snd_sof_pipeline *spipe = swidget->spipe;
+-	struct snd_sof_widget *pipe_widget;
+ 	int err = 0;
+ 	int ret;
+ 
+
+
+# ===== 应用成功的补丁块 2 =====
+
+From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/sof-audio.c b/sound/soc/sof/sof-audio.c
+index 9163975c9c3f..e693dcb475e4 100644
+--- a/sound/soc/sof/sof-audio.c
++++ b/sound/soc/sof/sof-audio.c
+@@ -59,8 +58,6 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
+ 	if (--swidget->use_count)
+ 		return 0;
+ 
+-	pipe_widget = swidget->spipe->pipe_widget;
+-
+ 	/* reset route setup status for all routes that contain this widget */
+ 	sof_reset_route_setup_status(sdev, swidget);
+ 
+
+
+# ===== 应用成功的补丁块 3 =====
+
+From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/sof-audio.c b/sound/soc/sof/sof-audio.c
+index 9163975c9c3f..e693dcb475e4 100644
+--- a/sound/soc/sof/sof-audio.c
++++ b/sound/soc/sof/sof-audio.c
+@@ -109,8 +106,9 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
+ 	 * free the scheduler widget (same as pipe_widget) associated with the current swidget.
+ 	 * skip for static pipelines
+ 	 */
+-	if (swidget->dynamic_pipeline_widget && swidget->id != snd_soc_dapm_scheduler) {
+-		ret = sof_widget_free_unlocked(sdev, pipe_widget);
++	if (swidget->spipe && swidget->dynamic_pipeline_widget &&
++	    swidget->id != snd_soc_dapm_scheduler) {
++		ret = sof_widget_free_unlocked(sdev, swidget->spipe->pipe_widget);
+ 		if (ret < 0 && !err)
+ 			err = ret;
+ 	}
+
+
+# ===== 应用成功的补丁块 4 =====
+
+From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index 25fb0d1443b6..915c2e88e32b 100644
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2396,6 +2402,7 @@ static int sof_dspless_widget_unload(struct snd_soc_component *scomp,
+ 
+ 		/* remove and free swidget object */
+ 		list_del(&swidget->list);
++		kfree(swidget->private);
+ 		kfree(swidget);
+ 	}
+ 
+-- 
+2.25.1
+

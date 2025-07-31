@@ -1,0 +1,103 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "chunks_info": {
+      "total_chunks": 1,
+      "no_conflict_chunks": 0,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 1,
+      "compilation_failed_chunks": 0
+    },
+    "method": "patch_adapter",
+    "timestamp": "2025-06-12T17:46:07.587257"
+  },
+  "to_adapt_commit": {
+    "sha": "5b29891f91dfb8758baf1e2217bef4b16b2b165b.patch",
+    "patch_url": "https://github.com/linux/kernel-stable/commit/5b29891f91dfb8758baf1e2217bef4b16b2b165b.patch",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/adapted_v6.12-rc7.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "v6.12-rc7",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: fs/smb/client/fs_context.c:1351\nerror: fs/smb/client/fs_context.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/upstream_5b2989.patch",
+      "already_applied": false,
+      "timestamp": "2025-06-12T17:45:47.870777"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/upstream_5b2989.patch",
+      "total_chunks": 1,
+      "applied_chunks": 0,
+      "applied_chunk_patches": [],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/chunk_patches/remaining_chunks_20250612_174549.patch",
+      "timestamp": "2025-06-12T17:45:49.002147",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/fs/smb/client/fs_context.c b/fs/smb/client/fs_context.c\nindex 5f3c5967a0f5..c983021c406b 100644\n--- a/fs/smb/client/fs_context.c\n+++ b/fs/smb/client/fs_context.c\n@@ -1351,11 +1351,11 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,\n \t\tctx->acregmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_acdirmax:\n-\t\tctx->acdirmax = HZ * result.uint_32;\n-\t\tif (ctx->acdirmax > CIFS_MAX_ACTIMEO) {\n+\t\tif (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {\n \t\t\tcifs_errorf(fc, \"acdirmax too large\\n\");\n \t\t\tgoto cifs_parse_mount_err;\n \t\t}\n+\t\tctx->acdirmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_actimeo:\n \t\tif (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {",
+      "prompt": {
+        "patch_content": "From 5b29891f91dfb8758baf1e2217bef4b16b2b165b Mon Sep 17 00:00:00 2001\nFrom: Murad Masimov <m.masimov@mt-integration.ru>\nDate: Tue, 11 Mar 2025 17:22:04 +0300\nSubject: [PATCH] cifs: Fix integer overflow while processing acdirmax mount\n option\n\nUser-provided mount parameter acdirmax of type u32 is intended to have\nan upper limit, but before it is validated, the value is converted from\nseconds to jiffies which can lead to an integer overflow.\n\nFound by Linux Verification Center (linuxtesting.org) with SVACE.\n\nFixes: 4c9f948142a5 (\"cifs: Add new mount parameter \"acdirmax\" to allow caching directory metadata\")\nSigned-off-by: Murad Masimov <m.masimov@mt-integration.ru>\nSigned-off-by: Steve French <stfrench@microsoft.com>\n\ndiff --git a/fs/smb/client/fs_context.c b/fs/smb/client/fs_context.c\nindex 5f3c5967a0f5..c983021c406b 100644\n--- a/fs/smb/client/fs_context.c\n+++ b/fs/smb/client/fs_context.c\n@@ -1351,11 +1351,11 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,\n \t\tctx->acregmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_acdirmax:\n-\t\tctx->acdirmax = HZ * result.uint_32;\n-\t\tif (ctx->acdirmax > CIFS_MAX_ACTIMEO) {\n+\t\tif (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {\n \t\t\tcifs_errorf(fc, \"acdirmax too large\\n\");\n \t\t\tgoto cifs_parse_mount_err;\n \t\t}\n+\t\tctx->acdirmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_actimeo:\n \t\tif (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {\n-- \n2.25.1\n\n",
+        "target_version": "v6.12-rc7",
+        "context_diff": "modified file: fs/smb/client/fs_context.c\n--- workspace/linux/kernel-stable/5b2989/newer/fs/smb/client/fs_context.c\n+++ workspace/linux/kernel-stable/5b2989/v6.12-rc7/fs/smb/client/fs_context.c\n@@ -65,12 +65,6 @@\n  \t{ Opt_sec_none, \"none\" },\n  \n  \t{ Opt_sec_err, NULL }\n -};\n -\n -static const match_table_t cifs_upcall_target = {\n -\t{ Opt_upcall_target_mount, \"mount\" },\n -\t{ Opt_upcall_target_application, \"app\" },\n -\t{ Opt_upcall_target_err, NULL }\n  };\n  \n  const struct fs_parameter_spec smb3_fs_parameters[] = {\n@@ -133,7 +127,6 @@\n  \tfsparam_flag(\"rootfs\", Opt_rootfs),\n  \tfsparam_flag(\"compress\", Opt_compress),\n  \tfsparam_flag(\"witness\", Opt_witness),\n -\tfsparam_flag_no(\"nativesocket\", Opt_nativesocket),\n  \n  \tfsparam_uid(\"backupuid\", Opt_backupuid),\n@@ -171,7 +164,6 @@\n  \tfsparam_string(\"username\", Opt_user),\n  \tfsparam_string(\"pass\", Opt_pass),\n  \tfsparam_string(\"password\", Opt_pass),\n -\tfsparam_string(\"pass2\", Opt_pass2),\n  \tfsparam_string(\"password2\", Opt_pass2),\n  \tfsparam_string(\"ip\", Opt_ip),\n  \tfsparam_string(\"addr\", Opt_ip),\n@@ -186,9 +178,6 @@\n  \tfsparam_string(\"sec\", Opt_sec),\n  \tfsparam_string(\"cache\", Opt_cache),\n  \tfsparam_string(\"reparse\", Opt_reparse),\n -\tfsparam_string(\"upcall_target\", Opt_upcalltarget),\n -\tfsparam_string(\"symlink\", Opt_symlink),\n -\tfsparam_string(\"symlinkroot\", Opt_symlinkroot),\n  \n  \tfsparam_flag(\"guest\", Opt_ignore),\n@@ -259,29 +248,6 @@\n  \treturn 0;\n  }\n  \n -static int\n -cifs_parse_upcall_target(struct fs_context *fc, char *value, struct smb3_fs_context *ctx)\n -{\n -\tsubstring_t args[MAX_OPT_ARGS];\n -\n -\tctx->upcall_target = UPTARGET_UNSPECIFIED;\n -\n -\tswitch (match_token(value, cifs_upcall_target, args)) {\n -\tcase Opt_upcall_target_mount:\n -\t\tctx->upcall_target = UPTARGET_MOUNT;\n -\t\tbreak;\n -\tcase Opt_upcall_target_application:\n -\t\tctx->upcall_target = UPTARGET_APP;\n -\t\tbreak;\n -\n -\tdefault:\n -\t\tcifs_errorf(fc, \"bad upcall target: %s\\n\", value);\n -\t\treturn 1;\n -\t}\n -\n -\treturn 0;\n -}\n -\n  static const match_table_t cifs_cacheflavor_tokens = {\n  \t{ Opt_cache_loose, \"loose\" },\n  \t{ Opt_cache_strict, \"strict\" },\n@@ -336,7 +302,6 @@\n  \n  static const match_table_t reparse_flavor_tokens = {\n  \t{ Opt_reparse_default,\t\"default\" },\n -\t{ Opt_reparse_none,\t\"none\" },\n  \t{ Opt_reparse_nfs,\t\"nfs\" },\n  \t{ Opt_reparse_wsl,\t\"wsl\" },\n  \t{ Opt_reparse_err,\tNULL },\n@@ -351,9 +316,6 @@\n  \tcase Opt_reparse_default:\n  \t\tctx->reparse_type = CIFS_REPARSE_TYPE_DEFAULT;\n  \t\tbreak;\n -\tcase Opt_reparse_none:\n -\t\tctx->reparse_type = CIFS_REPARSE_TYPE_NONE;\n -\t\tbreak;\n  \tcase Opt_reparse_nfs:\n  \t\tctx->reparse_type = CIFS_REPARSE_TYPE_NFS;\n  \t\tbreak;\n@@ -362,55 +324,6 @@\n  \t\tbreak;\n  \tdefault:\n  \t\tcifs_errorf(fc, \"bad reparse= option: %s\\n\", value);\n -\t\treturn 1;\n -\t}\n -\treturn 0;\n -}\n -\n -static const match_table_t symlink_flavor_tokens = {\n -\t{ Opt_symlink_default,\t\t\"default\" },\n -\t{ Opt_symlink_none,\t\t\"none\" },\n -\t{ Opt_symlink_native,\t\t\"native\" },\n -\t{ Opt_symlink_unix,\t\t\"unix\" },\n -\t{ Opt_symlink_mfsymlinks,\t\"mfsymlinks\" },\n -\t{ Opt_symlink_sfu,\t\t\"sfu\" },\n -\t{ Opt_symlink_nfs,\t\t\"nfs\" },\n -\t{ Opt_symlink_wsl,\t\t\"wsl\" },\n -\t{ Opt_symlink_err,\t\tNULL },\n -};\n -\n -static int parse_symlink_flavor(struct fs_context *fc, char *value,\n -\t\t\t\tstruct smb3_fs_context *ctx)\n -{\n -\tsubstring_t args[MAX_OPT_ARGS];\n -\n -\tswitch (match_token(value, symlink_flavor_tokens, args)) {\n -\tcase Opt_symlink_default:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_DEFAULT;\n -\t\tbreak;\n -\tcase Opt_symlink_none:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_NONE;\n -\t\tbreak;\n -\tcase Opt_symlink_native:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_NATIVE;\n -\t\tbreak;\n -\tcase Opt_symlink_unix:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_UNIX;\n -\t\tbreak;\n -\tcase Opt_symlink_mfsymlinks:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_MFSYMLINKS;\n -\t\tbreak;\n -\tcase Opt_symlink_sfu:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_SFU;\n -\t\tbreak;\n -\tcase Opt_symlink_nfs:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_NFS;\n -\t\tbreak;\n -\tcase Opt_symlink_wsl:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_WSL;\n -\t\tbreak;\n -\tdefault:\n -\t\tcifs_errorf(fc, \"bad symlink= option: %s\\n\", value);\n  \t\treturn 1;\n  \t}\n  \treturn 0;\n@@ -442,8 +355,6 @@\n  \tnew_ctx->source = NULL;\n  \tnew_ctx->iocharset = NULL;\n  \tnew_ctx->leaf_fullpath = NULL;\n -\tnew_ctx->dns_dom = NULL;\n -\tnew_ctx->symlinkroot = NULL;\n@@ -458,8 +369,6 @@\n  \tDUP_CTX_STR(nodename);\n  \tDUP_CTX_STR(iocharset);\n  \tDUP_CTX_STR(leaf_fullpath);\n -\tDUP_CTX_STR(dns_dom);\n -\tDUP_CTX_STR(symlinkroot);\n  \n  \treturn 0;\n  }\n@@ -981,37 +890,12 @@\n  \tcifs_sb->ctx->field = NULL;\t\t\t\t\t\\\n  } while (0)\n  \n -int smb3_sync_session_ctx_passwords(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses)\n -{\n -\tif (ses->password &&\n -\t    cifs_sb->ctx->password &&\n -\t    strcmp(ses->password, cifs_sb->ctx->password)) {\n -\t\tkfree_sensitive(cifs_sb->ctx->password);\n -\t\tcifs_sb->ctx->password = kstrdup(ses->password, GFP_KERNEL);\n -\t\tif (!cifs_sb->ctx->password)\n -\t\t\treturn -ENOMEM;\n -\t}\n -\tif (ses->password2 &&\n -\t    cifs_sb->ctx->password2 &&\n -\t    strcmp(ses->password2, cifs_sb->ctx->password2)) {\n -\t\tkfree_sensitive(cifs_sb->ctx->password2);\n -\t\tcifs_sb->ctx->password2 = kstrdup(ses->password2, GFP_KERNEL);\n -\t\tif (!cifs_sb->ctx->password2) {\n -\t\t\tkfree_sensitive(cifs_sb->ctx->password);\n -\t\t\tcifs_sb->ctx->password = NULL;\n -\t\t\treturn -ENOMEM;\n -\t\t}\n -\t}\n -\treturn 0;\n -}\n -\n  static int smb3_reconfigure(struct fs_context *fc)\n  {\n  \tstruct smb3_fs_context *ctx = smb3_fc2context(fc);\n  \tstruct dentry *root = fc->root;\n  \tstruct cifs_sb_info *cifs_sb = CIFS_SB(root->d_sb);\n  \tstruct cifs_ses *ses = cifs_sb_master_tcon(cifs_sb)->ses;\n -\tchar *new_password = NULL, *new_password2 = NULL;\n  \tbool need_recon = false;\n  \tint rc;\n  \n@@ -1031,63 +915,21 @@\n  \tSTEAL_STRING(cifs_sb, ctx, UNC);\n  \tSTEAL_STRING(cifs_sb, ctx, source);\n  \tSTEAL_STRING(cifs_sb, ctx, username);\n -\n  \tif (need_recon == false)\n  \t\tSTEAL_STRING_SENSITIVE(cifs_sb, ctx, password);\n  \telse  {\n -\t\tif (ctx->password) {\n -\t\t\tnew_password = kstrdup(ctx->password, GFP_KERNEL);\n -\t\t\tif (!new_password)\n -\t\t\t\treturn -ENOMEM;\n -\t\t} else\n -\t\t\tSTEAL_STRING_SENSITIVE(cifs_sb, ctx, password);\n -\t}\n -\n -\t/*\n -\t * if a new password2 has been specified, then reset it's value\n -\t * inside the ses struct\n -\t */\n -\tif (ctx->password2) {\n -\t\tnew_password2 = kstrdup(ctx->password2, GFP_KERNEL);\n -\t\tif (!new_password2) {\n -\t\t\tkfree_sensitive(new_password);\n +\t\tkfree_sensitive(ses->password);\n +\t\tses->password = kstrdup(ctx->password, GFP_KERNEL);\n +\t\tif (!ses->password)\n  \t\t\treturn -ENOMEM;\n -\t\t}\n -\t} else\n -\t\tSTEAL_STRING_SENSITIVE(cifs_sb, ctx, password2);\n -\n -\t/*\n -\t * we may update the passwords in the ses struct below. Make sure we do\n -\t * not race with smb2_reconnect\n -\t */\n -\tmutex_lock(&ses->session_mutex);\n -\n -\t/*\n -\t * smb2_reconnect may swap password and password2 in case session setup\n -\t * failed. First get ctx passwords in sync with ses passwords. It should\n -\t * be okay to do this even if this function were to return an error at a\n -\t * later stage\n -\t */\n -\trc = smb3_sync_session_ctx_passwords(cifs_sb, ses);\n -\tif (rc) {\n -\t\tmutex_unlock(&ses->session_mutex);\n -\t\treturn rc;\n -\t}\n -\n -\t/*\n -\t * now that allocations for passwords are done, commit them\n -\t */\n -\tif (new_password) {\n -\t\tkfree_sensitive(ses->password);\n -\t\tses->password = new_password;\n -\t}\n -\tif (new_password2) {\n  \t\tkfree_sensitive(ses->password2);\n -\t\tses->password2 = new_password2;\n -\t}\n -\n -\tmutex_unlock(&ses->session_mutex);\n -\n +\t\tses->password2 = kstrdup(ctx->password2, GFP_KERNEL);\n +\t\tif (!ses->password2) {\n +\t\t\tkfree_sensitive(ses->password);\n +\t\t\tses->password = NULL;\n +\t\t\treturn -ENOMEM;\n +\t\t}\n +\t}\n  \tSTEAL_STRING(cifs_sb, ctx, domainname);\n  \tSTEAL_STRING(cifs_sb, ctx, nodename);\n  \tSTEAL_STRING(cifs_sb, ctx, iocharset);\n@@ -1132,9 +974,6 @@\n  \t\t} else if (!strcmp(\"user\", param->key) || !strcmp(\"username\", param->key)) {\n  \t\t\tskip_parsing = true;\n  \t\t\topt = Opt_user;\n -\t\t} else if (!strcmp(\"pass2\", param->key) || !strcmp(\"password2\", param->key)) {\n -\t\t\tskip_parsing = true;\n -\t\t\topt = Opt_pass2;\n  \t\t}\n  \t}\n  \n@@ -1344,11 +1183,11 @@\n  \t\t}\n  \t\tbreak;\n  \tcase Opt_acregmax:\n -\t\tif (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {\n +\t\tctx->acregmax = HZ * result.uint_32;\n +\t\tif (ctx->acregmax > CIFS_MAX_ACTIMEO) {\n  \t\t\tcifs_errorf(fc, \"acregmax too large\\n\");\n  \t\t\tgoto cifs_parse_mount_err;\n  \t\t}\n -\t\tctx->acregmax = HZ * result.uint_32;\n  \t\tbreak;\n  \tcase Opt_acdirmax:\n  \t\tctx->acdirmax = HZ * result.uint_32;\n@@ -1611,10 +1450,6 @@\n  \t\tif (cifs_parse_security_flavors(fc, param->string, ctx) != 0)\n  \t\t\tgoto cifs_parse_mount_err;\n  \t\tbreak;\n -\tcase Opt_upcalltarget:\n -\t\tif (cifs_parse_upcall_target(fc, param->string, ctx) != 0)\n -\t\t\tgoto cifs_parse_mount_err;\n -\t\tbreak;\n  \tcase Opt_cache:\n  \t\tif (cifs_parse_cache_flavor(fc, param->string, ctx) != 0)\n  \t\t\tgoto cifs_parse_mount_err;\n@@ -1789,37 +1624,8 @@\n  \t\tif (parse_reparse_flavor(fc, param->string, ctx))\n  \t\t\tgoto cifs_parse_mount_err;\n  \t\tbreak;\n -\tcase Opt_nativesocket:\n -\t\tctx->nonativesocket = result.negated;\n -\t\tbreak;\n -\tcase Opt_symlink:\n -\t\tif (parse_symlink_flavor(fc, param->string, ctx))\n -\t\t\tgoto cifs_parse_mount_err;\n -\t\tbreak;\n -\tcase Opt_symlinkroot:\n -\t\tif (param->string[0] != '/') {\n -\t\t\tcifs_errorf(fc, \"symlinkroot mount options must be absolute path\\n\");\n -\t\t\tgoto cifs_parse_mount_err;\n -\t\t}\n -\t\tkfree(ctx->symlinkroot);\n -\t\tctx->symlinkroot = kstrdup(param->string, GFP_KERNEL);\n -\t\tif (!ctx->symlinkroot)\n -\t\t\tgoto cifs_parse_mount_err;\n -\t\tbreak;\n  \t}\n -\n -\tif (ctx->multiuser && ctx->upcall_target == UPTARGET_MOUNT) {\n -\t\tcifs_errorf(fc, \"multiuser mount option not supported with upcalltarget set as 'mount'\\n\");\n -\t\tgoto cifs_parse_mount_err;\n -\t}\n -\n -\t/*\n -\t * By default resolve all native absolute symlinks relative to \"/mnt/\".\n -\t * Same default has drvfs driver running in WSL for resolving SMB shares.\n -\t */\n -\tif (!ctx->symlinkroot)\n -\t\tctx->symlinkroot = kstrdup(\"/mnt/\", GFP_KERNEL);\n  \n  \treturn 0;\n  \n@@ -1829,24 +1635,6 @@\n  \tkfree_sensitive(ctx->password2);\n  \tctx->password2 = NULL;\n  \treturn -EINVAL;\n -}\n -\n -enum cifs_symlink_type get_cifs_symlink_type(struct cifs_sb_info *cifs_sb)\n -{\n -\tif (cifs_sb->ctx->symlink_type == CIFS_SYMLINK_TYPE_DEFAULT) {\n -\t\tif (cifs_sb->ctx->mfsymlinks)\n -\t\t\treturn CIFS_SYMLINK_TYPE_MFSYMLINKS;\n -\t\telse if (cifs_sb->ctx->sfu_emul)\n -\t\t\treturn CIFS_SYMLINK_TYPE_SFU;\n -\t\telse if (cifs_sb->ctx->linux_ext && !cifs_sb->ctx->no_linux_ext)\n -\t\t\treturn CIFS_SYMLINK_TYPE_UNIX;\n -\t\telse if (cifs_sb->ctx->reparse_type != CIFS_REPARSE_TYPE_NONE)\n -\t\t\treturn CIFS_SYMLINK_TYPE_NATIVE;\n -\t\telse\n -\t\t\treturn CIFS_SYMLINK_TYPE_NONE;\n -\t} else {\n -\t\treturn cifs_sb->ctx->symlink_type;\n -\t}\n  }\n  \n  int smb3_init_fs_context(struct fs_context *fc)\n@@ -1925,8 +1713,6 @@\n  \n  \tctx->retrans = 1;\n  \tctx->reparse_type = CIFS_REPARSE_TYPE_DEFAULT;\n -\tctx->symlink_type = CIFS_SYMLINK_TYPE_DEFAULT;\n -\tctx->nonativesocket = 0;\n  \n\n\"\"\"\"\"\"\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/linux/kernel-stable/5b2989/llm_output/output_v6.12-rc7_qwen-plus.patch",
+      "timestamp": "2025-06-12T17:46:05.824596",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": true,
+      "adapted_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/adapted_v6.12-rc7.patch",
+      "apply_result": {
+        "success": true,
+        "error": null,
+        "error_type": null,
+        "output": "Applying: Applied adapted patch for v6.12-rc7\n"
+      }
+    },
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/adapted_v6.12-rc7.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-12T17:45:46.790314",
+    "end_time": "2025-06-12T17:46:07.583316",
+    "total_seconds": 20.793002,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "patch_content": "From 482e7cab56a56b431ef88c86416a08b7273a5242 Mon Sep 17 00:00:00 2001\nFrom: elpsy <hewenkuan_work@foxmail.com>\nDate: Thu, 12 Jun 2025 17:46:06 +0800\nSubject: [PATCH] Applied adapted patch for v6.12-rc7\n\n---\n fs/smb/client/fs_context.c | 4 ++--\n 1 file changed, 2 insertions(+), 2 deletions(-)\n\ndiff --git a/fs/smb/client/fs_context.c b/fs/smb/client/fs_context.c\nindex 5c5a52019efa..2e98e3432fb7 100644\n--- a/fs/smb/client/fs_context.c\n+++ b/fs/smb/client/fs_context.c\n@@ -1190,11 +1190,11 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,\n \t\t}\n \t\tbreak;\n \tcase Opt_acdirmax:\n-\t\tctx->acdirmax = HZ * result.uint_32;\n-\t\tif (ctx->acdirmax > CIFS_MAX_ACTIMEO) {\n+\t\tif (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {\n \t\t\tcifs_errorf(fc, \"acdirmax too large\\n\");\n \t\t\tgoto cifs_parse_mount_err;\n \t\t}\n+\t\tctx->acdirmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_actimeo:\n \t\tif (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {\n-- \n2.25.1\n\n",
+    "llm_output": "diff --git a/fs/smb/client/fs_context.c b/fs/smb/client/fs_context.c\nindex 5f3c5967a0f5..c983021c406b 100644\n--- a/fs/smb/client/fs_context.c\n+++ b/fs/smb/client/fs_context.c\n@@ -1351,11 +1351,11 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,\n \t\tctx->acregmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_acdirmax:\n-\t\tctx->acdirmax = HZ * result.uint_32;\n-\t\tif (ctx->acdirmax > CIFS_MAX_ACTIMEO) {\n+\t\tif (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {\n \t\t\tcifs_errorf(fc, \"acdirmax too large\\n\");\n \t\t\tgoto cifs_parse_mount_err;\n \t\t}\n+\t\tctx->acdirmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_actimeo:\n \t\tif (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": false,
+      "llm_adapter": false,
+      "patch_adapter": true,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "v6.12-rc7",
+      "commit_sha": "5b29891f91dfb8758baf1e2217bef4b16b2b165b.patch",
+      "timestamp": "2025-06-12T17:46:07.587299",
+      "execution_path": "patch_adapter",
+      "adaptation_method": "unknown"
+    }
+  }
+}

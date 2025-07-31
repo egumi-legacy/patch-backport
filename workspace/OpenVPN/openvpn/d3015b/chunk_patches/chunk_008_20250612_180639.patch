@@ -1,0 +1,49 @@
+From d3015bfd65348db629dab51e20a9d4e2f3b23493 Mon Sep 17 00:00:00 2001
+From: Arne Schwabe <arne@rfc2549.org>
+Date: Tue, 1 Apr 2025 19:30:37 +0200
+Subject: [PATCH] Allow tls-crypt-v2 to be setup only on initial packet of a
+ session
+
+This fixes an internal server error condition that can be triggered by a
+malicous authenticated client, a very unlucky corruption of packets in
+transit or by an attacker that is able to inject a specially created
+packet at the right time and is able to observe the traffic to construct
+the packet.
+
+The error condition results in an ASSERT statement being triggered,
+
+NOTE: due to the security sensitive nature, this patch was prepared
+under embargo on the security@openvpn.net mailing list, and thus has
+no publically available "mailing list discussion before merge" URL.
+
+CVE: 2025-2704
+Change-Id: I07c1352204d308e5bde5f0b85e561a5dd0bc63c8
+Signed-off-by: Arne Schwabe <arne@rfc2549.org>
+Acked-by: Gert Doering <gert@greenie.muc.de>
+Message-Id: <385d88f0-d7c9-4330-82ff-9f5931183afd@rfc2549.org>
+Signed-off-by: Gert Doering <gert@greenie.muc.de>
+(cherry picked from commit 82ee2fe4b42d9988c59ae3f83bd56a54d54e8c76)
+---
+ src/openvpn/ssl.c                         | 26 +++++++++++++++++++----
+ src/openvpn/ssl_common.h                  | 15 +++++++------
+ src/openvpn/ssl_pkt.c                     |  7 +++---
+ src/openvpn/ssl_pkt.h                     | 12 +++++++++--
+ src/openvpn/tls_crypt.c                   | 24 ++++++++++++++++++++-
+ src/openvpn/tls_crypt.h                   |  7 +++++-
+ tests/unit_tests/openvpn/test_tls_crypt.c |  2 +-
+ 7 files changed, 75 insertions(+), 18 deletions(-)
+
+diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+index 689cd7f99f9..41299f462db 100644
+--- a/src/openvpn/ssl_pkt.c
++++ b/src/openvpn/ssl_pkt.c
+@@ -200,7 +200,8 @@ bool
+ read_control_auth(struct buffer *buf,
+                   struct tls_wrap_ctx *ctx,
+                   const struct link_socket_actual *from,
+-                  const struct tls_options *opt)
++                  const struct tls_options *opt,
++                  bool initial_packet)
+ {
+     struct gc_arena gc = gc_new();
+     bool ret = false;

@@ -1,0 +1,79 @@
+modified file: drivers/video/fbdev/hyperv_fb.c
+--- workspace/linux/kernel-torvalds/ea2f45/newer/drivers/video/fbdev/hyperv_fb.c
++++ workspace/linux/kernel-torvalds/ea2f45/v6.12-rc7/drivers/video/fbdev/hyperv_fb.c
+@@ -952,7 +952,7 @@
+  }
+  
+ -static void hvfb_release_phymem(struct device *device,
+ +static void hvfb_release_phymem(struct hv_device *hdev,
+  				phys_addr_t paddr, unsigned int size)
+  {
+  	unsigned int order = get_order(size);
+@@ -960,7 +960,7 @@
+  	if (order <= MAX_PAGE_ORDER)
+  		__free_pages(pfn_to_page(paddr >> PAGE_SHIFT), order);
+  	else
+ -		dma_free_coherent(device,
+ +		dma_free_coherent(&hdev->device,
+  				  round_up(size, PAGE_SIZE),
+  				  phys_to_virt(paddr),
+  				  paddr);
+@@ -989,7 +989,6 @@
+  
+  		base = pci_resource_start(pdev, 0);
+  		size = pci_resource_len(pdev, 0);
+ -		aperture_remove_conflicting_devices(base, size, KBUILD_MODNAME);
+  
+  	dio_fb_size =
+  		screen_width * screen_height * screen_depth / 8;
+@@ -1062,6 +1051,11 @@
+  	info->screen_size = dio_fb_size;
+  
+  getmem_done:
+ +	if (base && size)
+ +		aperture_remove_conflicting_devices(base, size, KBUILD_MODNAME);
+ +	else
+ +		aperture_remove_all_conflicting_devices(KBUILD_MODNAME);
+ +
+  	if (!gen2vm)
+  		pci_dev_put(pdev);
+  
+@@ -1080,16 +1074,16 @@
+  }
+  
+ -static void hvfb_putmem(struct fb_info *info)
+ +static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)
+  {
+  	struct hvfb_par *par = info->par;
+  
+  	if (par->need_docopy) {
+  		vfree(par->dio_vp);
+ -		iounmap(par->mmio_vp);
+ +		iounmap(info->screen_base);
+  		vmbus_free_mmio(par->mem->start, screen_fb_size);
+  	} else {
+ -		hvfb_release_phymem(info->device, info->fix.smem_start,
+ +		hvfb_release_phymem(hdev, info->fix.smem_start,
+  				    screen_fb_size);
+  	}
+  
+@@ -1203,7 +1197,7 @@
+  
+  error:
+  	fb_deferred_io_cleanup(info);
+ -	hvfb_putmem(info);
+ +	hvfb_putmem(hdev, info);
+  error2:
+  	vmbus_close(hdev->channel);
+  error1:
+@@ -1232,7 +1226,7 @@
+  	vmbus_close(hdev->channel);
+  	hv_set_drvdata(hdev, NULL);
+  
+ -	hvfb_putmem(info);
+ +	hvfb_putmem(hdev, info);
+  	framebuffer_release(info);
+  }
+  
+
+""""""

@@ -1,0 +1,72 @@
+### A. Commit message:
+```
+Backport CVE-2024-41128 fix: Avoid backtracking in parameter filtering
+
+This patch backports the functionality from commit 27121e80f6dbb260f5a9f0452cd8411cb681f075
+to avoid backtracking in `parameter_filtered_location`. The changes ensure that query string
+filtering is performed in a more efficient manner by splitting and rejoining query parts,
+reducing the risk of performance issues or vulnerabilities.
+
+Thanks scyoon for the original patch.
+```
+
+---
+
+### B. Change summary:
+The original patch modifies the `filtered_query_string` method in `filter_parameters.rb` and the `parameter_filtered_location` method in `filter_redirect.rb`. The key change is to replace the use of a regular expression (`PAIR_RE`) with a split-and-rejoin approach to avoid backtracking during query string filtering.
+
+In the older version file provided, only `filter_redirect.rb` exists, so we focus on backporting the changes to the `parameter_filtered_location` method in this file. The following steps were taken:
+
+1. **Replace Regular Expression Matching**: The original code used `gsub` with a regex (`PAIR_RE`) to filter query parameters. This was replaced with a `split` and `map` approach to process each query part individually.
+2. **Preserve Compatibility**: Ensured that the backported code uses APIs and methods available in the older version (e.g., `request.parameter_filter`).
+3. **Retain Original Logic**: Maintained the same logic and structure as the original patch while adapting it to the older version's context.
+
+---
+
+### C. Compatibility Risk:
+**Low**  
+The changes are confined to the `parameter_filtered_location` method and do not introduce new dependencies or modify existing behavior outside of this method. The backported patch adheres to the older version's API and coding style.
+
+---
+
+### D. Fixed Code:
+```diff
+diff --git a/actionpack/lib/action_dispatch/http/filter_redirect.rb b/actionpack/lib/action_dispatch/http/filter_redirect.rb
+--- a/actionpack/lib/action_dispatch/http/filter_redirect.rb
++++ b/actionpack/lib/action_dispatch/http/filter_redirect.rb
+@@ -32,14 +32,21 @@ def location_filter_match?
+       def parameter_filtered_location
+         uri = URI.parse(location)
+         unless uri.query.nil? || uri.query.empty?
+-          uri.query.gsub!(FilterParameters::PAIR_RE) do
+-            request.parameter_filter.filter($1 => $2).first.join("=")
++          parts = uri.query.split(/([&;])/)
++          filtered_parts = parts.map do |part|
++            if part.include?("=")
++              key, value = part.split("=", 2)
++              request.parameter_filter.filter(key => value).first.join("=")
++            else
++              part
++            end
+           end
++          uri.query = filtered_parts.join("")
+         end
+         uri.to_s
+       rescue URI::Error
+         FILTERED
+       end
+     end
+   end
+ end
+```
+
+---
+
+### Explanation of Changes:
+1. **Removed `FILTER_PARAMETERS::PAIR_RE`**: The original regex-based approach was replaced with a `split` and `map` operation to process query string parts.
+2. **Split Query String**: The query string is split into parts using `split(/([&;])/)` to preserve delimiters (`&` or `;`).
+3. **Filter Each Part**: Each part is checked for the presence of an equals sign (`=`). If found, the key-value pair is filtered using `request.parameter_filter`.
+4. **Rejoin Filtered Parts**: The filtered parts are joined back together with their original delimiters.
+5. **Preserve Error Handling**: The `rescue URI::Error` block remains unchanged to handle invalid URIs gracefully.
+
+This backported patch ensures that the older version benefits from the performance improvement and vulnerability fix introduced in the newer version.

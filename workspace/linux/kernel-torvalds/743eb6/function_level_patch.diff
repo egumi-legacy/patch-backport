@@ -1,0 +1,175 @@
+commit 743eb6c68d3534e01e73d316ddcaa7334c0e29d3
+Author: Pierre-Louis Bossart <pierre-louis.bossart@linux.dev>
+Date:   Tue Feb 13 12:12:41 2024 +0200
+
+    ASoC: SOF: topology: dynamically allocate and store DAI widget->private
+    
+    For dspless mode, we need to allocate and store an 'sdai'
+    structure. The existing code allocate the data on the stack and does
+    not set the widget->private pointer.
+    
+    This minor change should not have any impact on existing DAIs, even
+    when the DSP is used.
+    
+    Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+    Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+    Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+    Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+    Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+    Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/sof-audio.c b/sound/soc/sof/sof-audio.c
+index 9163975c9c3f..e693dcb475e4 100644
+--- a/sound/soc/sof/sof-audio.c
++++ b/sound/soc/sof/sof-audio.c
+@@ -44,79 +44,77 @@ static void sof_reset_route_setup_status(struct snd_sof_dev *sdev, struct snd_so
+ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
+ 				    struct snd_sof_widget *swidget)
+ {
+ 	const struct sof_ipc_tplg_ops *tplg_ops = sof_ipc_get_ops(sdev, tplg);
+ 	struct snd_sof_pipeline *spipe = swidget->spipe;
+-	struct snd_sof_widget *pipe_widget;
+ 	int err = 0;
+ 	int ret;
+ 
+ 	if (!swidget->private)
+ 		return 0;
+ 
+ 	trace_sof_widget_free(swidget);
+ 
+ 	/* only free when use_count is 0 */
+ 	if (--swidget->use_count)
+ 		return 0;
+ 
+-	pipe_widget = swidget->spipe->pipe_widget;
+-
+ 	/* reset route setup status for all routes that contain this widget */
+ 	sof_reset_route_setup_status(sdev, swidget);
+ 
+ 	/* free DAI config and continue to free widget even if it fails */
+ 	if (WIDGET_IS_DAI(swidget->id)) {
+ 		struct snd_sof_dai_config_data data;
+ 		unsigned int flags = SOF_DAI_CONFIG_FLAGS_HW_FREE;
+ 
+ 		data.dai_data = DMA_CHAN_INVALID;
+ 
+ 		if (tplg_ops && tplg_ops->dai_config) {
+ 			err = tplg_ops->dai_config(sdev, swidget, flags, &data);
+ 			if (err < 0)
+ 				dev_err(sdev->dev, "failed to free config for widget %s\n",
+ 					swidget->widget->name);
+ 		}
+ 	}
+ 
+ 	/* continue to disable core even if IPC fails */
+ 	if (tplg_ops && tplg_ops->widget_free) {
+ 		ret = tplg_ops->widget_free(sdev, swidget);
+ 		if (ret < 0 && !err)
+ 			err = ret;
+ 	}
+ 
+ 	/*
+ 	 * decrement ref count for cores associated with all modules in the pipeline and clear
+ 	 * the complete flag
+ 	 */
+ 	if (swidget->id == snd_soc_dapm_scheduler) {
+ 		int i;
+ 
+ 		for_each_set_bit(i, &spipe->core_mask, sdev->num_cores) {
+ 			ret = snd_sof_dsp_core_put(sdev, i);
+ 			if (ret < 0) {
+ 				dev_err(sdev->dev, "failed to disable target core: %d for pipeline %s\n",
+ 					i, swidget->widget->name);
+ 				if (!err)
+ 					err = ret;
+ 			}
+ 		}
+ 		swidget->spipe->complete = 0;
+ 	}
+ 
+ 	/*
+ 	 * free the scheduler widget (same as pipe_widget) associated with the current swidget.
+ 	 * skip for static pipelines
+ 	 */
+-	if (swidget->dynamic_pipeline_widget && swidget->id != snd_soc_dapm_scheduler) {
+-		ret = sof_widget_free_unlocked(sdev, pipe_widget);
++	if (swidget->spipe && swidget->dynamic_pipeline_widget &&
++	    swidget->id != snd_soc_dapm_scheduler) {
++		ret = sof_widget_free_unlocked(sdev, swidget->spipe->pipe_widget);
+ 		if (ret < 0 && !err)
+ 			err = ret;
+ 	}
+ 
+ 	if (!err)
+ 		dev_dbg(sdev->dev, "widget %s freed\n", swidget->widget->name);
+ 
+ 	return err;
+ }
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index 25fb0d1443b6..915c2e88e32b 100644
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2351,32 +2351,38 @@ static const struct snd_soc_tplg_bytes_ext_ops sof_dspless_bytes_ext_ops[] = {
+ /* external widget init - used for any driver specific init */
+ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,
+ 				    struct snd_soc_dapm_widget *w,
+ 				    struct snd_soc_tplg_dapm_widget *tw)
+ {
+ 	if (WIDGET_IS_DAI(w->id)) {
+ 		struct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);
+ 		struct snd_sof_widget *swidget;
+-		struct snd_sof_dai dai;
++		struct snd_sof_dai *sdai;
+ 		int ret;
+ 
+ 		swidget = kzalloc(sizeof(*swidget), GFP_KERNEL);
+ 		if (!swidget)
+ 			return -ENOMEM;
+ 
+-		memset(&dai, 0, sizeof(dai));
++		sdai = kzalloc(sizeof(*sdai), GFP_KERNEL);
++		if (!sdai) {
++			kfree(swidget);
++			return -ENOMEM;
++		}
+ 
+-		ret = sof_connect_dai_widget(scomp, w, tw, &dai);
++		ret = sof_connect_dai_widget(scomp, w, tw, sdai);
+ 		if (ret) {
+ 			kfree(swidget);
++			kfree(sdai);
+ 			return ret;
+ 		}
+ 
+ 		swidget->scomp = scomp;
+ 		swidget->widget = w;
++		swidget->private = sdai;
+ 		mutex_init(&swidget->setup_mutex);
+ 		w->dobj.private = swidget;
+ 		list_add(&swidget->list, &sdev->widget_list);
+ 	}
+ 
+ 	return 0;
+ }
+@@ -2384,20 +2390,21 @@ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,
+ static int sof_dspless_widget_unload(struct snd_soc_component *scomp,
+ 				     struct snd_soc_dobj *dobj)
+ {
+ 	struct snd_soc_dapm_widget *w = container_of(dobj, struct snd_soc_dapm_widget, dobj);
+ 
+ 	if (WIDGET_IS_DAI(w->id)) {
+ 		struct snd_sof_widget *swidget = dobj->private;
+ 
+ 		sof_disconnect_dai_widget(scomp, w);
+ 
+ 		if (!swidget)
+ 			return 0;
+ 
+ 		/* remove and free swidget object */
+ 		list_del(&swidget->list);
++		kfree(swidget->private);
+ 		kfree(swidget);
+ 	}
+ 
+ 	return 0;
+ }

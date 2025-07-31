@@ -1,0 +1,1021 @@
+commit 022ab0a75c76ab2ea31dfcc5f2cf5501e378d397
+Author: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date:   Mon Aug 12 15:17:57 2024 +0200
+
+    [5.1.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in urlize and urlizetrunc template filters.
+    
+    Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+
+diff --git a/django/utils/html.py b/django/utils/html.py
+index e5ad5646fa..d9513fc758 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -273,190 +273,193 @@ class CountsDict(dict):
+ class Urlizer:
+     """
+     Convert any URLs in text into clickable links.
+ 
+     Work on http://, https://, www. links, and also on links ending in one of
+     the original seven gTLDs (.com, .edu, .gov, .int, .mil, .net, and .org).
+     Links can have trailing punctuation (periods, commas, close-parens) and
+     leading punctuation (opening parens) and it'll still do the right thing.
+     """
+ 
+     trailing_punctuation_chars = ".,:;!"
+     wrapping_punctuation = [("(", ")"), ("[", "]")]
+ 
+     simple_url_re = _lazy_re_compile(r"^https?://\[?\w", re.IGNORECASE)
+     simple_url_2_re = _lazy_re_compile(
+         r"^www\.|^(?!http)\w[^@]+\.(com|edu|gov|int|mil|net|org)($|/.*)$", re.IGNORECASE
+     )
+     word_split_re = _lazy_re_compile(r"""([\s<>"']+)""")
+ 
+     mailto_template = "mailto:{local}@{domain}"
+     url_template = '<a href="{href}"{attrs}>{url}</a>'
+ 
+     def __call__(self, text, trim_url_limit=None, nofollow=False, autoescape=False):
+         """
+         If trim_url_limit is not None, truncate the URLs in the link text
+         longer than this limit to trim_url_limit - 1 characters and append an
+         ellipsis.
+ 
+         If nofollow is True, give the links a rel="nofollow" attribute.
+ 
+         If autoescape is True, autoescape the link text and URLs.
+         """
+         safe_input = isinstance(text, SafeData)
+ 
+         words = self.word_split_re.split(str(text))
+         return "".join(
+             [
+                 self.handle_word(
+                     word,
+                     safe_input=safe_input,
+                     trim_url_limit=trim_url_limit,
+                     nofollow=nofollow,
+                     autoescape=autoescape,
+                 )
+                 for word in words
+             ]
+         )
+ 
+     def handle_word(
+         self,
+         word,
+         *,
+         safe_input,
+         trim_url_limit=None,
+         nofollow=False,
+         autoescape=False,
+     ):
+         if "." in word or "@" in word or ":" in word:
+             # lead: Punctuation trimmed from the beginning of the word.
+             # middle: State of the word.
+             # trail: Punctuation trimmed from the end of the word.
+             lead, middle, trail = self.trim_punctuation(word)
+             # Make URL we want to point to.
+             url = None
+             nofollow_attr = ' rel="nofollow"' if nofollow else ""
+             if len(middle) <= MAX_URL_LENGTH and self.simple_url_re.match(middle):
+                 url = smart_urlquote(html.unescape(middle))
+             elif len(middle) <= MAX_URL_LENGTH and self.simple_url_2_re.match(middle):
+                 url = smart_urlquote("http://%s" % html.unescape(middle))
+             elif ":" not in middle and self.is_email_simple(middle):
+                 local, domain = middle.rsplit("@", 1)
+                 try:
+                     domain = punycode(domain)
+                 except UnicodeError:
+                     return word
+                 url = self.mailto_template.format(local=local, domain=domain)
+                 nofollow_attr = ""
+             # Make link.
+             if url:
+                 trimmed = self.trim_url(middle, limit=trim_url_limit)
+                 if autoescape and not safe_input:
+                     lead, trail = escape(lead), escape(trail)
+                     trimmed = escape(trimmed)
+                 middle = self.url_template.format(
+                     href=escape(url),
+                     attrs=nofollow_attr,
+                     url=trimmed,
+                 )
+                 return mark_safe(f"{lead}{middle}{trail}")
+             else:
+                 if safe_input:
+                     return mark_safe(word)
+                 elif autoescape:
+                     return escape(word)
+         elif safe_input:
+             return mark_safe(word)
+         elif autoescape:
+             return escape(word)
+         return word
+ 
+     def trim_url(self, x, *, limit):
+         if limit is None or len(x) <= limit:
+             return x
+         return "%s…" % x[: max(0, limit - 1)]
+ 
+     @cached_property
+     def wrapping_punctuation_openings(self):
+         return "".join(dict(self.wrapping_punctuation).keys())
+ 
+     @cached_property
+     def trailing_punctuation_chars_no_semicolon(self):
+         return self.trailing_punctuation_chars.replace(";", "")
+ 
+     @cached_property
+     def trailing_punctuation_chars_has_semicolon(self):
+         return ";" in self.trailing_punctuation_chars
+ 
+     def trim_punctuation(self, word):
+         """
+         Trim trailing and wrapping punctuation from `word`. Return the items of
+         the new state.
+         """
+         # Strip all opening wrapping punctuation.
+         middle = word.lstrip(self.wrapping_punctuation_openings)
+         lead = word[: len(word) - len(middle)]
+         trail = ""
+ 
+         # Continue trimming until middle remains unchanged.
+         trimmed_something = True
+         counts = CountsDict(word=middle)
+         while trimmed_something and middle:
+             trimmed_something = False
+             # Trim wrapping punctuation.
+             for opening, closing in self.wrapping_punctuation:
+                 if counts[opening] < counts[closing]:
+                     rstripped = middle.rstrip(closing)
+                     if rstripped != middle:
+                         strip = counts[closing] - counts[opening]
+                         trail = middle[-strip:]
+                         middle = middle[:-strip]
+                         trimmed_something = True
+                         counts[closing] -= strip
+ 
+             amp = middle.rfind("&")
+             if amp == -1:
+                 rstripped = middle.rstrip(self.trailing_punctuation_chars)
+             else:
+                 rstripped = middle.rstrip(self.trailing_punctuation_chars_no_semicolon)
+             if rstripped != middle:
+                 trail = middle[len(rstripped) :] + trail
+                 middle = rstripped
+                 trimmed_something = True
+ 
+             if self.trailing_punctuation_chars_has_semicolon and middle.endswith(";"):
+                 # Only strip if not part of an HTML entity.
+                 potential_entity = middle[amp:]
+                 escaped = html.unescape(potential_entity)
+                 if escaped == potential_entity or escaped.endswith(";"):
+-                    rstripped = middle.rstrip(";")
+-                    amount_stripped = len(middle) - len(rstripped)
+-                    if amp > -1 and amount_stripped > 1:
+-                        # Leave a trailing semicolon as might be an entity.
+-                        trail = middle[len(rstripped) + 1 :] + trail
+-                        middle = rstripped + ";"
++                    rstripped = middle.rstrip(self.trailing_punctuation_chars)
++                    trail_start = len(rstripped)
++                    amount_trailing_semicolons = len(middle) - len(middle.rstrip(";"))
++                    if amp > -1 and amount_trailing_semicolons > 1:
++                        # Leave up to most recent semicolon as might be an entity.
++                        recent_semicolon = middle[trail_start:].index(";")
++                        middle_semicolon_index = recent_semicolon + trail_start + 1
++                        trail = middle[middle_semicolon_index:] + trail
++                        middle = rstripped + middle[trail_start:middle_semicolon_index]
+                     else:
+-                        trail = middle[len(rstripped) :] + trail
++                        trail = middle[trail_start:] + trail
+                         middle = rstripped
+                     trimmed_something = True
+ 
+         return lead, middle, trail
+ 
+     @staticmethod
+     def is_email_simple(value):
+         """Return True if value looks like an email address."""
+         # An @ must be in the middle of the value.
+         if "@" not in value or value.startswith("@") or value.endswith("@"):
+             return False
+         try:
+             p1, p2 = value.split("@")
+         except ValueError:
+             # value contains more than one @.
+             return False
+         # Max length for domain name labels is 63 characters per RFC 1034.
+         # Helps to avoid ReDoS vectors in the domain part.
+         if len(p2) > 63:
+             return False
+         # Dot must be in p2 (e.g. example.com)
+         if "." not in p2 or p2.startswith("."):
+             return False
+         return True
+diff --git a/docs/ref/templates/builtins.txt b/docs/ref/templates/builtins.txt
+index 3e2d63800a..86841b3dbd 100644
+--- a/docs/ref/templates/builtins.txt
++++ b/docs/ref/templates/builtins.txt
+@@ -2925,14 +2925,25 @@ The ``urlize`` filter also takes an optional parameter ``autoescape``. If
+ ``autoescape`` is ``True``, the link text and URLs will be escaped using
+ Django's built-in :tfilter:`escape` filter. The default value for
+ ``autoescape`` is ``True``.
+ 
+ .. note::
+ 
+     If ``urlize`` is applied to text that already contains HTML markup, or to
+     email addresses that contain single quotes (``'``), things won't work as
+     expected. Apply this filter only to plain text.
+ 
++.. warning::
++
++    Using ``urlize`` or ``urlizetrunc`` can incur a performance penalty, which
++    can become severe when applied to user controlled values such as content
++    stored in a :class:`~django.db.models.TextField`. You can use
++    :tfilter:`truncatechars` to add a limit to such inputs:
++
++    .. code-block:: html+django
++
++        {{ value|truncatechars:500|urlize }}
++
+ .. templatefilter:: urlizetrunc
+ 
+ ``urlizetrunc``
+ ---------------
+diff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt
+index 9853004386..2a84186867 100644
+--- a/docs/releases/4.2.16.txt
++++ b/docs/releases/4.2.16.txt
+@@ -7,4 +7,9 @@ Django 4.2.16 release notes
+ Django 4.2.16 fixes one security issue with severity "moderate" and one
+ security issue with severity "low" in 4.2.15.
+ 
+-...
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
+diff --git a/docs/releases/5.0.9.txt b/docs/releases/5.0.9.txt
+index eb3dbe832d..50e94ea3f2 100644
+--- a/docs/releases/5.0.9.txt
++++ b/docs/releases/5.0.9.txt
+@@ -7,4 +7,9 @@ Django 5.0.9 release notes
+ Django 5.0.9 fixes one security issue with severity "moderate" and one security
+ issue with severity "low" in 5.0.8.
+ 
+-...
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
+diff --git a/docs/releases/5.1.1.txt b/docs/releases/5.1.1.txt
+index 743f2753a8..dd24929100 100644
+--- a/docs/releases/5.1.1.txt
++++ b/docs/releases/5.1.1.txt
+@@ -7,6 +7,13 @@ Django 5.1.1 release notes
+ Django 5.1.1 fixes one security issue with severity "moderate", one security
+ issue with severity "low", and several bugs in 5.1.
+ 
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
++
+ Bugfixes
+ ========
+ 
+diff --git a/tests/template_tests/filter_tests/test_urlize.py b/tests/template_tests/filter_tests/test_urlize.py
+index c19103859e..546bd6c7d6 100644
+--- a/tests/template_tests/filter_tests/test_urlize.py
++++ b/tests/template_tests/filter_tests/test_urlize.py
+@@ -109,356 +109,361 @@ class UrlizeTests(SimpleTestCase):
+ class FunctionTests(SimpleTestCase):
+     def test_urls(self):
+         self.assertEqual(
+             urlize("http://google.com"),
+             '<a href="http://google.com" rel="nofollow">http://google.com</a>',
+         )
+         self.assertEqual(
+             urlize("http://google.com/"),
+             '<a href="http://google.com/" rel="nofollow">http://google.com/</a>',
+         )
+         self.assertEqual(
+             urlize("www.google.com"),
+             '<a href="http://www.google.com" rel="nofollow">www.google.com</a>',
+         )
+         self.assertEqual(
+             urlize("djangoproject.org"),
+             '<a href="http://djangoproject.org" rel="nofollow">djangoproject.org</a>',
+         )
+         self.assertEqual(
+             urlize("djangoproject.org/"),
+             '<a href="http://djangoproject.org/" rel="nofollow">djangoproject.org/</a>',
+         )
+ 
+     def test_url_split_chars(self):
+         # Quotes (single and double) and angle brackets shouldn't be considered
+         # part of URLs.
+         self.assertEqual(
+             urlize('www.server.com"abc'),
+             '<a href="http://www.server.com" rel="nofollow">www.server.com</a>&quot;'
+             "abc",
+         )
+         self.assertEqual(
+             urlize("www.server.com'abc"),
+             '<a href="http://www.server.com" rel="nofollow">www.server.com</a>&#x27;'
+             "abc",
+         )
+         self.assertEqual(
+             urlize("www.server.com<abc"),
+             '<a href="http://www.server.com" rel="nofollow">www.server.com</a>&lt;abc',
+         )
+         self.assertEqual(
+             urlize("www.server.com>abc"),
+             '<a href="http://www.server.com" rel="nofollow">www.server.com</a>&gt;abc',
+         )
+ 
+     def test_email(self):
+         self.assertEqual(
+             urlize("info@djangoproject.org"),
+             '<a href="mailto:info@djangoproject.org">info@djangoproject.org</a>',
+         )
+ 
+     def test_word_with_dot(self):
+         self.assertEqual(urlize("some.organization"), "some.organization")
+ 
+     def test_https(self):
+         self.assertEqual(
+             urlize("https://google.com"),
+             '<a href="https://google.com" rel="nofollow">https://google.com</a>',
+         )
+ 
+     def test_quoting(self):
+         """
+         #9655 - Check urlize doesn't overquote already quoted urls. The
+         teststring is the urlquoted version of 'http://hi.baidu.com/重新开始'
+         """
+         self.assertEqual(
+             urlize("http://hi.baidu.com/%E9%87%8D%E6%96%B0%E5%BC%80%E5%A7%8B"),
+             '<a href="http://hi.baidu.com/%E9%87%8D%E6%96%B0%E5%BC%80%E5%A7%8B" '
+             'rel="nofollow">http://hi.baidu.com/%E9%87%8D%E6%96%B0%E5%BC%80%E5%A7%8B'
+             "</a>",
+         )
+ 
+     def test_urlencoded(self):
+         self.assertEqual(
+             urlize("www.mystore.com/30%OffCoupons!"),
+             '<a href="http://www.mystore.com/30%25OffCoupons" rel="nofollow">'
+             "www.mystore.com/30%OffCoupons</a>!",
+         )
+         self.assertEqual(
+             urlize("https://en.wikipedia.org/wiki/Caf%C3%A9"),
+             '<a href="https://en.wikipedia.org/wiki/Caf%C3%A9" rel="nofollow">'
+             "https://en.wikipedia.org/wiki/Caf%C3%A9</a>",
+         )
+ 
+     def test_unicode(self):
+         self.assertEqual(
+             urlize("https://en.wikipedia.org/wiki/Café"),
+             '<a href="https://en.wikipedia.org/wiki/Caf%C3%A9" rel="nofollow">'
+             "https://en.wikipedia.org/wiki/Café</a>",
+         )
+ 
+     def test_parenthesis(self):
+         """
+         #11911 - Check urlize keeps balanced parentheses
+         """
+         self.assertEqual(
+             urlize("https://en.wikipedia.org/wiki/Django_(web_framework)"),
+             '<a href="https://en.wikipedia.org/wiki/Django_(web_framework)" '
+             'rel="nofollow">https://en.wikipedia.org/wiki/Django_(web_framework)</a>',
+         )
+         self.assertEqual(
+             urlize("(see https://en.wikipedia.org/wiki/Django_(web_framework))"),
+             '(see <a href="https://en.wikipedia.org/wiki/Django_(web_framework)" '
+             'rel="nofollow">https://en.wikipedia.org/wiki/Django_(web_framework)</a>)',
+         )
+ 
+     def test_nofollow(self):
+         """
+         #12183 - Check urlize adds nofollow properly - see #12183
+         """
+         self.assertEqual(
+             urlize("foo@bar.com or www.bar.com"),
+             '<a href="mailto:foo@bar.com">foo@bar.com</a> or '
+             '<a href="http://www.bar.com" rel="nofollow">www.bar.com</a>',
+         )
+ 
+     def test_idn(self):
+         """
+         #13704 - Check urlize handles IDN correctly
+         """
+         self.assertEqual(
+             urlize("http://c✶.ws"),
+             '<a href="http://xn--c-lgq.ws" rel="nofollow">http://c✶.ws</a>',
+         )
+         self.assertEqual(
+             urlize("www.c✶.ws"),
+             '<a href="http://www.xn--c-lgq.ws" rel="nofollow">www.c✶.ws</a>',
+         )
+         self.assertEqual(
+             urlize("c✶.org"), '<a href="http://xn--c-lgq.org" rel="nofollow">c✶.org</a>'
+         )
+         self.assertEqual(
+             urlize("info@c✶.org"), '<a href="mailto:info@xn--c-lgq.org">info@c✶.org</a>'
+         )
+ 
+     def test_malformed(self):
+         """
+         #16395 - Check urlize doesn't highlight malformed URIs
+         """
+         self.assertEqual(urlize("http:///www.google.com"), "http:///www.google.com")
+         self.assertEqual(urlize("http://.google.com"), "http://.google.com")
+         self.assertEqual(urlize("http://@foo.com"), "http://@foo.com")
+ 
+     def test_tlds(self):
+         """
+         #16656 - Check urlize accepts more TLDs
+         """
+         self.assertEqual(
+             urlize("usa.gov"), '<a href="http://usa.gov" rel="nofollow">usa.gov</a>'
+         )
+ 
+     def test_invalid_email(self):
+         """
+         #17592 - Check urlize don't crash on invalid email with dot-starting
+         domain
+         """
+         self.assertEqual(urlize("email@.stream.ru"), "email@.stream.ru")
+ 
+     def test_uppercase(self):
+         """
+         #18071 - Check urlize accepts uppercased URL schemes
+         """
+         self.assertEqual(
+             urlize("HTTPS://github.com/"),
+             '<a href="https://github.com/" rel="nofollow">HTTPS://github.com/</a>',
+         )
+ 
+     def test_trailing_period(self):
+         """
+         #18644 - Check urlize trims trailing period when followed by parenthesis
+         """
+         self.assertEqual(
+             urlize("(Go to http://www.example.com/foo.)"),
+             '(Go to <a href="http://www.example.com/foo" rel="nofollow">'
+             "http://www.example.com/foo</a>.)",
+         )
+ 
+     def test_trailing_multiple_punctuation(self):
+         self.assertEqual(
+             urlize("A test http://testing.com/example.."),
+             'A test <a href="http://testing.com/example" rel="nofollow">'
+             "http://testing.com/example</a>..",
+         )
+         self.assertEqual(
+             urlize("A test http://testing.com/example!!"),
+             'A test <a href="http://testing.com/example" rel="nofollow">'
+             "http://testing.com/example</a>!!",
+         )
+         self.assertEqual(
+             urlize("A test http://testing.com/example!!!"),
+             'A test <a href="http://testing.com/example" rel="nofollow">'
+             "http://testing.com/example</a>!!!",
+         )
+         self.assertEqual(
+             urlize('A test http://testing.com/example.,:;)"!'),
+             'A test <a href="http://testing.com/example" rel="nofollow">'
+             "http://testing.com/example</a>.,:;)&quot;!",
+         )
+ 
+     def test_trailing_semicolon(self):
+         self.assertEqual(
+             urlize("http://example.com?x=&amp;", autoescape=False),
+             '<a href="http://example.com?x=" rel="nofollow">'
+             "http://example.com?x=&amp;</a>",
+         )
+         self.assertEqual(
+             urlize("http://example.com?x=&amp;;", autoescape=False),
+             '<a href="http://example.com?x=" rel="nofollow">'
+             "http://example.com?x=&amp;</a>;",
+         )
+         self.assertEqual(
+             urlize("http://example.com?x=&amp;;;", autoescape=False),
+             '<a href="http://example.com?x=" rel="nofollow">'
+             "http://example.com?x=&amp;</a>;;",
+         )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp.;...;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp</a>.;...;",
++        )
+ 
+     def test_brackets(self):
+         """
+         #19070 - Check urlize handles brackets properly
+         """
+         self.assertEqual(
+             urlize("[see www.example.com]"),
+             '[see <a href="http://www.example.com" rel="nofollow">www.example.com</a>]',
+         )
+         self.assertEqual(
+             urlize("see test[at[example.com"),
+             'see <a href="http://test[at[example.com" rel="nofollow">'
+             "test[at[example.com</a>",
+         )
+         self.assertEqual(
+             urlize("[http://168.192.0.1](http://168.192.0.1)"),
+             '[<a href="http://168.192.0.1](http://168.192.0.1)" rel="nofollow">'
+             "http://168.192.0.1](http://168.192.0.1)</a>",
+         )
+ 
+     def test_wrapping_characters(self):
+         wrapping_chars = (
+             ("()", ("(", ")")),
+             ("<>", ("&lt;", "&gt;")),
+             ("[]", ("[", "]")),
+             ('""', ("&quot;", "&quot;")),
+             ("''", ("&#x27;", "&#x27;")),
+         )
+         for wrapping_in, (start_out, end_out) in wrapping_chars:
+             with self.subTest(wrapping_in=wrapping_in):
+                 start_in, end_in = wrapping_in
+                 self.assertEqual(
+                     urlize(start_in + "https://www.example.org/" + end_in),
+                     f'{start_out}<a href="https://www.example.org/" rel="nofollow">'
+                     f"https://www.example.org/</a>{end_out}",
+                 )
+ 
+     def test_ipv4(self):
+         self.assertEqual(
+             urlize("http://192.168.0.15/api/9"),
+             '<a href="http://192.168.0.15/api/9" rel="nofollow">'
+             "http://192.168.0.15/api/9</a>",
+         )
+ 
+     def test_ipv6(self):
+         self.assertEqual(
+             urlize("http://[2001:db8:cafe::2]/api/9"),
+             '<a href="http://[2001:db8:cafe::2]/api/9" rel="nofollow">'
+             "http://[2001:db8:cafe::2]/api/9</a>",
+         )
+ 
+     def test_quotation_marks(self):
+         """
+         #20364 - Check urlize correctly include quotation marks in links
+         """
+         self.assertEqual(
+             urlize('before "hi@example.com" afterward', autoescape=False),
+             'before "<a href="mailto:hi@example.com">hi@example.com</a>" afterward',
+         )
+         self.assertEqual(
+             urlize('before hi@example.com" afterward', autoescape=False),
+             'before <a href="mailto:hi@example.com">hi@example.com</a>" afterward',
+         )
+         self.assertEqual(
+             urlize('before "hi@example.com afterward', autoescape=False),
+             'before "<a href="mailto:hi@example.com">hi@example.com</a> afterward',
+         )
+         self.assertEqual(
+             urlize("before 'hi@example.com' afterward", autoescape=False),
+             "before '<a href=\"mailto:hi@example.com\">hi@example.com</a>' afterward",
+         )
+         self.assertEqual(
+             urlize("before hi@example.com' afterward", autoescape=False),
+             'before <a href="mailto:hi@example.com">hi@example.com</a>\' afterward',
+         )
+         self.assertEqual(
+             urlize("before 'hi@example.com afterward", autoescape=False),
+             'before \'<a href="mailto:hi@example.com">hi@example.com</a> afterward',
+         )
+ 
+     def test_quote_commas(self):
+         """
+         #20364 - Check urlize copes with commas following URLs in quotes
+         """
+         self.assertEqual(
+             urlize(
+                 'Email us at "hi@example.com", or phone us at +xx.yy', autoescape=False
+             ),
+             'Email us at "<a href="mailto:hi@example.com">hi@example.com</a>", or '
+             "phone us at +xx.yy",
+         )
+ 
+     def test_exclamation_marks(self):
+         """
+         #23715 - Check urlize correctly handles exclamation marks after TLDs
+         or query string
+         """
+         self.assertEqual(
+             urlize("Go to djangoproject.com! and enjoy."),
+             'Go to <a href="http://djangoproject.com" rel="nofollow">djangoproject.com'
+             "</a>! and enjoy.",
+         )
+         self.assertEqual(
+             urlize("Search for google.com/?q=! and see."),
+             'Search for <a href="http://google.com/?q=" rel="nofollow">google.com/?q='
+             "</a>! and see.",
+         )
+         self.assertEqual(
+             urlize("Search for google.com/?q=dj!`? and see."),
+             'Search for <a href="http://google.com/?q=dj%21%60%3F" rel="nofollow">'
+             "google.com/?q=dj!`?</a> and see.",
+         )
+         self.assertEqual(
+             urlize("Search for google.com/?q=dj!`?! and see."),
+             'Search for <a href="http://google.com/?q=dj%21%60%3F" rel="nofollow">'
+             "google.com/?q=dj!`?</a>! and see.",
+         )
+ 
+     def test_non_string_input(self):
+         self.assertEqual(urlize(123), "123")
+ 
+     def test_autoescape(self):
+         self.assertEqual(
+             urlize('foo<a href=" google.com ">bar</a>buz'),
+             'foo&lt;a href=&quot; <a href="http://google.com" rel="nofollow">google.com'
+             "</a> &quot;&gt;bar&lt;/a&gt;buz",
+         )
+ 
+     def test_autoescape_off(self):
+         self.assertEqual(
+             urlize('foo<a href=" google.com ">bar</a>buz', autoescape=False),
+             'foo<a href=" <a href="http://google.com" rel="nofollow">google.com</a> ">'
+             "bar</a>buz",
+         )
+ 
+     def test_lazystring(self):
+         prepend_www = lazy(lambda url: "www." + url, str)
+         self.assertEqual(
+             urlize(prepend_www("google.com")),
+             '<a href="http://www.google.com" rel="nofollow">www.google.com</a>',
+         )
+diff --git a/tests/utils_tests/test_html.py b/tests/utils_tests/test_html.py
+index 10ba621dd5..9bee483dc7 100644
+--- a/tests/utils_tests/test_html.py
++++ b/tests/utils_tests/test_html.py
+@@ -24,358 +24,359 @@ from django.utils.safestring import mark_safe
+ class TestUtilsHtml(SimpleTestCase):
+     def check_output(self, function, value, output=None):
+         """
+         function(value) equals output. If output is None, function(value)
+         equals value.
+         """
+         if output is None:
+             output = value
+         self.assertEqual(function(value), output)
+ 
+     def test_escape(self):
+         items = (
+             ("&", "&amp;"),
+             ("<", "&lt;"),
+             (">", "&gt;"),
+             ('"', "&quot;"),
+             ("'", "&#x27;"),
+         )
+         # Substitution patterns for testing the above items.
+         patterns = ("%s", "asdf%sfdsa", "%s1", "1%sb")
+         for value, output in items:
+             with self.subTest(value=value, output=output):
+                 for pattern in patterns:
+                     with self.subTest(value=value, output=output, pattern=pattern):
+                         self.check_output(escape, pattern % value, pattern % output)
+                         self.check_output(
+                             escape, lazystr(pattern % value), pattern % output
+                         )
+                 # Check repeated values.
+                 self.check_output(escape, value * 2, output * 2)
+         # Verify it doesn't double replace &.
+         self.check_output(escape, "<&", "&lt;&amp;")
+ 
+     def test_format_html(self):
+         self.assertEqual(
+             format_html(
+                 "{} {} {third} {fourth}",
+                 "< Dangerous >",
+                 mark_safe("<b>safe</b>"),
+                 third="< dangerous again",
+                 fourth=mark_safe("<i>safe again</i>"),
+             ),
+             "&lt; Dangerous &gt; <b>safe</b> &lt; dangerous again <i>safe again</i>",
+         )
+ 
+     def test_format_html_no_params(self):
+         msg = "Calling format_html() without passing args or kwargs is deprecated."
+         # RemovedInDjango60Warning: when the deprecation ends, replace with:
+         # msg = "args or kwargs must be provided."
+         # with self.assertRaisesMessage(TypeError, msg):
+         with self.assertWarnsMessage(RemovedInDjango60Warning, msg) as ctx:
+             name = "Adam"
+             self.assertEqual(format_html(f"<i>{name}</i>"), "<i>Adam</i>")
+         self.assertEqual(ctx.filename, __file__)
+ 
+     def test_linebreaks(self):
+         items = (
+             ("para1\n\npara2\r\rpara3", "<p>para1</p>\n\n<p>para2</p>\n\n<p>para3</p>"),
+             (
+                 "para1\nsub1\rsub2\n\npara2",
+                 "<p>para1<br>sub1<br>sub2</p>\n\n<p>para2</p>",
+             ),
+             (
+                 "para1\r\n\r\npara2\rsub1\r\rpara4",
+                 "<p>para1</p>\n\n<p>para2<br>sub1</p>\n\n<p>para4</p>",
+             ),
+             ("para1\tmore\n\npara2", "<p>para1\tmore</p>\n\n<p>para2</p>"),
+         )
+         for value, output in items:
+             with self.subTest(value=value, output=output):
+                 self.check_output(linebreaks, value, output)
+                 self.check_output(linebreaks, lazystr(value), output)
+ 
+     def test_strip_tags(self):
+         items = (
+             (
+                 "<p>See: &#39;&eacute; is an apostrophe followed by e acute</p>",
+                 "See: &#39;&eacute; is an apostrophe followed by e acute",
+             ),
+             (
+                 "<p>See: &#x27;&eacute; is an apostrophe followed by e acute</p>",
+                 "See: &#x27;&eacute; is an apostrophe followed by e acute",
+             ),
+             ("<adf>a", "a"),
+             ("</adf>a", "a"),
+             ("<asdf><asdf>e", "e"),
+             ("hi, <f x", "hi, <f x"),
+             ("234<235, right?", "234<235, right?"),
+             ("a4<a5 right?", "a4<a5 right?"),
+             ("b7>b2!", "b7>b2!"),
+             ("</fe", "</fe"),
+             ("<x>b<y>", "b"),
+             ("a<p onclick=\"alert('<test>')\">b</p>c", "abc"),
+             ("a<p a >b</p>c", "abc"),
+             ("d<a:b c:d>e</p>f", "def"),
+             ('<strong>foo</strong><a href="http://example.com">bar</a>', "foobar"),
+             # caused infinite loop on Pythons not patched with
+             # https://bugs.python.org/issue20288
+             ("&gotcha&#;<>", "&gotcha&#;<>"),
+             ("<sc<!-- -->ript>test<<!-- -->/script>", "ript>test"),
+             ("<script>alert()</script>&h", "alert()h"),
+             ("><!" + ("&" * 16000) + "D", "><!" + ("&" * 16000) + "D"),
+             ("X<<<<br>br>br>br>X", "XX"),
+         )
+         for value, output in items:
+             with self.subTest(value=value, output=output):
+                 self.check_output(strip_tags, value, output)
+                 self.check_output(strip_tags, lazystr(value), output)
+ 
+     def test_strip_tags_files(self):
+         # Test with more lengthy content (also catching performance regressions)
+         for filename in ("strip_tags1.html", "strip_tags2.txt"):
+             with self.subTest(filename=filename):
+                 path = os.path.join(os.path.dirname(__file__), "files", filename)
+                 with open(path) as fp:
+                     content = fp.read()
+                     start = datetime.now()
+                     stripped = strip_tags(content)
+                     elapsed = datetime.now() - start
+                 self.assertEqual(elapsed.seconds, 0)
+                 self.assertIn("Test string that has not been stripped.", stripped)
+                 self.assertNotIn("<", stripped)
+ 
+     def test_strip_spaces_between_tags(self):
+         # Strings that should come out untouched.
+         items = (" <adf>", "<adf> ", " </adf> ", " <f> x</f>")
+         for value in items:
+             with self.subTest(value=value):
+                 self.check_output(strip_spaces_between_tags, value)
+                 self.check_output(strip_spaces_between_tags, lazystr(value))
+ 
+         # Strings that have spaces to strip.
+         items = (
+             ("<d> </d>", "<d></d>"),
+             ("<p>hello </p>\n<p> world</p>", "<p>hello </p><p> world</p>"),
+             ("\n<p>\t</p>\n<p> </p>\n", "\n<p></p><p></p>\n"),
+         )
+         for value, output in items:
+             with self.subTest(value=value, output=output):
+                 self.check_output(strip_spaces_between_tags, value, output)
+                 self.check_output(strip_spaces_between_tags, lazystr(value), output)
+ 
+     def test_escapejs(self):
+         items = (
+             (
+                 "\"double quotes\" and 'single quotes'",
+                 "\\u0022double quotes\\u0022 and \\u0027single quotes\\u0027",
+             ),
+             (r"\ : backslashes, too", "\\u005C : backslashes, too"),
+             (
+                 "and lots of whitespace: \r\n\t\v\f\b",
+                 "and lots of whitespace: \\u000D\\u000A\\u0009\\u000B\\u000C\\u0008",
+             ),
+             (
+                 r"<script>and this</script>",
+                 "\\u003Cscript\\u003Eand this\\u003C/script\\u003E",
+             ),
+             (
+                 "paragraph separator:\u2029and line separator:\u2028",
+                 "paragraph separator:\\u2029and line separator:\\u2028",
+             ),
+             ("`", "\\u0060"),
+         )
+         for value, output in items:
+             with self.subTest(value=value, output=output):
+                 self.check_output(escapejs, value, output)
+                 self.check_output(escapejs, lazystr(value), output)
+ 
+     def test_json_script(self):
+         tests = (
+             # "<", ">" and "&" are quoted inside JSON strings
+             (
+                 (
+                     "&<>",
+                     '<script id="test_id" type="application/json">'
+                     '"\\u0026\\u003C\\u003E"</script>',
+                 )
+             ),
+             # "<", ">" and "&" are quoted inside JSON objects
+             (
+                 {"a": "<script>test&ing</script>"},
+                 '<script id="test_id" type="application/json">'
+                 '{"a": "\\u003Cscript\\u003Etest\\u0026ing\\u003C/script\\u003E"}'
+                 "</script>",
+             ),
+             # Lazy strings are quoted
+             (
+                 lazystr("&<>"),
+                 '<script id="test_id" type="application/json">"\\u0026\\u003C\\u003E"'
+                 "</script>",
+             ),
+             (
+                 {"a": lazystr("<script>test&ing</script>")},
+                 '<script id="test_id" type="application/json">'
+                 '{"a": "\\u003Cscript\\u003Etest\\u0026ing\\u003C/script\\u003E"}'
+                 "</script>",
+             ),
+         )
+         for arg, expected in tests:
+             with self.subTest(arg=arg):
+                 self.assertEqual(json_script(arg, "test_id"), expected)
+ 
+     def test_json_script_custom_encoder(self):
+         class CustomDjangoJSONEncoder(DjangoJSONEncoder):
+             def encode(self, o):
+                 return '{"hello": "world"}'
+ 
+         self.assertHTMLEqual(
+             json_script({}, encoder=CustomDjangoJSONEncoder),
+             '<script type="application/json">{"hello": "world"}</script>',
+         )
+ 
+     def test_json_script_without_id(self):
+         self.assertHTMLEqual(
+             json_script({"key": "value"}),
+             '<script type="application/json">{"key": "value"}</script>',
+         )
+ 
+     def test_smart_urlquote(self):
+         items = (
+             ("http://öäü.com/", "http://xn--4ca9at.com/"),
+             ("http://öäü.com/öäü/", "http://xn--4ca9at.com/%C3%B6%C3%A4%C3%BC/"),
+             # Everything unsafe is quoted, !*'();:@&=+$,/?#[]~ is considered
+             # safe as per RFC.
+             (
+                 "http://example.com/path/öäü/",
+                 "http://example.com/path/%C3%B6%C3%A4%C3%BC/",
+             ),
+             ("http://example.com/%C3%B6/ä/", "http://example.com/%C3%B6/%C3%A4/"),
+             ("http://example.com/?x=1&y=2+3&z=", "http://example.com/?x=1&y=2+3&z="),
+             ("http://example.com/?x=<>\"'", "http://example.com/?x=%3C%3E%22%27"),
+             (
+                 "http://example.com/?q=http://example.com/?x=1%26q=django",
+                 "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3D"
+                 "django",
+             ),
+             (
+                 "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3D"
+                 "django",
+                 "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3D"
+                 "django",
+             ),
+             ("http://.www.f oo.bar/", "http://.www.f%20oo.bar/"),
+         )
+         # IDNs are properly quoted
+         for value, output in items:
+             with self.subTest(value=value, output=output):
+                 self.assertEqual(smart_urlquote(value), output)
+ 
+     def test_conditional_escape(self):
+         s = "<h1>interop</h1>"
+         self.assertEqual(conditional_escape(s), "&lt;h1&gt;interop&lt;/h1&gt;")
+         self.assertEqual(conditional_escape(mark_safe(s)), s)
+         self.assertEqual(conditional_escape(lazystr(mark_safe(s))), s)
+ 
+     def test_html_safe(self):
+         @html_safe
+         class HtmlClass:
+             def __str__(self):
+                 return "<h1>I'm a html class!</h1>"
+ 
+         html_obj = HtmlClass()
+         self.assertTrue(hasattr(HtmlClass, "__html__"))
+         self.assertTrue(hasattr(html_obj, "__html__"))
+         self.assertEqual(str(html_obj), html_obj.__html__())
+ 
+     def test_html_safe_subclass(self):
+         class BaseClass:
+             def __html__(self):
+                 # defines __html__ on its own
+                 return "some html content"
+ 
+             def __str__(self):
+                 return "some non html content"
+ 
+         @html_safe
+         class Subclass(BaseClass):
+             def __str__(self):
+                 # overrides __str__ and is marked as html_safe
+                 return "some html safe content"
+ 
+         subclass_obj = Subclass()
+         self.assertEqual(str(subclass_obj), subclass_obj.__html__())
+ 
+     def test_html_safe_defines_html_error(self):
+         msg = "can't apply @html_safe to HtmlClass because it defines __html__()."
+         with self.assertRaisesMessage(ValueError, msg):
+ 
+             @html_safe
+             class HtmlClass:
+                 def __html__(self):
+                     return "<h1>I'm a html class!</h1>"
+ 
+     def test_html_safe_doesnt_define_str(self):
+         msg = "can't apply @html_safe to HtmlClass because it doesn't define __str__()."
+         with self.assertRaisesMessage(ValueError, msg):
+ 
+             @html_safe
+             class HtmlClass:
+                 pass
+ 
+     def test_urlize(self):
+         tests = (
+             (
+                 "Search for google.com/?q=! and see.",
+                 'Search for <a href="http://google.com/?q=">google.com/?q=</a>! and '
+                 "see.",
+             ),
+             (
+                 "Search for google.com/?q=1&lt! and see.",
+                 'Search for <a href="http://google.com/?q=1%3C">google.com/?q=1&lt'
+                 "</a>! and see.",
+             ),
+             (
+                 lazystr("Search for google.com/?q=!"),
+                 'Search for <a href="http://google.com/?q=">google.com/?q=</a>!',
+             ),
+             ("foo@example.com", '<a href="mailto:foo@example.com">foo@example.com</a>'),
+             (
+                 "test@" + "한.글." * 15 + "aaa",
+                 '<a href="mailto:test@'
+                 + "xn--6q8b.xn--bj0b." * 15
+                 + 'aaa">'
+                 + "test@"
+                 + "한.글." * 15
+                 + "aaa</a>",
+             ),
+         )
+         for value, output in tests:
+             with self.subTest(value=value):
+                 self.assertEqual(urlize(value), output)
+ 
+     def test_urlize_unchanged_inputs(self):
+         tests = (
+             ("a" + "@a" * 50000) + "a",  # simple_email_re catastrophic test
+             # Unicode domain catastrophic tests.
+             "a@" + "한.글." * 1_000_000 + "a",
+             "http://" + "한.글." * 1_000_000 + "com",
+             "www." + "한.글." * 1_000_000 + "com",
+             ("a" + "." * 1000000) + "a",  # trailing_punctuation catastrophic test
+             "foo@",
+             "@foo.com",
+             "foo@.example.com",
+             "foo@localhost",
+             "foo@localhost.",
+             # trim_punctuation catastrophic tests
+             "(" * 100_000 + ":" + ")" * 100_000,
+             "(" * 100_000 + "&:" + ")" * 100_000,
+             "([" * 100_000 + ":" + "])" * 100_000,
+             "[(" * 100_000 + ":" + ")]" * 100_000,
+             "([[" * 100_000 + ":" + "]])" * 100_000,
+             "&:" + ";" * 100_000,
+             "&.;" * 100_000,
+             ".;" * 100_000,
++            "&" + ";:" * 100_000,
+         )
+         for value in tests:
+             with self.subTest(value=value):
+                 self.assertEqual(urlize(value), value)

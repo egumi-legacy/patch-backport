@@ -1,0 +1,85 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "chunks_info": {
+      "total_chunks": 4,
+      "no_conflict_chunks": 4,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 0,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-12T04:03:24.018132"
+  },
+  "to_adapt_commit": {
+    "sha": "f9618ff105a0f6f5a6beed3edc557ea6a7d26df6.patch",
+    "patch_url": "https://github.com/linux/kernel-stable/commit/f9618ff105a0f6f5a6beed3edc557ea6a7d26df6.patch",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f9618f/chunk_patches/chunk_001_20250612_040322.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "v6.12-rc7",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: sound/soc/sof/ipc4-topology.c:549\nerror: sound/soc/sof/ipc4-topology.c: patch does not apply\nerror: patch failed: sound/soc/sof/sof-audio.h:514\nerror: sound/soc/sof/sof-audio.h: patch does not apply\nerror: patch failed: sound/soc/sof/topology.c:2354\nerror: sound/soc/sof/topology.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f9618f/patches/upstream_f9618f.patch",
+      "timestamp": "2025-06-12T04:03:22.150527"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f9618f/patches/upstream_f9618f.patch",
+      "total_chunks": 4,
+      "applied_chunks": 4,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f9618f/chunk_patches/chunk_001_20250612_040322.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f9618f/chunk_patches/chunk_002_20250612_040322.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f9618f/chunk_patches/chunk_003_20250612_040322.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f9618f/chunk_patches/chunk_004_20250612_040322.patch"
+      ],
+      "remaining_patch": null,
+      "timestamp": "2025-06-12T04:03:22.371599",
+      "success": true
+    },
+    "llm_adapter": null,
+    "patch_adapter": [],
+    "final_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f9618f/chunk_patches/chunk_001_20250612_040322.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-12T04:03:21.011121",
+    "end_time": "2025-06-12T04:03:22.386610",
+    "total_seconds": 1.375489,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "patch_content": "From f9618ff105a0f6f5a6beed3edc557ea6a7d26df6 Mon Sep 17 00:00:00 2001\nFrom: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>\nDate: Tue, 13 Feb 2024 12:12:43 +0200\nSubject: [PATCH] ASoC: SOF: topology: Parse DAI type token for dspless mode\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\nStarting with LunarLake, the dspless mode can handle SoundWire/ALH,\nDMIC and SSPs, so we need to identify the dai type from topology.\n\nSigned-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>\nReviewed-by: P\u00e9ter Ujfalusi <peter.ujfalusi@linux.intel.com>\nReviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>\nSigned-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>\nLink: https://msgid.link/r/20240213101247.28887-12-peter.ujfalusi@linux.intel.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\n\ndiff --git a/sound/soc/sof/ipc4-topology.c b/sound/soc/sof/ipc4-topology.c\nindex 98e2f83b1c09..43d4abd79f44 100644\n--- a/sound/soc/sof/ipc4-topology.c\n+++ b/sound/soc/sof/ipc4-topology.c\n@@ -549,6 +549,7 @@ static int sof_ipc4_widget_setup_comp_dai(struct snd_sof_widget *swidget)\n \tdev_dbg(scomp->dev, \"dai %s node_type %u dai_type %u dai_index %d\\n\", swidget->widget->name,\n \t\tnode_type, ipc4_copier->dai_type, ipc4_copier->dai_index);\n \n+\tdai->type = ipc4_copier->dai_type;\n \tipc4_copier->data.gtw_cfg.node_id = SOF_IPC4_NODE_TYPE(node_type);\n \n \tpipe_widget = swidget->spipe->pipe_widget;\n",
+    "llm_output": null,
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "v6.12-rc7",
+      "commit_sha": "f9618ff105a0f6f5a6beed3edc557ea6a7d26df6.patch",
+      "timestamp": "2025-06-12T04:03:24.018170",
+      "execution_path": "chunk_analyzer (all chunks)"
+    }
+  }
+}

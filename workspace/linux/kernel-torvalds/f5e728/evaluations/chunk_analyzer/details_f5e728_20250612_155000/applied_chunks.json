@@ -1,0 +1,42 @@
+[
+  {
+    "索引": 1,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f5e728/chunk_patches/chunk_001_20250612_155000.patch",
+    "实际补丁": null,
+    "修改文件": "drivers/video/fbdev/hyperv_fb.c",
+    "修改位置": "952-952",
+    "内容": "From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001\nFrom: Saurabh Sengar <ssengar@linux.microsoft.com>\nDate: Sat, 1 Mar 2025 08:16:30 -0800\nSubject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem\n\nThe device object required in 'hvfb_release_phymem' function\nfor 'dma_free_coherent' can also be obtained from the 'info'\npointer, making 'hdev' parameter in 'hvfb_putmem' redundant.\nRemove the unnecessary 'hdev' argument from 'hvfb_putmem'.\n\nSigned-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>\nReviewed-by: Michael Kelley <mhklinux@outlook.com>\nTested-by: Michael Kelley <mhklinux@outlook.com>\nLink: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com\nSigned-off-by: Wei Liu <wei.liu@kernel.org>\nMessage-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>\n\ndiff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c\nindex ce23d0ef5702..9798a34ac571 100644\n--- a/drivers/video/fbdev/hyperv_fb.c\n+++ b/drivers/video/fbdev/hyperv_fb.c\n@@ -952,7 +952,7 @@ static phys_addr_t hvfb_get_phymem(struct hv_device *hdev,\n }\n \n /* Release contiguous physical memory */\n-static void hvfb_release_phymem(struct hv_device *hdev,\n+static void hvfb_release_phymem(struct device *device,\n \t\t\t\tphys_addr_t paddr, unsigned int size)\n {\n \tunsigned int order = get_order(size);\n"
+  },
+  {
+    "索引": 2,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f5e728/chunk_patches/chunk_002_20250612_155000.patch",
+    "实际补丁": null,
+    "修改文件": "drivers/video/fbdev/hyperv_fb.c",
+    "修改位置": "960-960",
+    "内容": "From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001\nFrom: Saurabh Sengar <ssengar@linux.microsoft.com>\nDate: Sat, 1 Mar 2025 08:16:30 -0800\nSubject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem\n\nThe device object required in 'hvfb_release_phymem' function\nfor 'dma_free_coherent' can also be obtained from the 'info'\npointer, making 'hdev' parameter in 'hvfb_putmem' redundant.\nRemove the unnecessary 'hdev' argument from 'hvfb_putmem'.\n\nSigned-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>\nReviewed-by: Michael Kelley <mhklinux@outlook.com>\nTested-by: Michael Kelley <mhklinux@outlook.com>\nLink: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com\nSigned-off-by: Wei Liu <wei.liu@kernel.org>\nMessage-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>\n\ndiff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c\nindex ce23d0ef5702..9798a34ac571 100644\n--- a/drivers/video/fbdev/hyperv_fb.c\n+++ b/drivers/video/fbdev/hyperv_fb.c\n@@ -960,7 +960,7 @@ static void hvfb_release_phymem(struct hv_device *hdev,\n \tif (order <= MAX_PAGE_ORDER)\n \t\t__free_pages(pfn_to_page(paddr >> PAGE_SHIFT), order);\n \telse\n-\t\tdma_free_coherent(&hdev->device,\n+\t\tdma_free_coherent(device,\n \t\t\t\t  round_up(size, PAGE_SIZE),\n \t\t\t\t  phys_to_virt(paddr),\n \t\t\t\t  paddr);\n"
+  },
+  {
+    "索引": 3,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f5e728/chunk_patches/chunk_003_20250612_155000.patch",
+    "实际补丁": null,
+    "修改文件": "drivers/video/fbdev/hyperv_fb.c",
+    "修改位置": "1080-1080",
+    "内容": "From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001\nFrom: Saurabh Sengar <ssengar@linux.microsoft.com>\nDate: Sat, 1 Mar 2025 08:16:30 -0800\nSubject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem\n\nThe device object required in 'hvfb_release_phymem' function\nfor 'dma_free_coherent' can also be obtained from the 'info'\npointer, making 'hdev' parameter in 'hvfb_putmem' redundant.\nRemove the unnecessary 'hdev' argument from 'hvfb_putmem'.\n\nSigned-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>\nReviewed-by: Michael Kelley <mhklinux@outlook.com>\nTested-by: Michael Kelley <mhklinux@outlook.com>\nLink: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com\nSigned-off-by: Wei Liu <wei.liu@kernel.org>\nMessage-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>\n\ndiff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c\nindex ce23d0ef5702..9798a34ac571 100644\n--- a/drivers/video/fbdev/hyperv_fb.c\n+++ b/drivers/video/fbdev/hyperv_fb.c\n@@ -1080,7 +1080,7 @@ static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)\n }\n \n /* Release the framebuffer */\n-static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)\n+static void hvfb_putmem(struct fb_info *info)\n {\n \tstruct hvfb_par *par = info->par;\n \n"
+  },
+  {
+    "索引": 4,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f5e728/chunk_patches/chunk_005_20250612_155000.patch",
+    "实际补丁": null,
+    "修改文件": "drivers/video/fbdev/hyperv_fb.c",
+    "修改位置": "1203-1203",
+    "内容": "From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001\nFrom: Saurabh Sengar <ssengar@linux.microsoft.com>\nDate: Sat, 1 Mar 2025 08:16:30 -0800\nSubject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem\n\nThe device object required in 'hvfb_release_phymem' function\nfor 'dma_free_coherent' can also be obtained from the 'info'\npointer, making 'hdev' parameter in 'hvfb_putmem' redundant.\nRemove the unnecessary 'hdev' argument from 'hvfb_putmem'.\n\nSigned-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>\nReviewed-by: Michael Kelley <mhklinux@outlook.com>\nTested-by: Michael Kelley <mhklinux@outlook.com>\nLink: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com\nSigned-off-by: Wei Liu <wei.liu@kernel.org>\nMessage-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>\n\ndiff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c\nindex ce23d0ef5702..9798a34ac571 100644\n--- a/drivers/video/fbdev/hyperv_fb.c\n+++ b/drivers/video/fbdev/hyperv_fb.c\n@@ -1203,7 +1203,7 @@ static int hvfb_probe(struct hv_device *hdev,\n \n error:\n \tfb_deferred_io_cleanup(info);\n-\thvfb_putmem(hdev, info);\n+\thvfb_putmem(info);\n error2:\n \tvmbus_close(hdev->channel);\n error1:\n"
+  },
+  {
+    "索引": 5,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f5e728/chunk_patches/chunk_006_20250612_155000.patch",
+    "实际补丁": null,
+    "修改文件": "drivers/video/fbdev/hyperv_fb.c",
+    "修改位置": "1232-1232",
+    "内容": "From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001\nFrom: Saurabh Sengar <ssengar@linux.microsoft.com>\nDate: Sat, 1 Mar 2025 08:16:30 -0800\nSubject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem\n\nThe device object required in 'hvfb_release_phymem' function\nfor 'dma_free_coherent' can also be obtained from the 'info'\npointer, making 'hdev' parameter in 'hvfb_putmem' redundant.\nRemove the unnecessary 'hdev' argument from 'hvfb_putmem'.\n\nSigned-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>\nReviewed-by: Michael Kelley <mhklinux@outlook.com>\nTested-by: Michael Kelley <mhklinux@outlook.com>\nLink: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com\nSigned-off-by: Wei Liu <wei.liu@kernel.org>\nMessage-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>\n\ndiff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c\nindex ce23d0ef5702..9798a34ac571 100644\n--- a/drivers/video/fbdev/hyperv_fb.c\n+++ b/drivers/video/fbdev/hyperv_fb.c\n@@ -1232,7 +1232,7 @@ static void hvfb_remove(struct hv_device *hdev)\n \tvmbus_close(hdev->channel);\n \thv_set_drvdata(hdev, NULL);\n \n-\thvfb_putmem(hdev, info);\n+\thvfb_putmem(info);\n \tframebuffer_release(info);\n }\n \n-- \n2.25.1\n\n"
+  }
+]

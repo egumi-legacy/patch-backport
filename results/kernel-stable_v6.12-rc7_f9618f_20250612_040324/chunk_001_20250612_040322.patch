@@ -1,0 +1,30 @@
+From f9618ff105a0f6f5a6beed3edc557ea6a7d26df6 Mon Sep 17 00:00:00 2001
+From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:43 +0200
+Subject: [PATCH] ASoC: SOF: topology: Parse DAI type token for dspless mode
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Starting with LunarLake, the dspless mode can handle SoundWire/ALH,
+DMIC and SSPs, so we need to identify the dai type from topology.
+
+Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-12-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/ipc4-topology.c b/sound/soc/sof/ipc4-topology.c
+index 98e2f83b1c09..43d4abd79f44 100644
+--- a/sound/soc/sof/ipc4-topology.c
++++ b/sound/soc/sof/ipc4-topology.c
+@@ -549,6 +549,7 @@ static int sof_ipc4_widget_setup_comp_dai(struct snd_sof_widget *swidget)
+ 	dev_dbg(scomp->dev, "dai %s node_type %u dai_type %u dai_index %d\n", swidget->widget->name,
+ 		node_type, ipc4_copier->dai_type, ipc4_copier->dai_index);
+ 
++	dai->type = ipc4_copier->dai_type;
+ 	ipc4_copier->data.gtw_cfg.node_id = SOF_IPC4_NODE_TYPE(node_type);
+ 
+ 	pipe_widget = swidget->spipe->pipe_widget;

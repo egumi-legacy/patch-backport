@@ -1,0 +1,411 @@
+2025-06-12 14:56:16.841 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_145616.log
+2025-06-12 14:56:16.842 | INFO     | __main__:process_multiple_commits:1842 - 处理第 1/6 个commit: ea2f45ab0e53b255f72c85ccd99e2b394fc5fceb
+2025-06-12 14:56:16.846 | INFO     | __main__:extract_commit_info:1990 - Commit ea2f45ab0e53b255f72c85ccd99e2b394fc5fceb 存在于仓库中
+2025-06-12 14:56:16.864 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_145616.log
+2025-06-12 14:56:16.865 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-12 14:56:16.865 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-torvalds/commit/ea2f45ab0e53b255f72c85ccd99e2b394fc5fceb.patch
+2025-06-12 14:56:16.865 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-12 14:56:16.866 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-12 14:56:16.867 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-12 14:56:16.868 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-12 14:56:16.868 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.12-rc7']
+2025-06-12 14:56:16.868 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.12-rc7
+2025-06-12 14:56:16.868 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: ea2f45ab0e53b255f72c85ccd99e2b394fc5fceb.patch
+2025-06-12 14:56:16.868 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-12 14:56:16.869 | INFO     | modules.direct_apply:_download_patch:240 - 上游补丁文件已存在: workspace/linux/kernel-torvalds/ea2f45/patches/upstream_ea2f45.patch
+2025-06-12 14:56:16.869 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-12 14:56:16.869 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/patches/upstream_ea2f45.patch
+2025-06-12 14:56:17.029 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_v6.12-rc7
+2025-06-12 14:56:17.642 | ERROR    | modules.direct_apply:_apply_patch:315 - 补丁应用失败: error: patch failed: drivers/video/fbdev/hyperv_fb.c:1226
+error: drivers/video/fbdev/hyperv_fb.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-12 14:56:18.063 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_v6.12-rc7
+2025-06-12 14:56:18.064 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-12 14:56:18.064 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/patches/upstream_ea2f45.patch
+2025-06-12 14:56:18.064 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:175 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/patches/upstream_ea2f45.patch
+2025-06-12 14:56:18.065 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:180 - 补丁文件包含 109 行内容
+2025-06-12 14:56:18.065 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:195 - 发现修改文件: drivers/video/fbdev/hyperv_fb.c
+2025-06-12 14:56:18.066 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/video/fbdev/hyperv_fb.c @@ -282,6 +282,8 @@ (modification)
+2025-06-12 14:56:18.066 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/video/fbdev/hyperv_fb.c @@ -862,6 +864,17 @@ (modification)
+2025-06-12 14:56:18.066 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/video/fbdev/hyperv_fb.c @@ -877,6 +890,7 @@ (modification)
+2025-06-12 14:56:18.067 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/video/fbdev/hyperv_fb.c @@ -1178,7 +1192,7 @@ (modification)
+2025-06-12 14:56:18.067 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:246 - 发现修改块: drivers/video/fbdev/hyperv_fb.c @@ -1226,14 +1240,10 @@ (modification)
+2025-06-12 14:56:18.067 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:266 - 补丁分解完成，共找到 5 个修改块
+2025-06-12 14:56:18.067 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 5 个块
+2025-06-12 14:56:18.068 | INFO     | modules.chunk_analyzer:_create_chunk_patches:285 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/patches/upstream_ea2f45.patch
+2025-06-12 14:56:18.068 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/chunk_patches/chunk_001_20250612_145618.patch (修改文件: drivers/video/fbdev/hyperv_fb.c)
+2025-06-12 14:56:18.069 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/chunk_patches/chunk_002_20250612_145618.patch (修改文件: drivers/video/fbdev/hyperv_fb.c)
+2025-06-12 14:56:18.069 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/chunk_patches/chunk_003_20250612_145618.patch (修改文件: drivers/video/fbdev/hyperv_fb.c)
+2025-06-12 14:56:18.070 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/chunk_patches/chunk_004_20250612_145618.patch (修改文件: drivers/video/fbdev/hyperv_fb.c)
+2025-06-12 14:56:18.070 | INFO     | modules.chunk_analyzer:_create_chunk_patches:311 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/chunk_patches/chunk_005_20250612_145618.patch (修改文件: drivers/video/fbdev/hyperv_fb.c)
+2025-06-12 14:56:18.070 | INFO     | modules.chunk_analyzer:execute:60 - 已为 5 个块创建单独的补丁文件
+2025-06-12 14:56:18.071 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-12 14:56:18.071 | INFO     | modules.chunk_analyzer:execute:66 - From ea2f45ab0e53b255f72c85ccd99e2b394fc5fceb Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
+Date: Sat, 1 Mar 2025 08:16:31 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Allow graceful removal of framebuffer
+
+When a Hyper-V framebuffer device is unbind, hyperv_fb driver tries to
+release the framebuffer forcefully. If this framebuffer is in use it
+produce the following WARN and hence this framebuffer is never released.
+
+[   44.111220] WARNING: CPU: 35 PID: 1882 at drivers/video/fbdev/core/fb_info.c:70 framebuffer_release+0x2c/0x40
+< snip >
+[   44.111289] Call Trace:
+[   44.111290]  <TASK>
+[   44.111291]  ? show_regs+0x6c/0x80
+[   44.111295]  ? __warn+0x8d/0x150
+[   44.111298]  ? framebuffer_release+0x2c/0x40
+[   44.111300]  ? report_bug+0x182/0x1b0
+[   44.111303]  ? handle_bug+0x6e/0xb0
+[   44.111306]  ? exc_invalid_op+0x18/0x80
+[   44.111308]  ? asm_exc_invalid_op+0x1b/0x20
+[   44.111311]  ? framebuffer_release+0x2c/0x40
+[   44.111313]  ? hvfb_remove+0x86/0xa0 [hyperv_fb]
+[   44.111315]  vmbus_remove+0x24/0x40 [hv_vmbus]
+[   44.111323]  device_remove+0x40/0x80
+[   44.111325]  device_release_driver_internal+0x20b/0x270
+[   44.111327]  ? bus_find_device+0xb3/0xf0
+
+Fix this by moving the release of framebuffer and assosiated memory
+to fb_ops.fb_destroy function, so that framebuffer framework handles
+it gracefully.
+
+While we fix this, also replace manual registrations/unregistration of
+framebuffer with devm_register_framebuffer.
+
+Fixes: 68a2d20b79b1 ("drivers/video: add Hyper-V Synthetic Video Frame Buffer Driver")
+
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Link: https://lore.kernel.org/r/1740845791-19977-3-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Message-ID: <1740845791-19977-3-git-send-email-ssengar@linux.microsoft.com>
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index 9798a34ac571..75338ffc703f 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -282,6 +282,8 @@ static uint screen_depth;
+ static uint screen_fb_size;
+ static uint dio_fb_size; /* FB size for deferred IO */
+ 
++static void hvfb_putmem(struct fb_info *info);
++
+ /* Send message to Hyper-V host */
+ static inline int synthvid_send(struct hv_device *hdev,
+ 				struct synthvid_msg *msg)
+
+2025-06-12 14:56:18.071 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-12 14:56:18.072 | INFO     | modules.chunk_analyzer:execute:66 - From ea2f45ab0e53b255f72c85ccd99e2b394fc5fceb Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
+Date: Sat, 1 Mar 2025 08:16:31 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Allow graceful removal of framebuffer
+
+When a Hyper-V framebuffer device is unbind, hyperv_fb driver tries to
+release the framebuffer forcefully. If this framebuffer is in use it
+produce the following WARN and hence this framebuffer is never released.
+
+[   44.111220] WARNING: CPU: 35 PID: 1882 at drivers/video/fbdev/core/fb_info.c:70 framebuffer_release+0x2c/0x40
+< snip >
+[   44.111289] Call Trace:
+[   44.111290]  <TASK>
+[   44.111291]  ? show_regs+0x6c/0x80
+[   44.111295]  ? __warn+0x8d/0x150
+[   44.111298]  ? framebuffer_release+0x2c/0x40
+[   44.111300]  ? report_bug+0x182/0x1b0
+[   44.111303]  ? handle_bug+0x6e/0xb0
+[   44.111306]  ? exc_invalid_op+0x18/0x80
+[   44.111308]  ? asm_exc_invalid_op+0x1b/0x20
+[   44.111311]  ? framebuffer_release+0x2c/0x40
+[   44.111313]  ? hvfb_remove+0x86/0xa0 [hyperv_fb]
+[   44.111315]  vmbus_remove+0x24/0x40 [hv_vmbus]
+[   44.111323]  device_remove+0x40/0x80
+[   44.111325]  device_release_driver_internal+0x20b/0x270
+[   44.111327]  ? bus_find_device+0xb3/0xf0
+
+Fix this by moving the release of framebuffer and assosiated memory
+to fb_ops.fb_destroy function, so that framebuffer framework handles
+it gracefully.
+
+While we fix this, also replace manual registrations/unregistration of
+framebuffer with devm_register_framebuffer.
+
+Fixes: 68a2d20b79b1 ("drivers/video: add Hyper-V Synthetic Video Frame Buffer Driver")
+
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Link: https://lore.kernel.org/r/1740845791-19977-3-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Message-ID: <1740845791-19977-3-git-send-email-ssengar@linux.microsoft.com>
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index 9798a34ac571..75338ffc703f 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -862,6 +864,17 @@ static void hvfb_ops_damage_area(struct fb_info *info, u32 x, u32 y, u32 width,
+ 		hvfb_ondemand_refresh_throttle(par, x, y, width, height);
+ }
+ 
++/*
++ * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
++ * of unregister_framebuffer() or fb_release(). Do any cleanup related to
++ * framebuffer here.
++ */
++static void hvfb_destroy(struct fb_info *info)
++{
++	hvfb_putmem(info);
++	framebuffer_release(info);
++}
++
+ /*
+  * TODO: GEN1 codepaths allocate from system or DMA-able memory. Fix the
+  *       driver to use the _SYSMEM_ or _DMAMEM_ helpers in these cases.
+
+2025-06-12 14:56:18.072 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-12 14:56:18.072 | INFO     | modules.chunk_analyzer:execute:66 - From ea2f45ab0e53b255f72c85ccd99e2b394fc5fceb Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
+Date: Sat, 1 Mar 2025 08:16:31 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Allow graceful removal of framebuffer
+
+When a Hyper-V framebuffer device is unbind, hyperv_fb driver tries to
+release the framebuffer forcefully. If this framebuffer is in use it
+produce the following WARN and hence this framebuffer is never released.
+
+[   44.111220] WARNING: CPU: 35 PID: 1882 at drivers/video/fbdev/core/fb_info.c:70 framebuffer_release+0x2c/0x40
+< snip >
+[   44.111289] Call Trace:
+[   44.111290]  <TASK>
+[   44.111291]  ? show_regs+0x6c/0x80
+[   44.111295]  ? __warn+0x8d/0x150
+[   44.111298]  ? framebuffer_release+0x2c/0x40
+[   44.111300]  ? report_bug+0x182/0x1b0
+[   44.111303]  ? handle_bug+0x6e/0xb0
+[   44.111306]  ? exc_invalid_op+0x18/0x80
+[   44.111308]  ? asm_exc_invalid_op+0x1b/0x20
+[   44.111311]  ? framebuffer_release+0x2c/0x40
+[   44.111313]  ? hvfb_remove+0x86/0xa0 [hyperv_fb]
+[   44.111315]  vmbus_remove+0x24/0x40 [hv_vmbus]
+[   44.111323]  device_remove+0x40/0x80
+[   44.111325]  device_release_driver_internal+0x20b/0x270
+[   44.111327]  ? bus_find_device+0xb3/0xf0
+
+Fix this by moving the release of framebuffer and assosiated memory
+to fb_ops.fb_destroy function, so that framebuffer framework handles
+it gracefully.
+
+While we fix this, also replace manual registrations/unregistration of
+framebuffer with devm_register_framebuffer.
+
+Fixes: 68a2d20b79b1 ("drivers/video: add Hyper-V Synthetic Video Frame Buffer Driver")
+
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Link: https://lore.kernel.org/r/1740845791-19977-3-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Message-ID: <1740845791-19977-3-git-send-email-ssengar@linux.microsoft.com>
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index 9798a34ac571..75338ffc703f 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -877,6 +890,7 @@ static const struct fb_ops hvfb_ops = {
+ 	.fb_set_par = hvfb_set_par,
+ 	.fb_setcolreg = hvfb_setcolreg,
+ 	.fb_blank = hvfb_blank,
++	.fb_destroy	= hvfb_destroy,
+ };
+ 
+ /* Get options from kernel paramenter "video=" */
+
+2025-06-12 14:56:18.073 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-06-12 14:56:18.073 | INFO     | modules.chunk_analyzer:execute:66 - From ea2f45ab0e53b255f72c85ccd99e2b394fc5fceb Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
+Date: Sat, 1 Mar 2025 08:16:31 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Allow graceful removal of framebuffer
+
+When a Hyper-V framebuffer device is unbind, hyperv_fb driver tries to
+release the framebuffer forcefully. If this framebuffer is in use it
+produce the following WARN and hence this framebuffer is never released.
+
+[   44.111220] WARNING: CPU: 35 PID: 1882 at drivers/video/fbdev/core/fb_info.c:70 framebuffer_release+0x2c/0x40
+< snip >
+[   44.111289] Call Trace:
+[   44.111290]  <TASK>
+[   44.111291]  ? show_regs+0x6c/0x80
+[   44.111295]  ? __warn+0x8d/0x150
+[   44.111298]  ? framebuffer_release+0x2c/0x40
+[   44.111300]  ? report_bug+0x182/0x1b0
+[   44.111303]  ? handle_bug+0x6e/0xb0
+[   44.111306]  ? exc_invalid_op+0x18/0x80
+[   44.111308]  ? asm_exc_invalid_op+0x1b/0x20
+[   44.111311]  ? framebuffer_release+0x2c/0x40
+[   44.111313]  ? hvfb_remove+0x86/0xa0 [hyperv_fb]
+[   44.111315]  vmbus_remove+0x24/0x40 [hv_vmbus]
+[   44.111323]  device_remove+0x40/0x80
+[   44.111325]  device_release_driver_internal+0x20b/0x270
+[   44.111327]  ? bus_find_device+0xb3/0xf0
+
+Fix this by moving the release of framebuffer and assosiated memory
+to fb_ops.fb_destroy function, so that framebuffer framework handles
+it gracefully.
+
+While we fix this, also replace manual registrations/unregistration of
+framebuffer with devm_register_framebuffer.
+
+Fixes: 68a2d20b79b1 ("drivers/video: add Hyper-V Synthetic Video Frame Buffer Driver")
+
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Link: https://lore.kernel.org/r/1740845791-19977-3-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Message-ID: <1740845791-19977-3-git-send-email-ssengar@linux.microsoft.com>
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index 9798a34ac571..75338ffc703f 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1178,7 +1192,7 @@ static int hvfb_probe(struct hv_device *hdev,
+ 	if (ret)
+ 		goto error;
+ 
+-	ret = register_framebuffer(info);
++	ret = devm_register_framebuffer(&hdev->device, info);
+ 	if (ret) {
+ 		pr_err("Unable to register framebuffer\n");
+ 		goto error;
+
+2025-06-12 14:56:18.073 | INFO     | modules.chunk_analyzer:execute:62 - 第 5 个补丁文件为：
+2025-06-12 14:56:18.073 | INFO     | modules.chunk_analyzer:execute:66 - From ea2f45ab0e53b255f72c85ccd99e2b394fc5fceb Mon Sep 17 00:00:00 2001
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
+Date: Sat, 1 Mar 2025 08:16:31 -0800
+Subject: [PATCH] fbdev: hyperv_fb: Allow graceful removal of framebuffer
+
+When a Hyper-V framebuffer device is unbind, hyperv_fb driver tries to
+release the framebuffer forcefully. If this framebuffer is in use it
+produce the following WARN and hence this framebuffer is never released.
+
+[   44.111220] WARNING: CPU: 35 PID: 1882 at drivers/video/fbdev/core/fb_info.c:70 framebuffer_release+0x2c/0x40
+< snip >
+[   44.111289] Call Trace:
+[   44.111290]  <TASK>
+[   44.111291]  ? show_regs+0x6c/0x80
+[   44.111295]  ? __warn+0x8d/0x150
+[   44.111298]  ? framebuffer_release+0x2c/0x40
+[   44.111300]  ? report_bug+0x182/0x1b0
+[   44.111303]  ? handle_bug+0x6e/0xb0
+[   44.111306]  ? exc_invalid_op+0x18/0x80
+[   44.111308]  ? asm_exc_invalid_op+0x1b/0x20
+[   44.111311]  ? framebuffer_release+0x2c/0x40
+[   44.111313]  ? hvfb_remove+0x86/0xa0 [hyperv_fb]
+[   44.111315]  vmbus_remove+0x24/0x40 [hv_vmbus]
+[   44.111323]  device_remove+0x40/0x80
+[   44.111325]  device_release_driver_internal+0x20b/0x270
+[   44.111327]  ? bus_find_device+0xb3/0xf0
+
+Fix this by moving the release of framebuffer and assosiated memory
+to fb_ops.fb_destroy function, so that framebuffer framework handles
+it gracefully.
+
+While we fix this, also replace manual registrations/unregistration of
+framebuffer with devm_register_framebuffer.
+
+Fixes: 68a2d20b79b1 ("drivers/video: add Hyper-V Synthetic Video Frame Buffer Driver")
+
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Link: https://lore.kernel.org/r/1740845791-19977-3-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Message-ID: <1740845791-19977-3-git-send-email-ssengar@linux.microsoft.com>
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index 9798a34ac571..75338ffc703f 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1226,14 +1240,10 @@ static void hvfb_remove(struct hv_device *hdev)
+ 
+ 	fb_deferred_io_cleanup(info);
+ 
+-	unregister_framebuffer(info);
+ 	cancel_delayed_work_sync(&par->dwork);
+ 
+ 	vmbus_close(hdev->channel);
+ 	hv_set_drvdata(hdev, NULL);
+-
+-	hvfb_putmem(info);
+-	framebuffer_release(info);
+ }
+ 
+ static int hvfb_suspend(struct hv_device *hdev)
+-- 
+2.25.1
+
+
+2025-06-12 14:56:18.074 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 1/5 个块补丁: chunk_001_20250612_145618.patch
+2025-06-12 14:56:18.078 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_001_20250612_145618.patch
+2025-06-12 14:56:18.079 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 2/5 个块补丁: chunk_002_20250612_145618.patch
+2025-06-12 14:56:18.084 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_002_20250612_145618.patch
+2025-06-12 14:56:18.084 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 3/5 个块补丁: chunk_003_20250612_145618.patch
+2025-06-12 14:56:18.089 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_003_20250612_145618.patch
+2025-06-12 14:56:18.090 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 4/5 个块补丁: chunk_004_20250612_145618.patch
+2025-06-12 14:56:18.094 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:360 - 成功应用块补丁: chunk_004_20250612_145618.patch
+2025-06-12 14:56:18.095 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:347 - 尝试应用第 5/5 个块补丁: chunk_005_20250612_145618.patch
+2025-06-12 14:56:18.103 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:379 - 块补丁 chunk_005_20250612_145618.patch 应用失败: error: patch failed: drivers/video/fbdev/hyperv_fb.c:1226
+error: drivers/video/fbdev/hyperv_fb.c: patch does not apply
+
+2025-06-12 14:56:18.103 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:389 - 块补丁应用统计信息:
+2025-06-12 14:56:18.104 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:390 - - 总块数: 5
+2025-06-12 14:56:18.104 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:391 - - 无冲突块数: 4
+2025-06-12 14:56:18.104 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:392 - - 适配失败块数: 1
+2025-06-12 14:56:18.104 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 4 个块补丁，总共 5 个
+2025-06-12 14:56:18.106 | INFO     | modules.chunk_analyzer:_create_remaining_patch:465 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/chunk_patches/remaining_chunks_20250612_145618.patch
+2025-06-12 14:56:18.106 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/chunk_patches/remaining_chunks_20250612_145618.patch
+2025-06-12 14:56:18.107 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/chunk_patches/remaining_chunks_20250612_145618.patch
+2025-06-12 14:56:18.108 | INFO     | modules.chunk_analyzer:execute:114 - 补丁分块分析完成，耗时: 0.04秒
+2025-06-12 14:56:18.109 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/metrics_ea2f45_20250612_145618.json
+2025-06-12 14:56:18.110 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:855 - 找到当前评估会话目录: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618
+2025-06-12 14:56:18.110 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618
+2025-06-12 14:56:18.110 | WARNING  | modules.chunk_analyzer:_get_patch_content:1145 - 补丁目录不存在: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618/patches
+2025-06-12 14:56:18.111 | INFO     | modules.chunk_analyzer:_get_patch_content:1150 - 成功创建补丁目录: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618/patches
+2025-06-12 14:56:18.111 | INFO     | modules.chunk_analyzer:_get_patch_content:1168 - 已将原始补丁内容保存到: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618/patches/original_patch.txt
+2025-06-12 14:56:18.111 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618
+2025-06-12 14:56:18.112 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618/patches/applied_chunk_1.txt
+2025-06-12 14:56:18.113 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618/patches/applied_chunk_2.txt
+2025-06-12 14:56:18.113 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618/patches/applied_chunk_3.txt
+2025-06-12 14:56:18.113 | INFO     | modules.chunk_analyzer:_get_patch_content:1273 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618/patches/applied_chunk_4.txt
+2025-06-12 14:56:18.114 | INFO     | modules.chunk_analyzer:_get_patch_content:1282 - 已将合并的补丁块内容保存到: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618/patches/all_applied_chunks.txt
+2025-06-12 14:56:18.114 | INFO     | modules.chunk_analyzer:_get_patch_content:1286 - 从context获取应用成功的补丁内容
+2025-06-12 14:56:18.114 | INFO     | modules.chunk_analyzer:_get_patch_content:1089 - 使用当前会话评估目录: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618
+2025-06-12 14:56:18.115 | INFO     | modules.chunk_analyzer:_get_patch_content:1337 - 已将剩余补丁内容保存到: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618/patches/remaining_patch.txt
+2025-06-12 14:56:18.115 | INFO     | modules.chunk_analyzer:_get_patch_content:1341 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/chunk_patches/remaining_chunks_20250612_145618.patch
+2025-06-12 14:56:18.116 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/linux/kernel-torvalds/ea2f45/evaluations/chunk_analyzer/details_ea2f45_20250612_145618
+2025-06-12 14:56:18.118 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-12 14:56:18.119 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/patches/upstream_ea2f45.patch
+2025-06-12 14:56:18.119 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/patches/upstream_ea2f45.patch
+2025-06-12 14:56:18.119 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-12 14:56:18.413 | ERROR    | modules.llm_adapter:_get_context_diff:885 - 获取上下文差异失败: stdout and stderr arguments may not be used with capture_output.
+2025-06-12 14:56:18.416 | ERROR    | modules.llm_adapter:_get_context_diff:886 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 836, in _get_context_diff
+    subprocess.run(['git', 'apply', '--ignore-whitespace', patch_path],
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'apply', '--ignore-whitespace', '/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/ea2f45/chunk_patches/chunk_001_20250612_145618.patch']' returned non-zero exit status 1.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 859, in _get_context_diff
+    subprocess.run(['git', 'branch', '-D', temp_branch], cwd=repo_path,
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 543, in run
+    raise ValueError('stdout and stderr arguments may not be used '
+ValueError: stdout and stderr arguments may not be used with capture_output.
+
+2025-06-12 14:56:18.416 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-12 14:56:18.501 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-12 14:56:22.747 | INFO     | __main__:clean_config:2107 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

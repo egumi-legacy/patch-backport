@@ -1,0 +1,46 @@
+2025-06-12 17:23:12.451 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_172312.log
+2025-06-12 17:23:12.452 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-12 17:23:12.452 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-torvalds/commit/f9618ff105a0f6f5a6beed3edc557ea6a7d26df6.patch
+2025-06-12 17:23:12.453 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-12 17:23:12.453 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-12 17:23:12.455 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-12 17:23:12.456 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-12 17:23:12.456 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.12-rc7']
+2025-06-12 17:23:12.456 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.12-rc7
+2025-06-12 17:23:12.456 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: f9618ff105a0f6f5a6beed3edc557ea6a7d26df6.patch
+2025-06-12 17:23:12.457 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-12 17:23:12.457 | INFO     | modules.direct_apply:_download_patch:248 - 上游补丁文件已存在: workspace/linux/kernel-torvalds/f9618f/patches/upstream_f9618f.patch
+2025-06-12 17:23:12.457 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-12 17:23:12.458 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f9618f/patches/upstream_f9618f.patch
+2025-06-12 17:23:12.635 | INFO     | modules.direct_apply:_prepare_test_branch:400 - 创建测试分支: test_patch_v6.12-rc7
+2025-06-12 17:23:13.136 | INFO     | modules.direct_apply:_apply_patch:319 - 补丁 upstream_f9618f.patch 可以被反向应用，说明已经应用过，标记为成功
+2025-06-12 17:23:13.195 | INFO     | modules.direct_apply:_move_to_cache:139 - 源目录: workspace/linux/kernel-torvalds/f9618f
+2025-06-12 17:23:13.196 | INFO     | modules.direct_apply:_move_to_cache:147 - 目标目录: workspace/linux/kernel-torvalds_cache
+2025-06-12 17:23:13.196 | INFO     | modules.direct_apply:_move_to_cache:158 - 已将成功的commit文件夹移动到缓存: workspace/linux/kernel-torvalds_cache
+2025-06-12 17:23:13.348 | INFO     | modules.direct_apply:_cleanup_test_branch:492 - 清理测试分支: test_patch_v6.12-rc7
+2025-06-12 17:23:13.349 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-torvalds/f9618f/evaluations/direct_apply/metrics_f9618f_20250612_172313.json
+2025-06-12 17:23:13.350 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: ChunkAnalyzerModule
+2025-06-12 17:23:13.350 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-06-12 17:23:13.350 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-06-12 17:23:13.351 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 0.89秒
+2025-06-12 17:23:13.351 | INFO     | __main__:_merge_patches:1101 - 开始合并补丁...
+2025-06-12 17:23:13.351 | WARNING  | __main__:_merge_patches:1109 - 没有找到任何可合并的补丁结果
+2025-06-12 17:23:13.353 | ERROR    | __main__:_save_results:765 - 复制补丁文件时出错: [Errno 2] No such file or directory: '/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f9618f/patches/upstream_f9618f.patch'
+2025-06-12 17:23:13.354 | INFO     | __main__:_save_results:896 - 结果已保存到: results/kernel-torvalds_v6.12-rc7_f9618f_20250612_172313/result.json
+2025-06-12 17:23:13.354 | INFO     | __main__:_print_summary:938 - context.patch_adapter_result: []
+2025-06-12 17:23:13.354 | INFO     | __main__:_print_summary:965 - ==================================================
+2025-06-12 17:23:13.355 | INFO     | __main__:_print_summary:966 - 处理摘要 - 提交: f9618f
+2025-06-12 17:23:13.355 | INFO     | __main__:_print_summary:967 - 适配状态: 无需适配 (直接应用成功) (方法: direct_apply)
+2025-06-12 17:23:13.355 | INFO     | __main__:_print_summary:982 - 块分析统计:
+2025-06-12 17:23:13.356 | INFO     | __main__:_print_summary:983 - - 总块数: 0
+2025-06-12 17:23:13.356 | INFO     | __main__:_print_summary:984 - - 冲突块数: 0
+2025-06-12 17:23:13.356 | INFO     | __main__:_print_summary:985 - - 成功适配块数: 0
+2025-06-12 17:23:13.356 | INFO     | __main__:_print_summary:986 - - 适配失败块数: 0
+2025-06-12 17:23:13.357 | INFO     | __main__:_print_summary:987 - - 编译失败块数: 0
+2025-06-12 17:23:13.357 | INFO     | __main__:_print_summary:991 - 总执行时间: 0.89秒
+2025-06-12 17:23:13.358 | INFO     | __main__:_print_summary:996 - ==================================================
+2025-06-12 17:23:13.358 | INFO     | __main__:run:335 - 处理完成
+2025-06-12 17:23:13.358 | INFO     | __main__:process_single_commit:2219 - ============================================================
+2025-06-12 17:23:13.358 | INFO     | __main__:process_single_commit:2220 - 单个commit处理完成: f9618ff105a0f6f5a6beed3edc557ea6a7d26df6
+2025-06-12 17:23:13.359 | INFO     | __main__:process_single_commit:2221 - ============================================================
+2025-06-12 17:23:13.362 | INFO     | __main__:clean_config:2181 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

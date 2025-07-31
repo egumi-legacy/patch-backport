@@ -1,0 +1,30 @@
+From f9618ff105a0f6f5a6beed3edc557ea6a7d26df6 Mon Sep 17 00:00:00 2001
+From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:43 +0200
+Subject: [PATCH] ASoC: SOF: topology: Parse DAI type token for dspless mode
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Starting with LunarLake, the dspless mode can handle SoundWire/ALH,
+DMIC and SSPs, so we need to identify the dai type from topology.
+
+Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-12-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/sof-audio.h b/sound/soc/sof/sof-audio.h
+index f98242a404db..9ea2ac5adac7 100644
+--- a/sound/soc/sof/sof-audio.h
++++ b/sound/soc/sof/sof-audio.h
+@@ -514,6 +514,7 @@ struct snd_sof_route {
+ struct snd_sof_dai {
+ 	struct snd_soc_component *scomp;
+ 	const char *name;
++	u32 type;
+ 
+ 	int number_configs;
+ 	int current_config;

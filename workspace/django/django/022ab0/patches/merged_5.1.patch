@@ -1,0 +1,81 @@
+From 88901fbc26b5e68d59227da9306a08bae0781c78 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 19 Jun 2025 16:21:19 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A3/?=
+ =?UTF-8?q?3=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ django/utils/html.py            | 17 ++++++++++-------
+ docs/ref/templates/builtins.txt | 11 +++++++++++
+ tests/utils_tests/test_html.py  |  1 +
+ 3 files changed, 22 insertions(+), 7 deletions(-)
+
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 154c820d34..0719347281 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -427,14 +427,17 @@ class Urlizer:
+                 potential_entity = middle[amp:]
+                 escaped = html.unescape(potential_entity)
+                 if escaped == potential_entity or escaped.endswith(";"):
+-                    rstripped = middle.rstrip(";")
+-                    amount_stripped = len(middle) - len(rstripped)
+-                    if amp > -1 and amount_stripped > 1:
+-                        # Leave a trailing semicolon as might be an entity.
+-                        trail = middle[len(rstripped) + 1 :] + trail
+-                        middle = rstripped + ";"
++                    rstripped = middle.rstrip(self.trailing_punctuation_chars)
++                    trail_start = len(rstripped)
++                    amount_trailing_semicolons = len(middle) - len(middle.rstrip(";"))
++                    if amp > -1 and amount_trailing_semicolons > 1:
++                        # Leave up to most recent semicolon as might be an entity.
++                        recent_semicolon = middle[trail_start:].index(";")
++                        middle_semicolon_index = recent_semicolon + trail_start + 1
++                        trail = middle[middle_semicolon_index:] + trail
++                        middle = rstripped + middle[trail_start:middle_semicolon_index]
+                     else:
+-                        trail = middle[len(rstripped) :] + trail
++                        trail = middle[trail_start:] + trail
+                         middle = rstripped
+                     trimmed_something = True
+ 
+diff --git a/docs/ref/templates/builtins.txt b/docs/ref/templates/builtins.txt
+index 3e2d63800a..86841b3dbd 100644
+--- a/docs/ref/templates/builtins.txt
++++ b/docs/ref/templates/builtins.txt
+@@ -2932,6 +2932,17 @@ Django's built-in :tfilter:`escape` filter. The default value for
+     email addresses that contain single quotes (``'``), things won't work as
+     expected. Apply this filter only to plain text.
+ 
++.. warning::
++
++    Using ``urlize`` or ``urlizetrunc`` can incur a performance penalty, which
++    can become severe when applied to user controlled values such as content
++    stored in a :class:`~django.db.models.TextField`. You can use
++    :tfilter:`truncatechars` to add a limit to such inputs:
++
++    .. code-block:: html+django
++
++        {{ value|truncatechars:500|urlize }}
++
+ .. templatefilter:: urlizetrunc
+ 
+ ``urlizetrunc``
+diff --git a/tests/utils_tests/test_html.py b/tests/utils_tests/test_html.py
+index 82dbd58f12..035585ec10 100644
+--- a/tests/utils_tests/test_html.py
++++ b/tests/utils_tests/test_html.py
+@@ -374,6 +374,7 @@ class TestUtilsHtml(SimpleTestCase):
+             "&:" + ";" * 100_000,
+             "&.;" * 100_000,
+             ".;" * 100_000,
++            "&" + ";:" * 100_000,
+         )
+         for value in tests:
+             with self.subTest(value=value):
+-- 
+2.25.1
+

@@ -1,0 +1,106 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "chunks_info": {
+      "total_chunks": 9,
+      "no_conflict_chunks": 3,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 6,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-12T16:07:23.405084"
+  },
+  "to_adapt_commit": {
+    "sha": "68a3a65003145644efcbb651e91db249ccd96281.patch",
+    "patch_url": "https://github.com/linux/kernel-torvalds/commit/68a3a65003145644efcbb651e91db249ccd96281",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "workspace/linux/kernel-torvalds/68a3a6/patches/merged_v6.12-rc7.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "v6.12-rc7",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: fs/libfs.c:291\nerror: fs/libfs.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/68a3a6/patches/upstream_68a3a6.patch",
+      "timestamp": "2025-06-12T16:06:34.302701"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/68a3a6/patches/upstream_68a3a6.patch",
+      "total_chunks": 9,
+      "applied_chunks": 3,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/68a3a6/chunk_patches/chunk_001_20250612_160634.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/68a3a6/chunk_patches/chunk_004_20250612_160634.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/68a3a6/chunk_patches/chunk_008_20250612_160634.patch"
+      ],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/68a3a6/chunk_patches/remaining_chunks_20250612_160634.patch",
+      "timestamp": "2025-06-12T16:06:34.547405",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/fs/libfs.c b/fs/libfs.c\nindex 8c9364a0174c..47399f90511a 100644\n--- a/fs/libfs.c\n+++ b/fs/libfs.c\n@@ -291,7 +297,8 @@ int simple_offset_add(struct offset_ctx *octx, struct dentry *dentry)\n \t\treturn -EBUSY;\n \n \tret = mtree_alloc_cyclic(&octx->mt, &offset, dentry, DIR_OFFSET_MIN,\n-\t\t\t\t LONG_MAX, &octx->next_offset, GFP_KERNEL);\n+\t\t\t\t DIR_OFFSET_MAX, &octx->next_offset,\n+\t\t\t\t GFP_KERNEL);\n \tif (unlikely(ret < 0))\n \t\treturn ret == -EBUSY ? -ENOSPC : ret;\n \n@@ -447,8 +454,6 @@ static loff_t offset_dir_llseek(struct file *file, loff_t offset, int whence)\n \t\treturn -EINVAL;\n \t}\n \n-\t/* In this case, ->private_data is protected by f_pos_lock */\n-\tfile->private_data = NULL;\n \treturn vfs_setpos(file, offset, LONG_MAX);\n }\n \n@@ -479,7 +484,7 @@ static bool offset_dir_emit(struct dir_context *ctx, struct dentry *dentry)\n \t\t\t  inode->i_ino, fs_umode_to_dtype(inode->i_mode));\n }\n \n-static void *offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n+static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n {\n \tstruct offset_ctx *octx = inode->i_op->get_offset_ctx(inode);\n \tstruct dentry *dentry;\n@@ -487,7 +492,7 @@ static void *offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n \twhile (true) {\n \t\tdentry = offset_find_next(octx, ctx->pos);\n \t\tif (!dentry)\n-\t\t\treturn ERR_PTR(-ENOENT);\n+\t\t\tgoto out_eod;\n \n \t\tif (!offset_dir_emit(ctx, dentry)) {\n \t\t\tdput(dentry);\n@@ -497,7 +502,10 @@ static void *offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n \t\tctx->pos = dentry2offset(dentry) + 1;\n \t\tdput(dentry);\n \t}\n-\treturn NULL;\n+\treturn;\n+\n+out_eod:\n+\tctx->pos = DIR_OFFSET_EOD;\n }\n \n /**\n@@ -529,13 +539,8 @@ static int offset_readdir(struct file *file, struct dir_context *ctx)\n \n \tif (!dir_emit_dots(file, ctx))\n \t\treturn 0;\n-\n-\t/* In this case, ->private_data is protected by f_pos_lock */\n-\tif (ctx->pos == DIR_OFFSET_MIN)\n-\t\tfile->private_data = NULL;\n-\telse if (file->private_data == ERR_PTR(-ENOENT))\n-\t\treturn 0;\n-\tfile->private_data = offset_iterate_dir(d_inode(dir), ctx);\n+\tif (ctx->pos != DIR_OFFSET_EOD)\n+\t\toffset_iterate_dir(d_inode(dir), ctx);\n \treturn 0;\n }",
+      "prompt": {
+        "patch_content": "From 68a3a65003145644efcbb651e91db249ccd96281 Mon Sep 17 00:00:00 2001\nFrom: Chuck Lever <chuck.lever@oracle.com>\nDate: Sat, 28 Dec 2024 12:55:20 -0500\nSubject: [PATCH] libfs: Replace simple_offset end-of-directory detection\n\nAccording to getdents(3), the d_off field in each returned directory\nentry points to the next entry in the directory. The d_off field in\nthe last returned entry in the readdir buffer must contain a valid\noffset value, but if it points to an actual directory entry, then\nreaddir/getdents can loop.\n\nThis patch introduces a specific fixed offset value that is placed\nin the d_off field of the last entry in a directory. Some user space\napplications assume that the EOD offset value is larger than the\noffsets of real directory entries, so the largest valid offset value\nis reserved for this purpose. This new value is never allocated by\nsimple_offset_add().\n\nWhen ->iterate_dir() returns, getdents{64} inserts the ctx->pos\nvalue into the d_off field of the last valid entry in the readdir\nbuffer. When it hits EOD, offset_readdir() sets ctx->pos to the EOD\noffset value so the last entry is updated to point to the EOD marker.\n\nWhen trying to read the entry at the EOD offset, offset_readdir()\nterminates immediately.\n\nIt is worth noting that using a Maple tree for directory offset\nvalue allocation does not guarantee a 63-bit range of values --\non platforms where \"long\" is a 32-bit type, the directory offset\nvalue range is still 0..(2^31 - 1). For broad compatibility with\n32-bit user space, the largest tmpfs directory cookie value is now\nS32_MAX.\n\nFixes: 796432efab1e (\"libfs: getdents() should return 0 after reaching EOD\")\nSigned-off-by: Chuck Lever <chuck.lever@oracle.com>\nLink: https://lore.kernel.org/r/20241228175522.1854234-5-cel@kernel.org\nSigned-off-by: Christian Brauner <brauner@kernel.org>\n\ndiff --git a/fs/libfs.c b/fs/libfs.c\nindex 8c9364a0174c..47399f90511a 100644\n--- a/fs/libfs.c\n+++ b/fs/libfs.c\n@@ -291,7 +297,8 @@ int simple_offset_add(struct offset_ctx *octx, struct dentry *dentry)\n \t\treturn -EBUSY;\n \n \tret = mtree_alloc_cyclic(&octx->mt, &offset, dentry, DIR_OFFSET_MIN,\n-\t\t\t\t LONG_MAX, &octx->next_offset, GFP_KERNEL);\n+\t\t\t\t DIR_OFFSET_MAX, &octx->next_offset,\n+\t\t\t\t GFP_KERNEL);\n \tif (unlikely(ret < 0))\n \t\treturn ret == -EBUSY ? -ENOSPC : ret;\n \n@@ -447,8 +454,6 @@ static loff_t offset_dir_llseek(struct file *file, loff_t offset, int whence)\n \t\treturn -EINVAL;\n \t}\n \n-\t/* In this case, ->private_data is protected by f_pos_lock */\n-\tfile->private_data = NULL;\n \treturn vfs_setpos(file, offset, LONG_MAX);\n }\n \n@@ -479,7 +484,7 @@ static bool offset_dir_emit(struct dir_context *ctx, struct dentry *dentry)\n \t\t\t  inode->i_ino, fs_umode_to_dtype(inode->i_mode));\n }\n \n-static void *offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n+static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n {\n \tstruct offset_ctx *octx = inode->i_op->get_offset_ctx(inode);\n \tstruct dentry *dentry;\n@@ -487,7 +492,7 @@ static void *offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n \twhile (true) {\n \t\tdentry = offset_find_next(octx, ctx->pos);\n \t\tif (!dentry)\n-\t\t\treturn ERR_PTR(-ENOENT);\n+\t\t\tgoto out_eod;\n \n \t\tif (!offset_dir_emit(ctx, dentry)) {\n \t\t\tdput(dentry);\n@@ -497,7 +502,10 @@ static void *offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n \t\tctx->pos = dentry2offset(dentry) + 1;\n \t\tdput(dentry);\n \t}\n-\treturn NULL;\n+\treturn;\n+\n+out_eod:\n+\tctx->pos = DIR_OFFSET_EOD;\n }\n \n /**\n@@ -529,13 +539,8 @@ static int offset_readdir(struct file *file, struct dir_context *ctx)\n \n \tif (!dir_emit_dots(file, ctx))\n \t\treturn 0;\n-\n-\t/* In this case, ->private_data is protected by f_pos_lock */\n-\tif (ctx->pos == DIR_OFFSET_MIN)\n-\t\tfile->private_data = NULL;\n-\telse if (file->private_data == ERR_PTR(-ENOENT))\n-\t\treturn 0;\n-\tfile->private_data = offset_iterate_dir(d_inode(dir), ctx);\n+\tif (ctx->pos != DIR_OFFSET_EOD)\n+\t\toffset_iterate_dir(d_inode(dir), ctx);\n \treturn 0;\n }\n \n-- \n2.25.1\n\n",
+        "target_version": "v6.12-rc7",
+        "context_diff": "From 68a3a65003145644efcbb651e91db249ccd96281 Mon Sep 17 00:00:00 2001\nFrom: Chuck Lever <chuck.lever@oracle.com>\nDate: Sat, 28 Dec 2024 12:55:20 -0500\nSubject: [PATCH] libfs: Replace simple_offset end-of-directory detection\n\nAccording to getdents(3), the d_off field in each returned directory\nentry points to the next entry in the directory. The d_off field in\nthe last returned entry in the readdir buffer must contain a valid\noffset value, but if it points to an actual directory entry, then\nreaddir/getdents can loop.\n\nThis patch introduces a specific fixed offset value that is placed\nin the d_off field of the last entry in a directory. Some user space\napplications assume that the EOD offset value is larger than the\noffsets of real directory entries, so the largest valid offset value\nis reserved for this purpose. This new value is never allocated by\nsimple_offset_add().\n\nWhen ->iterate_dir() returns, getdents{64} inserts the ctx->pos\nvalue into the d_off field of the last valid entry in the readdir\nbuffer. When it hits EOD, offset_readdir() sets ctx->pos to the EOD\noffset value so the last entry is updated to point to the EOD marker.\n\nWhen trying to read the entry at the EOD offset, offset_readdir()\nterminates immediately.\n\nIt is worth noting that using a Maple tree for directory offset\nvalue allocation does not guarantee a 63-bit range of values --\non platforms where \"long\" is a 32-bit type, the directory offset\nvalue range is still 0..(2^31 - 1). For broad compatibility with\n32-bit user space, the largest tmpfs directory cookie value is now\nS32_MAX.\n\nFixes: 796432efab1e (\"libfs: getdents() should return 0 after reaching EOD\")\nSigned-off-by: Chuck Lever <chuck.lever@oracle.com>\nLink: https://lore.kernel.org/r/20241228175522.1854234-5-cel@kernel.org\nSigned-off-by: Christian Brauner <brauner@kernel.org>\n\ndiff --git a/fs/libfs.c b/fs/libfs.c\nindex 8c9364a0174c..47399f90511a 100644\n--- a/fs/libfs.c\n+++ b/fs/libfs.c\n@@ -291,7 +297,8 @@ int simple_offset_add(struct offset_ctx *octx, struct dentry *dentry)\n \t\treturn -EBUSY;\n \n \tret = mtree_alloc_cyclic(&octx->mt, &offset, dentry, DIR_OFFSET_MIN,\n-\t\t\t\t LONG_MAX, &octx->next_offset, GFP_KERNEL);\n+\t\t\t\t DIR_OFFSET_MAX, &octx->next_offset,\n+\t\t\t\t GFP_KERNEL);\n \tif (unlikely(ret < 0))\n \t\treturn ret == -EBUSY ? -ENOSPC : ret;\n \n@@ -447,8 +454,6 @@ static loff_t offset_dir_llseek(struct file *file, loff_t offset, int whence)\n \t\treturn -EINVAL;\n \t}\n \n-\t/* In this case, ->private_data is protected by f_pos_lock */\n-\tfile->private_data = NULL;\n \treturn vfs_setpos(file, offset, LONG_MAX);\n }\n \n@@ -479,7 +484,7 @@ static bool offset_dir_emit(struct dir_context *ctx, struct dentry *dentry)\n \t\t\t  inode->i_ino, fs_umode_to_dtype(inode->i_mode));\n }\n \n-static void *offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n+static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n {\n \tstruct offset_ctx *octx = inode->i_op->get_offset_ctx(inode);\n \tstruct dentry *dentry;\n@@ -487,7 +492,7 @@ static void *offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n \twhile (true) {\n \t\tdentry = offset_find_next(octx, ctx->pos);\n \t\tif (!dentry)\n-\t\t\treturn ERR_PTR(-ENOENT);\n+\t\t\tgoto out_eod;\n \n \t\tif (!offset_dir_emit(ctx, dentry)) {\n \t\t\tdput(dentry);\n@@ -497,7 +502,10 @@ static void *offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n \t\tctx->pos = dentry2offset(dentry) + 1;\n \t\tdput(dentry);\n \t}\n-\treturn NULL;\n+\treturn;\n+\n+out_eod:\n+\tctx->pos = DIR_OFFSET_EOD;\n }\n \n /**\n@@ -529,13 +539,8 @@ static int offset_readdir(struct file *file, struct dir_context *ctx)\n \n \tif (!dir_emit_dots(file, ctx))\n \t\treturn 0;\n-\n-\t/* In this case, ->private_data is protected by f_pos_lock */\n-\tif (ctx->pos == DIR_OFFSET_MIN)\n-\t\tfile->private_data = NULL;\n-\telse if (file->private_data == ERR_PTR(-ENOENT))\n-\t\treturn 0;\n-\tfile->private_data = offset_iterate_dir(d_inode(dir), ctx);\n+\tif (ctx->pos != DIR_OFFSET_EOD)\n+\t\toffset_iterate_dir(d_inode(dir), ctx);\n \treturn 0;\n }\n \n-- \n2.25.1\n\n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/linux/kernel-torvalds/68a3a6/llm_output/output_v6.12-rc7_qwen-plus.patch",
+      "timestamp": "2025-06-12T16:07:20.345388",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": true,
+      "adapted_patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/68a3a6/patches/adapted_v6.12-rc7.patch",
+      "apply_result": {
+        "success": true,
+        "error": null,
+        "error_type": null,
+        "output": "Applying: Applied adapted patch for v6.12-rc7\n"
+      }
+    },
+    "final_patch_path": "workspace/linux/kernel-torvalds/68a3a6/patches/merged_v6.12-rc7.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-12T16:06:25.851490",
+    "end_time": "2025-06-12T16:07:22.078395",
+    "total_seconds": 56.226905,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": true,
+    "patch_content": "From 0494c76eb65c260f790edf100d8fcd914e8af822 Mon Sep 17 00:00:00 2001\nFrom: elpsy <hewenkuan_work@foxmail.com>\nDate: Thu, 12 Jun 2025 16:07:23 +0800\nSubject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A4?=\n =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\n---\n fs/libfs.c | 21 +++++++++++++++------\n 1 file changed, 15 insertions(+), 6 deletions(-)\n\ndiff --git a/fs/libfs.c b/fs/libfs.c\nindex 46966fd8bcf9..013cd9105eff 100644\n--- a/fs/libfs.c\n+++ b/fs/libfs.c\n@@ -241,9 +241,15 @@ const struct inode_operations simple_dir_inode_operations = {\n };\n EXPORT_SYMBOL(simple_dir_inode_operations);\n \n-/* 0 is '.', 1 is '..', so always start with offset 2 or more */\n+/* simple_offset_add() never assigns these to a dentry */\n enum {\n-\tDIR_OFFSET_MIN\t= 2,\n+\tDIR_OFFSET_EOD\t\t= S32_MAX,\n+};\n+\n+/* simple_offset_add() allocation range */\n+enum {\n+\tDIR_OFFSET_MIN\t\t= 2,\n+\tDIR_OFFSET_MAX\t\t= DIR_OFFSET_EOD - 1,\n };\n \n static void offset_set(struct dentry *dentry, long offset)\n@@ -287,7 +293,8 @@ int simple_offset_add(struct offset_ctx *octx, struct dentry *dentry)\n \t\treturn -EBUSY;\n \n \tret = mtree_alloc_cyclic(&octx->mt, &offset, dentry, DIR_OFFSET_MIN,\n-\t\t\t\t LONG_MAX, &octx->next_offset, GFP_KERNEL);\n+\t\t\t\t DIR_OFFSET_MAX, &octx->next_offset,\n+\t\t\t\t GFP_KERNEL);\n \tif (ret < 0)\n \t\treturn ret;\n \n@@ -498,7 +505,7 @@ static struct dentry *offset_find_next(struct offset_ctx *octx, loff_t offset)\n \tstruct dentry *child, *found = NULL;\n \n \trcu_read_lock();\n-\tchild = mas_find(&mas, LONG_MAX);\n+\tchild = mas_find(&mas, DIR_OFFSET_MAX);\n \tif (!child)\n \t\tgoto out;\n \tspin_lock(&child->d_lock);\n@@ -519,7 +526,7 @@ static bool offset_dir_emit(struct dir_context *ctx, struct dentry *dentry)\n \t\t\t  inode->i_ino, fs_umode_to_dtype(inode->i_mode));\n }\n \n-static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx, long last_index)\n+static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n {\n \tstruct offset_ctx *octx = inode->i_op->get_offset_ctx(inode);\n \tstruct dentry *dentry;\n@@ -527,7 +534,7 @@ static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx, lon\n \twhile (true) {\n \t\tdentry = offset_find_next(octx, ctx->pos);\n \t\tif (!dentry)\n-\t\t\treturn;\n+\t\t\tgoto out_eod;\n \n \t\tif (dentry2offset(dentry) >= last_index) {\n \t\t\tdput(dentry);\n@@ -561,6 +568,8 @@ static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx, lon\n  *\n  * On return, @ctx->pos contains an offset that will read the next entry\n  * in this directory when offset_readdir() is called again with @ctx.\n+ * Caller places this value in the d_off field of the last entry in the\n+ * user's buffer.\n  *\n  * Return values:\n  *   %0 - Complete\n-- \n2.25.1\n\n",
+    "llm_output": "diff --git a/fs/libfs.c b/fs/libfs.c\nindex 8c9364a0174c..47399f90511a 100644\n--- a/fs/libfs.c\n+++ b/fs/libfs.c\n@@ -291,7 +297,8 @@ int simple_offset_add(struct offset_ctx *octx, struct dentry *dentry)\n \t\treturn -EBUSY;\n \n \tret = mtree_alloc_cyclic(&octx->mt, &offset, dentry, DIR_OFFSET_MIN,\n-\t\t\t\t LONG_MAX, &octx->next_offset, GFP_KERNEL);\n+\t\t\t\t DIR_OFFSET_MAX, &octx->next_offset,\n+\t\t\t\t GFP_KERNEL);\n \tif (unlikely(ret < 0))\n \t\treturn ret == -EBUSY ? -ENOSPC : ret;\n \n@@ -447,8 +454,6 @@ static loff_t offset_dir_llseek(struct file *file, loff_t offset, int whence)\n \t\treturn -EINVAL;\n \t}\n \n-\t/* In this case, ->private_data is protected by f_pos_lock */\n-\tfile->private_data = NULL;\n \treturn vfs_setpos(file, offset, LONG_MAX);\n }\n \n@@ -479,7 +484,7 @@ static bool offset_dir_emit(struct dir_context *ctx, struct dentry *dentry)\n \t\t\t  inode->i_ino, fs_umode_to_dtype(inode->i_mode));\n }\n \n-static void *offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n+static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n {\n \tstruct offset_ctx *octx = inode->i_op->get_offset_ctx(inode);\n \tstruct dentry *dentry;\n@@ -487,7 +492,7 @@ static void *offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n \twhile (true) {\n \t\tdentry = offset_find_next(octx, ctx->pos);\n \t\tif (!dentry)\n-\t\t\treturn ERR_PTR(-ENOENT);\n+\t\t\tgoto out_eod;\n \n \t\tif (!offset_dir_emit(ctx, dentry)) {\n \t\t\tdput(dentry);\n@@ -497,7 +502,10 @@ static void *offset_iterate_dir(struct inode *inode, struct dir_context *ctx)\n \t\tctx->pos = dentry2offset(dentry) + 1;\n \t\tdput(dentry);\n \t}\n-\treturn NULL;\n+\treturn;\n+\n+out_eod:\n+\tctx->pos = DIR_OFFSET_EOD;\n }\n \n /**\n@@ -529,13 +539,8 @@ static int offset_readdir(struct file *file, struct dir_context *ctx)\n \n \tif (!dir_emit_dots(file, ctx))\n \t\treturn 0;\n-\n-\t/* In this case, ->private_data is protected by f_pos_lock */\n-\tif (ctx->pos == DIR_OFFSET_MIN)\n-\t\tfile->private_data = NULL;\n-\telse if (file->private_data == ERR_PTR(-ENOENT))\n-\t\treturn 0;\n-\tfile->private_data = offset_iterate_dir(d_inode(dir), ctx);\n+\tif (ctx->pos != DIR_OFFSET_EOD)\n+\t\toffset_iterate_dir(d_inode(dir), ctx);\n \treturn 0;\n }",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": true,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "v6.12-rc7",
+      "commit_sha": "68a3a65003145644efcbb651e91db249ccd96281.patch",
+      "timestamp": "2025-06-12T16:07:23.405120",
+      "execution_path": "chunk_analyzer (3/9 chunks) -> patch_adapter",
+      "adaptation_method": "unknown"
+    }
+  }
+}

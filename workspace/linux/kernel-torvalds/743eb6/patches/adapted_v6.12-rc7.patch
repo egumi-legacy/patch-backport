@@ -1,0 +1,29 @@
+From d260439d635f5ce309a2d76e75eb5c4f625b6a1f Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 12 Jun 2025 17:30:17 +0800
+Subject: [PATCH] Applied adapted patch for v6.12-rc7
+
+---
+ sound/soc/sof/topology.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index b3fca5fd87d6..1e464a3bb4f6 100644
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2413,9 +2413,10 @@ static int sof_dspless_widget_unload(struct snd_soc_component *scomp,
+ 		if (!swidget)
+ 			return 0;
+ 
+-		/* remove and free swidget object */
+-		list_del(&swidget->list);
++		/* Free sdai and remove swidget object */
+ 		kfree(swidget->private);
++		list_del(&swidget->list);
++		kfree(swidget);
+ 		kfree(swidget);
+ 	}
+ 
+-- 
+2.25.1
+

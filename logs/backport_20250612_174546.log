@@ -1,0 +1,214 @@
+2025-06-12 17:45:46.785 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_174546.log
+2025-06-12 17:45:46.786 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-12 17:45:46.786 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-stable/commit/5b29891f91dfb8758baf1e2217bef4b16b2b165b.patch
+2025-06-12 17:45:46.787 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-12 17:45:46.787 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-12 17:45:46.789 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-12 17:45:46.789 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-12 17:45:46.789 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.12-rc7']
+2025-06-12 17:45:46.789 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.12-rc7
+2025-06-12 17:45:46.790 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: 5b29891f91dfb8758baf1e2217bef4b16b2b165b.patch
+2025-06-12 17:45:46.790 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-12 17:45:46.790 | INFO     | modules.direct_apply:_download_patch:248 - 上游补丁文件已存在: workspace/linux/kernel-stable/5b2989/patches/upstream_5b2989.patch
+2025-06-12 17:45:46.791 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-12 17:45:46.791 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/upstream_5b2989.patch
+2025-06-12 17:45:46.957 | INFO     | modules.direct_apply:_prepare_test_branch:400 - 创建测试分支: test_patch_v6.12-rc7
+2025-06-12 17:45:47.566 | ERROR    | modules.direct_apply:_apply_patch:340 - 补丁应用失败: error: patch failed: fs/smb/client/fs_context.c:1351
+error: fs/smb/client/fs_context.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-12 17:45:48.038 | INFO     | modules.direct_apply:_cleanup_test_branch:492 - 清理测试分支: test_patch_v6.12-rc7
+2025-06-12 17:45:48.039 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-12 17:45:48.039 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/upstream_5b2989.patch
+2025-06-12 17:45:48.039 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:178 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/upstream_5b2989.patch
+2025-06-12 17:45:48.040 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:183 - 补丁文件包含 37 行内容
+2025-06-12 17:45:48.040 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: fs/smb/client/fs_context.c
+2025-06-12 17:45:48.041 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: fs/smb/client/fs_context.c @@ -1351,11 +1351,11 @@ (modification)
+2025-06-12 17:45:48.042 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:269 - 补丁分解完成，共找到 1 个修改块
+2025-06-12 17:45:48.042 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 1 个块
+2025-06-12 17:45:48.042 | INFO     | modules.chunk_analyzer:_create_chunk_patches:288 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/upstream_5b2989.patch
+2025-06-12 17:45:48.043 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/chunk_patches/chunk_001_20250612_174548.patch (修改文件: fs/smb/client/fs_context.c)
+2025-06-12 17:45:48.044 | INFO     | modules.chunk_analyzer:execute:60 - 已为 1 个块创建单独的补丁文件
+2025-06-12 17:45:48.044 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-12 17:45:48.045 | INFO     | modules.chunk_analyzer:execute:66 - From 5b29891f91dfb8758baf1e2217bef4b16b2b165b Mon Sep 17 00:00:00 2001
+From: Murad Masimov <m.masimov@mt-integration.ru>
+Date: Tue, 11 Mar 2025 17:22:04 +0300
+Subject: [PATCH] cifs: Fix integer overflow while processing acdirmax mount
+ option
+
+User-provided mount parameter acdirmax of type u32 is intended to have
+an upper limit, but before it is validated, the value is converted from
+seconds to jiffies which can lead to an integer overflow.
+
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Fixes: 4c9f948142a5 ("cifs: Add new mount parameter "acdirmax" to allow caching directory metadata")
+Signed-off-by: Murad Masimov <m.masimov@mt-integration.ru>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+
+diff --git a/fs/smb/client/fs_context.c b/fs/smb/client/fs_context.c
+index 5f3c5967a0f5..c983021c406b 100644
+--- a/fs/smb/client/fs_context.c
++++ b/fs/smb/client/fs_context.c
+@@ -1351,11 +1351,11 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
+ 		ctx->acregmax = HZ * result.uint_32;
+ 		break;
+ 	case Opt_acdirmax:
+-		ctx->acdirmax = HZ * result.uint_32;
+-		if (ctx->acdirmax > CIFS_MAX_ACTIMEO) {
++		if (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {
+ 			cifs_errorf(fc, "acdirmax too large\n");
+ 			goto cifs_parse_mount_err;
+ 		}
++		ctx->acdirmax = HZ * result.uint_32;
+ 		break;
+ 	case Opt_actimeo:
+ 		if (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {
+-- 
+2.25.1
+
+
+2025-06-12 17:45:48.046 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:357 - 切换到目标版本: v6.12-rc7
+2025-06-12 17:45:48.318 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:369 - 创建测试分支: test_chunk_apply_d240f808
+2025-06-12 17:45:48.839 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 1/1 个块补丁: chunk_001_20250612_174548.patch
+2025-06-12 17:45:48.846 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:420 - 块补丁 chunk_001_20250612_174548.patch 应用失败: error: patch failed: fs/smb/client/fs_context.c:1351
+error: fs/smb/client/fs_context.c: patch does not apply
+
+2025-06-12 17:45:48.847 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:430 - 块补丁应用统计信息:
+2025-06-12 17:45:48.847 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:431 - - 总块数: 1
+2025-06-12 17:45:48.847 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:432 - - 无冲突块数: 0
+2025-06-12 17:45:48.848 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:433 - - 适配失败块数: 1
+2025-06-12 17:45:48.848 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:438 - 切换回目标版本: v6.12-rc7
+2025-06-12 17:45:48.994 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:446 - 删除测试分支: test_chunk_apply_d240f808
+2025-06-12 17:45:48.999 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 0 个块补丁，总共 1 个
+2025-06-12 17:45:49.001 | INFO     | modules.chunk_analyzer:_create_remaining_patch:527 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/chunk_patches/remaining_chunks_20250612_174549.patch
+2025-06-12 17:45:49.001 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/chunk_patches/remaining_chunks_20250612_174549.patch
+2025-06-12 17:45:49.002 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/chunk_patches/remaining_chunks_20250612_174549.patch
+2025-06-12 17:45:49.002 | INFO     | modules.chunk_analyzer:execute:117 - 补丁分块分析完成，耗时: 0.96秒
+2025-06-12 17:45:49.003 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-stable/5b2989/evaluations/chunk_analyzer/metrics_5b2989_20250612_174549.json
+2025-06-12 17:45:49.004 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:917 - 找到当前评估会话目录: workspace/linux/kernel-stable/5b2989/evaluations/chunk_analyzer/details_5b2989_20250612_174549
+2025-06-12 17:45:49.005 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/linux/kernel-stable/5b2989/evaluations/chunk_analyzer/details_5b2989_20250612_174549
+2025-06-12 17:45:49.005 | WARNING  | modules.chunk_analyzer:_get_patch_content:1207 - 补丁目录不存在: workspace/linux/kernel-stable/5b2989/evaluations/chunk_analyzer/details_5b2989_20250612_174549/patches
+2025-06-12 17:45:49.005 | INFO     | modules.chunk_analyzer:_get_patch_content:1212 - 成功创建补丁目录: workspace/linux/kernel-stable/5b2989/evaluations/chunk_analyzer/details_5b2989_20250612_174549/patches
+2025-06-12 17:45:49.006 | INFO     | modules.chunk_analyzer:_get_patch_content:1230 - 已将原始补丁内容保存到: workspace/linux/kernel-stable/5b2989/evaluations/chunk_analyzer/details_5b2989_20250612_174549/patches/original_patch.txt
+2025-06-12 17:45:49.006 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/linux/kernel-stable/5b2989/evaluations/chunk_analyzer/details_5b2989_20250612_174549
+2025-06-12 17:45:49.007 | WARNING  | modules.chunk_analyzer:_get_patch_content:1351 - 未找到任何应用成功的补丁文件
+2025-06-12 17:45:49.007 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/linux/kernel-stable/5b2989/evaluations/chunk_analyzer/details_5b2989_20250612_174549
+2025-06-12 17:45:49.008 | INFO     | modules.chunk_analyzer:_get_patch_content:1399 - 已将剩余补丁内容保存到: workspace/linux/kernel-stable/5b2989/evaluations/chunk_analyzer/details_5b2989_20250612_174549/patches/remaining_patch.txt
+2025-06-12 17:45:49.008 | INFO     | modules.chunk_analyzer:_get_patch_content:1403 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/chunk_patches/remaining_chunks_20250612_174549.patch
+2025-06-12 17:45:49.008 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/linux/kernel-stable/5b2989/evaluations/chunk_analyzer/details_5b2989_20250612_174549
+2025-06-12 17:45:49.010 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-12 17:45:49.010 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/upstream_5b2989.patch
+2025-06-12 17:45:49.010 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/upstream_5b2989.patch
+2025-06-12 17:45:49.010 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-12 17:45:49.011 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-12 17:45:49.099 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-12 17:46:05.819 | INFO     | llm_assistant:run:298 - ---responses in run: [{'prompt': [{'role': 'system', 'content': 'You are a senior software engineer who is best in the world at fixing vulnerabilities and patch porting between versions.\nUsers will give you 1. a patch based on a newer version 2. the diff info between the newer version and and older version. \nAnd you will generate a fix patch to the older version in the form of git diff based on the provided INSTRUCTION.\nINSTRUCTION:\nOnly reterun the final result after patch and diff information are entered. When all the information is entered, it will be identified with \u200d\u200d```===end===\u200d\u200d```\nOnly respond with the patch info, do not add any comments or change the indentation.\nThe patch should have no errors, it should compile and user should be able to use the fixed code as a direct replacement of the vulnerable code. The code should not introduce any new dependencies or use API calls that are not present in the code.\nIf you can generate a backport patch for the patch, do a brief change impact analysis to assess how these modifications might affect the overall system, considering both immediate and potential long-term compatibility issues.\nLow: Code diff will be applied to the code base and automatically merged without review.\nMedium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.\nHigh: Code diff will be offered as a suggestion to the developer to review and then apply to the code base. There are likely other changes that need to be done by the developer before the change can be implemented.\nPlease provide a response only in the following format:\n\nA. Commit message:\n<brief summary of the diff>\n\nB. Change summary:\n<description of the changes made in the diff>\n\nC. Compatibility Risk:\n<Low, Medium, High>\n\nD. Fixed Code:\n<original patch info with now backported>\n\n'}, {'role': 'system', 'content': '1. a patch based on a newer version: \nFrom 5b29891f91dfb8758baf1e2217bef4b16b2b165b Mon Sep 17 00:00:00 2001\nFrom: Murad Masimov <m.masimov@mt-integration.ru>\nDate: Tue, 11 Mar 2025 17:22:04 +0300\nSubject: [PATCH] cifs: Fix integer overflow while processing acdirmax mount\n option\n\nUser-provided mount parameter acdirmax of type u32 is intended to have\nan upper limit, but before it is validated, the value is converted from\nseconds to jiffies which can lead to an integer overflow.\n\nFound by Linux Verification Center (linuxtesting.org) with SVACE.\n\nFixes: 4c9f948142a5 ("cifs: Add new mount parameter "acdirmax" to allow caching directory metadata")\nSigned-off-by: Murad Masimov <m.masimov@mt-integration.ru>\nSigned-off-by: Steve French <stfrench@microsoft.com>\n\ndiff --git a/fs/smb/client/fs_context.c b/fs/smb/client/fs_context.c\nindex 5f3c5967a0f5..c983021c406b 100644\n--- a/fs/smb/client/fs_context.c\n+++ b/fs/smb/client/fs_context.c\n@@ -1351,11 +1351,11 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,\n \t\tctx->acregmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_acdirmax:\n-\t\tctx->acdirmax = HZ * result.uint_32;\n-\t\tif (ctx->acdirmax > CIFS_MAX_ACTIMEO) {\n+\t\tif (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {\n \t\t\tcifs_errorf(fc, "acdirmax too large\\n");\n \t\t\tgoto cifs_parse_mount_err;\n \t\t}\n+\t\tctx->acdirmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_actimeo:\n \t\tif (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {\n-- \n2.25.1\n\n'}, {'role': 'system', 'content': '2. the diff info between the newer version and and older version: \nmodified file: fs/smb/client/fs_context.c\n--- workspace/linux/kernel-stable/5b2989/newer/fs/smb/client/fs_context.c\n+++ workspace/linux/kernel-stable/5b2989/v6.12-rc7/fs/smb/client/fs_context.c\n@@ -65,12 +65,6 @@\n  \t{ Opt_sec_none, "none" },\n  \n  \t{ Opt_sec_err, NULL }\n -};\n -\n -static const match_table_t cifs_upcall_target = {\n -\t{ Opt_upcall_target_mount, "mount" },\n -\t{ Opt_upcall_target_application, "app" },\n -\t{ Opt_upcall_target_err, NULL }\n  };\n  \n  const struct fs_parameter_spec smb3_fs_parameters[] = {\n@@ -133,7 +127,6 @@\n  \tfsparam_flag("rootfs", Opt_rootfs),\n  \tfsparam_flag("compress", Opt_compress),\n  \tfsparam_flag("witness", Opt_witness),\n -\tfsparam_flag_no("nativesocket", Opt_nativesocket),\n  \n  \tfsparam_uid("backupuid", Opt_backupuid),\n@@ -171,7 +164,6 @@\n  \tfsparam_string("username", Opt_user),\n  \tfsparam_string("pass", Opt_pass),\n  \tfsparam_string("password", Opt_pass),\n -\tfsparam_string("pass2", Opt_pass2),\n  \tfsparam_string("password2", Opt_pass2),\n  \tfsparam_string("ip", Opt_ip),\n  \tfsparam_string("addr", Opt_ip),\n@@ -186,9 +178,6 @@\n  \tfsparam_string("sec", Opt_sec),\n  \tfsparam_string("cache", Opt_cache),\n  \tfsparam_string("reparse", Opt_reparse),\n -\tfsparam_string("upcall_target", Opt_upcalltarget),\n -\tfsparam_string("symlink", Opt_symlink),\n -\tfsparam_string("symlinkroot", Opt_symlinkroot),\n  \n  \tfsparam_flag("guest", Opt_ignore),\n@@ -259,29 +248,6 @@\n  \treturn 0;\n  }\n  \n -static int\n -cifs_parse_upcall_target(struct fs_context *fc, char *value, struct smb3_fs_context *ctx)\n -{\n -\tsubstring_t args[MAX_OPT_ARGS];\n -\n -\tctx->upcall_target = UPTARGET_UNSPECIFIED;\n -\n -\tswitch (match_token(value, cifs_upcall_target, args)) {\n -\tcase Opt_upcall_target_mount:\n -\t\tctx->upcall_target = UPTARGET_MOUNT;\n -\t\tbreak;\n -\tcase Opt_upcall_target_application:\n -\t\tctx->upcall_target = UPTARGET_APP;\n -\t\tbreak;\n -\n -\tdefault:\n -\t\tcifs_errorf(fc, "bad upcall target: %s\\n", value);\n -\t\treturn 1;\n -\t}\n -\n -\treturn 0;\n -}\n -\n  static const match_table_t cifs_cacheflavor_tokens = {\n  \t{ Opt_cache_loose, "loose" },\n  \t{ Opt_cache_strict, "strict" },\n@@ -336,7 +302,6 @@\n  \n  static const match_table_t reparse_flavor_tokens = {\n  \t{ Opt_reparse_default,\t"default" },\n -\t{ Opt_reparse_none,\t"none" },\n  \t{ Opt_reparse_nfs,\t"nfs" },\n  \t{ Opt_reparse_wsl,\t"wsl" },\n  \t{ Opt_reparse_err,\tNULL },\n@@ -351,9 +316,6 @@\n  \tcase Opt_reparse_default:\n  \t\tctx->reparse_type = CIFS_REPARSE_TYPE_DEFAULT;\n  \t\tbreak;\n -\tcase Opt_reparse_none:\n -\t\tctx->reparse_type = CIFS_REPARSE_TYPE_NONE;\n -\t\tbreak;\n  \tcase Opt_reparse_nfs:\n  \t\tctx->reparse_type = CIFS_REPARSE_TYPE_NFS;\n  \t\tbreak;\n@@ -362,55 +324,6 @@\n  \t\tbreak;\n  \tdefault:\n  \t\tcifs_errorf(fc, "bad reparse= option: %s\\n", value);\n -\t\treturn 1;\n -\t}\n -\treturn 0;\n -}\n -\n -static const match_table_t symlink_flavor_tokens = {\n -\t{ Opt_symlink_default,\t\t"default" },\n -\t{ Opt_symlink_none,\t\t"none" },\n -\t{ Opt_symlink_native,\t\t"native" },\n -\t{ Opt_symlink_unix,\t\t"unix" },\n -\t{ Opt_symlink_mfsymlinks,\t"mfsymlinks" },\n -\t{ Opt_symlink_sfu,\t\t"sfu" },\n -\t{ Opt_symlink_nfs,\t\t"nfs" },\n -\t{ Opt_symlink_wsl,\t\t"wsl" },\n -\t{ Opt_symlink_err,\t\tNULL },\n -};\n -\n -static int parse_symlink_flavor(struct fs_context *fc, char *value,\n -\t\t\t\tstruct smb3_fs_context *ctx)\n -{\n -\tsubstring_t args[MAX_OPT_ARGS];\n -\n -\tswitch (match_token(value, symlink_flavor_tokens, args)) {\n -\tcase Opt_symlink_default:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_DEFAULT;\n -\t\tbreak;\n -\tcase Opt_symlink_none:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_NONE;\n -\t\tbreak;\n -\tcase Opt_symlink_native:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_NATIVE;\n -\t\tbreak;\n -\tcase Opt_symlink_unix:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_UNIX;\n -\t\tbreak;\n -\tcase Opt_symlink_mfsymlinks:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_MFSYMLINKS;\n -\t\tbreak;\n -\tcase Opt_symlink_sfu:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_SFU;\n -\t\tbreak;\n -\tcase Opt_symlink_nfs:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_NFS;\n -\t\tbreak;\n -\tcase Opt_symlink_wsl:\n -\t\tctx->symlink_type = CIFS_SYMLINK_TYPE_WSL;\n -\t\tbreak;\n -\tdefault:\n -\t\tcifs_errorf(fc, "bad symlink= option: %s\\n", value);\n  \t\treturn 1;\n  \t}\n  \treturn 0;\n@@ -442,8 +355,6 @@\n  \tnew_ctx->source = NULL;\n  \tnew_ctx->iocharset = NULL;\n  \tnew_ctx->leaf_fullpath = NULL;\n -\tnew_ctx->dns_dom = NULL;\n -\tnew_ctx->symlinkroot = NULL;\n@@ -458,8 +369,6 @@\n  \tDUP_CTX_STR(nodename);\n  \tDUP_CTX_STR(iocharset);\n  \tDUP_CTX_STR(leaf_fullpath);\n -\tDUP_CTX_STR(dns_dom);\n -\tDUP_CTX_STR(symlinkroot);\n  \n  \treturn 0;\n  }\n@@ -981,37 +890,12 @@\n  \tcifs_sb->ctx->field = NULL;\t\t\t\t\t\\\n  } while (0)\n  \n -int smb3_sync_session_ctx_passwords(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses)\n -{\n -\tif (ses->password &&\n -\t    cifs_sb->ctx->password &&\n -\t    strcmp(ses->password, cifs_sb->ctx->password)) {\n -\t\tkfree_sensitive(cifs_sb->ctx->password);\n -\t\tcifs_sb->ctx->password = kstrdup(ses->password, GFP_KERNEL);\n -\t\tif (!cifs_sb->ctx->password)\n -\t\t\treturn -ENOMEM;\n -\t}\n -\tif (ses->password2 &&\n -\t    cifs_sb->ctx->password2 &&\n -\t    strcmp(ses->password2, cifs_sb->ctx->password2)) {\n -\t\tkfree_sensitive(cifs_sb->ctx->password2);\n -\t\tcifs_sb->ctx->password2 = kstrdup(ses->password2, GFP_KERNEL);\n -\t\tif (!cifs_sb->ctx->password2) {\n -\t\t\tkfree_sensitive(cifs_sb->ctx->password);\n -\t\t\tcifs_sb->ctx->password = NULL;\n -\t\t\treturn -ENOMEM;\n -\t\t}\n -\t}\n -\treturn 0;\n -}\n -\n  static int smb3_reconfigure(struct fs_context *fc)\n  {\n  \tstruct smb3_fs_context *ctx = smb3_fc2context(fc);\n  \tstruct dentry *root = fc->root;\n  \tstruct cifs_sb_info *cifs_sb = CIFS_SB(root->d_sb);\n  \tstruct cifs_ses *ses = cifs_sb_master_tcon(cifs_sb)->ses;\n -\tchar *new_password = NULL, *new_password2 = NULL;\n  \tbool need_recon = false;\n  \tint rc;\n  \n@@ -1031,63 +915,21 @@\n  \tSTEAL_STRING(cifs_sb, ctx, UNC);\n  \tSTEAL_STRING(cifs_sb, ctx, source);\n  \tSTEAL_STRING(cifs_sb, ctx, username);\n -\n  \tif (need_recon == false)\n  \t\tSTEAL_STRING_SENSITIVE(cifs_sb, ctx, password);\n  \telse  {\n -\t\tif (ctx->password) {\n -\t\t\tnew_password = kstrdup(ctx->password, GFP_KERNEL);\n -\t\t\tif (!new_password)\n -\t\t\t\treturn -ENOMEM;\n -\t\t} else\n -\t\t\tSTEAL_STRING_SENSITIVE(cifs_sb, ctx, password);\n -\t}\n -\n -\t/*\n -\t * if a new password2 has been specified, then reset it\'s value\n -\t * inside the ses struct\n -\t */\n -\tif (ctx->password2) {\n -\t\tnew_password2 = kstrdup(ctx->password2, GFP_KERNEL);\n -\t\tif (!new_password2) {\n -\t\t\tkfree_sensitive(new_password);\n +\t\tkfree_sensitive(ses->password);\n +\t\tses->password = kstrdup(ctx->password, GFP_KERNEL);\n +\t\tif (!ses->password)\n  \t\t\treturn -ENOMEM;\n -\t\t}\n -\t} else\n -\t\tSTEAL_STRING_SENSITIVE(cifs_sb, ctx, password2);\n -\n -\t/*\n -\t * we may update the passwords in the ses struct below. Make sure we do\n -\t * not race with smb2_reconnect\n -\t */\n -\tmutex_lock(&ses->session_mutex);\n -\n -\t/*\n -\t * smb2_reconnect may swap password and password2 in case session setup\n -\t * failed. First get ctx passwords in sync with ses passwords. It should\n -\t * be okay to do this even if this function were to return an error at a\n -\t * later stage\n -\t */\n -\trc = smb3_sync_session_ctx_passwords(cifs_sb, ses);\n -\tif (rc) {\n -\t\tmutex_unlock(&ses->session_mutex);\n -\t\treturn rc;\n -\t}\n -\n -\t/*\n -\t * now that allocations for passwords are done, commit them\n -\t */\n -\tif (new_password) {\n -\t\tkfree_sensitive(ses->password);\n -\t\tses->password = new_password;\n -\t}\n -\tif (new_password2) {\n  \t\tkfree_sensitive(ses->password2);\n -\t\tses->password2 = new_password2;\n -\t}\n -\n -\tmutex_unlock(&ses->session_mutex);\n -\n +\t\tses->password2 = kstrdup(ctx->password2, GFP_KERNEL);\n +\t\tif (!ses->password2) {\n +\t\t\tkfree_sensitive(ses->password);\n +\t\t\tses->password = NULL;\n +\t\t\treturn -ENOMEM;\n +\t\t}\n +\t}\n  \tSTEAL_STRING(cifs_sb, ctx, domainname);\n  \tSTEAL_STRING(cifs_sb, ctx, nodename);\n  \tSTEAL_STRING(cifs_sb, ctx, iocharset);\n@@ -1132,9 +974,6 @@\n  \t\t} else if (!strcmp("user", param->key) || !strcmp("username", param->key)) {\n  \t\t\tskip_parsing = true;\n  \t\t\topt = Opt_user;\n -\t\t} else if (!strcmp("pass2", param->key) || !strcmp("password2", param->key)) {\n -\t\t\tskip_parsing = true;\n -\t\t\topt = Opt_pass2;\n  \t\t}\n  \t}\n  \n@@ -1344,11 +1183,11 @@\n  \t\t}\n  \t\tbreak;\n  \tcase Opt_acregmax:\n -\t\tif (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {\n +\t\tctx->acregmax = HZ * result.uint_32;\n +\t\tif (ctx->acregmax > CIFS_MAX_ACTIMEO) {\n  \t\t\tcifs_errorf(fc, "acregmax too large\\n");\n  \t\t\tgoto cifs_parse_mount_err;\n  \t\t}\n -\t\tctx->acregmax = HZ * result.uint_32;\n  \t\tbreak;\n  \tcase Opt_acdirmax:\n  \t\tctx->acdirmax = HZ * result.uint_32;\n@@ -1611,10 +1450,6 @@\n  \t\tif (cifs_parse_security_flavors(fc, param->string, ctx) != 0)\n  \t\t\tgoto cifs_parse_mount_err;\n  \t\tbreak;\n -\tcase Opt_upcalltarget:\n -\t\tif (cifs_parse_upcall_target(fc, param->string, ctx) != 0)\n -\t\t\tgoto cifs_parse_mount_err;\n -\t\tbreak;\n  \tcase Opt_cache:\n  \t\tif (cifs_parse_cache_flavor(fc, param->string, ctx) != 0)\n  \t\t\tgoto cifs_parse_mount_err;\n@@ -1789,37 +1624,8 @@\n  \t\tif (parse_reparse_flavor(fc, param->string, ctx))\n  \t\t\tgoto cifs_parse_mount_err;\n  \t\tbreak;\n -\tcase Opt_nativesocket:\n -\t\tctx->nonativesocket = result.negated;\n -\t\tbreak;\n -\tcase Opt_symlink:\n -\t\tif (parse_symlink_flavor(fc, param->string, ctx))\n -\t\t\tgoto cifs_parse_mount_err;\n -\t\tbreak;\n -\tcase Opt_symlinkroot:\n -\t\tif (param->string[0] != \'/\') {\n -\t\t\tcifs_errorf(fc, "symlinkroot mount options must be absolute path\\n");\n -\t\t\tgoto cifs_parse_mount_err;\n -\t\t}\n -\t\tkfree(ctx->symlinkroot);\n -\t\tctx->symlinkroot = kstrdup(param->string, GFP_KERNEL);\n -\t\tif (!ctx->symlinkroot)\n -\t\t\tgoto cifs_parse_mount_err;\n -\t\tbreak;\n  \t}\n -\n -\tif (ctx->multiuser && ctx->upcall_target == UPTARGET_MOUNT) {\n -\t\tcifs_errorf(fc, "multiuser mount option not supported with upcalltarget set as \'mount\'\\n");\n -\t\tgoto cifs_parse_mount_err;\n -\t}\n -\n -\t/*\n -\t * By default resolve all native absolute symlinks relative to "/mnt/".\n -\t * Same default has drvfs driver running in WSL for resolving SMB shares.\n -\t */\n -\tif (!ctx->symlinkroot)\n -\t\tctx->symlinkroot = kstrdup("/mnt/", GFP_KERNEL);\n  \n  \treturn 0;\n  \n@@ -1829,24 +1635,6 @@\n  \tkfree_sensitive(ctx->password2);\n  \tctx->password2 = NULL;\n  \treturn -EINVAL;\n -}\n -\n -enum cifs_symlink_type get_cifs_symlink_type(struct cifs_sb_info *cifs_sb)\n -{\n -\tif (cifs_sb->ctx->symlink_type == CIFS_SYMLINK_TYPE_DEFAULT) {\n -\t\tif (cifs_sb->ctx->mfsymlinks)\n -\t\t\treturn CIFS_SYMLINK_TYPE_MFSYMLINKS;\n -\t\telse if (cifs_sb->ctx->sfu_emul)\n -\t\t\treturn CIFS_SYMLINK_TYPE_SFU;\n -\t\telse if (cifs_sb->ctx->linux_ext && !cifs_sb->ctx->no_linux_ext)\n -\t\t\treturn CIFS_SYMLINK_TYPE_UNIX;\n -\t\telse if (cifs_sb->ctx->reparse_type != CIFS_REPARSE_TYPE_NONE)\n -\t\t\treturn CIFS_SYMLINK_TYPE_NATIVE;\n -\t\telse\n -\t\t\treturn CIFS_SYMLINK_TYPE_NONE;\n -\t} else {\n -\t\treturn cifs_sb->ctx->symlink_type;\n -\t}\n  }\n  \n  int smb3_init_fs_context(struct fs_context *fc)\n@@ -1925,8 +1713,6 @@\n  \n  \tctx->retrans = 1;\n  \tctx->reparse_type = CIFS_REPARSE_TYPE_DEFAULT;\n -\tctx->symlink_type = CIFS_SYMLINK_TYPE_DEFAULT;\n -\tctx->nonativesocket = 0;\n  \n\n""""""\n\n===end==='}, {'role': 'user', 'content': 'Please return the final result.'}], 'response': 'A. Commit message:\ncifs: Fix integer overflow while processing acdirmax mount option\n\nB. Change summary:\nThe patch prevents an integer overflow when converting the user-provided \'acdirmax\' parameter from seconds to jiffies by validating the value before the conversion.\n\nC. Compatibility Risk:\nLow\n\nD. Fixed Code:\ndiff --git a/fs/smb/client/fs_context.c b/fs/smb/client/fs_context.c\nindex 5f3c5967a0f5..c983021c406b 100644\n--- a/fs/smb/client/fs_context.c\n+++ b/fs/smb/client/fs_context.c\n@@ -1351,11 +1351,11 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,\n \t\tctx->acregmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_acdirmax:\n-\t\tctx->acdirmax = HZ * result.uint_32;\n-\t\tif (ctx->acdirmax > CIFS_MAX_ACTIMEO) {\n+\t\tif (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {\n \t\t\tcifs_errorf(fc, "acdirmax too large\\n");\n \t\t\tgoto cifs_parse_mount_err;\n \t\t}\n+\t\tctx->acdirmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_actimeo:\n \t\tif (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {', 'request_token': 0, 'response_token': 0}]
+2025-06-12 17:46:05.820 | INFO     | modules.llm_adapter:_call_llm:973 - llm.run() result:{'openai_responses': ['A. Commit message:\ncifs: Fix integer overflow while processing acdirmax mount option\n\nB. Change summary:\nThe patch prevents an integer overflow when converting the user-provided \'acdirmax\' parameter from seconds to jiffies by validating the value before the conversion.\n\nC. Compatibility Risk:\nLow\n\nD. Fixed Code:\ndiff --git a/fs/smb/client/fs_context.c b/fs/smb/client/fs_context.c\nindex 5f3c5967a0f5..c983021c406b 100644\n--- a/fs/smb/client/fs_context.c\n+++ b/fs/smb/client/fs_context.c\n@@ -1351,11 +1351,11 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,\n \t\tctx->acregmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_acdirmax:\n-\t\tctx->acdirmax = HZ * result.uint_32;\n-\t\tif (ctx->acdirmax > CIFS_MAX_ACTIMEO) {\n+\t\tif (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {\n \t\t\tcifs_errorf(fc, "acdirmax too large\\n");\n \t\t\tgoto cifs_parse_mount_err;\n \t\t}\n+\t\tctx->acdirmax = HZ * result.uint_32;\n \t\tbreak;\n \tcase Opt_actimeo:\n \t\tif (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-06-12 17:46:05.820 | INFO     | modules.llm_adapter:_parse_llm_response:1055 - 原始LLM响应(前100字符): A. Commit message:
+cifs: Fix integer overflow while processing acdirmax mount option
+
+B. Change summ...
+2025-06-12 17:46:05.821 | INFO     | modules.llm_adapter:_parse_llm_response:1089 - 找到diff --git格式，内容前100字符: diff --git a/fs/smb/client/fs_context.c b/fs/smb/client/fs_context.c
+index 5f3c5967a0f5..c983021c406...
+2025-06-12 17:46:05.822 | INFO     | modules.llm_adapter:_save_llm_response:1224 - LLM响应已保存到: workspace/linux/kernel-stable/5b2989/llm_output/output_v6.12-rc7_qwen-plus.patch
+2025-06-12 17:46:05.822 | INFO     | modules.llm_adapter:_save_llm_response:1225 - 原始LLM响应已保存到: workspace/linux/kernel-stable/5b2989/llm_output/raw_output_v6.12-rc7_qwen-plus.patch
+2025-06-12 17:46:05.822 | INFO     | modules.llm_adapter:execute:97 - ==================================================
+2025-06-12 17:46:05.823 | INFO     | modules.llm_adapter:execute:98 - LLM适配器执行完成 - 摘要
+2025-06-12 17:46:05.823 | INFO     | modules.llm_adapter:execute:99 - 提示模式: 标准模式
+2025-06-12 17:46:05.823 | INFO     | modules.llm_adapter:execute:100 - 提示类型: 标准上下文差异
+2025-06-12 17:46:05.823 | INFO     | modules.llm_adapter:execute:101 - 函数上下文统计: 总尝试: 0, 成功: 0, 回退: 0
+2025-06-12 17:46:05.824 | INFO     | modules.llm_adapter:execute:105 - 执行时间: 16.81 秒
+2025-06-12 17:46:05.824 | INFO     | modules.llm_adapter:execute:106 - 生成的补丁保存到: workspace/linux/kernel-stable/5b2989/llm_output/output_v6.12-rc7_qwen-plus.patch
+2025-06-12 17:46:05.824 | INFO     | modules.llm_adapter:execute:107 - ==================================================
+2025-06-12 17:46:05.824 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-stable/5b2989/evaluations/llm_adapter/metrics_5b2989_20250612_174605.json
+2025-06-12 17:46:05.825 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-12 17:46:05.825 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/linux/kernel-stable/5b2989/llm_output/output_v6.12-rc7_qwen-plus.patch
+2025-06-12 17:46:05.826 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_v6.12-rc7_20250612_174605
+2025-06-12 17:46:06.456 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/fs/smb/client/fs_context.c b/fs/smb/client/fs_context.c
+index 5f3c5967a0f5..c983021c406b 100644
+--- a/fs/smb/client/fs_context.c
++++ b/fs/smb/client/fs_context.c
+@@ -1351,11 +1351,11 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
+ 		ctx->acregmax = HZ * result.uint_32;
+ 		break;
+ 	case Opt_acdirmax:
+-		ctx->acdirmax = HZ * result.uint_32;
+-		if (ctx->acdirmax > CIFS_MAX_ACTIMEO) {
++		if (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {
+ 			cifs_errorf(fc, "acdirmax too large\n");
+ 			goto cifs_parse_mount_err;
+ 		}
++		ctx->acdirmax = HZ * result.uint_32;
+ 		break;
+ 	case Opt_actimeo:
+ 		if (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {
+2025-06-12 17:46:06.457 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -1351,11 +1351,11 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
+ 		ctx->acregmax = HZ * result.uint_32;
+ 		break;
+ 	case Opt_acdirmax:
+-		ctx->acdirmax = HZ * result.uint_32;
+-		if (ctx->acdirmax > CIFS_MAX_ACTIMEO) {
++		if (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {
+ 			cifs_errorf(fc, "acdirmax too large\n");
+ 			goto cifs_parse_mount_err;
+ 		}
++		ctx->acdirmax = HZ * result.uint_32;
+ 		break;
+ 	case Opt_actimeo:
+ 		if (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {
+2025-06-12 17:46:06.458 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -1351,11 +1351,11 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
+ 		ctx->acregmax = HZ * result.uint_32;
+ 		break;
+ 	case Opt_acdirmax:
+-		ctx->acdirmax = HZ * result.uint_32;
+-		if (ctx->acdirmax > CIFS_MAX_ACTIMEO) {
++		if (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {
+ 			cifs_errorf(fc, "acdirmax too large\n");
+ 			goto cifs_parse_mount_err;
+ 		}
++		ctx->acdirmax = HZ * result.uint_32;
+ 		break;
+ 	case Opt_actimeo:
+ 		if (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {
+2025-06-12 17:46:06.459 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 1351, 'old_count': 11, 'new_start': 1351, 'new_count': 11}, 'lines': [('context', '\t\tctx->acregmax = HZ * result.uint_32;'), ('context', '\t\tbreak;'), ('context', '\tcase Opt_acdirmax:'), ('remove', '\t\tctx->acdirmax = HZ * result.uint_32;'), ('remove', '\t\tif (ctx->acdirmax > CIFS_MAX_ACTIMEO) {'), ('add', '\t\tif (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {'), ('context', '\t\t\tcifs_errorf(fc, "acdirmax too large\\n");'), ('context', '\t\t\tgoto cifs_parse_mount_err;'), ('context', '\t\t}'), ('add', '\t\tctx->acdirmax = HZ * result.uint_32;'), ('context', '\t\tbreak;'), ('context', '\tcase Opt_actimeo:'), ('context', '\t\tif (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {')]}
+2025-06-12 17:46:06.465 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is 1189
+2025-06-12 17:46:06.466 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: fs/smb/client/fs_context.c
+2025-06-12 17:46:06.467 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/linux_kernel-stable/fs/smb/client/fs_context.c
+2025-06-12 17:46:06.467 | INFO     | modules.patch_adapter:_generate_adapted_patch:264 - 文件内容变化，执行复制: fs/smb/client/fs_context.c
+2025-06-12 17:46:06.476 | INFO     | modules.patch_adapter:_generate_adapted_patch:267 - 将文件从/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/adapted_v6.12-rc7/fs/smb/client/fs_context.c复制到/home/elpsy/.cache/port-patch/linux_kernel-stable/fs/smb/client/fs_context.c
+2025-06-12 17:46:06.837 | INFO     | modules.patch_adapter:_generate_adapted_patch:322 - 生成补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/0001-Applied-adapted-patch-for-v6.12-rc7.patch
+
+2025-06-12 17:46:06.837 | INFO     | modules.patch_adapter:_generate_adapted_patch:324 - patch_dir所含文件: ['upstream_5b2989.patch', '0001-Applied-adapted-patch-for-v6.12-rc7.patch']
+2025-06-12 17:46:06.838 | INFO     | modules.patch_adapter:_generate_adapted_patch:335 - 已重命名补丁文件: 从 /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/0001-Applied-adapted-patch-for-v6.12-rc7.patch 到 /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/adapted_v6.12-rc7.patch
+2025-06-12 17:46:06.838 | INFO     | modules.patch_adapter:_generate_adapted_patch:345 - 已生成适配后的补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/adapted_v6.12-rc7.patch
+2025-06-12 17:46:06.839 | INFO     | modules.patch_adapter:execute:73 - 生成适配补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/adapted_v6.12-rc7.patch
+2025-06-12 17:46:07.201 | INFO     | modules.patch_adapter:_test_apply_patch:478 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/adapted_v6.12-rc7.patch
+2025-06-12 17:46:07.394 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_v6.12-rc7_20250612_174605
+2025-06-12 17:46:07.582 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/linux/kernel-stable/5b2989/metrics/patch_adapter_metrics.json
+2025-06-12 17:46:07.583 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 20.79秒
+2025-06-12 17:46:07.583 | INFO     | __main__:_merge_patches:1101 - 开始合并补丁...
+2025-06-12 17:46:07.583 | INFO     | __main__:_merge_patches:1175 - 找到patch_adapter成功的补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/adapted_v6.12-rc7.patch
+2025-06-12 17:46:07.584 | INFO     | __main__:_merge_patches:1210 - 只使用patch_adapter补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/adapted_v6.12-rc7.patch
+2025-06-12 17:46:07.584 | INFO     | __main__:_process_mode1:392 - 成功合并补丁到: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/adapted_v6.12-rc7.patch
+2025-06-12 17:46:07.586 | INFO     | __main__:_save_results:758 - 已复制最终补丁到结果目录: results/kernel-stable_v6.12-rc7_5b2989_20250612_174607/adapted_v6.12-rc7.patch
+2025-06-12 17:46:07.588 | INFO     | __main__:_save_results:896 - 结果已保存到: results/kernel-stable_v6.12-rc7_5b2989_20250612_174607/result.json
+2025-06-12 17:46:07.588 | INFO     | __main__:_print_summary:938 - context.patch_adapter_result: {'success': True, 'adapted_patch_path': '/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/5b2989/patches/adapted_v6.12-rc7.patch', 'apply_result': {'success': True, 'error': None, 'error_type': None, 'output': 'Applying: Applied adapted patch for v6.12-rc7\n'}}
+2025-06-12 17:46:07.589 | INFO     | __main__:_print_summary:965 - ==================================================
+2025-06-12 17:46:07.589 | INFO     | __main__:_print_summary:966 - 处理摘要 - 提交: 5b2989
+2025-06-12 17:46:07.590 | INFO     | __main__:_print_summary:967 - 适配状态: 适配成功 (方法: patch_adapter)
+2025-06-12 17:46:07.591 | INFO     | __main__:_print_summary:982 - 块分析统计:
+2025-06-12 17:46:07.591 | INFO     | __main__:_print_summary:983 - - 总块数: 1
+2025-06-12 17:46:07.591 | INFO     | __main__:_print_summary:984 - - 冲突块数: 1
+2025-06-12 17:46:07.592 | INFO     | __main__:_print_summary:985 - - 成功适配块数: 1
+2025-06-12 17:46:07.592 | INFO     | __main__:_print_summary:986 - - 适配失败块数: 0
+2025-06-12 17:46:07.593 | INFO     | __main__:_print_summary:987 - - 编译失败块数: 0
+2025-06-12 17:46:07.593 | INFO     | __main__:_print_summary:991 - 总执行时间: 20.79秒
+2025-06-12 17:46:07.593 | INFO     | __main__:_print_summary:996 - ==================================================
+2025-06-12 17:46:07.594 | INFO     | __main__:run:335 - 处理完成
+2025-06-12 17:46:07.594 | INFO     | __main__:process_single_commit:2219 - ============================================================
+2025-06-12 17:46:07.595 | INFO     | __main__:process_single_commit:2220 - 单个commit处理完成: 5b29891f91dfb8758baf1e2217bef4b16b2b165b
+2025-06-12 17:46:07.595 | INFO     | __main__:process_single_commit:2221 - ============================================================
+2025-06-12 17:46:07.600 | INFO     | __main__:clean_config:2181 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

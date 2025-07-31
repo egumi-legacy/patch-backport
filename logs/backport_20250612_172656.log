@@ -1,0 +1,1120 @@
+2025-06-12 17:26:56.137 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_172656.log
+2025-06-12 17:26:56.137 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-12 17:26:56.138 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-torvalds/commit/f8fb2403ddebb5eea0033d90d9daae4c88749ada.patch
+2025-06-12 17:26:56.138 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-12 17:26:56.138 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-12 17:26:56.140 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-12 17:26:56.140 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-12 17:26:56.141 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.12-rc7']
+2025-06-12 17:26:56.141 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.12-rc7
+2025-06-12 17:26:56.141 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: f8fb2403ddebb5eea0033d90d9daae4c88749ada.patch
+2025-06-12 17:26:56.141 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-12 17:26:56.142 | INFO     | modules.direct_apply:_download_patch:248 - 上游补丁文件已存在: workspace/linux/kernel-torvalds/f8fb24/patches/upstream_f8fb24.patch
+2025-06-12 17:26:56.142 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-12 17:26:56.142 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/patches/upstream_f8fb24.patch
+2025-06-12 17:26:56.305 | INFO     | modules.direct_apply:_prepare_test_branch:400 - 创建测试分支: test_patch_v6.12-rc7
+2025-06-12 17:26:56.929 | ERROR    | modules.direct_apply:_apply_patch:340 - 补丁应用失败: error: patch failed: drivers/ufs/host/ufshcd-pltfrm.c:534
+error: drivers/ufs/host/ufshcd-pltfrm.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-12 17:26:57.371 | INFO     | modules.direct_apply:_cleanup_test_branch:492 - 清理测试分支: test_patch_v6.12-rc7
+2025-06-12 17:26:57.371 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-12 17:26:57.371 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/patches/upstream_f8fb24.patch
+2025-06-12 17:26:57.372 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:178 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/patches/upstream_f8fb24.patch
+2025-06-12 17:26:57.372 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:183 - 补丁文件包含 258 行内容
+2025-06-12 17:26:57.372 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: drivers/ufs/core/ufshcd.c
+2025-06-12 17:26:57.373 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: drivers/ufs/core/ufshcd.c @@ -10226,16 +10226,6 @@ (modification)
+2025-06-12 17:26:57.373 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: drivers/ufs/core/ufshcd.c @@ -10254,12 +10244,26 @@ (modification)
+2025-06-12 17:26:57.373 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: drivers/ufs/core/ufshcd.c @@ -10281,6 +10285,13 @@ (modification)
+2025-06-12 17:26:57.374 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: drivers/ufs/host/ufshcd-pci.c
+2025-06-12 17:26:57.374 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: drivers/ufs/host/ufshcd-pci.c @@ -562,7 +562,6 @@ (modification)
+2025-06-12 17:26:57.374 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: drivers/ufs/host/ufshcd-pci.c @@ -605,7 +604,6 @@ (modification)
+2025-06-12 17:26:57.375 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: drivers/ufs/host/ufshcd-pltfrm.c
+2025-06-12 17:26:57.375 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: drivers/ufs/host/ufshcd-pltfrm.c @@ -465,21 +465,17 @@ (modification)
+2025-06-12 17:26:57.375 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: drivers/ufs/host/ufshcd-pltfrm.c @@ -488,13 +484,13 @@ (modification)
+2025-06-12 17:26:57.375 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: drivers/ufs/host/ufshcd-pltfrm.c @@ -502,25 +498,20 @@ (modification)
+2025-06-12 17:26:57.376 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: drivers/ufs/host/ufshcd-pltfrm.c @@ -534,7 +525,6 @@ (modification)
+2025-06-12 17:26:57.376 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: include/ufs/ufshcd.h
+2025-06-12 17:26:57.376 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: include/ufs/ufshcd.h @@ -1309,7 +1309,6 @@ (modification)
+2025-06-12 17:26:57.376 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:269 - 补丁分解完成，共找到 10 个修改块
+2025-06-12 17:26:57.377 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 10 个块
+2025-06-12 17:26:57.377 | INFO     | modules.chunk_analyzer:_create_chunk_patches:288 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/patches/upstream_f8fb24.patch
+2025-06-12 17:26:57.378 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_001_20250612_172657.patch (修改文件: drivers/ufs/core/ufshcd.c)
+2025-06-12 17:26:57.378 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_002_20250612_172657.patch (修改文件: drivers/ufs/core/ufshcd.c)
+2025-06-12 17:26:57.378 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_003_20250612_172657.patch (修改文件: drivers/ufs/core/ufshcd.c)
+2025-06-12 17:26:57.379 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_004_20250612_172657.patch (修改文件: drivers/ufs/host/ufshcd-pci.c)
+2025-06-12 17:26:57.380 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_005_20250612_172657.patch (修改文件: drivers/ufs/host/ufshcd-pci.c)
+2025-06-12 17:26:57.380 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_006_20250612_172657.patch (修改文件: drivers/ufs/host/ufshcd-pltfrm.c)
+2025-06-12 17:26:57.381 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_007_20250612_172657.patch (修改文件: drivers/ufs/host/ufshcd-pltfrm.c)
+2025-06-12 17:26:57.382 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_008_20250612_172657.patch (修改文件: drivers/ufs/host/ufshcd-pltfrm.c)
+2025-06-12 17:26:57.382 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_009_20250612_172657.patch (修改文件: drivers/ufs/host/ufshcd-pltfrm.c)
+2025-06-12 17:26:57.383 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/chunk_010_20250612_172657.patch (修改文件: include/ufs/ufshcd.h)
+2025-06-12 17:26:57.383 | INFO     | modules.chunk_analyzer:execute:60 - 已为 10 个块创建单独的补丁文件
+2025-06-12 17:26:57.384 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-12 17:26:57.384 | INFO     | modules.chunk_analyzer:execute:66 - From f8fb2403ddebb5eea0033d90d9daae4c88749ada Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>
+Date: Fri, 24 Jan 2025 15:09:00 +0000
+Subject: [PATCH] scsi: ufs: core: Fix use-after free in init error and remove
+ paths
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+devm_blk_crypto_profile_init() registers a cleanup handler to run when
+the associated (platform-) device is being released. For UFS, the
+crypto private data and pointers are stored as part of the ufs_hba's
+data structure 'struct ufs_hba::crypto_profile'. This structure is
+allocated as part of the underlying ufshcd and therefore Scsi_host
+allocation.
+
+During driver release or during error handling in ufshcd_pltfrm_init(),
+this structure is released as part of ufshcd_dealloc_host() before the
+(platform-) device associated with the crypto call above is released.
+Once this device is released, the crypto cleanup code will run, using
+the just-released 'struct ufs_hba::crypto_profile'. This causes a
+use-after-free situation:
+
+  Call trace:
+   kfree+0x60/0x2d8 (P)
+   kvfree+0x44/0x60
+   blk_crypto_profile_destroy_callback+0x28/0x70
+   devm_action_release+0x1c/0x30
+   release_nodes+0x6c/0x108
+   devres_release_all+0x98/0x100
+   device_unbind_cleanup+0x20/0x70
+   really_probe+0x218/0x2d0
+
+In other words, the initialisation code flow is:
+
+  platform-device probe
+    ufshcd_pltfrm_init()
+      ufshcd_alloc_host()
+        scsi_host_alloc()
+          allocation of struct ufs_hba
+          creation of scsi-host devices
+    devm_blk_crypto_profile_init()
+      devm registration of cleanup handler using platform-device
+
+and during error handling of ufshcd_pltfrm_init() or during driver
+removal:
+
+  ufshcd_dealloc_host()
+    scsi_host_put()
+      put_device(scsi-host)
+        release of struct ufs_hba
+  put_device(platform-device)
+    crypto cleanup handler
+
+To fix this use-after free, change ufshcd_alloc_host() to register a
+devres action to automatically cleanup the underlying SCSI device on
+ufshcd destruction, without requiring explicit calls to
+ufshcd_dealloc_host(). This way:
+
+    * the crypto profile and all other ufs_hba-owned resources are
+      destroyed before SCSI (as they've been registered after)
+    * a memleak is plugged in tc-dwc-g210-pci.c remove() as a
+      side-effect
+    * EXPORT_SYMBOL_GPL(ufshcd_dealloc_host) can be removed fully as
+      it's not needed anymore
+    * no future drivers using ufshcd_alloc_host() could ever forget
+      adding the cleanup
+
+Fixes: cb77cb5abe1f ("blk-crypto: rename blk_keyslot_manager to blk_crypto_profile")
+Fixes: d76d9d7d1009 ("scsi: ufs: use devm_blk_ksm_init()")
+Cc: stable@vger.kernel.org
+Signed-off-by: André Draszik <andre.draszik@linaro.org>
+Link: https://lore.kernel.org/r/20250124-ufshcd-fix-v4-1-c5d0144aae59@linaro.org
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index d3741b1f4382..d2de80b2bba4 100644
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -10226,16 +10226,6 @@ int ufshcd_system_thaw(struct device *dev)
+ EXPORT_SYMBOL_GPL(ufshcd_system_thaw);
+ #endif /* CONFIG_PM_SLEEP  */
+ 
+-/**
+- * ufshcd_dealloc_host - deallocate Host Bus Adapter (HBA)
+- * @hba: pointer to Host Bus Adapter (HBA)
+- */
+-void ufshcd_dealloc_host(struct ufs_hba *hba)
+-{
+-	scsi_host_put(hba->host);
+-}
+-EXPORT_SYMBOL_GPL(ufshcd_dealloc_host);
+-
+ /**
+  * ufshcd_set_dma_mask - Set dma mask based on the controller
+  *			 addressing capability
+
+2025-06-12 17:26:57.384 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-12 17:26:57.385 | INFO     | modules.chunk_analyzer:execute:66 - From f8fb2403ddebb5eea0033d90d9daae4c88749ada Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>
+Date: Fri, 24 Jan 2025 15:09:00 +0000
+Subject: [PATCH] scsi: ufs: core: Fix use-after free in init error and remove
+ paths
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+devm_blk_crypto_profile_init() registers a cleanup handler to run when
+the associated (platform-) device is being released. For UFS, the
+crypto private data and pointers are stored as part of the ufs_hba's
+data structure 'struct ufs_hba::crypto_profile'. This structure is
+allocated as part of the underlying ufshcd and therefore Scsi_host
+allocation.
+
+During driver release or during error handling in ufshcd_pltfrm_init(),
+this structure is released as part of ufshcd_dealloc_host() before the
+(platform-) device associated with the crypto call above is released.
+Once this device is released, the crypto cleanup code will run, using
+the just-released 'struct ufs_hba::crypto_profile'. This causes a
+use-after-free situation:
+
+  Call trace:
+   kfree+0x60/0x2d8 (P)
+   kvfree+0x44/0x60
+   blk_crypto_profile_destroy_callback+0x28/0x70
+   devm_action_release+0x1c/0x30
+   release_nodes+0x6c/0x108
+   devres_release_all+0x98/0x100
+   device_unbind_cleanup+0x20/0x70
+   really_probe+0x218/0x2d0
+
+In other words, the initialisation code flow is:
+
+  platform-device probe
+    ufshcd_pltfrm_init()
+      ufshcd_alloc_host()
+        scsi_host_alloc()
+          allocation of struct ufs_hba
+          creation of scsi-host devices
+    devm_blk_crypto_profile_init()
+      devm registration of cleanup handler using platform-device
+
+and during error handling of ufshcd_pltfrm_init() or during driver
+removal:
+
+  ufshcd_dealloc_host()
+    scsi_host_put()
+      put_device(scsi-host)
+        release of struct ufs_hba
+  put_device(platform-device)
+    crypto cleanup handler
+
+To fix this use-after free, change ufshcd_alloc_host() to register a
+devres action to automatically cleanup the underlying SCSI device on
+ufshcd destruction, without requiring explicit calls to
+ufshcd_dealloc_host(). This way:
+
+    * the crypto profile and all other ufs_hba-owned resources are
+      destroyed before SCSI (as they've been registered after)
+    * a memleak is plugged in tc-dwc-g210-pci.c remove() as a
+      side-effect
+    * EXPORT_SYMBOL_GPL(ufshcd_dealloc_host) can be removed fully as
+      it's not needed anymore
+    * no future drivers using ufshcd_alloc_host() could ever forget
+      adding the cleanup
+
+Fixes: cb77cb5abe1f ("blk-crypto: rename blk_keyslot_manager to blk_crypto_profile")
+Fixes: d76d9d7d1009 ("scsi: ufs: use devm_blk_ksm_init()")
+Cc: stable@vger.kernel.org
+Signed-off-by: André Draszik <andre.draszik@linaro.org>
+Link: https://lore.kernel.org/r/20250124-ufshcd-fix-v4-1-c5d0144aae59@linaro.org
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index d3741b1f4382..d2de80b2bba4 100644
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -10254,12 +10244,26 @@ static int ufshcd_set_dma_mask(struct ufs_hba *hba)
+ 	return dma_set_mask_and_coherent(hba->dev, DMA_BIT_MASK(32));
+ }
+ 
++/**
++ * ufshcd_devres_release - devres cleanup handler, invoked during release of
++ *			   hba->dev
++ * @host: pointer to SCSI host
++ */
++static void ufshcd_devres_release(void *host)
++{
++	scsi_host_put(host);
++}
++
+ /**
+  * ufshcd_alloc_host - allocate Host Bus Adapter (HBA)
+  * @dev: pointer to device handle
+  * @hba_handle: driver private handle
+  *
+  * Return: 0 on success, non-zero value on failure.
++ *
++ * NOTE: There is no corresponding ufshcd_dealloc_host() because this function
++ * keeps track of its allocations using devres and deallocates everything on
++ * device removal automatically.
+  */
+ int ufshcd_alloc_host(struct device *dev, struct ufs_hba **hba_handle)
+ {
+
+2025-06-12 17:26:57.385 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-12 17:26:57.385 | INFO     | modules.chunk_analyzer:execute:66 - From f8fb2403ddebb5eea0033d90d9daae4c88749ada Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>
+Date: Fri, 24 Jan 2025 15:09:00 +0000
+Subject: [PATCH] scsi: ufs: core: Fix use-after free in init error and remove
+ paths
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+devm_blk_crypto_profile_init() registers a cleanup handler to run when
+the associated (platform-) device is being released. For UFS, the
+crypto private data and pointers are stored as part of the ufs_hba's
+data structure 'struct ufs_hba::crypto_profile'. This structure is
+allocated as part of the underlying ufshcd and therefore Scsi_host
+allocation.
+
+During driver release or during error handling in ufshcd_pltfrm_init(),
+this structure is released as part of ufshcd_dealloc_host() before the
+(platform-) device associated with the crypto call above is released.
+Once this device is released, the crypto cleanup code will run, using
+the just-released 'struct ufs_hba::crypto_profile'. This causes a
+use-after-free situation:
+
+  Call trace:
+   kfree+0x60/0x2d8 (P)
+   kvfree+0x44/0x60
+   blk_crypto_profile_destroy_callback+0x28/0x70
+   devm_action_release+0x1c/0x30
+   release_nodes+0x6c/0x108
+   devres_release_all+0x98/0x100
+   device_unbind_cleanup+0x20/0x70
+   really_probe+0x218/0x2d0
+
+In other words, the initialisation code flow is:
+
+  platform-device probe
+    ufshcd_pltfrm_init()
+      ufshcd_alloc_host()
+        scsi_host_alloc()
+          allocation of struct ufs_hba
+          creation of scsi-host devices
+    devm_blk_crypto_profile_init()
+      devm registration of cleanup handler using platform-device
+
+and during error handling of ufshcd_pltfrm_init() or during driver
+removal:
+
+  ufshcd_dealloc_host()
+    scsi_host_put()
+      put_device(scsi-host)
+        release of struct ufs_hba
+  put_device(platform-device)
+    crypto cleanup handler
+
+To fix this use-after free, change ufshcd_alloc_host() to register a
+devres action to automatically cleanup the underlying SCSI device on
+ufshcd destruction, without requiring explicit calls to
+ufshcd_dealloc_host(). This way:
+
+    * the crypto profile and all other ufs_hba-owned resources are
+      destroyed before SCSI (as they've been registered after)
+    * a memleak is plugged in tc-dwc-g210-pci.c remove() as a
+      side-effect
+    * EXPORT_SYMBOL_GPL(ufshcd_dealloc_host) can be removed fully as
+      it's not needed anymore
+    * no future drivers using ufshcd_alloc_host() could ever forget
+      adding the cleanup
+
+Fixes: cb77cb5abe1f ("blk-crypto: rename blk_keyslot_manager to blk_crypto_profile")
+Fixes: d76d9d7d1009 ("scsi: ufs: use devm_blk_ksm_init()")
+Cc: stable@vger.kernel.org
+Signed-off-by: André Draszik <andre.draszik@linaro.org>
+Link: https://lore.kernel.org/r/20250124-ufshcd-fix-v4-1-c5d0144aae59@linaro.org
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index d3741b1f4382..d2de80b2bba4 100644
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -10281,6 +10285,13 @@ int ufshcd_alloc_host(struct device *dev, struct ufs_hba **hba_handle)
+ 		err = -ENOMEM;
+ 		goto out_error;
+ 	}
++
++	err = devm_add_action_or_reset(dev, ufshcd_devres_release,
++				       host);
++	if (err)
++		return dev_err_probe(dev, err,
++				     "failed to add ufshcd dealloc action\n");
++
+ 	host->nr_maps = HCTX_TYPE_POLL + 1;
+ 	hba = shost_priv(host);
+ 	hba->host = host;
+
+2025-06-12 17:26:57.386 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-06-12 17:26:57.386 | INFO     | modules.chunk_analyzer:execute:66 - From f8fb2403ddebb5eea0033d90d9daae4c88749ada Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>
+Date: Fri, 24 Jan 2025 15:09:00 +0000
+Subject: [PATCH] scsi: ufs: core: Fix use-after free in init error and remove
+ paths
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+devm_blk_crypto_profile_init() registers a cleanup handler to run when
+the associated (platform-) device is being released. For UFS, the
+crypto private data and pointers are stored as part of the ufs_hba's
+data structure 'struct ufs_hba::crypto_profile'. This structure is
+allocated as part of the underlying ufshcd and therefore Scsi_host
+allocation.
+
+During driver release or during error handling in ufshcd_pltfrm_init(),
+this structure is released as part of ufshcd_dealloc_host() before the
+(platform-) device associated with the crypto call above is released.
+Once this device is released, the crypto cleanup code will run, using
+the just-released 'struct ufs_hba::crypto_profile'. This causes a
+use-after-free situation:
+
+  Call trace:
+   kfree+0x60/0x2d8 (P)
+   kvfree+0x44/0x60
+   blk_crypto_profile_destroy_callback+0x28/0x70
+   devm_action_release+0x1c/0x30
+   release_nodes+0x6c/0x108
+   devres_release_all+0x98/0x100
+   device_unbind_cleanup+0x20/0x70
+   really_probe+0x218/0x2d0
+
+In other words, the initialisation code flow is:
+
+  platform-device probe
+    ufshcd_pltfrm_init()
+      ufshcd_alloc_host()
+        scsi_host_alloc()
+          allocation of struct ufs_hba
+          creation of scsi-host devices
+    devm_blk_crypto_profile_init()
+      devm registration of cleanup handler using platform-device
+
+and during error handling of ufshcd_pltfrm_init() or during driver
+removal:
+
+  ufshcd_dealloc_host()
+    scsi_host_put()
+      put_device(scsi-host)
+        release of struct ufs_hba
+  put_device(platform-device)
+    crypto cleanup handler
+
+To fix this use-after free, change ufshcd_alloc_host() to register a
+devres action to automatically cleanup the underlying SCSI device on
+ufshcd destruction, without requiring explicit calls to
+ufshcd_dealloc_host(). This way:
+
+    * the crypto profile and all other ufs_hba-owned resources are
+      destroyed before SCSI (as they've been registered after)
+    * a memleak is plugged in tc-dwc-g210-pci.c remove() as a
+      side-effect
+    * EXPORT_SYMBOL_GPL(ufshcd_dealloc_host) can be removed fully as
+      it's not needed anymore
+    * no future drivers using ufshcd_alloc_host() could ever forget
+      adding the cleanup
+
+Fixes: cb77cb5abe1f ("blk-crypto: rename blk_keyslot_manager to blk_crypto_profile")
+Fixes: d76d9d7d1009 ("scsi: ufs: use devm_blk_ksm_init()")
+Cc: stable@vger.kernel.org
+Signed-off-by: André Draszik <andre.draszik@linaro.org>
+Link: https://lore.kernel.org/r/20250124-ufshcd-fix-v4-1-c5d0144aae59@linaro.org
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+
+diff --git a/drivers/ufs/host/ufshcd-pci.c b/drivers/ufs/host/ufshcd-pci.c
+index ea39c5d5b8cf..9cfcaad23cf9 100644
+--- a/drivers/ufs/host/ufshcd-pci.c
++++ b/drivers/ufs/host/ufshcd-pci.c
+@@ -562,7 +562,6 @@ static void ufshcd_pci_remove(struct pci_dev *pdev)
+ 	pm_runtime_forbid(&pdev->dev);
+ 	pm_runtime_get_noresume(&pdev->dev);
+ 	ufshcd_remove(hba);
+-	ufshcd_dealloc_host(hba);
+ }
+ 
+ /**
+
+2025-06-12 17:26:57.386 | INFO     | modules.chunk_analyzer:execute:62 - 第 5 个补丁文件为：
+2025-06-12 17:26:57.386 | INFO     | modules.chunk_analyzer:execute:66 - From f8fb2403ddebb5eea0033d90d9daae4c88749ada Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>
+Date: Fri, 24 Jan 2025 15:09:00 +0000
+Subject: [PATCH] scsi: ufs: core: Fix use-after free in init error and remove
+ paths
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+devm_blk_crypto_profile_init() registers a cleanup handler to run when
+the associated (platform-) device is being released. For UFS, the
+crypto private data and pointers are stored as part of the ufs_hba's
+data structure 'struct ufs_hba::crypto_profile'. This structure is
+allocated as part of the underlying ufshcd and therefore Scsi_host
+allocation.
+
+During driver release or during error handling in ufshcd_pltfrm_init(),
+this structure is released as part of ufshcd_dealloc_host() before the
+(platform-) device associated with the crypto call above is released.
+Once this device is released, the crypto cleanup code will run, using
+the just-released 'struct ufs_hba::crypto_profile'. This causes a
+use-after-free situation:
+
+  Call trace:
+   kfree+0x60/0x2d8 (P)
+   kvfree+0x44/0x60
+   blk_crypto_profile_destroy_callback+0x28/0x70
+   devm_action_release+0x1c/0x30
+   release_nodes+0x6c/0x108
+   devres_release_all+0x98/0x100
+   device_unbind_cleanup+0x20/0x70
+   really_probe+0x218/0x2d0
+
+In other words, the initialisation code flow is:
+
+  platform-device probe
+    ufshcd_pltfrm_init()
+      ufshcd_alloc_host()
+        scsi_host_alloc()
+          allocation of struct ufs_hba
+          creation of scsi-host devices
+    devm_blk_crypto_profile_init()
+      devm registration of cleanup handler using platform-device
+
+and during error handling of ufshcd_pltfrm_init() or during driver
+removal:
+
+  ufshcd_dealloc_host()
+    scsi_host_put()
+      put_device(scsi-host)
+        release of struct ufs_hba
+  put_device(platform-device)
+    crypto cleanup handler
+
+To fix this use-after free, change ufshcd_alloc_host() to register a
+devres action to automatically cleanup the underlying SCSI device on
+ufshcd destruction, without requiring explicit calls to
+ufshcd_dealloc_host(). This way:
+
+    * the crypto profile and all other ufs_hba-owned resources are
+      destroyed before SCSI (as they've been registered after)
+    * a memleak is plugged in tc-dwc-g210-pci.c remove() as a
+      side-effect
+    * EXPORT_SYMBOL_GPL(ufshcd_dealloc_host) can be removed fully as
+      it's not needed anymore
+    * no future drivers using ufshcd_alloc_host() could ever forget
+      adding the cleanup
+
+Fixes: cb77cb5abe1f ("blk-crypto: rename blk_keyslot_manager to blk_crypto_profile")
+Fixes: d76d9d7d1009 ("scsi: ufs: use devm_blk_ksm_init()")
+Cc: stable@vger.kernel.org
+Signed-off-by: André Draszik <andre.draszik@linaro.org>
+Link: https://lore.kernel.org/r/20250124-ufshcd-fix-v4-1-c5d0144aae59@linaro.org
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+
+diff --git a/drivers/ufs/host/ufshcd-pci.c b/drivers/ufs/host/ufshcd-pci.c
+index ea39c5d5b8cf..9cfcaad23cf9 100644
+--- a/drivers/ufs/host/ufshcd-pci.c
++++ b/drivers/ufs/host/ufshcd-pci.c
+@@ -605,7 +604,6 @@ ufshcd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	err = ufshcd_init(hba, mmio_base, pdev->irq);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "Initialization failed\n");
+-		ufshcd_dealloc_host(hba);
+ 		return err;
+ 	}
+ 
+
+2025-06-12 17:26:57.387 | INFO     | modules.chunk_analyzer:execute:62 - 第 6 个补丁文件为：
+2025-06-12 17:26:57.387 | INFO     | modules.chunk_analyzer:execute:66 - From f8fb2403ddebb5eea0033d90d9daae4c88749ada Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>
+Date: Fri, 24 Jan 2025 15:09:00 +0000
+Subject: [PATCH] scsi: ufs: core: Fix use-after free in init error and remove
+ paths
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+devm_blk_crypto_profile_init() registers a cleanup handler to run when
+the associated (platform-) device is being released. For UFS, the
+crypto private data and pointers are stored as part of the ufs_hba's
+data structure 'struct ufs_hba::crypto_profile'. This structure is
+allocated as part of the underlying ufshcd and therefore Scsi_host
+allocation.
+
+During driver release or during error handling in ufshcd_pltfrm_init(),
+this structure is released as part of ufshcd_dealloc_host() before the
+(platform-) device associated with the crypto call above is released.
+Once this device is released, the crypto cleanup code will run, using
+the just-released 'struct ufs_hba::crypto_profile'. This causes a
+use-after-free situation:
+
+  Call trace:
+   kfree+0x60/0x2d8 (P)
+   kvfree+0x44/0x60
+   blk_crypto_profile_destroy_callback+0x28/0x70
+   devm_action_release+0x1c/0x30
+   release_nodes+0x6c/0x108
+   devres_release_all+0x98/0x100
+   device_unbind_cleanup+0x20/0x70
+   really_probe+0x218/0x2d0
+
+In other words, the initialisation code flow is:
+
+  platform-device probe
+    ufshcd_pltfrm_init()
+      ufshcd_alloc_host()
+        scsi_host_alloc()
+          allocation of struct ufs_hba
+          creation of scsi-host devices
+    devm_blk_crypto_profile_init()
+      devm registration of cleanup handler using platform-device
+
+and during error handling of ufshcd_pltfrm_init() or during driver
+removal:
+
+  ufshcd_dealloc_host()
+    scsi_host_put()
+      put_device(scsi-host)
+        release of struct ufs_hba
+  put_device(platform-device)
+    crypto cleanup handler
+
+To fix this use-after free, change ufshcd_alloc_host() to register a
+devres action to automatically cleanup the underlying SCSI device on
+ufshcd destruction, without requiring explicit calls to
+ufshcd_dealloc_host(). This way:
+
+    * the crypto profile and all other ufs_hba-owned resources are
+      destroyed before SCSI (as they've been registered after)
+    * a memleak is plugged in tc-dwc-g210-pci.c remove() as a
+      side-effect
+    * EXPORT_SYMBOL_GPL(ufshcd_dealloc_host) can be removed fully as
+      it's not needed anymore
+    * no future drivers using ufshcd_alloc_host() could ever forget
+      adding the cleanup
+
+Fixes: cb77cb5abe1f ("blk-crypto: rename blk_keyslot_manager to blk_crypto_profile")
+Fixes: d76d9d7d1009 ("scsi: ufs: use devm_blk_ksm_init()")
+Cc: stable@vger.kernel.org
+Signed-off-by: André Draszik <andre.draszik@linaro.org>
+Link: https://lore.kernel.org/r/20250124-ufshcd-fix-v4-1-c5d0144aae59@linaro.org
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+
+diff --git a/drivers/ufs/host/ufshcd-pltfrm.c b/drivers/ufs/host/ufshcd-pltfrm.c
+index 505572d4fa87..ffe5d1d2b215 100644
+--- a/drivers/ufs/host/ufshcd-pltfrm.c
++++ b/drivers/ufs/host/ufshcd-pltfrm.c
+@@ -465,21 +465,17 @@ int ufshcd_pltfrm_init(struct platform_device *pdev,
+ 	struct device *dev = &pdev->dev;
+ 
+ 	mmio_base = devm_platform_ioremap_resource(pdev, 0);
+-	if (IS_ERR(mmio_base)) {
+-		err = PTR_ERR(mmio_base);
+-		goto out;
+-	}
++	if (IS_ERR(mmio_base))
++		return PTR_ERR(mmio_base);
+ 
+ 	irq = platform_get_irq(pdev, 0);
+-	if (irq < 0) {
+-		err = irq;
+-		goto out;
+-	}
++	if (irq < 0)
++		return irq;
+ 
+ 	err = ufshcd_alloc_host(dev, &hba);
+ 	if (err) {
+ 		dev_err(dev, "Allocation failed\n");
+-		goto out;
++		return err;
+ 	}
+ 
+ 	hba->vops = vops;
+
+2025-06-12 17:26:57.387 | INFO     | modules.chunk_analyzer:execute:62 - 第 7 个补丁文件为：
+2025-06-12 17:26:57.388 | INFO     | modules.chunk_analyzer:execute:66 - From f8fb2403ddebb5eea0033d90d9daae4c88749ada Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>
+Date: Fri, 24 Jan 2025 15:09:00 +0000
+Subject: [PATCH] scsi: ufs: core: Fix use-after free in init error and remove
+ paths
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+devm_blk_crypto_profile_init() registers a cleanup handler to run when
+the associated (platform-) device is being released. For UFS, the
+crypto private data and pointers are stored as part of the ufs_hba's
+data structure 'struct ufs_hba::crypto_profile'. This structure is
+allocated as part of the underlying ufshcd and therefore Scsi_host
+allocation.
+
+During driver release or during error handling in ufshcd_pltfrm_init(),
+this structure is released as part of ufshcd_dealloc_host() before the
+(platform-) device associated with the crypto call above is released.
+Once this device is released, the crypto cleanup code will run, using
+the just-released 'struct ufs_hba::crypto_profile'. This causes a
+use-after-free situation:
+
+  Call trace:
+   kfree+0x60/0x2d8 (P)
+   kvfree+0x44/0x60
+   blk_crypto_profile_destroy_callback+0x28/0x70
+   devm_action_release+0x1c/0x30
+   release_nodes+0x6c/0x108
+   devres_release_all+0x98/0x100
+   device_unbind_cleanup+0x20/0x70
+   really_probe+0x218/0x2d0
+
+In other words, the initialisation code flow is:
+
+  platform-device probe
+    ufshcd_pltfrm_init()
+      ufshcd_alloc_host()
+        scsi_host_alloc()
+          allocation of struct ufs_hba
+          creation of scsi-host devices
+    devm_blk_crypto_profile_init()
+      devm registration of cleanup handler using platform-device
+
+and during error handling of ufshcd_pltfrm_init() or during driver
+removal:
+
+  ufshcd_dealloc_host()
+    scsi_host_put()
+      put_device(scsi-host)
+        release of struct ufs_hba
+  put_device(platform-device)
+    crypto cleanup handler
+
+To fix this use-after free, change ufshcd_alloc_host() to register a
+devres action to automatically cleanup the underlying SCSI device on
+ufshcd destruction, without requiring explicit calls to
+ufshcd_dealloc_host(). This way:
+
+    * the crypto profile and all other ufs_hba-owned resources are
+      destroyed before SCSI (as they've been registered after)
+    * a memleak is plugged in tc-dwc-g210-pci.c remove() as a
+      side-effect
+    * EXPORT_SYMBOL_GPL(ufshcd_dealloc_host) can be removed fully as
+      it's not needed anymore
+    * no future drivers using ufshcd_alloc_host() could ever forget
+      adding the cleanup
+
+Fixes: cb77cb5abe1f ("blk-crypto: rename blk_keyslot_manager to blk_crypto_profile")
+Fixes: d76d9d7d1009 ("scsi: ufs: use devm_blk_ksm_init()")
+Cc: stable@vger.kernel.org
+Signed-off-by: André Draszik <andre.draszik@linaro.org>
+Link: https://lore.kernel.org/r/20250124-ufshcd-fix-v4-1-c5d0144aae59@linaro.org
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+
+diff --git a/drivers/ufs/host/ufshcd-pltfrm.c b/drivers/ufs/host/ufshcd-pltfrm.c
+index 505572d4fa87..ffe5d1d2b215 100644
+--- a/drivers/ufs/host/ufshcd-pltfrm.c
++++ b/drivers/ufs/host/ufshcd-pltfrm.c
+@@ -488,13 +484,13 @@ int ufshcd_pltfrm_init(struct platform_device *pdev,
+ 	if (err) {
+ 		dev_err(dev, "%s: clock parse failed %d\n",
+ 				__func__, err);
+-		goto dealloc_host;
++		return err;
+ 	}
+ 	err = ufshcd_parse_regulator_info(hba);
+ 	if (err) {
+ 		dev_err(dev, "%s: regulator init failed %d\n",
+ 				__func__, err);
+-		goto dealloc_host;
++		return err;
+ 	}
+ 
+ 	ufshcd_init_lanes_per_dir(hba);
+
+2025-06-12 17:26:57.388 | INFO     | modules.chunk_analyzer:execute:62 - 第 8 个补丁文件为：
+2025-06-12 17:26:57.388 | INFO     | modules.chunk_analyzer:execute:66 - From f8fb2403ddebb5eea0033d90d9daae4c88749ada Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>
+Date: Fri, 24 Jan 2025 15:09:00 +0000
+Subject: [PATCH] scsi: ufs: core: Fix use-after free in init error and remove
+ paths
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+devm_blk_crypto_profile_init() registers a cleanup handler to run when
+the associated (platform-) device is being released. For UFS, the
+crypto private data and pointers are stored as part of the ufs_hba's
+data structure 'struct ufs_hba::crypto_profile'. This structure is
+allocated as part of the underlying ufshcd and therefore Scsi_host
+allocation.
+
+During driver release or during error handling in ufshcd_pltfrm_init(),
+this structure is released as part of ufshcd_dealloc_host() before the
+(platform-) device associated with the crypto call above is released.
+Once this device is released, the crypto cleanup code will run, using
+the just-released 'struct ufs_hba::crypto_profile'. This causes a
+use-after-free situation:
+
+  Call trace:
+   kfree+0x60/0x2d8 (P)
+   kvfree+0x44/0x60
+   blk_crypto_profile_destroy_callback+0x28/0x70
+   devm_action_release+0x1c/0x30
+   release_nodes+0x6c/0x108
+   devres_release_all+0x98/0x100
+   device_unbind_cleanup+0x20/0x70
+   really_probe+0x218/0x2d0
+
+In other words, the initialisation code flow is:
+
+  platform-device probe
+    ufshcd_pltfrm_init()
+      ufshcd_alloc_host()
+        scsi_host_alloc()
+          allocation of struct ufs_hba
+          creation of scsi-host devices
+    devm_blk_crypto_profile_init()
+      devm registration of cleanup handler using platform-device
+
+and during error handling of ufshcd_pltfrm_init() or during driver
+removal:
+
+  ufshcd_dealloc_host()
+    scsi_host_put()
+      put_device(scsi-host)
+        release of struct ufs_hba
+  put_device(platform-device)
+    crypto cleanup handler
+
+To fix this use-after free, change ufshcd_alloc_host() to register a
+devres action to automatically cleanup the underlying SCSI device on
+ufshcd destruction, without requiring explicit calls to
+ufshcd_dealloc_host(). This way:
+
+    * the crypto profile and all other ufs_hba-owned resources are
+      destroyed before SCSI (as they've been registered after)
+    * a memleak is plugged in tc-dwc-g210-pci.c remove() as a
+      side-effect
+    * EXPORT_SYMBOL_GPL(ufshcd_dealloc_host) can be removed fully as
+      it's not needed anymore
+    * no future drivers using ufshcd_alloc_host() could ever forget
+      adding the cleanup
+
+Fixes: cb77cb5abe1f ("blk-crypto: rename blk_keyslot_manager to blk_crypto_profile")
+Fixes: d76d9d7d1009 ("scsi: ufs: use devm_blk_ksm_init()")
+Cc: stable@vger.kernel.org
+Signed-off-by: André Draszik <andre.draszik@linaro.org>
+Link: https://lore.kernel.org/r/20250124-ufshcd-fix-v4-1-c5d0144aae59@linaro.org
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+
+diff --git a/drivers/ufs/host/ufshcd-pltfrm.c b/drivers/ufs/host/ufshcd-pltfrm.c
+index 505572d4fa87..ffe5d1d2b215 100644
+--- a/drivers/ufs/host/ufshcd-pltfrm.c
++++ b/drivers/ufs/host/ufshcd-pltfrm.c
+@@ -502,25 +498,20 @@ int ufshcd_pltfrm_init(struct platform_device *pdev,
+ 	err = ufshcd_parse_operating_points(hba);
+ 	if (err) {
+ 		dev_err(dev, "%s: OPP parse failed %d\n", __func__, err);
+-		goto dealloc_host;
++		return err;
+ 	}
+ 
+ 	err = ufshcd_init(hba, mmio_base, irq);
+ 	if (err) {
+ 		dev_err_probe(dev, err, "Initialization failed with error %d\n",
+ 			      err);
+-		goto dealloc_host;
++		return err;
+ 	}
+ 
+ 	pm_runtime_set_active(dev);
+ 	pm_runtime_enable(dev);
+ 
+ 	return 0;
+-
+-dealloc_host:
+-	ufshcd_dealloc_host(hba);
+-out:
+-	return err;
+ }
+ EXPORT_SYMBOL_GPL(ufshcd_pltfrm_init);
+ 
+
+2025-06-12 17:26:57.389 | INFO     | modules.chunk_analyzer:execute:62 - 第 9 个补丁文件为：
+2025-06-12 17:26:57.389 | INFO     | modules.chunk_analyzer:execute:66 - From f8fb2403ddebb5eea0033d90d9daae4c88749ada Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>
+Date: Fri, 24 Jan 2025 15:09:00 +0000
+Subject: [PATCH] scsi: ufs: core: Fix use-after free in init error and remove
+ paths
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+devm_blk_crypto_profile_init() registers a cleanup handler to run when
+the associated (platform-) device is being released. For UFS, the
+crypto private data and pointers are stored as part of the ufs_hba's
+data structure 'struct ufs_hba::crypto_profile'. This structure is
+allocated as part of the underlying ufshcd and therefore Scsi_host
+allocation.
+
+During driver release or during error handling in ufshcd_pltfrm_init(),
+this structure is released as part of ufshcd_dealloc_host() before the
+(platform-) device associated with the crypto call above is released.
+Once this device is released, the crypto cleanup code will run, using
+the just-released 'struct ufs_hba::crypto_profile'. This causes a
+use-after-free situation:
+
+  Call trace:
+   kfree+0x60/0x2d8 (P)
+   kvfree+0x44/0x60
+   blk_crypto_profile_destroy_callback+0x28/0x70
+   devm_action_release+0x1c/0x30
+   release_nodes+0x6c/0x108
+   devres_release_all+0x98/0x100
+   device_unbind_cleanup+0x20/0x70
+   really_probe+0x218/0x2d0
+
+In other words, the initialisation code flow is:
+
+  platform-device probe
+    ufshcd_pltfrm_init()
+      ufshcd_alloc_host()
+        scsi_host_alloc()
+          allocation of struct ufs_hba
+          creation of scsi-host devices
+    devm_blk_crypto_profile_init()
+      devm registration of cleanup handler using platform-device
+
+and during error handling of ufshcd_pltfrm_init() or during driver
+removal:
+
+  ufshcd_dealloc_host()
+    scsi_host_put()
+      put_device(scsi-host)
+        release of struct ufs_hba
+  put_device(platform-device)
+    crypto cleanup handler
+
+To fix this use-after free, change ufshcd_alloc_host() to register a
+devres action to automatically cleanup the underlying SCSI device on
+ufshcd destruction, without requiring explicit calls to
+ufshcd_dealloc_host(). This way:
+
+    * the crypto profile and all other ufs_hba-owned resources are
+      destroyed before SCSI (as they've been registered after)
+    * a memleak is plugged in tc-dwc-g210-pci.c remove() as a
+      side-effect
+    * EXPORT_SYMBOL_GPL(ufshcd_dealloc_host) can be removed fully as
+      it's not needed anymore
+    * no future drivers using ufshcd_alloc_host() could ever forget
+      adding the cleanup
+
+Fixes: cb77cb5abe1f ("blk-crypto: rename blk_keyslot_manager to blk_crypto_profile")
+Fixes: d76d9d7d1009 ("scsi: ufs: use devm_blk_ksm_init()")
+Cc: stable@vger.kernel.org
+Signed-off-by: André Draszik <andre.draszik@linaro.org>
+Link: https://lore.kernel.org/r/20250124-ufshcd-fix-v4-1-c5d0144aae59@linaro.org
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+
+diff --git a/drivers/ufs/host/ufshcd-pltfrm.c b/drivers/ufs/host/ufshcd-pltfrm.c
+index 505572d4fa87..ffe5d1d2b215 100644
+--- a/drivers/ufs/host/ufshcd-pltfrm.c
++++ b/drivers/ufs/host/ufshcd-pltfrm.c
+@@ -534,7 +525,6 @@ void ufshcd_pltfrm_remove(struct platform_device *pdev)
+ 
+ 	pm_runtime_get_sync(&pdev->dev);
+ 	ufshcd_remove(hba);
+-	ufshcd_dealloc_host(hba);
+ 	pm_runtime_disable(&pdev->dev);
+ 	pm_runtime_put_noidle(&pdev->dev);
+ }
+
+2025-06-12 17:26:57.389 | INFO     | modules.chunk_analyzer:execute:62 - 第 10 个补丁文件为：
+2025-06-12 17:26:57.390 | INFO     | modules.chunk_analyzer:execute:66 - From f8fb2403ddebb5eea0033d90d9daae4c88749ada Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>
+Date: Fri, 24 Jan 2025 15:09:00 +0000
+Subject: [PATCH] scsi: ufs: core: Fix use-after free in init error and remove
+ paths
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+devm_blk_crypto_profile_init() registers a cleanup handler to run when
+the associated (platform-) device is being released. For UFS, the
+crypto private data and pointers are stored as part of the ufs_hba's
+data structure 'struct ufs_hba::crypto_profile'. This structure is
+allocated as part of the underlying ufshcd and therefore Scsi_host
+allocation.
+
+During driver release or during error handling in ufshcd_pltfrm_init(),
+this structure is released as part of ufshcd_dealloc_host() before the
+(platform-) device associated with the crypto call above is released.
+Once this device is released, the crypto cleanup code will run, using
+the just-released 'struct ufs_hba::crypto_profile'. This causes a
+use-after-free situation:
+
+  Call trace:
+   kfree+0x60/0x2d8 (P)
+   kvfree+0x44/0x60
+   blk_crypto_profile_destroy_callback+0x28/0x70
+   devm_action_release+0x1c/0x30
+   release_nodes+0x6c/0x108
+   devres_release_all+0x98/0x100
+   device_unbind_cleanup+0x20/0x70
+   really_probe+0x218/0x2d0
+
+In other words, the initialisation code flow is:
+
+  platform-device probe
+    ufshcd_pltfrm_init()
+      ufshcd_alloc_host()
+        scsi_host_alloc()
+          allocation of struct ufs_hba
+          creation of scsi-host devices
+    devm_blk_crypto_profile_init()
+      devm registration of cleanup handler using platform-device
+
+and during error handling of ufshcd_pltfrm_init() or during driver
+removal:
+
+  ufshcd_dealloc_host()
+    scsi_host_put()
+      put_device(scsi-host)
+        release of struct ufs_hba
+  put_device(platform-device)
+    crypto cleanup handler
+
+To fix this use-after free, change ufshcd_alloc_host() to register a
+devres action to automatically cleanup the underlying SCSI device on
+ufshcd destruction, without requiring explicit calls to
+ufshcd_dealloc_host(). This way:
+
+    * the crypto profile and all other ufs_hba-owned resources are
+      destroyed before SCSI (as they've been registered after)
+    * a memleak is plugged in tc-dwc-g210-pci.c remove() as a
+      side-effect
+    * EXPORT_SYMBOL_GPL(ufshcd_dealloc_host) can be removed fully as
+      it's not needed anymore
+    * no future drivers using ufshcd_alloc_host() could ever forget
+      adding the cleanup
+
+Fixes: cb77cb5abe1f ("blk-crypto: rename blk_keyslot_manager to blk_crypto_profile")
+Fixes: d76d9d7d1009 ("scsi: ufs: use devm_blk_ksm_init()")
+Cc: stable@vger.kernel.org
+Signed-off-by: André Draszik <andre.draszik@linaro.org>
+Link: https://lore.kernel.org/r/20250124-ufshcd-fix-v4-1-c5d0144aae59@linaro.org
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+
+diff --git a/include/ufs/ufshcd.h b/include/ufs/ufshcd.h
+index 650ff238cd74..8bf31e6ca4e5 100644
+--- a/include/ufs/ufshcd.h
++++ b/include/ufs/ufshcd.h
+@@ -1309,7 +1309,6 @@ static inline void ufshcd_rmwl(struct ufs_hba *hba, u32 mask, u32 val, u32 reg)
+ void ufshcd_enable_irq(struct ufs_hba *hba);
+ void ufshcd_disable_irq(struct ufs_hba *hba);
+ int ufshcd_alloc_host(struct device *, struct ufs_hba **);
+-void ufshcd_dealloc_host(struct ufs_hba *);
+ int ufshcd_hba_enable(struct ufs_hba *hba);
+ int ufshcd_init(struct ufs_hba *, void __iomem *, unsigned int);
+ int ufshcd_link_recovery(struct ufs_hba *hba);
+-- 
+2.25.1
+
+
+2025-06-12 17:26:57.390 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:357 - 切换到目标版本: v6.12-rc7
+2025-06-12 17:26:57.551 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:369 - 创建测试分支: test_chunk_apply_375720e4
+2025-06-12 17:26:57.994 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 1/10 个块补丁: chunk_001_20250612_172657.patch
+2025-06-12 17:26:58.000 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_001_20250612_172657.patch
+2025-06-12 17:26:58.000 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 2/10 个块补丁: chunk_002_20250612_172657.patch
+2025-06-12 17:26:58.005 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_002_20250612_172657.patch
+2025-06-12 17:26:58.006 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 3/10 个块补丁: chunk_003_20250612_172657.patch
+2025-06-12 17:26:58.010 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_003_20250612_172657.patch
+2025-06-12 17:26:58.011 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 4/10 个块补丁: chunk_004_20250612_172657.patch
+2025-06-12 17:26:58.015 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_004_20250612_172657.patch
+2025-06-12 17:26:58.015 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 5/10 个块补丁: chunk_005_20250612_172657.patch
+2025-06-12 17:26:58.019 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_005_20250612_172657.patch
+2025-06-12 17:26:58.019 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 6/10 个块补丁: chunk_006_20250612_172657.patch
+2025-06-12 17:26:58.036 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_006_20250612_172657.patch
+2025-06-12 17:26:58.037 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 7/10 个块补丁: chunk_007_20250612_172657.patch
+2025-06-12 17:26:58.043 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_007_20250612_172657.patch
+2025-06-12 17:26:58.043 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 8/10 个块补丁: chunk_008_20250612_172657.patch
+2025-06-12 17:26:58.049 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_008_20250612_172657.patch
+2025-06-12 17:26:58.049 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 9/10 个块补丁: chunk_009_20250612_172657.patch
+2025-06-12 17:26:58.058 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:420 - 块补丁 chunk_009_20250612_172657.patch 应用失败: error: patch failed: drivers/ufs/host/ufshcd-pltfrm.c:534
+error: drivers/ufs/host/ufshcd-pltfrm.c: patch does not apply
+
+2025-06-12 17:26:58.058 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 10/10 个块补丁: chunk_010_20250612_172657.patch
+2025-06-12 17:26:58.062 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_010_20250612_172657.patch
+2025-06-12 17:26:58.062 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:430 - 块补丁应用统计信息:
+2025-06-12 17:26:58.062 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:431 - - 总块数: 10
+2025-06-12 17:26:58.062 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:432 - - 无冲突块数: 9
+2025-06-12 17:26:58.062 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:433 - - 适配失败块数: 1
+2025-06-12 17:26:58.063 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:438 - 切换回目标版本: v6.12-rc7
+2025-06-12 17:26:58.219 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:446 - 删除测试分支: test_chunk_apply_375720e4
+2025-06-12 17:26:58.223 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 9 个块补丁，总共 10 个
+2025-06-12 17:26:58.224 | INFO     | modules.chunk_analyzer:_create_remaining_patch:527 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/remaining_chunks_20250612_172658.patch
+2025-06-12 17:26:58.225 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/remaining_chunks_20250612_172658.patch
+2025-06-12 17:26:58.226 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/remaining_chunks_20250612_172658.patch
+2025-06-12 17:26:58.226 | INFO     | modules.chunk_analyzer:execute:117 - 补丁分块分析完成，耗时: 0.85秒
+2025-06-12 17:26:58.227 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/metrics_f8fb24_20250612_172658.json
+2025-06-12 17:26:58.228 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:917 - 找到当前评估会话目录: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658
+2025-06-12 17:26:58.229 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658
+2025-06-12 17:26:58.229 | WARNING  | modules.chunk_analyzer:_get_patch_content:1207 - 补丁目录不存在: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches
+2025-06-12 17:26:58.230 | INFO     | modules.chunk_analyzer:_get_patch_content:1212 - 成功创建补丁目录: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches
+2025-06-12 17:26:58.230 | INFO     | modules.chunk_analyzer:_get_patch_content:1230 - 已将原始补丁内容保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches/original_patch.txt
+2025-06-12 17:26:58.231 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658
+2025-06-12 17:26:58.232 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches/applied_chunk_1.txt
+2025-06-12 17:26:58.233 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches/applied_chunk_2.txt
+2025-06-12 17:26:58.233 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches/applied_chunk_3.txt
+2025-06-12 17:26:58.234 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches/applied_chunk_4.txt
+2025-06-12 17:26:58.234 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches/applied_chunk_5.txt
+2025-06-12 17:26:58.235 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches/applied_chunk_6.txt
+2025-06-12 17:26:58.236 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches/applied_chunk_7.txt
+2025-06-12 17:26:58.236 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches/applied_chunk_8.txt
+2025-06-12 17:26:58.237 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches/applied_chunk_9.txt
+2025-06-12 17:26:58.237 | INFO     | modules.chunk_analyzer:_get_patch_content:1344 - 已将合并的补丁块内容保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches/all_applied_chunks.txt
+2025-06-12 17:26:58.238 | INFO     | modules.chunk_analyzer:_get_patch_content:1348 - 从context获取应用成功的补丁内容
+2025-06-12 17:26:58.238 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658
+2025-06-12 17:26:58.239 | INFO     | modules.chunk_analyzer:_get_patch_content:1399 - 已将剩余补丁内容保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658/patches/remaining_patch.txt
+2025-06-12 17:26:58.239 | INFO     | modules.chunk_analyzer:_get_patch_content:1403 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/chunk_patches/remaining_chunks_20250612_172658.patch
+2025-06-12 17:26:58.240 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/linux/kernel-torvalds/f8fb24/evaluations/chunk_analyzer/details_f8fb24_20250612_172658
+2025-06-12 17:26:58.247 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-12 17:26:58.247 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/patches/upstream_f8fb24.patch
+2025-06-12 17:26:58.248 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/f8fb24/patches/upstream_f8fb24.patch
+2025-06-12 17:26:58.248 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-12 17:26:58.249 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-12 17:26:58.341 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-12 17:26:58.978 | INFO     | __main__:clean_config:2181 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

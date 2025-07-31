@@ -1,0 +1,340 @@
+2025-06-12 17:26:38.130 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_172638.log
+2025-06-12 17:26:38.130 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-12 17:26:38.131 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-torvalds/commit/64c37e134b120fb462fb4a80694bfb8e7be77b14.patch
+2025-06-12 17:26:38.131 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-12 17:26:38.132 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-12 17:26:38.134 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-12 17:26:38.135 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-12 17:26:38.136 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.12-rc7']
+2025-06-12 17:26:38.136 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.12-rc7
+2025-06-12 17:26:38.137 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: 64c37e134b120fb462fb4a80694bfb8e7be77b14.patch
+2025-06-12 17:26:38.138 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-12 17:26:38.138 | INFO     | modules.direct_apply:_download_patch:248 - 上游补丁文件已存在: workspace/linux/kernel-torvalds/64c37e/patches/upstream_64c37e.patch
+2025-06-12 17:26:38.138 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-12 17:26:38.139 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/patches/upstream_64c37e.patch
+2025-06-12 17:26:38.310 | INFO     | modules.direct_apply:_prepare_test_branch:400 - 创建测试分支: test_patch_v6.12-rc7
+2025-06-12 17:26:38.907 | ERROR    | modules.direct_apply:_apply_patch:340 - 补丁应用失败: error: patch failed: kernel/events/uprobes.c:28
+error: kernel/events/uprobes.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-12 17:26:39.384 | INFO     | modules.direct_apply:_cleanup_test_branch:492 - 清理测试分支: test_patch_v6.12-rc7
+2025-06-12 17:26:39.385 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-12 17:26:39.385 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/patches/upstream_64c37e.patch
+2025-06-12 17:26:39.386 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:178 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/patches/upstream_64c37e.patch
+2025-06-12 17:26:39.386 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:183 - 补丁文件包含 105 行内容
+2025-06-12 17:26:39.386 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: kernel/events/uprobes.c
+2025-06-12 17:26:39.387 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: kernel/events/uprobes.c @@ -28,6 +28,7 @@ (modification)
+2025-06-12 17:26:39.387 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: kernel/events/uprobes.c @@ -1260,6 +1261,9 @@ (modification)
+2025-06-12 17:26:39.387 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: kernel/fork.c
+2025-06-12 17:26:39.388 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: kernel/fork.c @@ -760,7 +760,8 @@ (modification)
+2025-06-12 17:26:39.388 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: kernel/fork.c @@ -768,8 +769,18 @@ (modification)
+2025-06-12 17:26:39.388 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:269 - 补丁分解完成，共找到 4 个修改块
+2025-06-12 17:26:39.388 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 4 个块
+2025-06-12 17:26:39.389 | INFO     | modules.chunk_analyzer:_create_chunk_patches:288 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/patches/upstream_64c37e.patch
+2025-06-12 17:26:39.389 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/chunk_patches/chunk_001_20250612_172639.patch (修改文件: kernel/events/uprobes.c)
+2025-06-12 17:26:39.390 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/chunk_patches/chunk_002_20250612_172639.patch (修改文件: kernel/events/uprobes.c)
+2025-06-12 17:26:39.390 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/chunk_patches/chunk_003_20250612_172639.patch (修改文件: kernel/fork.c)
+2025-06-12 17:26:39.390 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/chunk_patches/chunk_004_20250612_172639.patch (修改文件: kernel/fork.c)
+2025-06-12 17:26:39.391 | INFO     | modules.chunk_analyzer:execute:60 - 已为 4 个块创建单独的补丁文件
+2025-06-12 17:26:39.391 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-12 17:26:39.391 | INFO     | modules.chunk_analyzer:execute:66 - From 64c37e134b120fb462fb4a80694bfb8e7be77b14 Mon Sep 17 00:00:00 2001
+From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+Date: Mon, 27 Jan 2025 12:02:21 -0500
+Subject: [PATCH] kernel: be more careful about dup_mmap() failures and uprobe
+ registering
+
+If a memory allocation fails during dup_mmap(), the maple tree can be left
+in an unsafe state for other iterators besides the exit path.  All the
+locks are dropped before the exit_mmap() call (in mm/mmap.c), but the
+incomplete mm_struct can be reached through (at least) the rmap finding
+the vmas which have a pointer back to the mm_struct.
+
+Up to this point, there have been no issues with being able to find an
+mm_struct that was only partially initialised.  Syzbot was able to make
+the incomplete mm_struct fail with recent forking changes, so it has been
+proven unsafe to use the mm_struct that hasn't been initialised, as
+referenced in the link below.
+
+Although 8ac662f5da19f ("fork: avoid inappropriate uprobe access to
+invalid mm") fixed the uprobe access, it does not completely remove the
+race.
+
+This patch sets the MMF_OOM_SKIP to avoid the iteration of the vmas on the
+oom side (even though this is extremely unlikely to be selected as an oom
+victim in the race window), and sets MMF_UNSTABLE to avoid other potential
+users from using a partially initialised mm_struct.
+
+When registering vmas for uprobe, skip the vmas in an mm that is marked
+unstable.  Modifying a vma in an unstable mm may cause issues if the mm
+isn't fully initialised.
+
+Link: https://lore.kernel.org/all/6756d273.050a0220.2477f.003d.GAE@google.com/
+Link: https://lkml.kernel.org/r/20250127170221.1761366-1-Liam.Howlett@oracle.com
+Fixes: d24062914837 ("fork: use __mt_dup() to duplicate maple tree in dup_mmap()")
+Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+Reviewed-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+Cc: Oleg Nesterov <oleg@redhat.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Jann Horn <jannh@google.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Peng Zhang <zhangpeng.00@bytedance.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+
+diff --git a/kernel/events/uprobes.c b/kernel/events/uprobes.c
+index e421a5f2ec7d..2ca797cbe465 100644
+--- a/kernel/events/uprobes.c
++++ b/kernel/events/uprobes.c
+@@ -28,6 +28,7 @@
+ #include <linux/rcupdate_trace.h>
+ #include <linux/workqueue.h>
+ #include <linux/srcu.h>
++#include <linux/oom.h>          /* check_stable_address_space */
+ 
+ #include <linux/uprobes.h>
+ 
+
+2025-06-12 17:26:39.391 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-12 17:26:39.392 | INFO     | modules.chunk_analyzer:execute:66 - From 64c37e134b120fb462fb4a80694bfb8e7be77b14 Mon Sep 17 00:00:00 2001
+From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+Date: Mon, 27 Jan 2025 12:02:21 -0500
+Subject: [PATCH] kernel: be more careful about dup_mmap() failures and uprobe
+ registering
+
+If a memory allocation fails during dup_mmap(), the maple tree can be left
+in an unsafe state for other iterators besides the exit path.  All the
+locks are dropped before the exit_mmap() call (in mm/mmap.c), but the
+incomplete mm_struct can be reached through (at least) the rmap finding
+the vmas which have a pointer back to the mm_struct.
+
+Up to this point, there have been no issues with being able to find an
+mm_struct that was only partially initialised.  Syzbot was able to make
+the incomplete mm_struct fail with recent forking changes, so it has been
+proven unsafe to use the mm_struct that hasn't been initialised, as
+referenced in the link below.
+
+Although 8ac662f5da19f ("fork: avoid inappropriate uprobe access to
+invalid mm") fixed the uprobe access, it does not completely remove the
+race.
+
+This patch sets the MMF_OOM_SKIP to avoid the iteration of the vmas on the
+oom side (even though this is extremely unlikely to be selected as an oom
+victim in the race window), and sets MMF_UNSTABLE to avoid other potential
+users from using a partially initialised mm_struct.
+
+When registering vmas for uprobe, skip the vmas in an mm that is marked
+unstable.  Modifying a vma in an unstable mm may cause issues if the mm
+isn't fully initialised.
+
+Link: https://lore.kernel.org/all/6756d273.050a0220.2477f.003d.GAE@google.com/
+Link: https://lkml.kernel.org/r/20250127170221.1761366-1-Liam.Howlett@oracle.com
+Fixes: d24062914837 ("fork: use __mt_dup() to duplicate maple tree in dup_mmap()")
+Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+Reviewed-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+Cc: Oleg Nesterov <oleg@redhat.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Jann Horn <jannh@google.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Peng Zhang <zhangpeng.00@bytedance.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+
+diff --git a/kernel/events/uprobes.c b/kernel/events/uprobes.c
+index e421a5f2ec7d..2ca797cbe465 100644
+--- a/kernel/events/uprobes.c
++++ b/kernel/events/uprobes.c
+@@ -1260,6 +1261,9 @@ register_for_each_vma(struct uprobe *uprobe, struct uprobe_consumer *new)
+ 		 * returns NULL in find_active_uprobe_rcu().
+ 		 */
+ 		mmap_write_lock(mm);
++		if (check_stable_address_space(mm))
++			goto unlock;
++
+ 		vma = find_vma(mm, info->vaddr);
+ 		if (!vma || !valid_vma(vma, is_register) ||
+ 		    file_inode(vma->vm_file) != uprobe->inode)
+
+2025-06-12 17:26:39.392 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-12 17:26:39.392 | INFO     | modules.chunk_analyzer:execute:66 - From 64c37e134b120fb462fb4a80694bfb8e7be77b14 Mon Sep 17 00:00:00 2001
+From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+Date: Mon, 27 Jan 2025 12:02:21 -0500
+Subject: [PATCH] kernel: be more careful about dup_mmap() failures and uprobe
+ registering
+
+If a memory allocation fails during dup_mmap(), the maple tree can be left
+in an unsafe state for other iterators besides the exit path.  All the
+locks are dropped before the exit_mmap() call (in mm/mmap.c), but the
+incomplete mm_struct can be reached through (at least) the rmap finding
+the vmas which have a pointer back to the mm_struct.
+
+Up to this point, there have been no issues with being able to find an
+mm_struct that was only partially initialised.  Syzbot was able to make
+the incomplete mm_struct fail with recent forking changes, so it has been
+proven unsafe to use the mm_struct that hasn't been initialised, as
+referenced in the link below.
+
+Although 8ac662f5da19f ("fork: avoid inappropriate uprobe access to
+invalid mm") fixed the uprobe access, it does not completely remove the
+race.
+
+This patch sets the MMF_OOM_SKIP to avoid the iteration of the vmas on the
+oom side (even though this is extremely unlikely to be selected as an oom
+victim in the race window), and sets MMF_UNSTABLE to avoid other potential
+users from using a partially initialised mm_struct.
+
+When registering vmas for uprobe, skip the vmas in an mm that is marked
+unstable.  Modifying a vma in an unstable mm may cause issues if the mm
+isn't fully initialised.
+
+Link: https://lore.kernel.org/all/6756d273.050a0220.2477f.003d.GAE@google.com/
+Link: https://lkml.kernel.org/r/20250127170221.1761366-1-Liam.Howlett@oracle.com
+Fixes: d24062914837 ("fork: use __mt_dup() to duplicate maple tree in dup_mmap()")
+Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+Reviewed-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+Cc: Oleg Nesterov <oleg@redhat.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Jann Horn <jannh@google.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Peng Zhang <zhangpeng.00@bytedance.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+
+diff --git a/kernel/fork.c b/kernel/fork.c
+index cba5ede2c639..735405a9c5f3 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -760,7 +760,8 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
+ 		mt_set_in_rcu(vmi.mas.tree);
+ 		ksm_fork(mm, oldmm);
+ 		khugepaged_fork(mm, oldmm);
+-	} else if (mpnt) {
++	} else {
++
+ 		/*
+ 		 * The entire maple tree has already been duplicated. If the
+ 		 * mmap duplication fails, mark the failure point with
+
+2025-06-12 17:26:39.393 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-06-12 17:26:39.393 | INFO     | modules.chunk_analyzer:execute:66 - From 64c37e134b120fb462fb4a80694bfb8e7be77b14 Mon Sep 17 00:00:00 2001
+From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+Date: Mon, 27 Jan 2025 12:02:21 -0500
+Subject: [PATCH] kernel: be more careful about dup_mmap() failures and uprobe
+ registering
+
+If a memory allocation fails during dup_mmap(), the maple tree can be left
+in an unsafe state for other iterators besides the exit path.  All the
+locks are dropped before the exit_mmap() call (in mm/mmap.c), but the
+incomplete mm_struct can be reached through (at least) the rmap finding
+the vmas which have a pointer back to the mm_struct.
+
+Up to this point, there have been no issues with being able to find an
+mm_struct that was only partially initialised.  Syzbot was able to make
+the incomplete mm_struct fail with recent forking changes, so it has been
+proven unsafe to use the mm_struct that hasn't been initialised, as
+referenced in the link below.
+
+Although 8ac662f5da19f ("fork: avoid inappropriate uprobe access to
+invalid mm") fixed the uprobe access, it does not completely remove the
+race.
+
+This patch sets the MMF_OOM_SKIP to avoid the iteration of the vmas on the
+oom side (even though this is extremely unlikely to be selected as an oom
+victim in the race window), and sets MMF_UNSTABLE to avoid other potential
+users from using a partially initialised mm_struct.
+
+When registering vmas for uprobe, skip the vmas in an mm that is marked
+unstable.  Modifying a vma in an unstable mm may cause issues if the mm
+isn't fully initialised.
+
+Link: https://lore.kernel.org/all/6756d273.050a0220.2477f.003d.GAE@google.com/
+Link: https://lkml.kernel.org/r/20250127170221.1761366-1-Liam.Howlett@oracle.com
+Fixes: d24062914837 ("fork: use __mt_dup() to duplicate maple tree in dup_mmap()")
+Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+Reviewed-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+Cc: Oleg Nesterov <oleg@redhat.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Jann Horn <jannh@google.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Peng Zhang <zhangpeng.00@bytedance.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+
+diff --git a/kernel/fork.c b/kernel/fork.c
+index cba5ede2c639..735405a9c5f3 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -768,8 +769,18 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
+ 		 * stop releasing VMAs that have not been duplicated after this
+ 		 * point.
+ 		 */
+-		mas_set_range(&vmi.mas, mpnt->vm_start, mpnt->vm_end - 1);
+-		mas_store(&vmi.mas, XA_ZERO_ENTRY);
++		if (mpnt) {
++			mas_set_range(&vmi.mas, mpnt->vm_start, mpnt->vm_end - 1);
++			mas_store(&vmi.mas, XA_ZERO_ENTRY);
++			/* Avoid OOM iterating a broken tree */
++			set_bit(MMF_OOM_SKIP, &mm->flags);
++		}
++		/*
++		 * The mm_struct is going to exit, but the locks will be dropped
++		 * first.  Set the mm_struct as unstable is advisable as it is
++		 * not fully initialised.
++		 */
++		set_bit(MMF_UNSTABLE, &mm->flags);
+ 	}
+ out:
+ 	mmap_write_unlock(mm);
+-- 
+2.25.1
+
+
+2025-06-12 17:26:39.394 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:357 - 切换到目标版本: v6.12-rc7
+2025-06-12 17:26:39.544 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:369 - 创建测试分支: test_chunk_apply_3ef719ba
+2025-06-12 17:26:39.999 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 1/4 个块补丁: chunk_001_20250612_172639.patch
+2025-06-12 17:26:40.007 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:420 - 块补丁 chunk_001_20250612_172639.patch 应用失败: error: patch failed: kernel/events/uprobes.c:28
+error: kernel/events/uprobes.c: patch does not apply
+
+2025-06-12 17:26:40.007 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 2/4 个块补丁: chunk_002_20250612_172639.patch
+2025-06-12 17:26:40.011 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_002_20250612_172639.patch
+2025-06-12 17:26:40.012 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 3/4 个块补丁: chunk_003_20250612_172639.patch
+2025-06-12 17:26:40.015 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_003_20250612_172639.patch
+2025-06-12 17:26:40.016 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 4/4 个块补丁: chunk_004_20250612_172639.patch
+2025-06-12 17:26:40.020 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_004_20250612_172639.patch
+2025-06-12 17:26:40.020 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:430 - 块补丁应用统计信息:
+2025-06-12 17:26:40.021 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:431 - - 总块数: 4
+2025-06-12 17:26:40.021 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:432 - - 无冲突块数: 3
+2025-06-12 17:26:40.021 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:433 - - 适配失败块数: 1
+2025-06-12 17:26:40.021 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:438 - 切换回目标版本: v6.12-rc7
+2025-06-12 17:26:40.169 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:446 - 删除测试分支: test_chunk_apply_3ef719ba
+2025-06-12 17:26:40.173 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 3 个块补丁，总共 4 个
+2025-06-12 17:26:40.174 | INFO     | modules.chunk_analyzer:_create_remaining_patch:527 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/chunk_patches/remaining_chunks_20250612_172640.patch
+2025-06-12 17:26:40.174 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/chunk_patches/remaining_chunks_20250612_172640.patch
+2025-06-12 17:26:40.175 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/chunk_patches/remaining_chunks_20250612_172640.patch
+2025-06-12 17:26:40.175 | INFO     | modules.chunk_analyzer:execute:117 - 补丁分块分析完成，耗时: 0.79秒
+2025-06-12 17:26:40.176 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/metrics_64c37e_20250612_172640.json
+2025-06-12 17:26:40.177 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:917 - 找到当前评估会话目录: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640
+2025-06-12 17:26:40.177 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640
+2025-06-12 17:26:40.177 | WARNING  | modules.chunk_analyzer:_get_patch_content:1207 - 补丁目录不存在: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640/patches
+2025-06-12 17:26:40.178 | INFO     | modules.chunk_analyzer:_get_patch_content:1212 - 成功创建补丁目录: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640/patches
+2025-06-12 17:26:40.178 | INFO     | modules.chunk_analyzer:_get_patch_content:1230 - 已将原始补丁内容保存到: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640/patches/original_patch.txt
+2025-06-12 17:26:40.178 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640
+2025-06-12 17:26:40.179 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640/patches/applied_chunk_1.txt
+2025-06-12 17:26:40.180 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640/patches/applied_chunk_2.txt
+2025-06-12 17:26:40.180 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640/patches/applied_chunk_3.txt
+2025-06-12 17:26:40.180 | INFO     | modules.chunk_analyzer:_get_patch_content:1344 - 已将合并的补丁块内容保存到: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640/patches/all_applied_chunks.txt
+2025-06-12 17:26:40.181 | INFO     | modules.chunk_analyzer:_get_patch_content:1348 - 从context获取应用成功的补丁内容
+2025-06-12 17:26:40.181 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640
+2025-06-12 17:26:40.181 | INFO     | modules.chunk_analyzer:_get_patch_content:1399 - 已将剩余补丁内容保存到: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640/patches/remaining_patch.txt
+2025-06-12 17:26:40.181 | INFO     | modules.chunk_analyzer:_get_patch_content:1403 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/chunk_patches/remaining_chunks_20250612_172640.patch
+2025-06-12 17:26:40.182 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/linux/kernel-torvalds/64c37e/evaluations/chunk_analyzer/details_64c37e_20250612_172640
+2025-06-12 17:26:40.187 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-12 17:26:40.187 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/patches/upstream_64c37e.patch
+2025-06-12 17:26:40.187 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/64c37e/patches/upstream_64c37e.patch
+2025-06-12 17:26:40.187 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-12 17:26:40.188 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-12 17:26:40.275 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-12 17:26:41.935 | INFO     | __main__:clean_config:2181 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

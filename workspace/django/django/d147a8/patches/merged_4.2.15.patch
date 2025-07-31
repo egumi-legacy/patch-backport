@@ -1,0 +1,115 @@
+From a89599886b7e6059760e9ec37076bab6f9a4c131 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 19 Jun 2025 16:15:32 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A4/?=
+ =?UTF-8?q?4=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ django/utils/html.py                          | 17 ++++++++------
+ docs/ref/templates/builtins.txt               | 11 ++++++++++
+ .../filter_tests/test_urlize.py               | 22 +++++++++++++++++++
+ tests/utils_tests/test_html.py                |  1 +
+ 4 files changed, 44 insertions(+), 7 deletions(-)
+
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 23575d3c11..df38c20519 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -395,14 +395,17 @@ class Urlizer:
+                 potential_entity = middle[amp:]
+                 escaped = html.unescape(potential_entity)
+                 if escaped == potential_entity or escaped.endswith(";"):
+-                    rstripped = middle.rstrip(";")
+-                    amount_stripped = len(middle) - len(rstripped)
+-                    if amp > -1 and amount_stripped > 1:
+-                        # Leave a trailing semicolon as might be an entity.
+-                        trail = middle[len(rstripped) + 1 :] + trail
+-                        middle = rstripped + ";"
++                    rstripped = middle.rstrip(self.trailing_punctuation_chars)
++                    trail_start = len(rstripped)
++                    amount_trailing_semicolons = len(middle) - len(middle.rstrip(";"))
++                    if amp > -1 and amount_trailing_semicolons > 1:
++                        # Leave up to most recent semicolon as might be an entity.
++                        recent_semicolon = middle[trail_start:].index(";")
++                        middle_semicolon_index = recent_semicolon + trail_start + 1
++                        trail = middle[middle_semicolon_index:] + trail
++                        middle = rstripped + middle[trail_start:middle_semicolon_index]
+                     else:
+-                        trail = middle[len(rstripped) :] + trail
++                        trail = middle[trail_start:] + trail
+                         middle = rstripped
+                     trimmed_something = True
+ 
+diff --git a/docs/ref/templates/builtins.txt b/docs/ref/templates/builtins.txt
+index 39aa398338..dda5b42655 100644
+--- a/docs/ref/templates/builtins.txt
++++ b/docs/ref/templates/builtins.txt
+@@ -2831,6 +2831,17 @@ Django's built-in :tfilter:`escape` filter. The default value for
+     email addresses that contain single quotes (``'``), things won't work as
+     expected. Apply this filter only to plain text.
+ 
++.. warning::
++
++    Using ``urlize`` or ``urlizetrunc`` can incur a performance penalty, which
++    can become severe when applied to user controlled values such as content
++    stored in a :class:`~django.db.models.TextField`. You can use
++    :tfilter:`truncatechars` to add a limit to such inputs:
++
++    .. code-block:: html+django
++
++        {{ value|truncatechars:500|urlize }}
++
+ .. templatefilter:: urlizetrunc
+ 
+ ``urlizetrunc``
+diff --git a/tests/template_tests/filter_tests/test_urlize.py b/tests/template_tests/filter_tests/test_urlize.py
+index abc227ba6a..e542802aae 100644
+--- a/tests/template_tests/filter_tests/test_urlize.py
++++ b/tests/template_tests/filter_tests/test_urlize.py
+@@ -305,6 +305,28 @@ class FunctionTests(SimpleTestCase):
+             "http://testing.com/example</a>.,:;)&quot;!",
+         )
+ 
++    def test_trailing_semicolon(self):
++        self.assertEqual(
++            urlize("http://example.com?x=&amp;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp;</a>",
++        )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp;;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp;</a>;",
++        )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp;;;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp;</a>;;",
++        )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp.;...;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp</a>.;...;",
++        )
++
+     def test_brackets(self):
+         """
+         #19070 - Check urlize handles brackets properly
+diff --git a/tests/utils_tests/test_html.py b/tests/utils_tests/test_html.py
+index 83ebe4334b..7ff5020fb6 100644
+--- a/tests/utils_tests/test_html.py
++++ b/tests/utils_tests/test_html.py
+@@ -364,6 +364,7 @@ class TestUtilsHtml(SimpleTestCase):
+             "&:" + ";" * 100_000,
+             "&.;" * 100_000,
+             ".;" * 100_000,
++            "&" + ";:" * 100_000,
+         )
+         for value in tests:
+             with self.subTest(value=value):
+-- 
+2.25.1
+

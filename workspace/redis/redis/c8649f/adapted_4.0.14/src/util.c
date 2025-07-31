@@ -47,8 +47,7 @@
 int stringmatchlen(const char *pattern, int patternLen,
         const char *string, int stringLen, int nocase)
 {
-    int nesting = 0;
-    while(patternLen && stringLen && nesting <= 1000) {
+    while(patternLen && stringLen) {
         switch(pattern[0]) {
         case '*':
             while (pattern[1] == '*') {
@@ -59,7 +58,7 @@ int stringmatchlen(const char *pattern, int patternLen,
                 return 1; /* match */
             while(stringLen) {
                 if (stringmatchlen(pattern+1, patternLen-1,
-                            string, stringLen, nocase) && ++nesting <= 1000)
+                            string, stringLen, nocase))
                     return 1; /* match */
                 string++;
                 stringLen--;

@@ -1,0 +1,64 @@
+From 5194f31a983440ca395b362727e472d62c52a0a5 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 12 Jun 2025 04:02:54 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A4?=
+ =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ drivers/video/fbdev/hyperv_fb.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index 7fdb5edd7e2e..7f5e76651c72 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -282,6 +282,8 @@ static uint screen_depth;
+ static uint screen_fb_size;
+ static uint dio_fb_size; /* FB size for deferred IO */
+ 
++static void hvfb_putmem(struct fb_info *info);
++
+ /* Send message to Hyper-V host */
+ static inline int synthvid_send(struct hv_device *hdev,
+ 				struct synthvid_msg *msg)
+@@ -862,6 +864,17 @@ static void hvfb_ops_damage_area(struct fb_info *info, u32 x, u32 y, u32 width,
+ 		hvfb_ondemand_refresh_throttle(par, x, y, width, height);
+ }
+ 
++/*
++ * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
++ * of unregister_framebuffer() or fb_release(). Do any cleanup related to
++ * framebuffer here.
++ */
++static void hvfb_destroy(struct fb_info *info)
++{
++	hvfb_putmem(info);
++	framebuffer_release(info);
++}
++
+ /*
+  * TODO: GEN1 codepaths allocate from system or DMA-able memory. Fix the
+  *       driver to use the _SYSMEM_ or _DMAMEM_ helpers in these cases.
+@@ -877,6 +890,7 @@ static const struct fb_ops hvfb_ops = {
+ 	.fb_set_par = hvfb_set_par,
+ 	.fb_setcolreg = hvfb_setcolreg,
+ 	.fb_blank = hvfb_blank,
++	.fb_destroy	= hvfb_destroy,
+ };
+ 
+ /* Get options from kernel paramenter "video=" */
+@@ -1172,7 +1186,7 @@ static int hvfb_probe(struct hv_device *hdev,
+ 	if (ret)
+ 		goto error;
+ 
+-	ret = register_framebuffer(info);
++	ret = devm_register_framebuffer(&hdev->device, info);
+ 	if (ret) {
+ 		pr_err("Unable to register framebuffer\n");
+ 		goto error;
+-- 
+2.25.1
+

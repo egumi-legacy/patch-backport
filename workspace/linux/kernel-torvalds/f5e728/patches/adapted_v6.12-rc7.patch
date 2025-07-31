@@ -1,0 +1,25 @@
+From 4e9566d0363dd2ca60098395ebf213a6eb0d772a Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 12 Jun 2025 15:50:18 +0800
+Subject: [PATCH] Applied adapted patch for v6.12-rc7
+
+---
+ drivers/video/fbdev/hyperv_fb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index 7fdb5edd7e2e..c0d6c127ac1f 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1083,7 +1083,7 @@ static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)
+ 		iounmap(info->screen_base);
+ 		vmbus_free_mmio(par->mem->start, screen_fb_size);
+ 	} else {
+-		hvfb_release_phymem(hdev, info->fix.smem_start,
++		hvfb_release_phymem(info->device, info->fix.smem_start,
+ 				    screen_fb_size);
+ 	}
+ 
+-- 
+2.25.1
+

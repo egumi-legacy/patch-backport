@@ -1,0 +1,35 @@
+From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/sof-audio.c b/sound/soc/sof/sof-audio.c
+index 9163975c9c3f..e693dcb475e4 100644
+--- a/sound/soc/sof/sof-audio.c
++++ b/sound/soc/sof/sof-audio.c
+@@ -46,7 +46,6 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
+ {
+ 	const struct sof_ipc_tplg_ops *tplg_ops = sof_ipc_get_ops(sdev, tplg);
+ 	struct snd_sof_pipeline *spipe = swidget->spipe;
+-	struct snd_sof_widget *pipe_widget;
+ 	int err = 0;
+ 	int ret;
+ 

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>chunk_analyzer 模块评估报告 - 79990c</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+    h1, h2, h3 { color: #2c3e50; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 20px; }
+    .success { color: #27ae60; }
+    .error { color: #e74c3c; }
+    .info { color: #3498db; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    th { background-color: #f8f9fa; }
+    tr:hover { background-color: #f5f5f5; }
+    pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    .progress-container { width: 100%; background-color: #f1f1f1; border-radius: 5px; }
+    .progress-bar { height: 20px; border-radius: 5px; }
+    .success-bg { background-color: #4CAF50; }
+    .pending-bg { background-color: #2196F3; }
+    .error-bg { background-color: #f44336; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+    .tag-success { background-color: #e8f5e9; color: #2e7d32; }
+    .tag-error { background-color: #ffebee; color: #c62828; }
+    .tag-pending { background-color: #e3f2fd; color: #1565c0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>chunk_analyzer 模块评估报告</h1>
+    
+    <div class="card">
+      <h2>基本信息</h2>
+      <table>
+        <tr>
+          <td width="150"><strong>模块名称</strong></td>
+          <td>chunk_analyzer</td>
+        </tr>
+        <tr>
+          <td><strong>模块类型</strong></td>
+          <td>ModuleType.CHUNK_ANALYZER</td>
+        </tr>
+        <tr>
+          <td><strong>提交SHA</strong></td>
+          <td>79990cf5e7aded76d0c092c9f5ed31eb1c75e02c.patch</td>
+        </tr>
+        <tr>
+          <td><strong>目标版本</strong></td>
+          <td>v6.12-rc7</td>
+        </tr>
+        <tr>
+          <td><strong>执行时间</strong></td>
+          <td>2025-06-12T15:30:59.070662</td>
+        </tr>
+        <tr>
+          <td><strong>状态</strong></td>
+          <td>
+            <span class="tag tag-success">成功</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输入信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>原始补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/patches/upstream_79990c.patch</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>代码仓库路径</strong></td>
+                  <td>/home/elpsy/.cache/port-patch/linux_kernel-stable</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    <div class="card">
+      <h2>输出信息</h2>
+      <table>
+        
+                <tr>
+                  <td width="200"><strong>状态</strong></td>
+                  <td>成功</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总尝试次数</strong></td>
+                  <td>1</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>执行时间</strong></td>
+                  <td>0.031299</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>总块数</strong></td>
+                  <td>4</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功应用块数</strong></td>
+                  <td>3</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>成功率</strong></td>
+                  <td>75.00%</td>
+                </tr>
+                
+                <tr>
+                  <td width="200"><strong>剩余补丁路径</strong></td>
+                  <td>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/remaining_chunks_20250612_153059.patch</td>
+                </tr>
+                
+      </table>
+    </div>
+    
+    
+        <div class="card">
+          <h2>补丁块应用统计</h2>
+          
+          <div class="progress-container">
+            <div class="progress-bar success-bg" style="width: 75%"></div>
+          </div>
+          <p>
+            成功应用 <strong class="success">3</strong> 个块，
+            总共 <strong>4</strong> 个块
+            (成功率: <strong>75.0%</strong>)
+          </p>
+        </div>
+        
+        <div class="card">
+          <h2>补丁内容详情</h2>
+          <div class="tabs">
+            <div class="tab-header">
+              <button class="tab-button active" onclick="openTab(event, 'original-patch')">原始补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'applied-patches')">应用成功的补丁</button>
+              <button class="tab-button" onclick="openTab(event, 'remaining-patch')">未应用成功的补丁</button>
+            </div>
+            
+            <div id="original-patch" class="tab-content" style="display:block;">
+              <h3>原始补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c Mon Sep 17 00:00:00 2001
+From: Marcin Szycik &lt;marcin.szycik@linux.intel.com&gt;
+Date: Mon, 24 Feb 2025 11:06:41 -0800
+Subject: [PATCH] ice: Fix deinitializing VF in error path
+
+If ice_ena_vfs() fails after calling ice_create_vf_entries(), it frees
+all VFs without removing them from snapshot PF-VF mailbox list, leading
+to list corruption.
+
+Reproducer:
+  devlink dev eswitch set $PF1_PCI mode switchdev
+  ip l s $PF1 up
+  ip l s $PF1 promisc on
+  sleep 1
+  echo 1 &gt; /sys/class/net/$PF1/device/sriov_numvfs
+  sleep 1
+  echo 1 &gt; /sys/class/net/$PF1/device/sriov_numvfs
+
+Trace (minimized):
+  list_add corruption. next-&gt;prev should be prev (ffff8882e241c6f0), but was 0000000000000000. (next=ffff888455da1330).
+  kernel BUG at lib/list_debug.c:29!
+  RIP: 0010:__list_add_valid_or_report+0xa6/0x100
+   ice_mbx_init_vf_info+0xa7/0x180 [ice]
+   ice_initialize_vf_entry+0x1fa/0x250 [ice]
+   ice_sriov_configure+0x8d7/0x1520 [ice]
+   ? __percpu_ref_switch_mode+0x1b1/0x5d0
+   ? __pfx_ice_sriov_configure+0x10/0x10 [ice]
+
+Sometimes a KASAN report can be seen instead with a similar stack trace:
+  BUG: KASAN: use-after-free in __list_add_valid_or_report+0xf1/0x100
+
+VFs are added to this list in ice_mbx_init_vf_info(), but only removed
+in ice_free_vfs(). Move the removing to ice_free_vf_entries(), which is
+also being called in other places where VFs are being removed (including
+ice_free_vfs() itself).
+
+Fixes: 8cd8a6b17d27 ("ice: move VF overflow message count into struct ice_mbx_vf_info")
+Reported-by: Sujai Buvaneswaran &lt;sujai.buvaneswaran@intel.com&gt;
+Closes: https://lore.kernel.org/intel-wired-lan/PH0PR11MB50138B635F2E5CEB7075325D961F2@PH0PR11MB5013.namprd11.prod.outlook.com
+Reviewed-by: Martyna Szapar-Mudlaw &lt;martyna.szapar-mudlaw@linux.intel.com&gt;
+Signed-off-by: Marcin Szycik &lt;marcin.szycik@linux.intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Tested-by: Sujai Buvaneswaran &lt;sujai.buvaneswaran@intel.com&gt;
+Signed-off-by: Tony Nguyen &lt;anthony.l.nguyen@intel.com&gt;
+Link: https://patch.msgid.link/20250224190647.3601930-2-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
+index b83f99c01d91..8aabf7749aa5 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sriov.c
++++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
+@@ -36,6 +36,7 @@ static void ice_free_vf_entries(struct ice_pf *pf)
+ 
+ 	hash_for_each_safe(vfs-&gt;table, bkt, tmp, vf, entry) {
+ 		hash_del_rcu(&vf-&gt;entry);
++		ice_deinitialize_vf_entry(vf);
+ 		ice_put_vf(vf);
+ 	}
+ }
+@@ -193,10 +194,6 @@ void ice_free_vfs(struct ice_pf *pf)
+ 			wr32(hw, GLGEN_VFLRSTAT(reg_idx), BIT(bit_idx));
+ 		}
+ 
+-		/* clear malicious info since the VF is getting released */
+-		if (!ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
+-			list_del(&vf-&gt;mbx_info.list_entry);
+-
+ 		mutex_unlock(&vf-&gt;cfg_lock);
+ 	}
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+index c7c0c2f50c26..815ad0bfe832 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+@@ -1036,6 +1036,14 @@ void ice_initialize_vf_entry(struct ice_vf *vf)
+ 	mutex_init(&vf-&gt;cfg_lock);
+ }
+ 
++void ice_deinitialize_vf_entry(struct ice_vf *vf)
++{
++	struct ice_pf *pf = vf-&gt;pf;
++
++	if (!ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
++		list_del(&vf-&gt;mbx_info.list_entry);
++}
++
+ /**
+  * ice_dis_vf_qs - Disable the VF queues
+  * @vf: pointer to the VF structure
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h b/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
+index 0c7e77c0a09f..5392b0404986 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
++++ b/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
+@@ -24,6 +24,7 @@
+ #endif
+ 
+ void ice_initialize_vf_entry(struct ice_vf *vf);
++void ice_deinitialize_vf_entry(struct ice_vf *vf);
+ void ice_dis_vf_qs(struct ice_vf *vf);
+ int ice_check_vf_init(struct ice_vf *vf);
+ enum virtchnl_status_code ice_err_to_virt_err(int err);
+-- 
+2.25.1
+
+</pre>
+              </div>
+            </div>
+            
+            <div id="applied-patches" class="tab-content">
+              <h3>应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">
+
+# ===== 应用成功的补丁块 1 =====
+
+From 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c Mon Sep 17 00:00:00 2001
+From: Marcin Szycik &lt;marcin.szycik@linux.intel.com&gt;
+Date: Mon, 24 Feb 2025 11:06:41 -0800
+Subject: [PATCH] ice: Fix deinitializing VF in error path
+
+If ice_ena_vfs() fails after calling ice_create_vf_entries(), it frees
+all VFs without removing them from snapshot PF-VF mailbox list, leading
+to list corruption.
+
+Reproducer:
+  devlink dev eswitch set $PF1_PCI mode switchdev
+  ip l s $PF1 up
+  ip l s $PF1 promisc on
+  sleep 1
+  echo 1 &gt; /sys/class/net/$PF1/device/sriov_numvfs
+  sleep 1
+  echo 1 &gt; /sys/class/net/$PF1/device/sriov_numvfs
+
+Trace (minimized):
+  list_add corruption. next-&gt;prev should be prev (ffff8882e241c6f0), but was 0000000000000000. (next=ffff888455da1330).
+  kernel BUG at lib/list_debug.c:29!
+  RIP: 0010:__list_add_valid_or_report+0xa6/0x100
+   ice_mbx_init_vf_info+0xa7/0x180 [ice]
+   ice_initialize_vf_entry+0x1fa/0x250 [ice]
+   ice_sriov_configure+0x8d7/0x1520 [ice]
+   ? __percpu_ref_switch_mode+0x1b1/0x5d0
+   ? __pfx_ice_sriov_configure+0x10/0x10 [ice]
+
+Sometimes a KASAN report can be seen instead with a similar stack trace:
+  BUG: KASAN: use-after-free in __list_add_valid_or_report+0xf1/0x100
+
+VFs are added to this list in ice_mbx_init_vf_info(), but only removed
+in ice_free_vfs(). Move the removing to ice_free_vf_entries(), which is
+also being called in other places where VFs are being removed (including
+ice_free_vfs() itself).
+
+Fixes: 8cd8a6b17d27 ("ice: move VF overflow message count into struct ice_mbx_vf_info")
+Reported-by: Sujai Buvaneswaran &lt;sujai.buvaneswaran@intel.com&gt;
+Closes: https://lore.kernel.org/intel-wired-lan/PH0PR11MB50138B635F2E5CEB7075325D961F2@PH0PR11MB5013.namprd11.prod.outlook.com
+Reviewed-by: Martyna Szapar-Mudlaw &lt;martyna.szapar-mudlaw@linux.intel.com&gt;
+Signed-off-by: Marcin Szycik &lt;marcin.szycik@linux.intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Tested-by: Sujai Buvaneswaran &lt;sujai.buvaneswaran@intel.com&gt;
+Signed-off-by: Tony Nguyen &lt;anthony.l.nguyen@intel.com&gt;
+Link: https://patch.msgid.link/20250224190647.3601930-2-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
+index b83f99c01d91..8aabf7749aa5 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sriov.c
++++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
+@@ -36,6 +36,7 @@ static void ice_free_vf_entries(struct ice_pf *pf)
+ 
+ 	hash_for_each_safe(vfs-&gt;table, bkt, tmp, vf, entry) {
+ 		hash_del_rcu(&vf-&gt;entry);
++		ice_deinitialize_vf_entry(vf);
+ 		ice_put_vf(vf);
+ 	}
+ }
+
+
+# ===== 应用成功的补丁块 2 =====
+
+From 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c Mon Sep 17 00:00:00 2001
+From: Marcin Szycik &lt;marcin.szycik@linux.intel.com&gt;
+Date: Mon, 24 Feb 2025 11:06:41 -0800
+Subject: [PATCH] ice: Fix deinitializing VF in error path
+
+If ice_ena_vfs() fails after calling ice_create_vf_entries(), it frees
+all VFs without removing them from snapshot PF-VF mailbox list, leading
+to list corruption.
+
+Reproducer:
+  devlink dev eswitch set $PF1_PCI mode switchdev
+  ip l s $PF1 up
+  ip l s $PF1 promisc on
+  sleep 1
+  echo 1 &gt; /sys/class/net/$PF1/device/sriov_numvfs
+  sleep 1
+  echo 1 &gt; /sys/class/net/$PF1/device/sriov_numvfs
+
+Trace (minimized):
+  list_add corruption. next-&gt;prev should be prev (ffff8882e241c6f0), but was 0000000000000000. (next=ffff888455da1330).
+  kernel BUG at lib/list_debug.c:29!
+  RIP: 0010:__list_add_valid_or_report+0xa6/0x100
+   ice_mbx_init_vf_info+0xa7/0x180 [ice]
+   ice_initialize_vf_entry+0x1fa/0x250 [ice]
+   ice_sriov_configure+0x8d7/0x1520 [ice]
+   ? __percpu_ref_switch_mode+0x1b1/0x5d0
+   ? __pfx_ice_sriov_configure+0x10/0x10 [ice]
+
+Sometimes a KASAN report can be seen instead with a similar stack trace:
+  BUG: KASAN: use-after-free in __list_add_valid_or_report+0xf1/0x100
+
+VFs are added to this list in ice_mbx_init_vf_info(), but only removed
+in ice_free_vfs(). Move the removing to ice_free_vf_entries(), which is
+also being called in other places where VFs are being removed (including
+ice_free_vfs() itself).
+
+Fixes: 8cd8a6b17d27 ("ice: move VF overflow message count into struct ice_mbx_vf_info")
+Reported-by: Sujai Buvaneswaran &lt;sujai.buvaneswaran@intel.com&gt;
+Closes: https://lore.kernel.org/intel-wired-lan/PH0PR11MB50138B635F2E5CEB7075325D961F2@PH0PR11MB5013.namprd11.prod.outlook.com
+Reviewed-by: Martyna Szapar-Mudlaw &lt;martyna.szapar-mudlaw@linux.intel.com&gt;
+Signed-off-by: Marcin Szycik &lt;marcin.szycik@linux.intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Tested-by: Sujai Buvaneswaran &lt;sujai.buvaneswaran@intel.com&gt;
+Signed-off-by: Tony Nguyen &lt;anthony.l.nguyen@intel.com&gt;
+Link: https://patch.msgid.link/20250224190647.3601930-2-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+index c7c0c2f50c26..815ad0bfe832 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+@@ -1036,6 +1036,14 @@ void ice_initialize_vf_entry(struct ice_vf *vf)
+ 	mutex_init(&vf-&gt;cfg_lock);
+ }
+ 
++void ice_deinitialize_vf_entry(struct ice_vf *vf)
++{
++	struct ice_pf *pf = vf-&gt;pf;
++
++	if (!ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
++		list_del(&vf-&gt;mbx_info.list_entry);
++}
++
+ /**
+  * ice_dis_vf_qs - Disable the VF queues
+  * @vf: pointer to the VF structure
+
+
+# ===== 应用成功的补丁块 3 =====
+
+From 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c Mon Sep 17 00:00:00 2001
+From: Marcin Szycik &lt;marcin.szycik@linux.intel.com&gt;
+Date: Mon, 24 Feb 2025 11:06:41 -0800
+Subject: [PATCH] ice: Fix deinitializing VF in error path
+
+If ice_ena_vfs() fails after calling ice_create_vf_entries(), it frees
+all VFs without removing them from snapshot PF-VF mailbox list, leading
+to list corruption.
+
+Reproducer:
+  devlink dev eswitch set $PF1_PCI mode switchdev
+  ip l s $PF1 up
+  ip l s $PF1 promisc on
+  sleep 1
+  echo 1 &gt; /sys/class/net/$PF1/device/sriov_numvfs
+  sleep 1
+  echo 1 &gt; /sys/class/net/$PF1/device/sriov_numvfs
+
+Trace (minimized):
+  list_add corruption. next-&gt;prev should be prev (ffff8882e241c6f0), but was 0000000000000000. (next=ffff888455da1330).
+  kernel BUG at lib/list_debug.c:29!
+  RIP: 0010:__list_add_valid_or_report+0xa6/0x100
+   ice_mbx_init_vf_info+0xa7/0x180 [ice]
+   ice_initialize_vf_entry+0x1fa/0x250 [ice]
+   ice_sriov_configure+0x8d7/0x1520 [ice]
+   ? __percpu_ref_switch_mode+0x1b1/0x5d0
+   ? __pfx_ice_sriov_configure+0x10/0x10 [ice]
+
+Sometimes a KASAN report can be seen instead with a similar stack trace:
+  BUG: KASAN: use-after-free in __list_add_valid_or_report+0xf1/0x100
+
+VFs are added to this list in ice_mbx_init_vf_info(), but only removed
+in ice_free_vfs(). Move the removing to ice_free_vf_entries(), which is
+also being called in other places where VFs are being removed (including
+ice_free_vfs() itself).
+
+Fixes: 8cd8a6b17d27 ("ice: move VF overflow message count into struct ice_mbx_vf_info")
+Reported-by: Sujai Buvaneswaran &lt;sujai.buvaneswaran@intel.com&gt;
+Closes: https://lore.kernel.org/intel-wired-lan/PH0PR11MB50138B635F2E5CEB7075325D961F2@PH0PR11MB5013.namprd11.prod.outlook.com
+Reviewed-by: Martyna Szapar-Mudlaw &lt;martyna.szapar-mudlaw@linux.intel.com&gt;
+Signed-off-by: Marcin Szycik &lt;marcin.szycik@linux.intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Tested-by: Sujai Buvaneswaran &lt;sujai.buvaneswaran@intel.com&gt;
+Signed-off-by: Tony Nguyen &lt;anthony.l.nguyen@intel.com&gt;
+Link: https://patch.msgid.link/20250224190647.3601930-2-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h b/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
+index 0c7e77c0a09f..5392b0404986 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
++++ b/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
+@@ -24,6 +24,7 @@
+ #endif
+ 
+ void ice_initialize_vf_entry(struct ice_vf *vf);
++void ice_deinitialize_vf_entry(struct ice_vf *vf);
+ void ice_dis_vf_qs(struct ice_vf *vf);
+ int ice_check_vf_init(struct ice_vf *vf);
+ enum virtchnl_status_code ice_err_to_virt_err(int err);
+-- 
+2.25.1
+
+</pre>
+              </div>
+            </div>
+            
+            <div id="remaining-patch" class="tab-content">
+              <h3>未应用成功的补丁内容</h3>
+              <div class="code-container">
+                <pre class="code-block">From 79990cf5e7aded76d0c092c9f5ed31eb1c75e02c Mon Sep 17 00:00:00 2001
+From: Marcin Szycik &lt;marcin.szycik@linux.intel.com&gt;
+Date: Mon, 24 Feb 2025 11:06:41 -0800
+Subject: [PATCH] ice: Fix deinitializing VF in error path
+
+If ice_ena_vfs() fails after calling ice_create_vf_entries(), it frees
+all VFs without removing them from snapshot PF-VF mailbox list, leading
+to list corruption.
+
+Reproducer:
+  devlink dev eswitch set $PF1_PCI mode switchdev
+  ip l s $PF1 up
+  ip l s $PF1 promisc on
+  sleep 1
+  echo 1 &gt; /sys/class/net/$PF1/device/sriov_numvfs
+  sleep 1
+  echo 1 &gt; /sys/class/net/$PF1/device/sriov_numvfs
+
+Trace (minimized):
+  list_add corruption. next-&gt;prev should be prev (ffff8882e241c6f0), but was 0000000000000000. (next=ffff888455da1330).
+  kernel BUG at lib/list_debug.c:29!
+  RIP: 0010:__list_add_valid_or_report+0xa6/0x100
+   ice_mbx_init_vf_info+0xa7/0x180 [ice]
+   ice_initialize_vf_entry+0x1fa/0x250 [ice]
+   ice_sriov_configure+0x8d7/0x1520 [ice]
+   ? __percpu_ref_switch_mode+0x1b1/0x5d0
+   ? __pfx_ice_sriov_configure+0x10/0x10 [ice]
+
+Sometimes a KASAN report can be seen instead with a similar stack trace:
+  BUG: KASAN: use-after-free in __list_add_valid_or_report+0xf1/0x100
+
+VFs are added to this list in ice_mbx_init_vf_info(), but only removed
+in ice_free_vfs(). Move the removing to ice_free_vf_entries(), which is
+also being called in other places where VFs are being removed (including
+ice_free_vfs() itself).
+
+Fixes: 8cd8a6b17d27 ("ice: move VF overflow message count into struct ice_mbx_vf_info")
+Reported-by: Sujai Buvaneswaran &lt;sujai.buvaneswaran@intel.com&gt;
+Closes: https://lore.kernel.org/intel-wired-lan/PH0PR11MB50138B635F2E5CEB7075325D961F2@PH0PR11MB5013.namprd11.prod.outlook.com
+Reviewed-by: Martyna Szapar-Mudlaw &lt;martyna.szapar-mudlaw@linux.intel.com&gt;
+Signed-off-by: Marcin Szycik &lt;marcin.szycik@linux.intel.com&gt;
+Reviewed-by: Simon Horman &lt;horms@kernel.org&gt;
+Tested-by: Sujai Buvaneswaran &lt;sujai.buvaneswaran@intel.com&gt;
+Signed-off-by: Tony Nguyen &lt;anthony.l.nguyen@intel.com&gt;
+Link: https://patch.msgid.link/20250224190647.3601930-2-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski &lt;kuba@kernel.org&gt;
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
+index b83f99c01d91..8aabf7749aa5 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sriov.c
++++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
+@@ -193,10 +194,6 @@ void ice_free_vfs(struct ice_pf *pf)
+ 			wr32(hw, GLGEN_VFLRSTAT(reg_idx), BIT(bit_idx));
+ 		}
+ 
+-		/* clear malicious info since the VF is getting released */
+-		if (!ice_is_feature_supported(pf, ICE_F_MBX_LIMIT))
+-			list_del(&vf-&gt;mbx_info.list_entry);
+-
+ 		mutex_unlock(&vf-&gt;cfg_lock);
+ 	}
+ 
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+                <div class="card">
+                  <h2>应用成功的补丁块</h2>
+                  <table>
+                    <tr>
+                      <th>块索引</th>
+                      <th>修改文件</th>
+                      <th>修改位置</th>
+                      <th>操作</th>
+                    </tr>
+                    
+                    <tr>
+                      <td>1</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_sriov.c</td>
+                      <td>36-36</td>
+                      <td><a href="applied_chunk_1.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>2</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_vf_lib.c</td>
+                      <td>1036-1036</td>
+                      <td><a href="applied_chunk_2.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+
+                    <tr>
+                      <td>3</td>
+                      <td>drivers/net/ethernet/intel/ice/ice_vf_lib_private.h</td>
+                      <td>24-24</td>
+                      <td><a href="applied_chunk_3.diff" target="_blank">查看</a></td>
+                    </tr>
+                    
+                  </table>
+                </div>
+                
+            <div class="card">
+              <h2>剩余补丁</h2>
+              <p>有 <strong class="info">1</strong> 个块未成功应用，已生成剩余补丁:</p>
+              <p><code>/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/79990c/chunk_patches/remaining_chunks_20250612_153059.patch</code></p>
+              <p><a href="remaining_patch.diff" target="_blank">查看剩余补丁</a></p>
+            </div>
+            
+        <style>
+        .code-container {
+          max-height: 500px;
+          overflow-y: auto;
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          border: 1px solid #eee;
+        }
+        
+        .code-block {
+          padding: 15px;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: monospace;
+          font-size: 13px;
+          line-height: 1.4;
+        }
+        
+        /* 为补丁内容添加语法高亮 */
+        .code-block .add {
+          background-color: #e6ffed;
+          color: #22863a;
+        }
+        
+        .code-block .remove {
+          background-color: #ffeef0;
+          color: #cb2431;
+        }
+        
+        .code-block .hunk {
+          color: #0366d6;
+          background-color: #f1f8ff;
+        }
+        
+        .code-block .header {
+          color: #6f42c1;
+          font-weight: bold;
+        }
+        </style>
+        
+        <script>
+        // 对补丁内容应用简单的语法高亮
+        document.addEventListener('DOMContentLoaded', function() {
+          const codeBlocks = document.querySelectorAll('.code-block');
+          codeBlocks.forEach(function(block) {
+            let html = block.innerHTML;
+            
+            // 替换添加的行
+            html = html.replace(/^(\+[^+].*)/gm, '<span class="add">$1</span>');
+            
+            // 替换删除的行
+            html = html.replace(/^(-[^-].*)/gm, '<span class="remove">$1</span>');
+            
+            // 替换区块头
+            html = html.replace(/^(@@.*@@)/gm, '<span class="hunk">$1</span>');
+            
+            // 替换diff头 - 修复无效转义序列
+            html = html.replace(/^(diff --git.*|index.*|---.*|\+\+\+.*)/gm, '<span class="header">$1</span>');
+            
+            block.innerHTML = html;
+          });
+        });
+        </script>
+        
+    
+  </div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+From 4c2c692c5a4fdc23147940f589f6c64f99a46682 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 12 Jun 2025 16:01:08 +0800
+Subject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A3?=
+ =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ kernel/events/uprobes.c |  3 +++
+ kernel/fork.c           | 17 ++++++++++++++---
+ 2 files changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/events/uprobes.c b/kernel/events/uprobes.c
+index 4b52cb2ae6d6..fa3573827e56 100644
+--- a/kernel/events/uprobes.c
++++ b/kernel/events/uprobes.c
+@@ -1092,6 +1092,9 @@ register_for_each_vma(struct uprobe *uprobe, struct uprobe_consumer *new)
+ 		 * returns NULL in find_active_uprobe_rcu().
+ 		 */
+ 		mmap_write_lock(mm);
++		if (check_stable_address_space(mm))
++			goto unlock;
++
+ 		vma = find_vma(mm, info->vaddr);
+ 		if (!vma || !valid_vma(vma, is_register) ||
+ 		    file_inode(vma->vm_file) != uprobe->inode)
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 22f43721d031..43d2fb96d789 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -758,7 +758,8 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
+ 		mt_set_in_rcu(vmi.mas.tree);
+ 		ksm_fork(mm, oldmm);
+ 		khugepaged_fork(mm, oldmm);
+-	} else if (mpnt) {
++	} else {
++
+ 		/*
+ 		 * The entire maple tree has already been duplicated. If the
+ 		 * mmap duplication fails, mark the failure point with
+@@ -766,8 +767,18 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
+ 		 * stop releasing VMAs that have not been duplicated after this
+ 		 * point.
+ 		 */
+-		mas_set_range(&vmi.mas, mpnt->vm_start, mpnt->vm_end - 1);
+-		mas_store(&vmi.mas, XA_ZERO_ENTRY);
++		if (mpnt) {
++			mas_set_range(&vmi.mas, mpnt->vm_start, mpnt->vm_end - 1);
++			mas_store(&vmi.mas, XA_ZERO_ENTRY);
++			/* Avoid OOM iterating a broken tree */
++			set_bit(MMF_OOM_SKIP, &mm->flags);
++		}
++		/*
++		 * The mm_struct is going to exit, but the locks will be dropped
++		 * first.  Set the mm_struct as unstable is advisable as it is
++		 * not fully initialised.
++		 */
++		set_bit(MMF_UNSTABLE, &mm->flags);
+ 	}
+ out:
+ 	mmap_write_unlock(mm);
+-- 
+2.25.1
+

@@ -1,0 +1,30 @@
+A. Commit message:
+Avoid backtracking in Token#raw_params
+
+B. Change summary:
+Updated the `raw_params` method to prevent potential backtracking issues by changing the splitting logic from using a regular expression with optional whitespace (`WHITESPACED_AUTHN_PAIR_DELIMITERS`) to directly using `AUTHN_PAIR_DELIMITERS` and mapping the results to stripped strings. This ensures more predictable parsing behavior.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+diff --git a/actionpack/lib/action_controller/metal/http_authentication.rb b/actionpack/lib/action_controller/metal/http_authentication.rb
+index 017e7a3a2f..bb60ffdeba 100644
+--- a/actionpack/lib/action_controller/metal/http_authentication.rb
++++ b/actionpack/lib/action_controller/metal/http_authentication.rb
+@@ -513,14 +513,11 @@ def rewrite_param_values(array_params)
+         array_params.each { |param| (param[1] || +"").gsub! %r/^"|"$/, "" }
+       end
+ 
+-      WHITESPACED_AUTHN_PAIR_DELIMITERS = /\s*#{AUTHN_PAIR_DELIMITERS}\s*/
+-      private_constant :WHITESPACED_AUTHN_PAIR_DELIMITERS
+-
+       # This method takes an authorization body and splits up the key-value pairs by
+       # the standardized `:`, `;`, or `\t` delimiters defined in
+       # `AUTHN_PAIR_DELIMITERS`.
+       def raw_params(auth)
+-        _raw_params = auth.sub(TOKEN_REGEX, "").split(WHITESPACED_AUTHN_PAIR_DELIMITERS)
++        _raw_params = auth.sub(TOKEN_REGEX, "").split(AUTHN_PAIR_DELIMITERS).map(&:strip)
+         _raw_params.reject!(&:empty?)
+ 
+         if !_raw_params.first&.start_with?(TOKEN_KEY)

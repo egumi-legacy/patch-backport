@@ -1,0 +1,77 @@
+2025-06-12 03:58:15.026 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_035815.log
+2025-06-12 03:58:15.026 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-12 03:58:15.026 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-stable/commit/d6e13e19063db24f94b690159d0633aaf72a0f03.patch
+2025-06-12 03:58:15.027 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-12 03:58:15.028 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-12 03:58:15.029 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-12 03:58:15.029 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-12 03:58:15.030 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.12-rc7']
+2025-06-12 03:58:15.030 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.12-rc7
+2025-06-12 03:58:15.031 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: d6e13e19063db24f94b690159d0633aaf72a0f03.patch
+2025-06-12 03:58:15.031 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-12 03:58:15.032 | INFO     | modules.direct_apply:_download_patch:245 - 上游补丁文件不存在，下载补丁
+2025-06-12 03:58:15.033 | INFO     | patch_utils:_download_github_patch:232 - GitHub patch URL parts: ['https:', '', 'github.com', 'linux', 'kernel-stable', 'commit', 'd6e13e19063db24f94b690159d0633aaf72a0f03.patch']
+2025-06-12 03:58:15.034 | INFO     | patch_utils:_download_github_patch:240 - 使用GitHub Commit API下载patch: https://api.github.com/repos/linux/kernel-stable/commits/d6e13e19063db24f94b690159d0633aaf72a0f03
+2025-06-12 03:58:16.909 | ERROR    | patch_utils:_download_github_patch:260 - 使用GitHub API下载patch失败: 404 Client Error: Not Found for url: https://api.github.com/repos/linux/kernel-stable/commits/d6e13e19063db24f94b690159d0633aaf72a0f03
+2025-06-12 03:58:16.909 | INFO     | patch_utils:_download_direct_patch:396 - 直接下载补丁文件: https://github.com/linux/kernel-stable/commit/d6e13e19063db24f94b690159d0633aaf72a0f03.patch
+2025-06-12 03:58:22.536 | ERROR    | patch_utils:_download_direct_patch:427 - 直接下载patch失败: Exceeded 30 redirects.
+2025-06-12 03:58:22.537 | WARNING  | modules.direct_apply:_download_patch:258 - 补丁下载出错: 无法下载补丁: https://github.com/linux/kernel-stable/commit/d6e13e19063db24f94b690159d0633aaf72a0f03.patch - Exceeded 30 redirects.
+2025-06-12 03:58:22.538 | INFO     | modules.direct_apply:_download_patch:261 - 尝试从本地仓库生成补丁
+2025-06-12 03:58:22.539 | INFO     | patch_utils:generate_patch_from_git:452 - 尝试从本地仓库生成补丁: d6e13e19063db24f94b690159d0633aaf72a0f03.patch
+2025-06-12 03:58:22.547 | INFO     | patch_utils:generate_patch_from_git:483 - 成功从本地仓库生成补丁: workspace/linux/kernel-stable/d6e13e/patches/upstream_d6e13e.patch
+2025-06-12 03:58:22.548 | INFO     | modules.direct_apply:_download_patch:269 - 成功从本地仓库生成补丁: workspace/linux/kernel-stable/d6e13e/patches/upstream_d6e13e.patch
+2025-06-12 03:58:22.548 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-12 03:58:22.548 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/d6e13e/patches/upstream_d6e13e.patch
+2025-06-12 03:58:22.722 | INFO     | modules.direct_apply:_prepare_test_branch:375 - 创建测试分支: test_patch_v6.12-rc7
+2025-06-12 03:58:23.479 | INFO     | modules.direct_apply:_apply_patch:311 - 补丁应用成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/d6e13e/patches/upstream_d6e13e.patch
+2025-06-12 03:58:23.526 | INFO     | modules.direct_apply:_move_to_cache:131 - 源目录: workspace/linux/kernel-stable/d6e13e
+2025-06-12 03:58:23.526 | INFO     | modules.direct_apply:_move_to_cache:139 - 目标目录: workspace/linux/kernel-stable_cache
+2025-06-12 03:58:23.527 | INFO     | modules.direct_apply:_move_to_cache:150 - 已将成功的commit文件夹移动到缓存: workspace/linux/kernel-stable_cache
+2025-06-12 03:58:23.682 | INFO     | modules.direct_apply:_cleanup_test_branch:467 - 清理测试分支: test_patch_v6.12-rc7
+2025-06-12 03:58:23.683 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-stable/d6e13e/evaluations/direct_apply/metrics_d6e13e_20250612_035823.json
+2025-06-12 03:58:23.683 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: ChunkAnalyzerModule
+2025-06-12 03:58:23.684 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: LLMAdapterModule
+2025-06-12 03:58:23.684 | INFO     | core.adaptation_pipeline:process_patch:94 - 直接应用成功，跳过模块: PatchAdapterModule
+2025-06-12 03:58:23.684 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 8.65秒
+2025-06-12 03:58:23.685 | INFO     | __main__:_merge_patches:1087 - 开始合并补丁...
+2025-06-12 03:58:23.685 | WARNING  | __main__:_merge_patches:1095 - 没有找到任何可合并的补丁结果
+2025-06-12 03:58:23.686 | ERROR    | __main__:_save_results:758 - 复制补丁文件时出错: [Errno 2] No such file or directory: '/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/d6e13e/patches/upstream_d6e13e.patch'
+2025-06-12 03:58:23.687 | INFO     | __main__:_save_results:889 - 结果已保存到: results/kernel-stable_v6.12-rc7_d6e13e_20250612_035823/result.json
+2025-06-12 03:58:23.687 | INFO     | __main__:_print_summary:931 - context.patch_adapter_result: []
+2025-06-12 03:58:23.687 | INFO     | __main__:_print_summary:954 - ==================================================
+2025-06-12 03:58:23.688 | INFO     | __main__:_print_summary:955 - 处理摘要 - 提交: d6e13e
+2025-06-12 03:58:23.688 | INFO     | __main__:_print_summary:956 - 适配状态: 无需适配 (直接应用成功) (方法: direct_apply)
+2025-06-12 03:58:23.688 | INFO     | __main__:_print_summary:971 - 块分析统计:
+2025-06-12 03:58:23.688 | INFO     | __main__:_print_summary:972 - - 总块数: 0
+2025-06-12 03:58:23.689 | INFO     | __main__:_print_summary:973 - - 冲突块数: 0
+2025-06-12 03:58:23.689 | INFO     | __main__:_print_summary:974 - - 成功适配块数: 0
+2025-06-12 03:58:23.689 | INFO     | __main__:_print_summary:975 - - 适配失败块数: 0
+2025-06-12 03:58:23.689 | INFO     | __main__:_print_summary:976 - - 编译失败块数: 0
+2025-06-12 03:58:23.690 | INFO     | __main__:_print_summary:980 - 总执行时间: 8.65秒
+2025-06-12 03:58:23.690 | INFO     | __main__:_print_summary:985 - ==================================================
+2025-06-12 03:58:23.690 | INFO     | __main__:run:335 - 处理完成
+2025-06-12 03:58:23.691 | INFO     | __main__:process_multiple_commits:1941 - 
+============================================================
+2025-06-12 03:58:23.691 | INFO     | __main__:process_multiple_commits:1942 - 完成处理 3 个commit
+2025-06-12 03:58:23.691 | INFO     | __main__:process_multiple_commits:1943 - 总耗时: 27.58秒
+2025-06-12 03:58:23.692 | INFO     | __main__:process_multiple_commits:1944 - 成功数量: 3/3 (100.00%)
+2025-06-12 03:58:23.692 | INFO     | __main__:process_multiple_commits:1945 - ============================================================
+2025-06-12 03:58:23.693 | INFO     | __main__:_print_mode1_statistics:1572 - ============================================================
+2025-06-12 03:58:23.693 | INFO     | __main__:_print_mode1_statistics:1573 - 模式1处理统计 - 多个commit
+2025-06-12 03:58:23.693 | INFO     | __main__:_print_mode1_statistics:1574 - ============================================================
+2025-06-12 03:58:23.694 | INFO     | __main__:_print_mode1_statistics:1575 - 总提交数: 3
+2025-06-12 03:58:23.694 | INFO     | __main__:_print_mode1_statistics:1576 - 成功处理数: 3
+2025-06-12 03:58:23.694 | INFO     | __main__:_print_mode1_statistics:1577 - 直接应用成功: 3
+2025-06-12 03:58:23.694 | INFO     | __main__:_print_mode1_statistics:1578 - 需要适配数量: 0
+2025-06-12 03:58:23.695 | INFO     | __main__:_print_mode1_statistics:1579 - 适配成功数量: 0
+2025-06-12 03:58:23.695 | INFO     | __main__:_print_mode1_statistics:1580 - 适配失败数量: 0
+2025-06-12 03:58:23.695 | INFO     | __main__:_print_mode1_statistics:1581 - 总体成功率: 100.00%
+2025-06-12 03:58:23.695 | INFO     | __main__:_print_mode1_statistics:1582 - 适配成功率: 0.00%
+2025-06-12 03:58:23.696 | INFO     | __main__:_print_mode1_statistics:1586 - 
+提交详情:
+2025-06-12 03:58:23.696 | INFO     | __main__:_print_mode1_statistics:1591 -   - abc7b3: 成功 (方法: direct_apply, 耗时: 10.78秒)
+2025-06-12 03:58:23.696 | INFO     | __main__:_print_mode1_statistics:1591 -   - 1b8b67: 成功 (方法: direct_apply, 耗时: 8.01秒)
+2025-06-12 03:58:23.696 | INFO     | __main__:_print_mode1_statistics:1591 -   - d6e13e: 成功 (方法: direct_apply, 耗时: 8.65秒)
+2025-06-12 03:58:23.696 | INFO     | __main__:_print_mode1_statistics:1598 - ============================================================
+2025-06-12 03:58:23.697 | INFO     | __main__:_print_mode1_statistics:1633 - 统计结果已保存到: statistics/kernel-stable_mode1_multi_commits_stats_20250612_035823.json
+2025-06-12 03:58:23.700 | INFO     | __main__:clean_config:2107 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

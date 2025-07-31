@@ -1,0 +1,604 @@
+2025-06-12 17:23:35.407 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250612_172335.log
+2025-06-12 17:23:35.407 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-12 17:23:35.407 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/linux/kernel-torvalds/commit/743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch
+2025-06-12 17:23:35.408 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-12 17:23:35.409 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-12 17:23:35.411 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-12 17:23:35.412 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-12 17:23:35.412 | INFO     | __main__:_process_mode1:358 - 目标版本: ['v6.12-rc7']
+2025-06-12 17:23:35.412 | INFO     | __main__:_process_mode1:365 - 开始处理版本: v6.12-rc7
+2025-06-12 17:23:35.413 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: 743eb6c68d3534e01e73d316ddcaa7334c0e29d3.patch
+2025-06-12 17:23:35.413 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-12 17:23:35.413 | INFO     | modules.direct_apply:_download_patch:248 - 上游补丁文件已存在: workspace/linux/kernel-torvalds/743eb6/patches/upstream_743eb6.patch
+2025-06-12 17:23:35.414 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-12 17:23:35.414 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/patches/upstream_743eb6.patch
+2025-06-12 17:23:35.610 | INFO     | modules.direct_apply:_prepare_test_branch:400 - 创建测试分支: test_patch_v6.12-rc7
+2025-06-12 17:23:36.248 | ERROR    | modules.direct_apply:_apply_patch:340 - 补丁应用失败: error: patch failed: sound/soc/sof/sof-audio.c:46
+error: sound/soc/sof/sof-audio.c: patch does not apply
+error: patch failed: sound/soc/sof/topology.c:2356
+error: sound/soc/sof/topology.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-12 17:23:36.820 | INFO     | modules.direct_apply:_cleanup_test_branch:492 - 清理测试分支: test_patch_v6.12-rc7
+2025-06-12 17:23:36.821 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-12 17:23:36.821 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/patches/upstream_743eb6.patch
+2025-06-12 17:23:36.822 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:178 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/patches/upstream_743eb6.patch
+2025-06-12 17:23:36.822 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:183 - 补丁文件包含 104 行内容
+2025-06-12 17:23:36.823 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: sound/soc/sof/sof-audio.c
+2025-06-12 17:23:36.823 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: sound/soc/sof/sof-audio.c @@ -46,7 +46,6 @@ (modification)
+2025-06-12 17:23:36.824 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: sound/soc/sof/sof-audio.c @@ -59,8 +58,6 @@ (modification)
+2025-06-12 17:23:36.824 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: sound/soc/sof/sof-audio.c @@ -109,8 +106,9 @@ (modification)
+2025-06-12 17:23:36.824 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: sound/soc/sof/topology.c
+2025-06-12 17:23:36.825 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: sound/soc/sof/topology.c @@ -2356,23 +2356,29 @@ (modification)
+2025-06-12 17:23:36.825 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: sound/soc/sof/topology.c @@ -2396,6 +2402,7 @@ (modification)
+2025-06-12 17:23:36.825 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:269 - 补丁分解完成，共找到 5 个修改块
+2025-06-12 17:23:36.825 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 5 个块
+2025-06-12 17:23:36.826 | INFO     | modules.chunk_analyzer:_create_chunk_patches:288 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/patches/upstream_743eb6.patch
+2025-06-12 17:23:36.826 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_001_20250612_172336.patch (修改文件: sound/soc/sof/sof-audio.c)
+2025-06-12 17:23:36.827 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_002_20250612_172336.patch (修改文件: sound/soc/sof/sof-audio.c)
+2025-06-12 17:23:36.827 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_003_20250612_172336.patch (修改文件: sound/soc/sof/sof-audio.c)
+2025-06-12 17:23:36.827 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_004_20250612_172336.patch (修改文件: sound/soc/sof/topology.c)
+2025-06-12 17:23:36.828 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_005_20250612_172336.patch (修改文件: sound/soc/sof/topology.c)
+2025-06-12 17:23:36.828 | INFO     | modules.chunk_analyzer:execute:60 - 已为 5 个块创建单独的补丁文件
+2025-06-12 17:23:36.828 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-12 17:23:36.828 | INFO     | modules.chunk_analyzer:execute:66 - From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/sof-audio.c b/sound/soc/sof/sof-audio.c
+index 9163975c9c3f..e693dcb475e4 100644
+--- a/sound/soc/sof/sof-audio.c
++++ b/sound/soc/sof/sof-audio.c
+@@ -46,7 +46,6 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
+ {
+ 	const struct sof_ipc_tplg_ops *tplg_ops = sof_ipc_get_ops(sdev, tplg);
+ 	struct snd_sof_pipeline *spipe = swidget->spipe;
+-	struct snd_sof_widget *pipe_widget;
+ 	int err = 0;
+ 	int ret;
+ 
+
+2025-06-12 17:23:36.829 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-12 17:23:36.829 | INFO     | modules.chunk_analyzer:execute:66 - From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/sof-audio.c b/sound/soc/sof/sof-audio.c
+index 9163975c9c3f..e693dcb475e4 100644
+--- a/sound/soc/sof/sof-audio.c
++++ b/sound/soc/sof/sof-audio.c
+@@ -59,8 +58,6 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
+ 	if (--swidget->use_count)
+ 		return 0;
+ 
+-	pipe_widget = swidget->spipe->pipe_widget;
+-
+ 	/* reset route setup status for all routes that contain this widget */
+ 	sof_reset_route_setup_status(sdev, swidget);
+ 
+
+2025-06-12 17:23:36.829 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-12 17:23:36.829 | INFO     | modules.chunk_analyzer:execute:66 - From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/sof-audio.c b/sound/soc/sof/sof-audio.c
+index 9163975c9c3f..e693dcb475e4 100644
+--- a/sound/soc/sof/sof-audio.c
++++ b/sound/soc/sof/sof-audio.c
+@@ -109,8 +106,9 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
+ 	 * free the scheduler widget (same as pipe_widget) associated with the current swidget.
+ 	 * skip for static pipelines
+ 	 */
+-	if (swidget->dynamic_pipeline_widget && swidget->id != snd_soc_dapm_scheduler) {
+-		ret = sof_widget_free_unlocked(sdev, pipe_widget);
++	if (swidget->spipe && swidget->dynamic_pipeline_widget &&
++	    swidget->id != snd_soc_dapm_scheduler) {
++		ret = sof_widget_free_unlocked(sdev, swidget->spipe->pipe_widget);
+ 		if (ret < 0 && !err)
+ 			err = ret;
+ 	}
+
+2025-06-12 17:23:36.830 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-06-12 17:23:36.830 | INFO     | modules.chunk_analyzer:execute:66 - From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index 25fb0d1443b6..915c2e88e32b 100644
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2356,23 +2356,29 @@ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,
+ 	if (WIDGET_IS_DAI(w->id)) {
+ 		struct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);
+ 		struct snd_sof_widget *swidget;
+-		struct snd_sof_dai dai;
++		struct snd_sof_dai *sdai;
+ 		int ret;
+ 
+ 		swidget = kzalloc(sizeof(*swidget), GFP_KERNEL);
+ 		if (!swidget)
+ 			return -ENOMEM;
+ 
+-		memset(&dai, 0, sizeof(dai));
++		sdai = kzalloc(sizeof(*sdai), GFP_KERNEL);
++		if (!sdai) {
++			kfree(swidget);
++			return -ENOMEM;
++		}
+ 
+-		ret = sof_connect_dai_widget(scomp, w, tw, &dai);
++		ret = sof_connect_dai_widget(scomp, w, tw, sdai);
+ 		if (ret) {
+ 			kfree(swidget);
++			kfree(sdai);
+ 			return ret;
+ 		}
+ 
+ 		swidget->scomp = scomp;
+ 		swidget->widget = w;
++		swidget->private = sdai;
+ 		mutex_init(&swidget->setup_mutex);
+ 		w->dobj.private = swidget;
+ 		list_add(&swidget->list, &sdev->widget_list);
+
+2025-06-12 17:23:36.830 | INFO     | modules.chunk_analyzer:execute:62 - 第 5 个补丁文件为：
+2025-06-12 17:23:36.830 | INFO     | modules.chunk_analyzer:execute:66 - From 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Date: Tue, 13 Feb 2024 12:12:41 +0200
+Subject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI
+ widget->private
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For dspless mode, we need to allocate and store an 'sdai'
+structure. The existing code allocate the data on the stack and does
+not set the widget->private pointer.
+
+This minor change should not have any impact on existing DAIs, even
+when the DSP is used.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index 25fb0d1443b6..915c2e88e32b 100644
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2396,6 +2402,7 @@ static int sof_dspless_widget_unload(struct snd_soc_component *scomp,
+ 
+ 		/* remove and free swidget object */
+ 		list_del(&swidget->list);
++		kfree(swidget->private);
+ 		kfree(swidget);
+ 	}
+ 
+-- 
+2.25.1
+
+
+2025-06-12 17:23:36.831 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:357 - 切换到目标版本: v6.12-rc7
+2025-06-12 17:23:36.988 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:369 - 创建测试分支: test_chunk_apply_4b71665e
+2025-06-12 17:23:37.488 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 1/5 个块补丁: chunk_001_20250612_172336.patch
+2025-06-12 17:23:37.502 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:416 - 块补丁 chunk_001_20250612_172336.patch 可以反向应用，可能已经被应用过
+2025-06-12 17:23:37.503 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 2/5 个块补丁: chunk_002_20250612_172336.patch
+2025-06-12 17:23:37.515 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:416 - 块补丁 chunk_002_20250612_172336.patch 可以反向应用，可能已经被应用过
+2025-06-12 17:23:37.515 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 3/5 个块补丁: chunk_003_20250612_172336.patch
+2025-06-12 17:23:37.524 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:416 - 块补丁 chunk_003_20250612_172336.patch 可以反向应用，可能已经被应用过
+2025-06-12 17:23:37.524 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 4/5 个块补丁: chunk_004_20250612_172336.patch
+2025-06-12 17:23:37.533 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:420 - 块补丁 chunk_004_20250612_172336.patch 应用失败: error: patch failed: sound/soc/sof/topology.c:2356
+error: sound/soc/sof/topology.c: patch does not apply
+
+2025-06-12 17:23:37.534 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 5/5 个块补丁: chunk_005_20250612_172336.patch
+2025-06-12 17:23:37.544 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:416 - 块补丁 chunk_005_20250612_172336.patch 可以反向应用，可能已经被应用过
+2025-06-12 17:23:37.545 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:430 - 块补丁应用统计信息:
+2025-06-12 17:23:37.545 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:431 - - 总块数: 5
+2025-06-12 17:23:37.545 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:432 - - 无冲突块数: 4
+2025-06-12 17:23:37.546 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:433 - - 适配失败块数: 1
+2025-06-12 17:23:37.546 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:438 - 切换回目标版本: v6.12-rc7
+2025-06-12 17:23:37.720 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:446 - 删除测试分支: test_chunk_apply_4b71665e
+2025-06-12 17:23:37.726 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 4 个块补丁，总共 5 个
+2025-06-12 17:23:37.728 | INFO     | modules.chunk_analyzer:_create_remaining_patch:527 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/remaining_chunks_20250612_172337.patch
+2025-06-12 17:23:37.728 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/remaining_chunks_20250612_172337.patch
+2025-06-12 17:23:37.729 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/remaining_chunks_20250612_172337.patch
+2025-06-12 17:23:37.729 | INFO     | modules.chunk_analyzer:execute:117 - 补丁分块分析完成，耗时: 0.91秒
+2025-06-12 17:23:37.730 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/metrics_743eb6_20250612_172337.json
+2025-06-12 17:23:37.732 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:917 - 找到当前评估会话目录: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337
+2025-06-12 17:23:37.732 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337
+2025-06-12 17:23:37.732 | WARNING  | modules.chunk_analyzer:_get_patch_content:1207 - 补丁目录不存在: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337/patches
+2025-06-12 17:23:37.733 | INFO     | modules.chunk_analyzer:_get_patch_content:1212 - 成功创建补丁目录: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337/patches
+2025-06-12 17:23:37.734 | INFO     | modules.chunk_analyzer:_get_patch_content:1230 - 已将原始补丁内容保存到: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337/patches/original_patch.txt
+2025-06-12 17:23:37.734 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337
+2025-06-12 17:23:37.735 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337/patches/applied_chunk_1.txt
+2025-06-12 17:23:37.736 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337/patches/applied_chunk_2.txt
+2025-06-12 17:23:37.737 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337/patches/applied_chunk_3.txt
+2025-06-12 17:23:37.738 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337/patches/applied_chunk_4.txt
+2025-06-12 17:23:37.739 | INFO     | modules.chunk_analyzer:_get_patch_content:1344 - 已将合并的补丁块内容保存到: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337/patches/all_applied_chunks.txt
+2025-06-12 17:23:37.740 | INFO     | modules.chunk_analyzer:_get_patch_content:1348 - 从context获取应用成功的补丁内容
+2025-06-12 17:23:37.740 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337
+2025-06-12 17:23:37.743 | INFO     | modules.chunk_analyzer:_get_patch_content:1399 - 已将剩余补丁内容保存到: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337/patches/remaining_patch.txt
+2025-06-12 17:23:37.743 | INFO     | modules.chunk_analyzer:_get_patch_content:1403 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/remaining_chunks_20250612_172337.patch
+2025-06-12 17:23:37.744 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/linux/kernel-torvalds/743eb6/evaluations/chunk_analyzer/details_743eb6_20250612_172337
+2025-06-12 17:23:37.750 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-12 17:23:37.750 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/patches/upstream_743eb6.patch
+2025-06-12 17:23:37.750 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/patches/upstream_743eb6.patch
+2025-06-12 17:23:37.751 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-12 17:23:37.751 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-12 17:23:37.843 | INFO     | llm_assistant:run:278 - +++++++++++++++++++++++++++++++++++
+2025-06-12 17:24:15.383 | INFO     | llm_assistant:run:298 - ---responses in run: [{'prompt': [{'role': 'system', 'content': 'You are a senior software engineer who is best in the world at fixing vulnerabilities and patch porting between versions.\nUsers will give you 1. a patch based on a newer version 2. the diff info between the newer version and and older version. \nAnd you will generate a fix patch to the older version in the form of git diff based on the provided INSTRUCTION.\nINSTRUCTION:\nOnly reterun the final result after patch and diff information are entered. When all the information is entered, it will be identified with \u200d\u200d```===end===\u200d\u200d```\nOnly respond with the patch info, do not add any comments or change the indentation.\nThe patch should have no errors, it should compile and user should be able to use the fixed code as a direct replacement of the vulnerable code. The code should not introduce any new dependencies or use API calls that are not present in the code.\nIf you can generate a backport patch for the patch, do a brief change impact analysis to assess how these modifications might affect the overall system, considering both immediate and potential long-term compatibility issues.\nLow: Code diff will be applied to the code base and automatically merged without review.\nMedium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.\nHigh: Code diff will be offered as a suggestion to the developer to review and then apply to the code base. There are likely other changes that need to be done by the developer before the change can be implemented.\nPlease provide a response only in the following format:\n\nA. Commit message:\n<brief summary of the diff>\n\nB. Change summary:\n<description of the changes made in the diff>\n\nC. Compatibility Risk:\n<Low, Medium, High>\n\nD. Fixed Code:\n<original patch info with now backported>\n\n'}, {'role': 'system', 'content': "1. a patch based on a newer version: \nFrom 743eb6c68d3534e01e73d316ddcaa7334c0e29d3 Mon Sep 17 00:00:00 2001\nFrom: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>\nDate: Tue, 13 Feb 2024 12:12:41 +0200\nSubject: [PATCH] ASoC: SOF: topology: dynamically allocate and store DAI\n widget->private\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\nFor dspless mode, we need to allocate and store an 'sdai'\nstructure. The existing code allocate the data on the stack and does\nnot set the widget->private pointer.\n\nThis minor change should not have any impact on existing DAIs, even\nwhen the DSP is used.\n\nSigned-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>\nReviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>\nReviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>\nSigned-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>\nLink: https://msgid.link/r/20240213101247.28887-10-peter.ujfalusi@linux.intel.com\nSigned-off-by: Mark Brown <broonie@kernel.org>\n\ndiff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c\nindex 25fb0d1443b6..915c2e88e32b 100644\n--- a/sound/soc/sof/topology.c\n+++ b/sound/soc/sof/topology.c\n@@ -2356,23 +2356,29 @@ static int sof_dspless_widget_ready(struct snd_soc_component *scomp, int index,\n \tif (WIDGET_IS_DAI(w->id)) {\n \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n \t\tstruct snd_sof_widget *swidget;\n-\t\tstruct snd_sof_dai dai;\n+\t\tstruct snd_sof_dai *sdai;\n \t\tint ret;\n \n \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n \t\tif (!swidget)\n \t\t\treturn -ENOMEM;\n \n-\t\tmemset(&dai, 0, sizeof(dai));\n+\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n+\t\tif (!sdai) {\n+\t\t\tkfree(swidget);\n+\t\t\treturn -ENOMEM;\n+\t\t}\n \n-\t\tret = sof_connect_dai_widget(scomp, w, tw, &dai);\n+\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n \t\tif (ret) {\n \t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n \t\t\treturn ret;\n \t\t}\n \n \t\tswidget->scomp = scomp;\n \t\tswidget->widget = w;\n+\t\tswidget->private = sdai;\n \t\tmutex_init(&swidget->setup_mutex);\n \t\tw->dobj.private = swidget;\n \t\tlist_add(&swidget->list, &sdev->widget_list);\n"}, {'role': 'system', 'content': '2. the diff info between the newer version and and older version: \nmodified file: sound/soc/sof/sof-audio.c\n--- workspace/linux/kernel-torvalds/743eb6/newer/sound/soc/sof/sof-audio.c\n+++ workspace/linux/kernel-torvalds/743eb6/v6.12-rc7/sound/soc/sof/sof-audio.c\n@@ -3,7 +3,7 @@\n  // This file is provided under a dual BSD/GPLv2 license.  When using or\n  // redistributing this file, you may do so under either license.\n  //\n -// Copyright(c) 2019 Intel Corporation. All rights reserved.\n +// Copyright(c) 2019 Intel Corporation\n  //\n  // Author: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>\n  //\n@@ -46,7 +46,6 @@\n  {\n  \tconst struct sof_ipc_tplg_ops *tplg_ops = sof_ipc_get_ops(sdev, tplg);\n  \tstruct snd_sof_pipeline *spipe = swidget->spipe;\n -\tstruct snd_sof_widget *pipe_widget;\n  \tint err = 0;\n  \tint ret;\n  \n@@ -58,8 +57,6 @@\n  \tif (--swidget->use_count)\n  \t\treturn 0;\n -\n -\tpipe_widget = swidget->spipe->pipe_widget;\n  \n  \tsof_reset_route_setup_status(sdev, swidget);\n@@ -109,8 +106,9 @@\n  \t * free the scheduler widget (same as pipe_widget) associated with the current swidget.\n  \t * skip for static pipelines\n  \t */\n -\tif (swidget->dynamic_pipeline_widget && swidget->id != snd_soc_dapm_scheduler) {\n -\t\tret = sof_widget_free_unlocked(sdev, pipe_widget);\n +\tif (swidget->spipe && swidget->dynamic_pipeline_widget &&\n +\t    swidget->id != snd_soc_dapm_scheduler) {\n +\t\tret = sof_widget_free_unlocked(sdev, swidget->spipe->pipe_widget);\n  \t\tif (ret < 0 && !err)\n  \t\t\terr = ret;\n  \t}\n@@ -487,7 +485,7 @@\n  \t\t\tif (ret < 0) {\n  \t\t\t\tif (widget_ops[widget->id].ipc_unprepare &&\n -\t\t\t\t    swidget && swidget->prepared) {\n +\t\t\t\t    swidget && swidget->prepared && swidget->use_count == 0) {\n  \t\t\t\t\twidget_ops[widget->id].ipc_unprepare(swidget);\n  \t\t\t\t\tswidget->prepared = false;\n  \t\t\t\t}\n@@ -836,35 +834,48 @@\n  {\n  \tconst struct sof_ipc_pcm_ops *pcm_ops = sof_ipc_get_ops(sdev, pcm);\n  \tint ret;\n +\tint err = 0;\n  \n  \tif (spcm->prepared[substream->stream]) {\n  \t\tif (pcm_ops && pcm_ops->platform_stop_during_hw_free)\n  \t\t\tsnd_sof_pcm_platform_trigger(sdev, substream, SNDRV_PCM_TRIGGER_STOP);\n  \n -\t\t/* Send PCM_FREE IPC to reset pipeline */\n +\t\t/* free PCM in the DSP */\n  \t\tif (pcm_ops && pcm_ops->hw_free) {\n  \t\t\tret = pcm_ops->hw_free(sdev->component, substream);\n -\t\t\tif (ret < 0)\n -\t\t\t\treturn ret;\n +\t\t\tif (ret < 0) {\n +\t\t\t\tdev_err(sdev->dev, "%s: pcm_ops hw_free failed %d\\n",\n +\t\t\t\t\t__func__, ret);\n +\t\t\t\terr = ret;\n +\t\t\t}\n  \t\t}\n  \n  \t\tspcm->prepared[substream->stream] = false;\n +\t\tspcm->pending_stop[substream->stream] = false;\n  \t}\n  \n  \tret = snd_sof_pcm_platform_hw_free(sdev, substream);\n -\tif (ret < 0)\n -\t\treturn ret;\n +\tif (ret < 0) {\n +\t\tdev_err(sdev->dev, "%s: platform hw free failed %d\\n",\n +\t\t\t__func__, ret);\n +\t\tif (!err)\n +\t\t\terr = ret;\n +\t}\n  \n  \tif (free_widget_list) {\n  \t\tret = sof_widget_list_free(sdev, spcm, dir);\n -\t\tif (ret < 0)\n -\t\t\tdev_err(sdev->dev, "failed to free widgets during suspend\\n");\n -\t}\n -\n -\treturn ret;\n +\t\tif (ret < 0) {\n +\t\t\tdev_err(sdev->dev, "%s: sof_widget_list_free failed %d\\n",\n +\t\t\t\t__func__, ret);\n +\t\t\tif (!err)\n +\t\t\t\terr = ret;\n +\t\t}\n +\t}\n +\n +\treturn err;\n  }\n  \n  int sof_dai_get_mclk(struct snd_soc_pcm_runtime *rtd)\n  {\n -\treturn sof_dai_get_clk(rtd, SOF_DAI_CLK_INTEL_SSP_MCLK);\n +\treturn sof_dai_get_param(rtd, SOF_DAI_PARAM_INTEL_SSP_MCLK);\n  }\n  EXPORT_SYMBOL(sof_dai_get_mclk);\n  \n@@ -1002,6 +1013,16 @@\n   */\n  int sof_dai_get_bclk(struct snd_soc_pcm_runtime *rtd)\n  {\n -\treturn sof_dai_get_clk(rtd, SOF_DAI_CLK_INTEL_SSP_BCLK);\n +\treturn sof_dai_get_param(rtd, SOF_DAI_PARAM_INTEL_SSP_BCLK);\n  }\n  EXPORT_SYMBOL(sof_dai_get_bclk);\n +\n +/*\n + * Helper to get SSP TDM slot number from a pcm_runtime.\n + * Return 0 if not exist.\n + */\n +int sof_dai_get_tdm_slots(struct snd_soc_pcm_runtime *rtd)\n +{\n +\treturn sof_dai_get_param(rtd, SOF_DAI_PARAM_INTEL_SSP_TDM_SLOTS);\n +}\n +EXPORT_SYMBOL(sof_dai_get_tdm_slots);\n\n""""""\nmodified file: sound/soc/sof/topology.c\n--- workspace/linux/kernel-torvalds/743eb6/newer/sound/soc/sof/topology.c\n+++ workspace/linux/kernel-torvalds/743eb6/v6.12-rc7/sound/soc/sof/topology.c\n@@ -3,7 +3,7 @@\n  // This file is provided under a dual BSD/GPLv2 license.  When using or\n  // redistributing this file, you may do so under either license.\n  //\n -// Copyright(c) 2018 Intel Corporation. All rights reserved.\n +// Copyright(c) 2018 Intel Corporation\n  //\n  // Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>\n  //\n@@ -1349,7 +1349,7 @@\n  \n  \tif (pin_binding[0]) {\n -\t\tpb = kmemdup(pin_binding, num_pins * sizeof(char *), GFP_KERNEL);\n +\t\tpb = kmemdup_array(pin_binding, num_pins, sizeof(char *), GFP_KERNEL);\n  \t\tif (!pb) {\n  \t\t\tret = -ENOMEM;\n  \t\t\tgoto err;\n@@ -1531,10 +1531,9 @@\n  \tif (ret < 0) {\n  \t\tdev_err(scomp->dev,\n -\t\t\t"error: failed to add widget id %d type %d name : %s stream %s\\n",\n -\t\t\ttw->shift, swidget->id, tw->name,\n -\t\t\tstrnlen(tw->sname, SNDRV_CTL_ELEM_ID_NAME_MAXLEN) > 0\n -\t\t\t\t? tw->sname : "none");\n +\t\t\t"failed to add widget type %d name : %s stream %s\\n",\n +\t\t\tswidget->id, tw->name, strnlen(tw->sname, SNDRV_CTL_ELEM_ID_NAME_MAXLEN) > 0\n +\t\t\t\t\t\t\t? tw->sname : "none");\n  \t\tgoto widget_free;\n  \t}\n  \n@@ -1890,9 +1889,9 @@\n  \t\treturn -ENOMEM;\n  \n  \tslink->num_hw_configs = le32_to_cpu(cfg->num_hw_configs);\n -\tslink->hw_configs = kmemdup(cfg->hw_config,\n -\t\t\t\t    sizeof(*slink->hw_configs) * slink->num_hw_configs,\n -\t\t\t\t    GFP_KERNEL);\n +\tslink->hw_configs = kmemdup_array(cfg->hw_config,\n +\t\t\t\t\t  slink->num_hw_configs, sizeof(*slink->hw_configs),\n +\t\t\t\t\t  GFP_KERNEL);\n  \tif (!slink->hw_configs) {\n  \t\tkfree(slink);\n  \t\treturn -ENOMEM;\n@@ -2051,6 +2050,8 @@\n  \tif (!slink)\n  \t\treturn 0;\n  \n +\tslink->link->platforms->name = NULL;\n +\n  \tkfree(slink->tuples);\n  \tlist_del(&slink->list);\n  \tkfree(slink->hw_configs);\n@@ -2279,7 +2280,7 @@\n  \t{SOF_TPLG_KCTL_BYTES_VOLATILE_RO, snd_sof_bytes_ext_volatile_get},\n  };\n  \n -static struct snd_soc_tplg_ops sof_tplg_ops = {\n +static const struct snd_soc_tplg_ops sof_tplg_ops = {\n  \t.control_load\t= sof_control_load,\n  \t.control_unload\t= sof_control_unload,\n@@ -2354,25 +2355,43 @@\n  \t\t\t\t    struct snd_soc_tplg_dapm_widget *tw)\n  {\n  \tif (WIDGET_IS_DAI(w->id)) {\n +\t\tstatic const struct sof_topology_token dai_tokens[] = {\n +\t\t\t{SOF_TKN_DAI_TYPE, SND_SOC_TPLG_TUPLE_TYPE_STRING, get_token_dai_type, 0}};\n  \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n +\t\tstruct snd_soc_tplg_private *priv = &tw->priv;\n  \t\tstruct snd_sof_widget *swidget;\n -\t\tstruct snd_sof_dai dai;\n +\t\tstruct snd_sof_dai *sdai;\n  \t\tint ret;\n  \n  \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n  \t\tif (!swidget)\n  \t\t\treturn -ENOMEM;\n  \n -\t\tmemset(&dai, 0, sizeof(dai));\n -\n -\t\tret = sof_connect_dai_widget(scomp, w, tw, &dai);\n +\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n +\t\tif (!sdai) {\n +\t\t\tkfree(swidget);\n +\t\t\treturn -ENOMEM;\n +\t\t}\n +\n +\t\tret = sof_parse_tokens(scomp, &sdai->type, dai_tokens, ARRAY_SIZE(dai_tokens),\n +\t\t\t\t       priv->array, le32_to_cpu(priv->size));\n +\t\tif (ret < 0) {\n +\t\t\tdev_err(scomp->dev, "Failed to parse DAI tokens for %s\\n", tw->name);\n +\t\t\tkfree(swidget);\n +\t\t\tkfree(sdai);\n +\t\t\treturn ret;\n +\t\t}\n +\n +\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n  \t\tif (ret) {\n  \t\t\tkfree(swidget);\n +\t\t\tkfree(sdai);\n  \t\t\treturn ret;\n  \t\t}\n  \n  \t\tswidget->scomp = scomp;\n  \t\tswidget->widget = w;\n +\t\tswidget->private = sdai;\n  \t\tmutex_init(&swidget->setup_mutex);\n  \t\tw->dobj.private = swidget;\n  \t\tlist_add(&swidget->list, &sdev->widget_list);\n@@ -2396,6 +2415,7 @@\n  \n  \t\tlist_del(&swidget->list);\n +\t\tkfree(swidget->private);\n  \t\tkfree(swidget);\n  \t}\n  \n@@ -2415,7 +2435,7 @@\n  \treturn 0;\n  }\n  \n -static struct snd_soc_tplg_ops sof_dspless_tplg_ops = {\n +static const struct snd_soc_tplg_ops sof_dspless_tplg_ops = {\n  \t.widget_ready\t= sof_dspless_widget_ready,\n  \t.widget_unload\t= sof_dspless_widget_unload,\n\n""""""\n\n===end==='}, {'role': 'user', 'content': 'Please return the final result.'}], 'response': 'A. Commit message:\nASoC: SOF: topology: dynamically allocate and store DAI widget->private for older kernel version\n\nB. Change summary:\nAdapted the patch to dynamically allocate and store an \'sdai\' structure for DAI widgets in the older kernel version. This involves modifying the `sof_dspless_widget_ready` function to allocate memory for `sdai`, handle errors appropriately, and assign it to `swidget->private`. Adjustments were made to ensure compatibility with the older kernel\'s codebase, including minor formatting and function call adaptations.\n\nC. Compatibility Risk:\nMedium\n\nD. Fixed Code:\ndiff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c\nindex 25fb0d1443b6..915c2e88e32b 100644\n--- a/sound/soc/sof/topology.c\n+++ b/sound/soc/sof/topology.c\n@@ -2354,25 +2354,43 @@\n \t\t\t\t    struct snd_soc_tplg_dapm_widget *tw)\n {\n \tif (WIDGET_IS_DAI(w->id)) {\n+\t\tstatic const struct sof_topology_token dai_tokens[] = {\n+\t\t\t{SOF_TKN_DAI_TYPE, SND_SOC_TPLG_TUPLE_TYPE_STRING, get_token_dai_type, 0}};\n \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n+\t\tstruct snd_soc_tplg_private *priv = &tw->priv;\n \t\tstruct snd_sof_widget *swidget;\n-\t\tstruct snd_sof_dai dai;\n+\t\tstruct snd_sof_dai *sdai;\n \t\tint ret;\n \n \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n \t\tif (!swidget)\n \t\t\treturn -ENOMEM;\n \n-\t\tmemset(&dai, 0, sizeof(dai));\n+\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n+\t\tif (!sdai) {\n+\t\t\tkfree(swidget);\n+\t\t\treturn -ENOMEM;\n+\t\t}\n+\n+\t\tret = sof_parse_tokens(scomp, &sdai->type, dai_tokens, ARRAY_SIZE(dai_tokens),\n+\t\t\t\t       priv->array, le32_to_cpu(priv->size));\n+\t\tif (ret < 0) {\n+\t\t\tdev_err(scomp->dev, "Failed to parse DAI tokens for %s\\n", tw->name);\n+\t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n+\t\t\treturn ret;\n+\t\t}\n+\n+\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n \t\tif (ret) {\n \t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n \t\t\treturn ret;\n \t\t}\n \n \t\tswidget->scomp = scomp;\n \t\tswidget->widget = w;\n+\t\tswidget->private = sdai;\n \t\tmutex_init(&swidget->setup_mutex);\n \t\tw->dobj.private = swidget;\n \t\tlist_add(&swidget->list, &sdev->widget_list);\n@@ -2396,6 +2415,7 @@\n \n \t\tlist_del(&swidget->list);\n+\t\tkfree(swidget->private);\n \t\tkfree(swidget);\n \t}\n \n@@ -2415,7 +2435,7 @@\n \treturn 0;\n }\n \n-static struct snd_soc_tplg_ops sof_dspless_tplg_ops = {\n+static const struct snd_soc_tplg_ops sof_dspless_tplg_ops = {\n \t.widget_ready\t= sof_dspless_widget_ready,\n \t.widget_unload\t= sof_dspless_widget_unload,', 'request_token': 0, 'response_token': 0}]
+2025-06-12 17:24:15.384 | INFO     | modules.llm_adapter:_call_llm:973 - llm.run() result:{'openai_responses': ['A. Commit message:\nASoC: SOF: topology: dynamically allocate and store DAI widget->private for older kernel version\n\nB. Change summary:\nAdapted the patch to dynamically allocate and store an \'sdai\' structure for DAI widgets in the older kernel version. This involves modifying the `sof_dspless_widget_ready` function to allocate memory for `sdai`, handle errors appropriately, and assign it to `swidget->private`. Adjustments were made to ensure compatibility with the older kernel\'s codebase, including minor formatting and function call adaptations.\n\nC. Compatibility Risk:\nMedium\n\nD. Fixed Code:\ndiff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c\nindex 25fb0d1443b6..915c2e88e32b 100644\n--- a/sound/soc/sof/topology.c\n+++ b/sound/soc/sof/topology.c\n@@ -2354,25 +2354,43 @@\n \t\t\t\t    struct snd_soc_tplg_dapm_widget *tw)\n {\n \tif (WIDGET_IS_DAI(w->id)) {\n+\t\tstatic const struct sof_topology_token dai_tokens[] = {\n+\t\t\t{SOF_TKN_DAI_TYPE, SND_SOC_TPLG_TUPLE_TYPE_STRING, get_token_dai_type, 0}};\n \t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);\n+\t\tstruct snd_soc_tplg_private *priv = &tw->priv;\n \t\tstruct snd_sof_widget *swidget;\n-\t\tstruct snd_sof_dai dai;\n+\t\tstruct snd_sof_dai *sdai;\n \t\tint ret;\n \n \t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);\n \t\tif (!swidget)\n \t\t\treturn -ENOMEM;\n \n-\t\tmemset(&dai, 0, sizeof(dai));\n+\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);\n+\t\tif (!sdai) {\n+\t\t\tkfree(swidget);\n+\t\t\treturn -ENOMEM;\n+\t\t}\n+\n+\t\tret = sof_parse_tokens(scomp, &sdai->type, dai_tokens, ARRAY_SIZE(dai_tokens),\n+\t\t\t\t       priv->array, le32_to_cpu(priv->size));\n+\t\tif (ret < 0) {\n+\t\t\tdev_err(scomp->dev, "Failed to parse DAI tokens for %s\\n", tw->name);\n+\t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n+\t\t\treturn ret;\n+\t\t}\n+\n+\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);\n \t\tif (ret) {\n \t\t\tkfree(swidget);\n+\t\t\tkfree(sdai);\n \t\t\treturn ret;\n \t\t}\n \n \t\tswidget->scomp = scomp;\n \t\tswidget->widget = w;\n+\t\tswidget->private = sdai;\n \t\tmutex_init(&swidget->setup_mutex);\n \t\tw->dobj.private = swidget;\n \t\tlist_add(&swidget->list, &sdev->widget_list);\n@@ -2396,6 +2415,7 @@\n \n \t\tlist_del(&swidget->list);\n+\t\tkfree(swidget->private);\n \t\tkfree(swidget);\n \t}\n \n@@ -2415,7 +2435,7 @@\n \treturn 0;\n }\n \n-static struct snd_soc_tplg_ops sof_dspless_tplg_ops = {\n+static const struct snd_soc_tplg_ops sof_dspless_tplg_ops = {\n \t.widget_ready\t= sof_dspless_widget_ready,\n \t.widget_unload\t= sof_dspless_widget_unload,'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-06-12 17:24:15.385 | INFO     | modules.llm_adapter:_parse_llm_response:1055 - 原始LLM响应(前100字符): A. Commit message:
+ASoC: SOF: topology: dynamically allocate and store DAI widget->private for older...
+2025-06-12 17:24:15.386 | INFO     | modules.llm_adapter:_parse_llm_response:1089 - 找到diff --git格式，内容前100字符: diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index 25fb0d1443b6..915c2e88e32b 10...
+2025-06-12 17:24:15.387 | INFO     | modules.llm_adapter:_save_llm_response:1224 - LLM响应已保存到: workspace/linux/kernel-torvalds/743eb6/llm_output/output_v6.12-rc7_qwen-plus.patch
+2025-06-12 17:24:15.387 | INFO     | modules.llm_adapter:_save_llm_response:1225 - 原始LLM响应已保存到: workspace/linux/kernel-torvalds/743eb6/llm_output/raw_output_v6.12-rc7_qwen-plus.patch
+2025-06-12 17:24:15.388 | INFO     | modules.llm_adapter:execute:97 - ==================================================
+2025-06-12 17:24:15.388 | INFO     | modules.llm_adapter:execute:98 - LLM适配器执行完成 - 摘要
+2025-06-12 17:24:15.388 | INFO     | modules.llm_adapter:execute:99 - 提示模式: 标准模式
+2025-06-12 17:24:15.389 | INFO     | modules.llm_adapter:execute:100 - 提示类型: 标准上下文差异
+2025-06-12 17:24:15.389 | INFO     | modules.llm_adapter:execute:101 - 函数上下文统计: 总尝试: 0, 成功: 0, 回退: 0
+2025-06-12 17:24:15.389 | INFO     | modules.llm_adapter:execute:105 - 执行时间: 37.64 秒
+2025-06-12 17:24:15.389 | INFO     | modules.llm_adapter:execute:106 - 生成的补丁保存到: workspace/linux/kernel-torvalds/743eb6/llm_output/output_v6.12-rc7_qwen-plus.patch
+2025-06-12 17:24:15.390 | INFO     | modules.llm_adapter:execute:107 - ==================================================
+2025-06-12 17:24:15.392 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/linux/kernel-torvalds/743eb6/evaluations/llm_adapter/metrics_743eb6_20250612_172415.json
+2025-06-12 17:24:15.392 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-12 17:24:15.393 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/linux/kernel-torvalds/743eb6/llm_output/output_v6.12-rc7_qwen-plus.patch
+2025-06-12 17:24:15.394 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_v6.12-rc7_20250612_172415
+2025-06-12 17:24:16.107 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+index 25fb0d1443b6..915c2e88e32b 100644
+--- a/sound/soc/sof/topology.c
++++ b/sound/soc/sof/topology.c
+@@ -2354,25 +2354,43 @@
+ 				    struct snd_soc_tplg_dapm_widget *tw)
+ {
+ 	if (WIDGET_IS_DAI(w->id)) {
++		static const struct sof_topology_token dai_tokens[] = {
++			{SOF_TKN_DAI_TYPE, SND_SOC_TPLG_TUPLE_TYPE_STRING, get_token_dai_type, 0}};
+ 		struct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);
++		struct snd_soc_tplg_private *priv = &tw->priv;
+ 		struct snd_sof_widget *swidget;
+-		struct snd_sof_dai dai;
++		struct snd_sof_dai *sdai;
+ 		int ret;
+ 
+ 		swidget = kzalloc(sizeof(*swidget), GFP_KERNEL);
+ 		if (!swidget)
+ 			return -ENOMEM;
+ 
+-		memset(&dai, 0, sizeof(dai));
++		sdai = kzalloc(sizeof(*sdai), GFP_KERNEL);
++		if (!sdai) {
++			kfree(swidget);
++			return -ENOMEM;
++		}
++
++		ret = sof_parse_tokens(scomp, &sdai->type, dai_tokens, ARRAY_SIZE(dai_tokens),
++				       priv->array, le32_to_cpu(priv->size));
++		if (ret < 0) {
++			dev_err(scomp->dev, "Failed to parse DAI tokens for %s\n", tw->name);
++			kfree(swidget);
++			kfree(sdai);
++			return ret;
++		}
++
++		ret = sof_connect_dai_widget(scomp, w, tw, sdai);
+ 		if (ret) {
+ 			kfree(swidget);
++			kfree(sdai);
+ 			return ret;
+ 		}
+ 
+ 		swidget->scomp = scomp;
+ 		swidget->widget = w;
++		swidget->private = sdai;
+ 		mutex_init(&swidget->setup_mutex);
+ 		w->dobj.private = swidget;
+ 		list_add(&swidget->list, &sdev->widget_list);
+@@ -2396,6 +2415,7 @@
+ 
+ 		list_del(&swidget->list);
++		kfree(swidget->private);
+ 		kfree(swidget);
+ 	}
+ 
+@@ -2415,7 +2435,7 @@
+ 	return 0;
+ }
+ 
+-static struct snd_soc_tplg_ops sof_dspless_tplg_ops = {
++static const struct snd_soc_tplg_ops sof_dspless_tplg_ops = {
+ 	.widget_ready	= sof_dspless_widget_ready,
+ 	.widget_unload	= sof_dspless_widget_unload,
+2025-06-12 17:24:16.107 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -2354,25 +2354,43 @@
+ 				    struct snd_soc_tplg_dapm_widget *tw)
+ {
+ 	if (WIDGET_IS_DAI(w->id)) {
++		static const struct sof_topology_token dai_tokens[] = {
++			{SOF_TKN_DAI_TYPE, SND_SOC_TPLG_TUPLE_TYPE_STRING, get_token_dai_type, 0}};
+ 		struct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);
++		struct snd_soc_tplg_private *priv = &tw->priv;
+ 		struct snd_sof_widget *swidget;
+-		struct snd_sof_dai dai;
++		struct snd_sof_dai *sdai;
+ 		int ret;
+ 
+ 		swidget = kzalloc(sizeof(*swidget), GFP_KERNEL);
+ 		if (!swidget)
+ 			return -ENOMEM;
+ 
+-		memset(&dai, 0, sizeof(dai));
++		sdai = kzalloc(sizeof(*sdai), GFP_KERNEL);
++		if (!sdai) {
++			kfree(swidget);
++			return -ENOMEM;
++		}
++
++		ret = sof_parse_tokens(scomp, &sdai->type, dai_tokens, ARRAY_SIZE(dai_tokens),
++				       priv->array, le32_to_cpu(priv->size));
++		if (ret < 0) {
++			dev_err(scomp->dev, "Failed to parse DAI tokens for %s\n", tw->name);
++			kfree(swidget);
++			kfree(sdai);
++			return ret;
++		}
++
++		ret = sof_connect_dai_widget(scomp, w, tw, sdai);
+ 		if (ret) {
+ 			kfree(swidget);
++			kfree(sdai);
+ 			return ret;
+ 		}
+ 
+ 		swidget->scomp = scomp;
+ 		swidget->widget = w;
++		swidget->private = sdai;
+ 		mutex_init(&swidget->setup_mutex);
+ 		w->dobj.private = swidget;
+ 		list_add(&swidget->list, &sdev->widget_list);
+@@ -2396,6 +2415,7 @@
+ 
+ 		list_del(&swidget->list);
++		kfree(swidget->private);
+ 		kfree(swidget);
+ 	}
+ 
+@@ -2415,7 +2435,7 @@
+ 	return 0;
+ }
+ 
+-static struct snd_soc_tplg_ops sof_dspless_tplg_ops = {
++static const struct snd_soc_tplg_ops sof_dspless_tplg_ops = {
+ 	.widget_ready	= sof_dspless_widget_ready,
+ 	.widget_unload	= sof_dspless_widget_unload,
+2025-06-12 17:24:16.109 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -2354,25 +2354,43 @@
+ 				    struct snd_soc_tplg_dapm_widget *tw)
+ {
+ 	if (WIDGET_IS_DAI(w->id)) {
++		static const struct sof_topology_token dai_tokens[] = {
++			{SOF_TKN_DAI_TYPE, SND_SOC_TPLG_TUPLE_TYPE_STRING, get_token_dai_type, 0}};
+ 		struct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);
++		struct snd_soc_tplg_private *priv = &tw->priv;
+ 		struct snd_sof_widget *swidget;
+-		struct snd_sof_dai dai;
++		struct snd_sof_dai *sdai;
+ 		int ret;
+ 
+ 		swidget = kzalloc(sizeof(*swidget), GFP_KERNEL);
+ 		if (!swidget)
+ 			return -ENOMEM;
+ 
+-		memset(&dai, 0, sizeof(dai));
++		sdai = kzalloc(sizeof(*sdai), GFP_KERNEL);
++		if (!sdai) {
++			kfree(swidget);
++			return -ENOMEM;
++		}
++
++		ret = sof_parse_tokens(scomp, &sdai->type, dai_tokens, ARRAY_SIZE(dai_tokens),
++				       priv->array, le32_to_cpu(priv->size));
++		if (ret < 0) {
++			dev_err(scomp->dev, "Failed to parse DAI tokens for %s\n", tw->name);
++			kfree(swidget);
++			kfree(sdai);
++			return ret;
++		}
++
++		ret = sof_connect_dai_widget(scomp, w, tw, sdai);
+ 		if (ret) {
+ 			kfree(swidget);
++			kfree(sdai);
+ 			return ret;
+ 		}
+ 
+ 		swidget->scomp = scomp;
+ 		swidget->widget = w;
++		swidget->private = sdai;
+ 		mutex_init(&swidget->setup_mutex);
+ 		w->dobj.private = swidget;
+ 		list_add(&swidget->list, &sdev->widget_list);
+
+2025-06-12 17:24:16.110 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 2354, 'old_count': 25, 'new_start': 2354, 'new_count': 43}, 'lines': [('context', '\t\t\t\t    struct snd_soc_tplg_dapm_widget *tw)'), ('context', '{'), ('context', '\tif (WIDGET_IS_DAI(w->id)) {'), ('add', '\t\tstatic const struct sof_topology_token dai_tokens[] = {'), ('add', '\t\t\t{SOF_TKN_DAI_TYPE, SND_SOC_TPLG_TUPLE_TYPE_STRING, get_token_dai_type, 0}};'), ('context', '\t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);'), ('add', '\t\tstruct snd_soc_tplg_private *priv = &tw->priv;'), ('context', '\t\tstruct snd_sof_widget *swidget;'), ('remove', '\t\tstruct snd_sof_dai dai;'), ('add', '\t\tstruct snd_sof_dai *sdai;'), ('context', '\t\tint ret;'), ('context', ''), ('context', '\t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);'), ('context', '\t\tif (!swidget)'), ('context', '\t\t\treturn -ENOMEM;'), ('context', ''), ('remove', '\t\tmemset(&dai, 0, sizeof(dai));'), ('add', '\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);'), ('add', '\t\tif (!sdai) {'), ('add', '\t\t\tkfree(swidget);'), ('add', '\t\t\treturn -ENOMEM;'), ('add', '\t\t}'), ('add', ''), ('add', '\t\tret = sof_parse_tokens(scomp, &sdai->type, dai_tokens, ARRAY_SIZE(dai_tokens),'), ('add', '\t\t\t\t       priv->array, le32_to_cpu(priv->size));'), ('add', '\t\tif (ret < 0) {'), ('add', '\t\t\tdev_err(scomp->dev, "Failed to parse DAI tokens for %s\\n", tw->name);'), ('add', '\t\t\tkfree(swidget);'), ('add', '\t\t\tkfree(sdai);'), ('add', '\t\t\treturn ret;'), ('add', '\t\t}'), ('add', ''), ('add', '\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);'), ('context', '\t\tif (ret) {'), ('context', '\t\t\tkfree(swidget);'), ('add', '\t\t\tkfree(sdai);'), ('context', '\t\t\treturn ret;'), ('context', '\t\t}'), ('context', ''), ('context', '\t\tswidget->scomp = scomp;'), ('context', '\t\tswidget->widget = w;'), ('add', '\t\tswidget->private = sdai;'), ('context', '\t\tmutex_init(&swidget->setup_mutex);'), ('context', '\t\tw->dobj.private = swidget;'), ('context', '\t\tlist_add(&swidget->list, &sdev->widget_list);')]}
+2025-06-12 17:24:16.123 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-06-12 17:24:16.124 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 2354, 'old_count': 25, 'new_start': 2354, 'new_count': 43}, 'lines': [('context', '\t\t\t\t    struct snd_soc_tplg_dapm_widget *tw)'), ('context', '{'), ('context', '\tif (WIDGET_IS_DAI(w->id)) {'), ('add', '\t\tstatic const struct sof_topology_token dai_tokens[] = {'), ('add', '\t\t\t{SOF_TKN_DAI_TYPE, SND_SOC_TPLG_TUPLE_TYPE_STRING, get_token_dai_type, 0}};'), ('context', '\t\tstruct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);'), ('add', '\t\tstruct snd_soc_tplg_private *priv = &tw->priv;'), ('context', '\t\tstruct snd_sof_widget *swidget;'), ('remove', '\t\tstruct snd_sof_dai dai;'), ('add', '\t\tstruct snd_sof_dai *sdai;'), ('context', '\t\tint ret;'), ('context', ''), ('context', '\t\tswidget = kzalloc(sizeof(*swidget), GFP_KERNEL);'), ('context', '\t\tif (!swidget)'), ('context', '\t\t\treturn -ENOMEM;'), ('context', ''), ('remove', '\t\tmemset(&dai, 0, sizeof(dai));'), ('add', '\t\tsdai = kzalloc(sizeof(*sdai), GFP_KERNEL);'), ('add', '\t\tif (!sdai) {'), ('add', '\t\t\tkfree(swidget);'), ('add', '\t\t\treturn -ENOMEM;'), ('add', '\t\t}'), ('add', ''), ('add', '\t\tret = sof_parse_tokens(scomp, &sdai->type, dai_tokens, ARRAY_SIZE(dai_tokens),'), ('add', '\t\t\t\t       priv->array, le32_to_cpu(priv->size));'), ('add', '\t\tif (ret < 0) {'), ('add', '\t\t\tdev_err(scomp->dev, "Failed to parse DAI tokens for %s\\n", tw->name);'), ('add', '\t\t\tkfree(swidget);'), ('add', '\t\t\tkfree(sdai);'), ('add', '\t\t\treturn ret;'), ('add', '\t\t}'), ('add', ''), ('add', '\t\tret = sof_connect_dai_widget(scomp, w, tw, sdai);'), ('context', '\t\tif (ret) {'), ('context', '\t\t\tkfree(swidget);'), ('add', '\t\t\tkfree(sdai);'), ('context', '\t\t\treturn ret;'), ('context', '\t\t}'), ('context', ''), ('context', '\t\tswidget->scomp = scomp;'), ('context', '\t\tswidget->widget = w;'), ('add', '\t\tswidget->private = sdai;'), ('context', '\t\tmutex_init(&swidget->setup_mutex);'), ('context', '\t\tw->dobj.private = swidget;'), ('context', '\t\tlist_add(&swidget->list, &sdev->widget_list);')]}
+2025-06-12 17:24:16.124 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -2396,6 +2415,7 @@
+ 
+ 		list_del(&swidget->list);
++		kfree(swidget->private);
+ 		kfree(swidget);
+ 	}
+ 
+
+2025-06-12 17:24:16.124 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 2396, 'old_count': 6, 'new_start': 2415, 'new_count': 7}, 'lines': [('context', ''), ('context', '\t\tlist_del(&swidget->list);'), ('add', '\t\tkfree(swidget->private);'), ('context', '\t\tkfree(swidget);'), ('context', '\t}'), ('context', '')]}
+2025-06-12 17:24:16.128 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-06-12 17:24:16.129 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 2396, 'old_count': 6, 'new_start': 2415, 'new_count': 7}, 'lines': [('context', ''), ('context', '\t\tlist_del(&swidget->list);'), ('add', '\t\tkfree(swidget->private);'), ('context', '\t\tkfree(swidget);'), ('context', '\t}'), ('context', '')]}
+2025-06-12 17:24:16.129 | INFO     | patch_adapter_utils:generate_adapted_file:892 - hunk_text is @@ -2415,7 +2435,7 @@
+ 	return 0;
+ }
+ 
+-static struct snd_soc_tplg_ops sof_dspless_tplg_ops = {
++static const struct snd_soc_tplg_ops sof_dspless_tplg_ops = {
+ 	.widget_ready	= sof_dspless_widget_ready,
+ 	.widget_unload	= sof_dspless_widget_unload,
+2025-06-12 17:24:16.129 | INFO     | patch_adapter_utils:generate_adapted_file:899 - hunk is {'line_numbers': {'old_start': 2415, 'old_count': 7, 'new_start': 2435, 'new_count': 7}, 'lines': [('context', '\treturn 0;'), ('context', '}'), ('context', ''), ('remove', 'static struct snd_soc_tplg_ops sof_dspless_tplg_ops = {'), ('add', 'static const struct snd_soc_tplg_ops sof_dspless_tplg_ops = {'), ('context', '\t.widget_ready\t= sof_dspless_widget_ready,'), ('context', '\t.widget_unload\t= sof_dspless_widget_unload,')]}
+2025-06-12 17:24:16.133 | INFO     | patch_adapter_utils:generate_adapted_file:902 - position is -1
+2025-06-12 17:24:16.134 | WARNING  | patch_adapter_utils:generate_adapted_file:905 - 在文件中未找到hunk的合适位置:
+{'line_numbers': {'old_start': 2415, 'old_count': 7, 'new_start': 2435, 'new_count': 7}, 'lines': [('context', '\treturn 0;'), ('context', '}'), ('context', ''), ('remove', 'static struct snd_soc_tplg_ops sof_dspless_tplg_ops = {'), ('add', 'static const struct snd_soc_tplg_ops sof_dspless_tplg_ops = {'), ('context', '\t.widget_ready\t= sof_dspless_widget_ready,'), ('context', '\t.widget_unload\t= sof_dspless_widget_unload,')]}
+2025-06-12 17:24:16.134 | INFO     | patch_adapter_utils:generate_adapted_file:924 - 成功应用修改到文件: sound/soc/sof/topology.c
+2025-06-12 17:24:16.136 | INFO     | modules.patch_adapter:_generate_adapted_patch:254 - target_path: /home/elpsy/.cache/port-patch/linux_kernel-torvalds/sound/soc/sof/topology.c
+2025-06-12 17:24:16.137 | INFO     | modules.patch_adapter:_generate_adapted_patch:271 - 文件未修改: sound/soc/sof/topology.c
+2025-06-12 17:24:16.137 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-06-12 17:24:16.138 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_v6.12-rc7_20250612_172415
+2025-06-12 17:24:16.306 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-06-12 17:24:16.307 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-06-12 17:24:16.307 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/linux/kernel-torvalds/743eb6/metrics/patch_adapter_metrics.json
+2025-06-12 17:24:16.308 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 40.89秒
+2025-06-12 17:24:16.308 | INFO     | __main__:_merge_patches:1101 - 开始合并补丁...
+2025-06-12 17:24:16.309 | INFO     | __main__:_merge_patches:1136 - chunk_results2:
+2025-06-12 17:24:16.310 | INFO     | __main__:_merge_patches:1138 - chunk_patches: [PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_001_20250612_172336.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_002_20250612_172336.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_003_20250612_172336.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_005_20250612_172336.patch')]
+2025-06-12 17:24:16.310 | INFO     | __main__:_merge_patches:1140 - Chunk分析器应用了 4/5 个chunks
+2025-06-12 17:24:16.311 | INFO     | __main__:_combine_patch_files:1269 - 创建临时测试分支: patch_merge_21e62d7b
+2025-06-12 17:24:17.113 | INFO     | __main__:_combine_patch_files:1321 - 补丁 chunk_001_20250612_172336.patch 大小: 1442 字节
+2025-06-12 17:24:17.113 | INFO     | __main__:_combine_patch_files:1321 - 补丁 chunk_002_20250612_172336.patch 大小: 1461 字节
+2025-06-12 17:24:17.114 | INFO     | __main__:_combine_patch_files:1321 - 补丁 chunk_003_20250612_172336.patch 大小: 1735 字节
+2025-06-12 17:24:17.114 | INFO     | __main__:_combine_patch_files:1321 - 补丁 chunk_005_20250612_172336.patch 大小: 1393 字节
+2025-06-12 17:24:17.114 | INFO     | __main__:_combine_patch_files:1330 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_001_20250612_172336.patch
+2025-06-12 17:24:17.115 | INFO     | __main__:_combine_patch_files:1333 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_001_20250612_172336.patch
+2025-06-12 17:24:17.119 | INFO     | __main__:_combine_patch_files:1346 - 应用补丁失败，返回码: 1
+2025-06-12 17:24:17.119 | INFO     | __main__:_combine_patch_files:1348 - 错误输出: error: patch failed: sound/soc/sof/sof-audio.c:46
+error: sound/soc/sof/sof-audio.c: patch does not apply
+
+2025-06-12 17:24:17.123 | INFO     | __main__:_combine_patch_files:1359 - 补丁 chunk_001_20250612_172336.patch 已经应用过，跳过
+2025-06-12 17:24:17.123 | INFO     | __main__:_combine_patch_files:1330 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_002_20250612_172336.patch
+2025-06-12 17:24:17.123 | INFO     | __main__:_combine_patch_files:1333 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_002_20250612_172336.patch
+2025-06-12 17:24:17.126 | INFO     | __main__:_combine_patch_files:1346 - 应用补丁失败，返回码: 1
+2025-06-12 17:24:17.127 | INFO     | __main__:_combine_patch_files:1348 - 错误输出: error: patch failed: sound/soc/sof/sof-audio.c:59
+error: sound/soc/sof/sof-audio.c: patch does not apply
+
+2025-06-12 17:24:17.130 | INFO     | __main__:_combine_patch_files:1359 - 补丁 chunk_002_20250612_172336.patch 已经应用过，跳过
+2025-06-12 17:24:17.130 | INFO     | __main__:_combine_patch_files:1330 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_003_20250612_172336.patch
+2025-06-12 17:24:17.130 | INFO     | __main__:_combine_patch_files:1333 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_003_20250612_172336.patch
+2025-06-12 17:24:17.134 | INFO     | __main__:_combine_patch_files:1346 - 应用补丁失败，返回码: 1
+2025-06-12 17:24:17.134 | INFO     | __main__:_combine_patch_files:1348 - 错误输出: error: patch failed: sound/soc/sof/sof-audio.c:109
+error: sound/soc/sof/sof-audio.c: patch does not apply
+
+2025-06-12 17:24:17.138 | INFO     | __main__:_combine_patch_files:1359 - 补丁 chunk_003_20250612_172336.patch 已经应用过，跳过
+2025-06-12 17:24:17.139 | INFO     | __main__:_combine_patch_files:1330 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_005_20250612_172336.patch
+2025-06-12 17:24:17.139 | INFO     | __main__:_combine_patch_files:1333 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/743eb6/chunk_patches/chunk_005_20250612_172336.patch
+2025-06-12 17:24:17.143 | INFO     | __main__:_combine_patch_files:1346 - 应用补丁失败，返回码: 1
+2025-06-12 17:24:17.143 | INFO     | __main__:_combine_patch_files:1348 - 错误输出: error: patch failed: sound/soc/sof/topology.c:2396
+error: sound/soc/sof/topology.c: patch does not apply
+
+2025-06-12 17:24:17.147 | INFO     | __main__:_combine_patch_files:1359 - 补丁 chunk_005_20250612_172336.patch 已经应用过，跳过
+2025-06-12 17:24:17.207 | WARNING  | __main__:_combine_patch_files:1421 - 合并后没有任何更改
+2025-06-12 17:24:17.207 | INFO     | __main__:_combine_patch_files:1499 - 清理临时分支: patch_merge_21e62d7b
+2025-06-12 17:24:17.351 | INFO     | __main__:_merge_patches:1222 - 只合并chunk补丁到: workspace/linux/kernel-torvalds/743eb6/patches/merged_v6.12-rc7.patch
+2025-06-12 17:24:17.351 | INFO     | __main__:_process_mode1:392 - 成功合并补丁到: workspace/linux/kernel-torvalds/743eb6/patches/merged_v6.12-rc7.patch
+2025-06-12 17:24:17.352 | INFO     | __main__:_save_results:758 - 已复制最终补丁到结果目录: results/kernel-torvalds_v6.12-rc7_743eb6_20250612_172417/merged_v6.12-rc7.patch
+2025-06-12 17:24:17.353 | INFO     | __main__:_save_results:896 - 结果已保存到: results/kernel-torvalds_v6.12-rc7_743eb6_20250612_172417/result.json
+2025-06-12 17:24:17.353 | INFO     | __main__:_print_summary:938 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-06-12 17:24:17.353 | INFO     | __main__:_print_summary:965 - ==================================================
+2025-06-12 17:24:17.354 | INFO     | __main__:_print_summary:966 - 处理摘要 - 提交: 743eb6
+2025-06-12 17:24:17.354 | INFO     | __main__:_print_summary:967 - 适配状态: 适配失败 (方法: failed)
+2025-06-12 17:24:17.354 | INFO     | __main__:_print_summary:982 - 块分析统计:
+2025-06-12 17:24:17.354 | INFO     | __main__:_print_summary:983 - - 总块数: 5
+2025-06-12 17:24:17.355 | INFO     | __main__:_print_summary:984 - - 冲突块数: 1
+2025-06-12 17:24:17.355 | INFO     | __main__:_print_summary:985 - - 成功适配块数: 0
+2025-06-12 17:24:17.355 | INFO     | __main__:_print_summary:986 - - 适配失败块数: 1
+2025-06-12 17:24:17.355 | INFO     | __main__:_print_summary:987 - - 编译失败块数: 0
+2025-06-12 17:24:17.355 | INFO     | __main__:_print_summary:991 - 总执行时间: 40.90秒
+2025-06-12 17:24:17.356 | INFO     | __main__:_print_summary:996 - ==================================================
+2025-06-12 17:24:17.356 | INFO     | __main__:run:335 - 处理完成
+2025-06-12 17:24:17.356 | INFO     | __main__:process_single_commit:2219 - ============================================================
+2025-06-12 17:24:17.356 | INFO     | __main__:process_single_commit:2220 - 单个commit处理完成: 743eb6c68d3534e01e73d316ddcaa7334c0e29d3
+2025-06-12 17:24:17.356 | INFO     | __main__:process_single_commit:2221 - ============================================================
+2025-06-12 17:24:17.359 | INFO     | __main__:clean_config:2181 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

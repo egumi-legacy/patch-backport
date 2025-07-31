@@ -1,0 +1,31 @@
+diff --git a/docs/releases/4.1.16.txt b/docs/releases/4.1.16.txt
+index 985300438608..2a84186867c5 100644
+--- a/docs/releases/4.1.16.txt
++++ b/docs/releases/4.1.16.txt
+@@ -7,4 +7,9 @@ Django 4.1.16 release notes
+ Django 4.1.16 fixes one security issue with severity "moderate" and one
+ security issue with severity "low" in 4.1.15.
+ 
+-...
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
+diff --git a/tests/template_tests/filter_tests/test_urlize.py b/tests/template_tests/filter_tests/test_urlize.py
+index c19103859ebe..546bd6c7d615 100644
+--- a/tests/template_tests/filter_tests/test_urlize.py
++++ b/tests/template_tests/filter_tests/test_urlize.py
+@@ -321,6 +321,11 @@ def test_trailing_semicolon(self):
+             '<a href="http://example.com?x=" rel="nofollow">'
+             "http://example.com?x=&amp;</a>;;",
+         )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp.;...;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp</a>.;...;",
++        )
+ 
+     def test_brackets(self):
+         """

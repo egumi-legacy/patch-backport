@@ -1,0 +1,39 @@
+From 3c733c78d6f8e50296d6e248968b6516c92a53ca Mon Sep 17 00:00:00 2001
+From: Natalia <124304+nessita@users.noreply.github.com>
+Date: Mon, 19 Aug 2024 14:47:38 -0300
+Subject: [PATCH] [5.1.x] Fixed CVE-2024-45231 -- Avoided server error on
+ password reset when email sending fails.
+
+On successful submission of a password reset request, an email is sent
+to the accounts known to the system. If sending this email fails (due to
+email backend misconfiguration, service provider outage, network issues,
+etc.), an attacker might exploit this by detecting which password reset
+requests succeed and which ones generate a 500 error response.
+
+Thanks to Thibaut Spriet for the report, and to Mariusz Felisiak, Adam
+Johnson, and Sarah Boyce for the reviews.
+---
+ django/contrib/auth/forms.py   |  9 ++++++++-
+ docs/ref/logging.txt           | 12 ++++++++++++
+ docs/releases/4.2.16.txt       | 11 +++++++++++
+ docs/releases/5.0.9.txt        | 11 +++++++++++
+ docs/releases/5.1.1.txt        | 11 +++++++++++
+ docs/topics/auth/default.txt   |  4 +++-
+ tests/auth_tests/test_forms.py | 21 +++++++++++++++++++++
+ tests/mail/custombackend.py    |  6 ++++++
+ 8 files changed, 83 insertions(+), 2 deletions(-)
+
+diff --git a/tests/mail/custombackend.py b/tests/mail/custombackend.py
+index 14e7f077ba70..c63f1c07b5bd 100644
+--- a/tests/mail/custombackend.py
++++ b/tests/mail/custombackend.py
+@@ -12,3 +12,9 @@ def send_messages(self, email_messages):
+         # Messages are stored in an instance variable for testing.
+         self.test_outbox.extend(email_messages)
+         return len(email_messages)
++
++
++class FailingEmailBackend(BaseEmailBackend):
++
++    def send_messages(self, email_messages):
++        raise ValueError("FailingEmailBackend is doomed to fail.")

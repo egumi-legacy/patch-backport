@@ -1,0 +1,143 @@
+2025-06-19 16:38:14.820 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250619_163814.log
+2025-06-19 16:38:14.821 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-19 16:38:14.822 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/rails/rails/commit/fb493bebae1a9b83e494fe7edbf01f6167d606fd.patch
+2025-06-19 16:38:14.824 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-19 16:38:14.825 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-19 16:38:14.835 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-19 16:38:14.837 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-19 16:38:14.838 | INFO     | __main__:_process_mode1:358 - 目标版本: ['5.2.7']
+2025-06-19 16:38:14.838 | INFO     | __main__:_process_mode1:365 - 开始处理版本: 5.2.7
+2025-06-19 16:38:14.840 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: fb493bebae1a9b83e494fe7edbf01f6167d606fd.patch
+2025-06-19 16:38:14.841 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-19 16:38:14.843 | INFO     | modules.direct_apply:_download_patch:248 - 上游补丁文件已存在: workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-19 16:38:14.845 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-19 16:38:14.848 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-19 16:38:14.878 | ERROR    | modules.direct_apply:_prepare_test_branch:420 - 准备测试分支失败: error: pathspec '5.2.7' did not match any file(s) known to git
+
+2025-06-19 16:38:14.909 | WARNING  | modules.direct_apply:_cleanup_test_branch:494 - 清理分支时发生错误: error: pathspec '5.2.7' did not match any file(s) known to git
+
+2025-06-19 16:38:14.910 | ERROR    | modules.direct_apply:execute:111 - 直接应用过程发生错误: 准备测试分支失败
+2025-06-19 16:38:14.924 | ERROR    | modules.direct_apply:execute:113 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/direct_apply.py", line 68, in execute
+    raise ValueError("准备测试分支失败")
+ValueError: 准备测试分支失败
+
+2025-06-19 16:38:14.926 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-19 16:38:14.928 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-19 16:38:14.930 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:178 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-19 16:38:14.933 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:183 - 补丁文件包含 38 行内容
+2025-06-19 16:38:14.936 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: actionpack/lib/action_dispatch/http/filter_parameters.rb
+2025-06-19 16:38:14.938 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: actionpack/lib/action_dispatch/http/filter_parameters.rb @@ -73,12 +73,17 @@ (modification)
+2025-06-19 16:38:14.939 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:269 - 补丁分解完成，共找到 1 个修改块
+2025-06-19 16:38:14.940 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 1 个块
+2025-06-19 16:38:14.941 | INFO     | modules.chunk_analyzer:_create_chunk_patches:288 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-19 16:38:14.948 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/chunk_patches/chunk_001_20250619_163814.patch (修改文件: actionpack/lib/action_dispatch/http/filter_parameters.rb)
+2025-06-19 16:38:14.949 | INFO     | modules.chunk_analyzer:execute:60 - 已为 1 个块创建单独的补丁文件
+2025-06-19 16:38:14.950 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-19 16:38:14.951 | INFO     | modules.chunk_analyzer:execute:66 - From fb493bebae1a9b83e494fe7edbf01f6167d606fd Mon Sep 17 00:00:00 2001
+From: John Hawthorn <john@hawthorn.email>
+Date: Thu, 10 Oct 2024 20:41:33 -0700
+Subject: [PATCH] Avoid backtracking in filtered_query_string
+
+Thanks scyoon for the patch
+
+CVE-2024-41128
+---
+ .../lib/action_dispatch/http/filter_parameters.rb   | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/actionpack/lib/action_dispatch/http/filter_parameters.rb b/actionpack/lib/action_dispatch/http/filter_parameters.rb
+index 7ad1ba3e0eb0e..b02f0d6f85341 100644
+--- a/actionpack/lib/action_dispatch/http/filter_parameters.rb
++++ b/actionpack/lib/action_dispatch/http/filter_parameters.rb
+@@ -73,12 +73,17 @@ def parameter_filter_for(filters) # :doc:
+         ActiveSupport::ParameterFilter.new(filters)
+       end
+ 
+-      KV_RE   = "[^&;=]+"
+-      PAIR_RE = %r{(#{KV_RE})=(#{KV_RE})}
+       def filtered_query_string # :doc:
+-        query_string.gsub(PAIR_RE) do |_|
+-          parameter_filter.filter($1 => $2).first.join("=")
++        parts = query_string.split(/([&;])/)
++        filtered_parts = parts.map do |part|
++          if part.include?("=")
++            key, value = part.split("=", 2)
++            parameter_filter.filter(key => value).first.join("=")
++          else
++            part
++          end
+         end
++        filtered_parts.join("")
+       end
+     end
+   end
+
+2025-06-19 16:38:14.953 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:357 - 切换到目标版本: 5.2.7
+2025-06-19 16:38:14.983 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:438 - 切换回目标版本: 5.2.7
+2025-06-19 16:38:15.012 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:446 - 删除测试分支: test_chunk_apply_a8068ed3
+2025-06-19 16:38:15.033 | ERROR    | modules.chunk_analyzer:execute:124 - 补丁分析过程发生错误: 切换到目标版本失败: error: pathspec '5.2.7' did not match any file(s) known to git
+
+2025-06-19 16:38:15.048 | ERROR    | modules.chunk_analyzer:execute:126 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 69, in execute
+    applied_chunks = self._apply_chunk_patches(chunk_patches, context)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/chunk_analyzer.py", line 366, in _apply_chunk_patches
+    raise ValueError(f"切换到目标版本失败: {checkout_result.stderr}")
+ValueError: 切换到目标版本失败: error: pathspec '5.2.7' did not match any file(s) known to git
+
+
+2025-06-19 16:38:15.053 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/metrics_fb493b_20250619_163815.json
+2025-06-19 16:38:15.056 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/rails/rails/fb493b/evaluations/chunk_analyzer/details_fb493b_20250619_163815
+2025-06-19 16:38:15.064 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-19 16:38:15.065 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-19 16:38:15.066 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/rails/rails/fb493b/patches/upstream_fb493b.patch
+2025-06-19 16:38:15.067 | ERROR    | modules.llm_adapter:execute:129 - LLM处理过程发生错误: expected str, bytes or os.PathLike object, not NoneType
+2025-06-19 16:38:15.075 | ERROR    | modules.llm_adapter:execute:130 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 80, in execute
+    prompt_data = self._prepare_prompt_data(context, is_retry)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 209, in _prepare_prompt_data
+    with open(context.commit.optimized_patch_path, 'r') as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+2025-06-19 16:38:15.078 | INFO     | modules.llm_adapter:execute:141 - ==================================================
+2025-06-19 16:38:15.080 | INFO     | modules.llm_adapter:execute:142 - LLM适配器执行失败 - 摘要
+2025-06-19 16:38:15.081 | INFO     | modules.llm_adapter:execute:143 - 错误: expected str, bytes or os.PathLike object, not NoneType
+2025-06-19 16:38:15.083 | INFO     | modules.llm_adapter:execute:144 - 执行时间: 0.01 秒
+2025-06-19 16:38:15.084 | INFO     | modules.llm_adapter:execute:145 - ==================================================
+2025-06-19 16:38:15.089 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/rails/rails/fb493b/evaluations/llm_adapter/metrics_fb493b_20250619_163815.json
+2025-06-19 16:38:15.091 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-19 16:38:15.096 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/rails/rails/fb493b/llm_output/output_5.2.7_qwen-plus.patch
+2025-06-19 16:38:15.106 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_5.2.7_20250619_163815
+2025-06-19 16:38:15.137 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: Command '['git', 'checkout', '5.2.7']' returned non-zero exit status 1.
+2025-06-19 16:38:15.148 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 58, in execute
+    branch_name = self._prepare_test_branch(context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 165, in _prepare_test_branch
+    subprocess.run(
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'checkout', '5.2.7']' returned non-zero exit status 1.
+
+2025-06-19 16:38:15.153 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/rails/rails/fb493b/metrics/patch_adapter_metrics.json
+2025-06-19 16:38:15.154 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 0.31秒
+2025-06-19 16:38:15.156 | INFO     | __main__:_merge_patches:1101 - 开始合并补丁...
+2025-06-19 16:38:15.157 | WARNING  | __main__:_merge_patches:1225 - 没有找到可合并的补丁
+2025-06-19 16:38:15.162 | INFO     | __main__:_save_results:758 - 已复制最终补丁到结果目录: results/rails_5.2.7_fb493b_20250619_163815/upstream_fb493b.patch
+2025-06-19 16:38:15.164 | ERROR    | __main__:run:343 - 执行过程发生错误: '>' not supported between instances of 'NoneType' and 'int'
+2025-06-19 16:38:15.171 | ERROR    | __main__:run:344 - 错误堆栈: Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 334, in run
+    results = self._process_mode1()
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 396, in _process_mode1
+    result_path = self._save_results(processed_context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/elpsy/workspace/sow/patch-backport/main.py", line 822, in _save_results
+    "chunk_analyzer": bool(context.chunk_analyzer_result and context.chunk_analyzer_result.get('applied_chunks') > 0),
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: '>' not supported between instances of 'NoneType' and 'int'
+
+2025-06-19 16:38:15.186 | INFO     | __main__:clean_config:2181 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

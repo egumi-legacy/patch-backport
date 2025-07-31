@@ -1,0 +1,401 @@
+2025-06-19 16:14:57.080 | INFO     | __main__:_setup_logger:325 - 日志文件: logs/backport_20250619_161457.log
+2025-06-19 16:14:57.081 | INFO     | __main__:run:329 - 开始执行 模式1
+2025-06-19 16:14:57.082 | INFO     | __main__:_process_mode1:351 - 处理补丁: https://github.com/django/django/commit/d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2.patch
+2025-06-19 16:14:57.083 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: direct_apply
+2025-06-19 16:14:57.083 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: chunk_analyzer
+2025-06-19 16:14:57.086 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: llm_adapter
+2025-06-19 16:14:57.087 | INFO     | core.adaptation_pipeline:_load_modules:66 - 已加载模块: patch_adapter
+2025-06-19 16:14:57.087 | INFO     | __main__:_process_mode1:358 - 目标版本: ['4.2.15']
+2025-06-19 16:14:57.088 | INFO     | __main__:_process_mode1:365 - 开始处理版本: 4.2.15
+2025-06-19 16:14:57.088 | INFO     | core.adaptation_pipeline:process_patch:85 - 开始处理补丁: d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2.patch
+2025-06-19 16:14:57.089 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: direct_apply
+2025-06-19 16:14:57.090 | INFO     | modules.direct_apply:_download_patch:253 - 上游补丁文件不存在，下载补丁
+2025-06-19 16:14:57.091 | INFO     | patch_utils:_download_github_patch:232 - GitHub patch URL parts: ['https:', '', 'github.com', 'django', 'django', 'commit', 'd147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2.patch']
+2025-06-19 16:14:57.092 | INFO     | patch_utils:_download_github_patch:240 - 使用GitHub Commit API下载patch: https://api.github.com/repos/django/django/commits/d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2
+2025-06-19 16:15:00.675 | INFO     | patch_utils:_download_github_patch:257 - 下载GitHub补丁成功，补丁已保存到: workspace/django/django/d147a8/patches/upstream_d147a8.patch
+2025-06-19 16:15:00.682 | INFO     | modules.direct_apply:_download_patch:260 - 上游补丁下载成功: workspace/django/django/d147a8/patches/upstream_d147a8.patch
+2025-06-19 16:15:00.684 | INFO     | modules.direct_apply:execute:62 - 此时upstream_patch_path存在状态: True
+2025-06-19 16:15:00.685 | INFO     | modules.direct_apply:execute:63 - 下载补丁成功: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/patches/upstream_d147a8.patch
+2025-06-19 16:15:02.776 | INFO     | modules.direct_apply:_prepare_test_branch:400 - 创建测试分支: test_patch_4.2.15
+2025-06-19 16:15:03.255 | ERROR    | modules.direct_apply:_apply_patch:340 - 补丁应用失败: error: docs/releases/4.2.16.txt: does not exist in index
+hint: Use 'git am --show-current-patch' to see the failed patch
+
+2025-06-19 16:15:03.404 | INFO     | modules.direct_apply:_cleanup_test_branch:492 - 清理测试分支: test_patch_4.2.15
+2025-06-19 16:15:03.405 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: chunk_analyzer
+2025-06-19 16:15:03.405 | INFO     | modules.chunk_analyzer:execute:52 - 开始分析补丁: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/patches/upstream_d147a8.patch
+2025-06-19 16:15:03.406 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:178 - 开始分解补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/patches/upstream_d147a8.patch
+2025-06-19 16:15:03.406 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:183 - 补丁文件包含 126 行内容
+2025-06-19 16:15:03.407 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: django/utils/html.py
+2025-06-19 16:15:03.408 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: django/utils/html.py @@ -395,14 +395,17 @@ (modification)
+2025-06-19 16:15:03.409 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: docs/ref/templates/builtins.txt
+2025-06-19 16:15:03.410 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: docs/ref/templates/builtins.txt @@ -2831,6 +2831,17 @@ (modification)
+2025-06-19 16:15:03.410 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: docs/releases/4.2.16.txt
+2025-06-19 16:15:03.411 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: docs/releases/4.2.16.txt @@ -7,4 +7,9 @@ (modification)
+2025-06-19 16:15:03.412 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: tests/template_tests/filter_tests/test_urlize.py
+2025-06-19 16:15:03.412 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: tests/template_tests/filter_tests/test_urlize.py @@ -305,6 +305,28 @@ (modification)
+2025-06-19 16:15:03.413 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:198 - 发现修改文件: tests/utils_tests/test_html.py
+2025-06-19 16:15:03.413 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:249 - 发现修改块: tests/utils_tests/test_html.py @@ -364,6 +364,7 @@ (modification)
+2025-06-19 16:15:03.414 | INFO     | modules.chunk_analyzer:_split_patch_into_chunks:269 - 补丁分解完成，共找到 5 个修改块
+2025-06-19 16:15:03.414 | INFO     | modules.chunk_analyzer:execute:56 - 补丁被分解为 5 个块
+2025-06-19 16:15:03.415 | INFO     | modules.chunk_analyzer:_create_chunk_patches:288 - 从原始补丁提取头部信息: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/patches/upstream_d147a8.patch
+2025-06-19 16:15:03.416 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_001_20250619_161503.patch (修改文件: django/utils/html.py)
+2025-06-19 16:15:03.418 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_002_20250619_161503.patch (修改文件: docs/ref/templates/builtins.txt)
+2025-06-19 16:15:03.419 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_003_20250619_161503.patch (修改文件: docs/releases/4.2.16.txt)
+2025-06-19 16:15:03.420 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_004_20250619_161503.patch (修改文件: tests/template_tests/filter_tests/test_urlize.py)
+2025-06-19 16:15:03.421 | INFO     | modules.chunk_analyzer:_create_chunk_patches:314 - 创建块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_005_20250619_161503.patch (修改文件: tests/utils_tests/test_html.py)
+2025-06-19 16:15:03.422 | INFO     | modules.chunk_analyzer:execute:60 - 已为 5 个块创建单独的补丁文件
+2025-06-19 16:15:03.422 | INFO     | modules.chunk_analyzer:execute:62 - 第 1 个补丁文件为：
+2025-06-19 16:15:03.423 | INFO     | modules.chunk_analyzer:execute:66 - From d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                          | 17 ++++++++------
+ docs/ref/templates/builtins.txt               | 11 ++++++++++
+ docs/releases/4.2.16.txt                      |  7 +++++-
+ .../filter_tests/test_urlize.py               | 22 +++++++++++++++++++
+ tests/utils_tests/test_html.py                |  1 +
+ 5 files changed, 50 insertions(+), 8 deletions(-)
+
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 23575d3c11b9..df38c2051994 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -395,14 +395,17 @@ def trim_punctuation(self, word):
+                 potential_entity = middle[amp:]
+                 escaped = html.unescape(potential_entity)
+                 if escaped == potential_entity or escaped.endswith(";"):
+-                    rstripped = middle.rstrip(";")
+-                    amount_stripped = len(middle) - len(rstripped)
+-                    if amp > -1 and amount_stripped > 1:
+-                        # Leave a trailing semicolon as might be an entity.
+-                        trail = middle[len(rstripped) + 1 :] + trail
+-                        middle = rstripped + ";"
++                    rstripped = middle.rstrip(self.trailing_punctuation_chars)
++                    trail_start = len(rstripped)
++                    amount_trailing_semicolons = len(middle) - len(middle.rstrip(";"))
++                    if amp > -1 and amount_trailing_semicolons > 1:
++                        # Leave up to most recent semicolon as might be an entity.
++                        recent_semicolon = middle[trail_start:].index(";")
++                        middle_semicolon_index = recent_semicolon + trail_start + 1
++                        trail = middle[middle_semicolon_index:] + trail
++                        middle = rstripped + middle[trail_start:middle_semicolon_index]
+                     else:
+-                        trail = middle[len(rstripped) :] + trail
++                        trail = middle[trail_start:] + trail
+                         middle = rstripped
+                     trimmed_something = True
+ 
+
+2025-06-19 16:15:03.424 | INFO     | modules.chunk_analyzer:execute:62 - 第 2 个补丁文件为：
+2025-06-19 16:15:03.424 | INFO     | modules.chunk_analyzer:execute:66 - From d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                          | 17 ++++++++------
+ docs/ref/templates/builtins.txt               | 11 ++++++++++
+ docs/releases/4.2.16.txt                      |  7 +++++-
+ .../filter_tests/test_urlize.py               | 22 +++++++++++++++++++
+ tests/utils_tests/test_html.py                |  1 +
+ 5 files changed, 50 insertions(+), 8 deletions(-)
+
+diff --git a/docs/ref/templates/builtins.txt b/docs/ref/templates/builtins.txt
+index 39aa39833885..dda5b426554b 100644
+--- a/docs/ref/templates/builtins.txt
++++ b/docs/ref/templates/builtins.txt
+@@ -2831,6 +2831,17 @@ Django's built-in :tfilter:`escape` filter. The default value for
+     email addresses that contain single quotes (``'``), things won't work as
+     expected. Apply this filter only to plain text.
+ 
++.. warning::
++
++    Using ``urlize`` or ``urlizetrunc`` can incur a performance penalty, which
++    can become severe when applied to user controlled values such as content
++    stored in a :class:`~django.db.models.TextField`. You can use
++    :tfilter:`truncatechars` to add a limit to such inputs:
++
++    .. code-block:: html+django
++
++        {{ value|truncatechars:500|urlize }}
++
+ .. templatefilter:: urlizetrunc
+ 
+ ``urlizetrunc``
+
+2025-06-19 16:15:03.425 | INFO     | modules.chunk_analyzer:execute:62 - 第 3 个补丁文件为：
+2025-06-19 16:15:03.426 | INFO     | modules.chunk_analyzer:execute:66 - From d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                          | 17 ++++++++------
+ docs/ref/templates/builtins.txt               | 11 ++++++++++
+ docs/releases/4.2.16.txt                      |  7 +++++-
+ .../filter_tests/test_urlize.py               | 22 +++++++++++++++++++
+ tests/utils_tests/test_html.py                |  1 +
+ 5 files changed, 50 insertions(+), 8 deletions(-)
+
+diff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt
+index 985300438608..2a84186867c5 100644
+--- a/docs/releases/4.2.16.txt
++++ b/docs/releases/4.2.16.txt
+@@ -7,4 +7,9 @@ Django 4.2.16 release notes
+ Django 4.2.16 fixes one security issue with severity "moderate" and one
+ security issue with severity "low" in 4.2.15.
+ 
+-...
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
+
+2025-06-19 16:15:03.426 | INFO     | modules.chunk_analyzer:execute:62 - 第 4 个补丁文件为：
+2025-06-19 16:15:03.427 | INFO     | modules.chunk_analyzer:execute:66 - From d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                          | 17 ++++++++------
+ docs/ref/templates/builtins.txt               | 11 ++++++++++
+ docs/releases/4.2.16.txt                      |  7 +++++-
+ .../filter_tests/test_urlize.py               | 22 +++++++++++++++++++
+ tests/utils_tests/test_html.py                |  1 +
+ 5 files changed, 50 insertions(+), 8 deletions(-)
+
+diff --git a/tests/template_tests/filter_tests/test_urlize.py b/tests/template_tests/filter_tests/test_urlize.py
+index abc227ba6a78..e542802aaeba 100644
+--- a/tests/template_tests/filter_tests/test_urlize.py
++++ b/tests/template_tests/filter_tests/test_urlize.py
+@@ -305,6 +305,28 @@ def test_trailing_multiple_punctuation(self):
+             "http://testing.com/example</a>.,:;)&quot;!",
+         )
+ 
++    def test_trailing_semicolon(self):
++        self.assertEqual(
++            urlize("http://example.com?x=&amp;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp;</a>",
++        )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp;;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp;</a>;",
++        )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp;;;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp;</a>;;",
++        )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp.;...;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp</a>.;...;",
++        )
++
+     def test_brackets(self):
+         """
+         #19070 - Check urlize handles brackets properly
+
+2025-06-19 16:15:03.428 | INFO     | modules.chunk_analyzer:execute:62 - 第 5 个补丁文件为：
+2025-06-19 16:15:03.429 | INFO     | modules.chunk_analyzer:execute:66 - From d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                          | 17 ++++++++------
+ docs/ref/templates/builtins.txt               | 11 ++++++++++
+ docs/releases/4.2.16.txt                      |  7 +++++-
+ .../filter_tests/test_urlize.py               | 22 +++++++++++++++++++
+ tests/utils_tests/test_html.py                |  1 +
+ 5 files changed, 50 insertions(+), 8 deletions(-)
+
+diff --git a/tests/utils_tests/test_html.py b/tests/utils_tests/test_html.py
+index 83ebe4334ba7..7ff5020fb6d3 100644
+--- a/tests/utils_tests/test_html.py
++++ b/tests/utils_tests/test_html.py
+@@ -364,6 +364,7 @@ def test_urlize_unchanged_inputs(self):
+             "&:" + ";" * 100_000,
+             "&.;" * 100_000,
+             ".;" * 100_000,
++            "&" + ";:" * 100_000,
+         )
+         for value in tests:
+             with self.subTest(value=value):
+
+2025-06-19 16:15:03.430 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:357 - 切换到目标版本: 4.2.15
+2025-06-19 16:15:03.483 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:369 - 创建测试分支: test_chunk_apply_458b06ec
+2025-06-19 16:15:03.620 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 1/5 个块补丁: chunk_001_20250619_161503.patch
+2025-06-19 16:15:03.629 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_001_20250619_161503.patch
+2025-06-19 16:15:03.629 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 2/5 个块补丁: chunk_002_20250619_161503.patch
+2025-06-19 16:15:03.651 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_002_20250619_161503.patch
+2025-06-19 16:15:03.651 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 3/5 个块补丁: chunk_003_20250619_161503.patch
+2025-06-19 16:15:03.678 | WARNING  | modules.chunk_analyzer:_apply_chunk_patches:420 - 块补丁 chunk_003_20250619_161503.patch 应用失败: error: docs/releases/4.2.16.txt: No such file or directory
+
+2025-06-19 16:15:03.679 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 4/5 个块补丁: chunk_004_20250619_161503.patch
+2025-06-19 16:15:03.692 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_004_20250619_161503.patch
+2025-06-19 16:15:03.693 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:388 - 尝试应用第 5/5 个块补丁: chunk_005_20250619_161503.patch
+2025-06-19 16:15:03.708 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:401 - 成功应用块补丁: chunk_005_20250619_161503.patch
+2025-06-19 16:15:03.709 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:430 - 块补丁应用统计信息:
+2025-06-19 16:15:03.710 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:431 - - 总块数: 5
+2025-06-19 16:15:03.710 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:432 - - 无冲突块数: 4
+2025-06-19 16:15:03.711 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:433 - - 适配失败块数: 1
+2025-06-19 16:15:03.712 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:438 - 切换回目标版本: 4.2.15
+2025-06-19 16:15:03.792 | INFO     | modules.chunk_analyzer:_apply_chunk_patches:446 - 删除测试分支: test_chunk_apply_458b06ec
+2025-06-19 16:15:03.813 | INFO     | modules.chunk_analyzer:execute:70 - 成功应用了 4 个块补丁，总共 5 个
+2025-06-19 16:15:03.816 | INFO     | modules.chunk_analyzer:_create_remaining_patch:527 - 创建剩余块补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/remaining_chunks_20250619_161503.patch
+2025-06-19 16:15:03.817 | INFO     | modules.chunk_analyzer:execute:78 - 创建了包含 1 个未应用块的剩余补丁: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/remaining_chunks_20250619_161503.patch
+2025-06-19 16:15:03.819 | INFO     | modules.chunk_analyzer:execute:102 - 已将剩余补丁路径存储到上下文: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/remaining_chunks_20250619_161503.patch
+2025-06-19 16:15:03.820 | INFO     | modules.chunk_analyzer:execute:117 - 补丁分块分析完成，耗时: 0.41秒
+2025-06-19 16:15:03.822 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/django/django/d147a8/evaluations/chunk_analyzer/metrics_d147a8_20250619_161503.json
+2025-06-19 16:15:03.833 | INFO     | modules.chunk_analyzer:_generate_additional_html_sections:917 - 找到当前评估会话目录: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503
+2025-06-19 16:15:03.833 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503
+2025-06-19 16:15:03.834 | WARNING  | modules.chunk_analyzer:_get_patch_content:1207 - 补丁目录不存在: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503/patches
+2025-06-19 16:15:03.835 | INFO     | modules.chunk_analyzer:_get_patch_content:1212 - 成功创建补丁目录: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503/patches
+2025-06-19 16:15:03.836 | INFO     | modules.chunk_analyzer:_get_patch_content:1230 - 已将原始补丁内容保存到: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503/patches/original_patch.txt
+2025-06-19 16:15:03.836 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503
+2025-06-19 16:15:03.838 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503/patches/applied_chunk_1.txt
+2025-06-19 16:15:03.839 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503/patches/applied_chunk_2.txt
+2025-06-19 16:15:03.840 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503/patches/applied_chunk_3.txt
+2025-06-19 16:15:03.841 | INFO     | modules.chunk_analyzer:_get_patch_content:1335 - 已将补丁块内容保存到: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503/patches/applied_chunk_4.txt
+2025-06-19 16:15:03.851 | INFO     | modules.chunk_analyzer:_get_patch_content:1344 - 已将合并的补丁块内容保存到: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503/patches/all_applied_chunks.txt
+2025-06-19 16:15:03.851 | INFO     | modules.chunk_analyzer:_get_patch_content:1348 - 从context获取应用成功的补丁内容
+2025-06-19 16:15:03.852 | INFO     | modules.chunk_analyzer:_get_patch_content:1151 - 使用当前会话评估目录: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503
+2025-06-19 16:15:03.853 | INFO     | modules.chunk_analyzer:_get_patch_content:1399 - 已将剩余补丁内容保存到: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503/patches/remaining_patch.txt
+2025-06-19 16:15:03.854 | INFO     | modules.chunk_analyzer:_get_patch_content:1403 - 从context获取剩余补丁内容: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/remaining_chunks_20250619_161503.patch
+2025-06-19 16:15:03.856 | INFO     | modules.base_module:_save_evaluation_info:198 - 美观易读的评估信息已保存到: workspace/django/django/d147a8/evaluations/chunk_analyzer/details_d147a8_20250619_161503
+2025-06-19 16:15:03.870 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: llm_adapter
+2025-06-19 16:15:03.870 | INFO     | modules.llm_adapter:execute:71 - context.commit.patch_path: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/patches/upstream_d147a8.patch
+2025-06-19 16:15:03.871 | INFO     | modules.llm_adapter:execute:73 - 使用原始补丁文件: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/patches/upstream_d147a8.patch
+2025-06-19 16:15:03.872 | INFO     | modules.llm_adapter:_prepare_prompt_data:223 - 使用传统上下文差异
+2025-06-19 16:15:04.048 | ERROR    | modules.llm_adapter:_get_context_diff:885 - 获取上下文差异失败: Command '['git', 'apply', '--ignore-whitespace', '/home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_001_20250619_161503.patch']' returned non-zero exit status 1.
+2025-06-19 16:15:04.053 | ERROR    | modules.llm_adapter:_get_context_diff:886 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/llm_adapter.py", line 836, in _get_context_diff
+    subprocess.run(['git', 'apply', '--ignore-whitespace', patch_path],
+  File "/home/elpsy/tools/miniconda3/envs/sow/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'apply', '--ignore-whitespace', '/home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_001_20250619_161503.patch']' returned non-zero exit status 1.
+
+2025-06-19 16:15:04.054 | INFO     | modules.llm_adapter:_call_llm:951 - 使用标准提示模式，使用diff模板: backport-diff
+2025-06-19 16:15:04.358 | INFO     | llm_assistant:run:284 - +++++++++++++++++++++++++++++++++++
+2025-06-19 16:15:31.136 | INFO     | llm_assistant:run:304 - ---responses in run: [{'prompt': [{'role': 'system', 'content': 'You are a senior software engineer who is best in the world at fixing vulnerabilities and patch porting between versions.\nUsers will give you 1. a patch based on a newer version 2. the diff info between the newer version and and older version. \nAnd you will generate a fix patch to the older version in the form of git diff based on the provided INSTRUCTION.\nINSTRUCTION:\nOnly reterun the final result after patch and diff information are entered. When all the information is entered, it will be identified with \u200d\u200d```===end===\u200d\u200d```\nOnly respond with the patch info, do not add any comments or change the indentation.\nThe patch should have no errors, it should compile and user should be able to use the fixed code as a direct replacement of the vulnerable code. The code should not introduce any new dependencies or use API calls that are not present in the code.\nIf you can generate a backport patch for the patch, do a brief change impact analysis to assess how these modifications might affect the overall system, considering both immediate and potential long-term compatibility issues.\nLow: Code diff will be applied to the code base and automatically merged without review.\nMedium: Code diff will be applied and a pull request will be sent to the developer to merge, but there are no indirect changes expected to be done in other parts of the system.\nHigh: Code diff will be offered as a suggestion to the developer to review and then apply to the code base. There are likely other changes that need to be done by the developer before the change can be implemented.\nPlease provide a response only in the following format:\n\nA. Commit message:\n<brief summary of the diff>\n\nB. Change summary:\n<description of the changes made in the diff>\n\nC. Compatibility Risk:\n<Low, Medium, High>\n\nD. Fixed Code:\n<original patch info with now backported>\n\n'}, {'role': 'system', 'content': '1. a patch based on a newer version: \nFrom d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2 Mon Sep 17 00:00:00 2001\nFrom: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>\nDate: Mon, 12 Aug 2024 15:17:57 +0200\nSubject: [PATCH] [4.2.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in\n urlize and urlizetrunc template filters.\n\nThanks MProgrammer (https://hackerone.com/mprogrammer) for the report.\n---\n django/utils/html.py                          | 17 ++++++++------\n docs/ref/templates/builtins.txt               | 11 ++++++++++\n docs/releases/4.2.16.txt                      |  7 +++++-\n .../filter_tests/test_urlize.py               | 22 +++++++++++++++++++\n tests/utils_tests/test_html.py                |  1 +\n 5 files changed, 50 insertions(+), 8 deletions(-)\n\ndiff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt\nindex 985300438608..2a84186867c5 100644\n--- a/docs/releases/4.2.16.txt\n+++ b/docs/releases/4.2.16.txt\n@@ -7,4 +7,9 @@ Django 4.2.16 release notes\n Django 4.2.16 fixes one security issue with severity "moderate" and one\n security issue with severity "low" in 4.2.15.\n \n-...\n+CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``\n+===========================================================================================\n+\n+:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential\n+denial-of-service attack via very large inputs with a specific sequence of\n+characters.\n'}, {'role': 'system', 'content': '2. the diff info between the newer version and and older version: \nFrom d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2 Mon Sep 17 00:00:00 2001\nFrom: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>\nDate: Mon, 12 Aug 2024 15:17:57 +0200\nSubject: [PATCH] [4.2.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in\n urlize and urlizetrunc template filters.\n\nThanks MProgrammer (https://hackerone.com/mprogrammer) for the report.\n---\n django/utils/html.py                          | 17 ++++++++------\n docs/ref/templates/builtins.txt               | 11 ++++++++++\n docs/releases/4.2.16.txt                      |  7 +++++-\n .../filter_tests/test_urlize.py               | 22 +++++++++++++++++++\n tests/utils_tests/test_html.py                |  1 +\n 5 files changed, 50 insertions(+), 8 deletions(-)\n\ndiff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt\nindex 985300438608..2a84186867c5 100644\n--- a/docs/releases/4.2.16.txt\n+++ b/docs/releases/4.2.16.txt\n@@ -7,4 +7,9 @@ Django 4.2.16 release notes\n Django 4.2.16 fixes one security issue with severity "moderate" and one\n security issue with severity "low" in 4.2.15.\n \n-...\n+CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``\n+===========================================================================================\n+\n+:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential\n+denial-of-service attack via very large inputs with a specific sequence of\n+characters.\n\n===end==='}, {'role': 'user', 'content': 'Please return the final result.'}], 'response': 'A. Commit message:\nFixed CVE-2024-45230 -- Mitigated potential DoS in urlize and urlizetrunc template filters.\n\nB. Change summary:\nUpdated the `urlize` and `urlizetrunc` functions to prevent potential denial-of-service attacks caused by very large inputs with specific character sequences. Added documentation and test cases to ensure proper functionality and security.\n\nC. Compatibility Risk:\nLow\n\nD. Fixed Code:\ndiff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt\nindex 985300438608..2a84186867c5 100644\n--- a/docs/releases/4.2.16.txt\n+++ b/docs/releases/4.2.16.txt\n@@ -7,4 +7,9 @@ Django 4.2.16 release notes\n Django 4.2.16 fixes one security issue with severity "moderate" and one\n security issue with severity "low" in 4.2.15.\n \n-...\n+CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``\n+===========================================================================================\n+\n+:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential\n+denial-of-service attack via very large inputs with a specific sequence of\n+characters.', 'request_token': 0, 'response_token': 0}]
+2025-06-19 16:15:31.138 | INFO     | modules.llm_adapter:_call_llm:973 - llm.run() result:{'openai_responses': ['A. Commit message:\nFixed CVE-2024-45230 -- Mitigated potential DoS in urlize and urlizetrunc template filters.\n\nB. Change summary:\nUpdated the `urlize` and `urlizetrunc` functions to prevent potential denial-of-service attacks caused by very large inputs with specific character sequences. Added documentation and test cases to ensure proper functionality and security.\n\nC. Compatibility Risk:\nLow\n\nD. Fixed Code:\ndiff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt\nindex 985300438608..2a84186867c5 100644\n--- a/docs/releases/4.2.16.txt\n+++ b/docs/releases/4.2.16.txt\n@@ -7,4 +7,9 @@ Django 4.2.16 release notes\n Django 4.2.16 fixes one security issue with severity "moderate" and one\n security issue with severity "low" in 4.2.15.\n \n-...\n+CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``\n+===========================================================================================\n+\n+:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential\n+denial-of-service attack via very large inputs with a specific sequence of\n+characters.'], 'request_tokens': [0], 'response_tokens': [0]}
+2025-06-19 16:15:31.139 | INFO     | modules.llm_adapter:_parse_llm_response:1055 - 原始LLM响应(前100字符): A. Commit message:
+Fixed CVE-2024-45230 -- Mitigated potential DoS in urlize and urlizetrunc templat...
+2025-06-19 16:15:31.142 | INFO     | modules.llm_adapter:_parse_llm_response:1089 - 找到diff --git格式，内容前100字符: diff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt
+index 985300438608..2a84186867c5 10...
+2025-06-19 16:15:31.145 | INFO     | modules.llm_adapter:_save_llm_response:1224 - LLM响应已保存到: workspace/django/django/d147a8/llm_output/output_4.2.15_qwen-plus.patch
+2025-06-19 16:15:31.146 | INFO     | modules.llm_adapter:_save_llm_response:1225 - 原始LLM响应已保存到: workspace/django/django/d147a8/llm_output/raw_output_4.2.15_qwen-plus.patch
+2025-06-19 16:15:31.148 | INFO     | modules.llm_adapter:execute:97 - ==================================================
+2025-06-19 16:15:31.149 | INFO     | modules.llm_adapter:execute:98 - LLM适配器执行完成 - 摘要
+2025-06-19 16:15:31.149 | INFO     | modules.llm_adapter:execute:99 - 提示模式: 标准模式
+2025-06-19 16:15:31.150 | INFO     | modules.llm_adapter:execute:100 - 提示类型: 标准上下文差异
+2025-06-19 16:15:31.151 | INFO     | modules.llm_adapter:execute:101 - 函数上下文统计: 总尝试: 0, 成功: 0, 回退: 0
+2025-06-19 16:15:31.152 | INFO     | modules.llm_adapter:execute:105 - 执行时间: 27.28 秒
+2025-06-19 16:15:31.152 | INFO     | modules.llm_adapter:execute:106 - 生成的补丁保存到: workspace/django/django/d147a8/llm_output/output_4.2.15_qwen-plus.patch
+2025-06-19 16:15:31.153 | INFO     | modules.llm_adapter:execute:107 - ==================================================
+2025-06-19 16:15:31.156 | INFO     | modules.base_module:_save_metrics:143 - 评测指标已保存到: workspace/django/django/d147a8/evaluations/llm_adapter/metrics_d147a8_20250619_161531.json
+2025-06-19 16:15:31.157 | INFO     | core.adaptation_pipeline:process_patch:106 - 执行模块: patch_adapter
+2025-06-19 16:15:31.159 | INFO     | modules.patch_adapter:execute:47 - LLM响应文件路径: workspace/django/django/d147a8/llm_output/output_4.2.15_qwen-plus.patch
+2025-06-19 16:15:31.161 | INFO     | modules.patch_adapter:_prepare_test_branch:162 - 创建测试分支: test_adapt_4.2.15_20250619_161531
+2025-06-19 16:15:31.546 | INFO     | patch_adapter_utils:generate_adapted_file:834 - the first diff_content:
+diff --git a/docs/releases/4.2.16.txt b/docs/releases/4.2.16.txt
+index 985300438608..2a84186867c5 100644
+--- a/docs/releases/4.2.16.txt
++++ b/docs/releases/4.2.16.txt
+@@ -7,4 +7,9 @@ Django 4.2.16 release notes
+ Django 4.2.16 fixes one security issue with severity "moderate" and one
+ security issue with severity "low" in 4.2.15.
+ 
+-...
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
+2025-06-19 16:15:31.548 | INFO     | patch_adapter_utils:generate_adapted_file:870 - the diff_content:
+@@ -7,4 +7,9 @@ Django 4.2.16 release notes
+ Django 4.2.16 fixes one security issue with severity "moderate" and one
+ security issue with severity "low" in 4.2.15.
+ 
+-...
++CVE-2024-45230: Potential denial-of-service vulnerability in ``django.utils.html.urlize()``
++===========================================================================================
++
++:tfilter:`urlize` and :tfilter:`urlizetrunc` were subject to a potential
++denial-of-service attack via very large inputs with a specific sequence of
++characters.
+2025-06-19 16:15:31.549 | ERROR    | patch_adapter_utils:generate_adapted_file:873 - 源文件不存在: workspace/django/django/d147a8/4.2.15/docs/releases/4.2.16.txt, 已跳过
+2025-06-19 16:15:31.551 | WARNING  | modules.patch_adapter:_generate_adapted_patch:281 - 没有发现需要更改的文件
+2025-06-19 16:15:31.553 | INFO     | modules.patch_adapter:_cleanup_test_branch:199 - 清理测试分支: test_adapt_4.2.15_20250619_161531
+2025-06-19 16:15:31.652 | ERROR    | modules.patch_adapter:execute:96 - 补丁适配过程发生错误: 生成适配补丁失败
+2025-06-19 16:15:31.654 | ERROR    | modules.patch_adapter:execute:99 - Traceback (most recent call last):
+  File "/home/elpsy/workspace/sow/patch-backport/modules/patch_adapter.py", line 71, in execute
+    raise ValueError("生成适配补丁失败")
+ValueError: 生成适配补丁失败
+
+2025-06-19 16:15:31.657 | INFO     | modules.patch_adapter:_save_metrics:428 - 补丁适配指标已保存到: workspace/django/django/d147a8/metrics/patch_adapter_metrics.json
+2025-06-19 16:15:31.658 | INFO     | core.adaptation_pipeline:process_patch:128 - 补丁处理完成，耗时: 34.57秒
+2025-06-19 16:15:31.659 | INFO     | __main__:_merge_patches:1101 - 开始合并补丁...
+2025-06-19 16:15:31.660 | INFO     | __main__:_merge_patches:1136 - chunk_results2:
+2025-06-19 16:15:31.662 | INFO     | __main__:_merge_patches:1138 - chunk_patches: [PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_001_20250619_161503.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_002_20250619_161503.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_004_20250619_161503.patch'), PosixPath('/home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_005_20250619_161503.patch')]
+2025-06-19 16:15:31.663 | INFO     | __main__:_merge_patches:1140 - Chunk分析器应用了 4/5 个chunks
+2025-06-19 16:15:31.664 | INFO     | __main__:_combine_patch_files:1269 - 创建临时测试分支: patch_merge_1a80f283
+2025-06-19 16:15:32.063 | INFO     | __main__:_combine_patch_files:1321 - 补丁 chunk_001_20250619_161503.patch 大小: 2440 字节
+2025-06-19 16:15:32.063 | INFO     | __main__:_combine_patch_files:1321 - 补丁 chunk_002_20250619_161503.patch 大小: 1591 字节
+2025-06-19 16:15:32.064 | INFO     | __main__:_combine_patch_files:1321 - 补丁 chunk_004_20250619_161503.patch 大小: 2163 字节
+2025-06-19 16:15:32.065 | INFO     | __main__:_combine_patch_files:1321 - 补丁 chunk_005_20250619_161503.patch 大小: 1200 字节
+2025-06-19 16:15:32.066 | INFO     | __main__:_combine_patch_files:1330 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_001_20250619_161503.patch
+2025-06-19 16:15:32.066 | INFO     | __main__:_combine_patch_files:1333 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_001_20250619_161503.patch
+2025-06-19 16:15:32.082 | INFO     | __main__:_combine_patch_files:1343 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_001_20250619_161503.patch
+2025-06-19 16:15:32.082 | INFO     | __main__:_combine_patch_files:1330 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_002_20250619_161503.patch
+2025-06-19 16:15:32.083 | INFO     | __main__:_combine_patch_files:1333 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_002_20250619_161503.patch
+2025-06-19 16:15:32.099 | INFO     | __main__:_combine_patch_files:1343 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_002_20250619_161503.patch
+2025-06-19 16:15:32.100 | INFO     | __main__:_combine_patch_files:1330 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_004_20250619_161503.patch
+2025-06-19 16:15:32.101 | INFO     | __main__:_combine_patch_files:1333 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_004_20250619_161503.patch
+2025-06-19 16:15:32.116 | INFO     | __main__:_combine_patch_files:1343 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_004_20250619_161503.patch
+2025-06-19 16:15:32.117 | INFO     | __main__:_combine_patch_files:1330 - 应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_005_20250619_161503.patch
+2025-06-19 16:15:32.118 | INFO     | __main__:_combine_patch_files:1333 - 执行命令: git apply --ignore-whitespace /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_005_20250619_161503.patch
+2025-06-19 16:15:32.132 | INFO     | __main__:_combine_patch_files:1343 - 成功应用补丁: /home/elpsy/workspace/sow/patch-backport/workspace/django/django/d147a8/chunk_patches/chunk_005_20250619_161503.patch
+2025-06-19 16:15:32.485 | INFO     | __main__:_combine_patch_files:1442 - 执行命令: git format-patch -1 HEAD --stdout > temp_patch_merge/merged.patch
+2025-06-19 16:15:32.530 | INFO     | __main__:_combine_patch_files:1484 - 成功生成合并补丁: temp_patch_merge/merged.patch (大小: 5109 字节)
+2025-06-19 16:15:32.532 | INFO     | __main__:_combine_patch_files:1499 - 清理临时分支: patch_merge_1a80f283
+2025-06-19 16:15:32.676 | INFO     | __main__:_merge_patches:1222 - 只合并chunk补丁到: workspace/django/django/d147a8/patches/merged_4.2.15.patch
+2025-06-19 16:15:32.676 | INFO     | __main__:_process_mode1:392 - 成功合并补丁到: workspace/django/django/d147a8/patches/merged_4.2.15.patch
+2025-06-19 16:15:32.678 | INFO     | __main__:_save_results:758 - 已复制最终补丁到结果目录: results/django_4.2.15_d147a8_20250619_161532/merged_4.2.15.patch
+2025-06-19 16:15:32.679 | INFO     | __main__:_save_results:896 - 结果已保存到: results/django_4.2.15_d147a8_20250619_161532/result.json
+2025-06-19 16:15:32.680 | INFO     | __main__:_print_summary:938 - context.patch_adapter_result: {'success': False, 'error': '生成适配补丁失败'}
+2025-06-19 16:15:32.680 | INFO     | __main__:_print_summary:965 - ==================================================
+2025-06-19 16:15:32.681 | INFO     | __main__:_print_summary:966 - 处理摘要 - 提交: d147a8
+2025-06-19 16:15:32.681 | INFO     | __main__:_print_summary:967 - 适配状态: 适配失败 (方法: failed)
+2025-06-19 16:15:32.682 | INFO     | __main__:_print_summary:982 - 块分析统计:
+2025-06-19 16:15:32.682 | INFO     | __main__:_print_summary:983 - - 总块数: 5
+2025-06-19 16:15:32.683 | INFO     | __main__:_print_summary:984 - - 冲突块数: 1
+2025-06-19 16:15:32.683 | INFO     | __main__:_print_summary:985 - - 成功适配块数: 0
+2025-06-19 16:15:32.683 | INFO     | __main__:_print_summary:986 - - 适配失败块数: 1
+2025-06-19 16:15:32.684 | INFO     | __main__:_print_summary:987 - - 编译失败块数: 0
+2025-06-19 16:15:32.684 | INFO     | __main__:_print_summary:991 - 总执行时间: 34.57秒
+2025-06-19 16:15:32.684 | INFO     | __main__:_print_summary:996 - ==================================================
+2025-06-19 16:15:32.685 | INFO     | __main__:run:335 - 处理完成
+2025-06-19 16:15:32.685 | INFO     | __main__:process_single_commit:2219 - ============================================================
+2025-06-19 16:15:32.686 | INFO     | __main__:process_single_commit:2220 - 单个commit处理完成: d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2
+2025-06-19 16:15:32.686 | INFO     | __main__:process_single_commit:2221 - ============================================================
+2025-06-19 16:15:32.691 | INFO     | __main__:clean_config:2181 - 清理配置文件: /home/elpsy/.config/port-patch/new_inputs.yaml

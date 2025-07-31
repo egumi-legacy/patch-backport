@@ -1,0 +1,34 @@
+modified file: drivers/video/fbdev/hyperv_fb.c
+--- workspace/linux/kernel-torvalds/f5e728/newer/drivers/video/fbdev/hyperv_fb.c
++++ workspace/linux/kernel-torvalds/f5e728/v6.12-rc7/drivers/video/fbdev/hyperv_fb.c
+@@ -989,7 +989,6 @@
+  
+  		base = pci_resource_start(pdev, 0);
+  		size = pci_resource_len(pdev, 0);
+ -		aperture_remove_conflicting_devices(base, size, KBUILD_MODNAME);
+  
+  	dio_fb_size =
+  		screen_width * screen_height * screen_depth / 8;
+@@ -1062,6 +1051,11 @@
+  	info->screen_size = dio_fb_size;
+  
+  getmem_done:
+ +	if (base && size)
+ +		aperture_remove_conflicting_devices(base, size, KBUILD_MODNAME);
+ +	else
+ +		aperture_remove_all_conflicting_devices(KBUILD_MODNAME);
+ +
+  	if (!gen2vm)
+  		pci_dev_put(pdev);
+  
+@@ -1086,7 +1080,7 @@
+  
+  	if (par->need_docopy) {
+  		vfree(par->dio_vp);
+ -		iounmap(par->mmio_vp);
+ +		iounmap(info->screen_base);
+  		vmbus_free_mmio(par->mem->start, screen_fb_size);
+  	} else {
+  		hvfb_release_phymem(hdev, info->fix.smem_start,
+
+""""""

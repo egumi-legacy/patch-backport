@@ -1,0 +1,48 @@
+From d147a8ebbdf28c17cafbbe2884f0bc57e2bf82e2 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Mon, 12 Aug 2024 15:17:57 +0200
+Subject: [PATCH] [4.2.x] Fixed CVE-2024-45230 -- Mitigated potential DoS in
+ urlize and urlizetrunc template filters.
+
+Thanks MProgrammer (https://hackerone.com/mprogrammer) for the report.
+---
+ django/utils/html.py                          | 17 ++++++++------
+ docs/ref/templates/builtins.txt               | 11 ++++++++++
+ docs/releases/4.2.16.txt                      |  7 +++++-
+ .../filter_tests/test_urlize.py               | 22 +++++++++++++++++++
+ tests/utils_tests/test_html.py                |  1 +
+ 5 files changed, 50 insertions(+), 8 deletions(-)
+
+diff --git a/tests/template_tests/filter_tests/test_urlize.py b/tests/template_tests/filter_tests/test_urlize.py
+index abc227ba6a78..e542802aaeba 100644
+--- a/tests/template_tests/filter_tests/test_urlize.py
++++ b/tests/template_tests/filter_tests/test_urlize.py
+@@ -305,6 +305,28 @@ def test_trailing_multiple_punctuation(self):
+             "http://testing.com/example</a>.,:;)&quot;!",
+         )
+ 
++    def test_trailing_semicolon(self):
++        self.assertEqual(
++            urlize("http://example.com?x=&amp;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp;</a>",
++        )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp;;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp;</a>;",
++        )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp;;;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp;</a>;;",
++        )
++        self.assertEqual(
++            urlize("http://example.com?x=&amp.;...;", autoescape=False),
++            '<a href="http://example.com?x=" rel="nofollow">'
++            "http://example.com?x=&amp</a>.;...;",
++        )
++
+     def test_brackets(self):
+         """
+         #19070 - Check urlize handles brackets properly

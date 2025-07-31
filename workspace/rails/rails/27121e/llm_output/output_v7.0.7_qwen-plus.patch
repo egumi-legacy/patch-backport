@@ -1,0 +1,8 @@
+Backport CVE-2024-41128 fix: Avoid backtracking in parameter filtering
+
+This patch backports the functionality from commit 27121e80f6dbb260f5a9f0452cd8411cb681f075
+to avoid backtracking in `parameter_filtered_location`. The changes ensure that query string
+filtering is performed in a more efficient manner by splitting and rejoining query parts,
+reducing the risk of performance issues or vulnerabilities.
+
+Thanks scyoon for the original patch.

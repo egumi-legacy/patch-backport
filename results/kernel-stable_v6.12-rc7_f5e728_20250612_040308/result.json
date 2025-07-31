@@ -1,0 +1,102 @@
+{
+  "summary": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "chunks_info": {
+      "total_chunks": 6,
+      "no_conflict_chunks": 5,
+      "adapt_succeeded_chunks": 0,
+      "adapt_failed_chunks": 1,
+      "compilation_failed_chunks": 0
+    },
+    "method": "chunk_analyzer",
+    "timestamp": "2025-06-12T04:03:08.993347"
+  },
+  "to_adapt_commit": {
+    "sha": "f5e728a50bb17336a20803dde488515b833ecd1d.patch",
+    "patch_url": "https://github.com/linux/kernel-stable/commit/f5e728a50bb17336a20803dde488515b833ecd1d.patch",
+    "downstream_sha": null,
+    "downstream_message": null,
+    "final_patch_path": "workspace/linux/kernel-stable/f5e728/patches/merged_v6.12-rc7.patch"
+  },
+  "config": {
+    "mode": 1,
+    "target_version": "v6.12-rc7",
+    "enabled_modules": [
+      "direct_apply",
+      "chunk_analyzer",
+      "llm_adapter",
+      "patch_adapter"
+    ]
+  },
+  "results": {
+    "direct_apply": {
+      "success": false,
+      "message": "\u8865\u4e01\u5e94\u7528\u5931\u8d25",
+      "error": "error: patch failed: drivers/video/fbdev/hyperv_fb.c:1089\nerror: drivers/video/fbdev/hyperv_fb.c: patch does not apply\nhint: Use 'git am --show-current-patch' to see the failed patch\n",
+      "patch_path": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/patches/upstream_f5e728.patch",
+      "timestamp": "2025-06-12T04:02:56.297123"
+    },
+    "chunk_analyzer": {
+      "original_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/patches/upstream_f5e728.patch",
+      "total_chunks": 6,
+      "applied_chunks": 5,
+      "applied_chunk_patches": [
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_001_20250612_040256.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_002_20250612_040256.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_003_20250612_040256.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_005_20250612_040256.patch",
+        "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/chunk_006_20250612_040256.patch"
+      ],
+      "remaining_patch": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-stable/f5e728/chunk_patches/remaining_chunks_20250612_040256.patch",
+      "timestamp": "2025-06-12T04:02:56.561167",
+      "success": false
+    },
+    "llm_adapter": {
+      "status": "success",
+      "content": "diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c\nindex ce23d0ef5702..9798a34ac571 100644\n--- a/drivers/video/fbdev/hyperv_fb.c\n+++ b/drivers/video/fbdev/hyperv_fb.c\n@@ -1089,7 +1089,7 @@ static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)\n \t\tiounmap(par->mmio_vp);\n \t\tvmbus_free_mmio(par->mem->start, screen_fb_size);\n \t} else {\n-\t\thvfb_release_phymem(hdev, info->fix.smem_start,\n+\t\thvfb_release_phymem(info->device, info->fix.smem_start,\n \t\t\t\t    screen_fb_size);\n \t}\n",
+      "prompt": {
+        "patch_content": "From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001\nFrom: Saurabh Sengar <ssengar@linux.microsoft.com>\nDate: Sat, 1 Mar 2025 08:16:30 -0800\nSubject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem\n\nThe device object required in 'hvfb_release_phymem' function\nfor 'dma_free_coherent' can also be obtained from the 'info'\npointer, making 'hdev' parameter in 'hvfb_putmem' redundant.\nRemove the unnecessary 'hdev' argument from 'hvfb_putmem'.\n\nSigned-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>\nReviewed-by: Michael Kelley <mhklinux@outlook.com>\nTested-by: Michael Kelley <mhklinux@outlook.com>\nLink: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com\nSigned-off-by: Wei Liu <wei.liu@kernel.org>\nMessage-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>\n\ndiff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c\nindex ce23d0ef5702..9798a34ac571 100644\n--- a/drivers/video/fbdev/hyperv_fb.c\n+++ b/drivers/video/fbdev/hyperv_fb.c\n@@ -1089,7 +1089,7 @@ static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)\n \t\tiounmap(par->mmio_vp);\n \t\tvmbus_free_mmio(par->mem->start, screen_fb_size);\n \t} else {\n-\t\thvfb_release_phymem(hdev, info->fix.smem_start,\n+\t\thvfb_release_phymem(info->device, info->fix.smem_start,\n \t\t\t\t    screen_fb_size);\n \t}\n \n",
+        "target_version": "v6.12-rc7",
+        "context_diff": "From f5e728a50bb17336a20803dde488515b833ecd1d Mon Sep 17 00:00:00 2001\nFrom: Saurabh Sengar <ssengar@linux.microsoft.com>\nDate: Sat, 1 Mar 2025 08:16:30 -0800\nSubject: [PATCH] fbdev: hyperv_fb: Simplify hvfb_putmem\n\nThe device object required in 'hvfb_release_phymem' function\nfor 'dma_free_coherent' can also be obtained from the 'info'\npointer, making 'hdev' parameter in 'hvfb_putmem' redundant.\nRemove the unnecessary 'hdev' argument from 'hvfb_putmem'.\n\nSigned-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>\nReviewed-by: Michael Kelley <mhklinux@outlook.com>\nTested-by: Michael Kelley <mhklinux@outlook.com>\nLink: https://lore.kernel.org/r/1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com\nSigned-off-by: Wei Liu <wei.liu@kernel.org>\nMessage-ID: <1740845791-19977-2-git-send-email-ssengar@linux.microsoft.com>\n\ndiff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c\nindex ce23d0ef5702..9798a34ac571 100644\n--- a/drivers/video/fbdev/hyperv_fb.c\n+++ b/drivers/video/fbdev/hyperv_fb.c\n@@ -1089,7 +1089,7 @@ static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)\n \t\tiounmap(par->mmio_vp);\n \t\tvmbus_free_mmio(par->mem->start, screen_fb_size);\n \t} else {\n-\t\thvfb_release_phymem(hdev, info->fix.smem_start,\n+\t\thvfb_release_phymem(info->device, info->fix.smem_start,\n \t\t\t\t    screen_fb_size);\n \t}\n \n",
+        "feedback_instruction": ""
+      },
+      "response_path": "workspace/linux/kernel-stable/f5e728/llm_output/output_v6.12-rc7_qwen-plus.patch",
+      "timestamp": "2025-06-12T04:03:05.952416",
+      "retry_count": 0
+    },
+    "patch_adapter": {
+      "success": false,
+      "error": "\u751f\u6210\u9002\u914d\u8865\u4e01\u5931\u8d25"
+    },
+    "final_patch_path": "workspace/linux/kernel-stable/f5e728/patches/merged_v6.12-rc7.patch",
+    "last_error": null
+  },
+  "timing": {
+    "start_time": "2025-06-12T04:02:54.795510",
+    "end_time": "2025-06-12T04:03:07.124070",
+    "total_seconds": 12.32856,
+    "module_execution_seconds": {}
+  },
+  "detailed": {
+    "need_adapt": true,
+    "adapt_success": false,
+    "patch_content": "From 6acd3786a1213cae2181fa5c205bf7f5352db3a9 Mon Sep 17 00:00:00 2001\nFrom: elpsy <hewenkuan_work@foxmail.com>\nDate: Thu, 12 Jun 2025 04:03:08 +0800\nSubject: [PATCH] =?UTF-8?q?=E5=90=88=E5=B9=B6=E8=A1=A5=E4=B8=81=EF=BC=9A5?=\n =?UTF-8?q?=E4=B8=AA=E8=A1=A5=E4=B8=81=E6=96=87=E4=BB=B6?=\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\n---\n drivers/video/fbdev/hyperv_fb.c | 10 +++++-----\n 1 file changed, 5 insertions(+), 5 deletions(-)\n\ndiff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c\nindex 7fdb5edd7e2e..eedf6938597e 100644\n--- a/drivers/video/fbdev/hyperv_fb.c\n+++ b/drivers/video/fbdev/hyperv_fb.c\n@@ -952,7 +952,7 @@ static phys_addr_t hvfb_get_phymem(struct hv_device *hdev,\n }\n \n /* Release contiguous physical memory */\n-static void hvfb_release_phymem(struct hv_device *hdev,\n+static void hvfb_release_phymem(struct device *device,\n \t\t\t\tphys_addr_t paddr, unsigned int size)\n {\n \tunsigned int order = get_order(size);\n@@ -960,7 +960,7 @@ static void hvfb_release_phymem(struct hv_device *hdev,\n \tif (order <= MAX_PAGE_ORDER)\n \t\t__free_pages(pfn_to_page(paddr >> PAGE_SHIFT), order);\n \telse\n-\t\tdma_free_coherent(&hdev->device,\n+\t\tdma_free_coherent(device,\n \t\t\t\t  round_up(size, PAGE_SIZE),\n \t\t\t\t  phys_to_virt(paddr),\n \t\t\t\t  paddr);\n@@ -1074,7 +1074,7 @@ static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)\n }\n \n /* Release the framebuffer */\n-static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)\n+static void hvfb_putmem(struct fb_info *info)\n {\n \tstruct hvfb_par *par = info->par;\n \n@@ -1197,7 +1197,7 @@ static int hvfb_probe(struct hv_device *hdev,\n \n error:\n \tfb_deferred_io_cleanup(info);\n-\thvfb_putmem(hdev, info);\n+\thvfb_putmem(info);\n error2:\n \tvmbus_close(hdev->channel);\n error1:\n@@ -1226,7 +1226,7 @@ static void hvfb_remove(struct hv_device *hdev)\n \tvmbus_close(hdev->channel);\n \thv_set_drvdata(hdev, NULL);\n \n-\thvfb_putmem(hdev, info);\n+\thvfb_putmem(info);\n \tframebuffer_release(info);\n }\n \n-- \n2.25.1\n\n",
+    "llm_output": "diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c\nindex ce23d0ef5702..9798a34ac571 100644\n--- a/drivers/video/fbdev/hyperv_fb.c\n+++ b/drivers/video/fbdev/hyperv_fb.c\n@@ -1089,7 +1089,7 @@ static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)\n \t\tiounmap(par->mmio_vp);\n \t\tvmbus_free_mmio(par->mem->start, screen_fb_size);\n \t} else {\n-\t\thvfb_release_phymem(hdev, info->fix.smem_start,\n+\t\thvfb_release_phymem(info->device, info->fix.smem_start,\n \t\t\t\t    screen_fb_size);\n \t}\n",
+    "model": "qwen-plus",
+    "modules_status": {
+      "direct_apply": false,
+      "chunk_analyzer": true,
+      "llm_adapter": false,
+      "patch_adapter": false,
+      "compilation": false
+    },
+    "input_parameters": {
+      "target_version": "v6.12-rc7",
+      "commit_sha": "f5e728a50bb17336a20803dde488515b833ecd1d.patch",
+      "timestamp": "2025-06-12T04:03:08.993366",
+      "execution_path": "chunk_analyzer (5/6 chunks)",
+      "adaptation_method": "unknown"
+    }
+  }
+}

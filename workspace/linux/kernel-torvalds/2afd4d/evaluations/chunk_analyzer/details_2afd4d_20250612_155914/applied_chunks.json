@@ -1,0 +1,306 @@
+[
+  {
+    "索引": 1,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_001_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/attrib.c",
+    "修改位置": "787-787",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c\nindex 8d789b017fa9..795cf8e75d2e 100644\n--- a/fs/ntfs3/attrib.c\n+++ b/fs/ntfs3/attrib.c\n@@ -787,7 +787,8 @@ int attr_set_size(struct ntfs_inode *ni, enum ATTR_TYPE type,\n \t\tif (err)\n \t\t\tgoto out;\n \n-\t\tattr = mi_find_attr(mi, NULL, type, name, name_len, &le->id);\n+\t\tattr = mi_find_attr(ni, mi, NULL, type, name, name_len,\n+\t\t\t\t    &le->id);\n \t\tif (!attr) {\n \t\t\terr = -EINVAL;\n \t\t\tgoto bad_inode;\n"
+  },
+  {
+    "索引": 2,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_002_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/attrib.c",
+    "修改位置": "1181-1182",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c\nindex 8d789b017fa9..795cf8e75d2e 100644\n--- a/fs/ntfs3/attrib.c\n+++ b/fs/ntfs3/attrib.c\n@@ -1181,7 +1182,7 @@ int attr_data_get_block(struct ntfs_inode *ni, CLST vcn, CLST clen, CLST *lcn,\n \t\t\tgoto out;\n \t\t}\n \n-\t\tattr = mi_find_attr(mi, NULL, ATTR_DATA, NULL, 0, &le->id);\n+\t\tattr = mi_find_attr(ni, mi, NULL, ATTR_DATA, NULL, 0, &le->id);\n \t\tif (!attr) {\n \t\t\terr = -EINVAL;\n \t\t\tgoto out;\n"
+  },
+  {
+    "索引": 3,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_003_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/attrib.c",
+    "修改位置": "1796-1797",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c\nindex 8d789b017fa9..795cf8e75d2e 100644\n--- a/fs/ntfs3/attrib.c\n+++ b/fs/ntfs3/attrib.c\n@@ -1796,7 +1797,7 @@ int attr_allocate_frame(struct ntfs_inode *ni, CLST frame, size_t compr_size,\n \t\t\t\tgoto out;\n \t\t\t}\n \n-\t\t\tattr = mi_find_attr(mi, NULL, ATTR_DATA, NULL, 0,\n+\t\t\tattr = mi_find_attr(ni, mi, NULL, ATTR_DATA, NULL, 0,\n \t\t\t\t\t    &le->id);\n \t\t\tif (!attr) {\n \t\t\t\terr = -EINVAL;\n"
+  },
+  {
+    "索引": 4,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_004_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/attrib.c",
+    "修改位置": "2041-2042",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c\nindex 8d789b017fa9..795cf8e75d2e 100644\n--- a/fs/ntfs3/attrib.c\n+++ b/fs/ntfs3/attrib.c\n@@ -2041,8 +2042,8 @@ int attr_collapse_range(struct ntfs_inode *ni, u64 vbo, u64 bytes)\n \t\t\t\t}\n \n \t\t\t\t/* Look for required attribute. */\n-\t\t\t\tattr = mi_find_attr(mi, NULL, ATTR_DATA, NULL,\n-\t\t\t\t\t\t    0, &le->id);\n+\t\t\t\tattr = mi_find_attr(ni, mi, NULL, ATTR_DATA,\n+\t\t\t\t\t\t    NULL, 0, &le->id);\n \t\t\t\tif (!attr) {\n \t\t\t\t\terr = -EINVAL;\n \t\t\t\t\tgoto out;\n"
+  },
+  {
+    "索引": 5,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_005_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "75-75",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -75,7 +75,7 @@ struct ATTR_STD_INFO *ni_std(struct ntfs_inode *ni)\n {\n \tconst struct ATTRIB *attr;\n \n-\tattr = mi_find_attr(&ni->mi, NULL, ATTR_STD, NULL, 0, NULL);\n+\tattr = mi_find_attr(ni, &ni->mi, NULL, ATTR_STD, NULL, 0, NULL);\n \treturn attr ? resident_data_ex(attr, sizeof(struct ATTR_STD_INFO)) :\n \t\t      NULL;\n }\n"
+  },
+  {
+    "索引": 6,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_006_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "89-89",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -89,7 +89,7 @@ struct ATTR_STD_INFO5 *ni_std5(struct ntfs_inode *ni)\n {\n \tconst struct ATTRIB *attr;\n \n-\tattr = mi_find_attr(&ni->mi, NULL, ATTR_STD, NULL, 0, NULL);\n+\tattr = mi_find_attr(ni, &ni->mi, NULL, ATTR_STD, NULL, 0, NULL);\n \n \treturn attr ? resident_data_ex(attr, sizeof(struct ATTR_STD_INFO5)) :\n \t\t      NULL;\n"
+  },
+  {
+    "索引": 7,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_007_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "201-201",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -201,7 +201,8 @@ struct ATTRIB *ni_find_attr(struct ntfs_inode *ni, struct ATTRIB *attr,\n \t\t\t*mi = &ni->mi;\n \n \t\t/* Look for required attribute in primary record. */\n-\t\treturn mi_find_attr(&ni->mi, attr, type, name, name_len, NULL);\n+\t\treturn mi_find_attr(ni, &ni->mi, attr, type, name, name_len,\n+\t\t\t\t    NULL);\n \t}\n \n \t/* First look for list entry of required type. */\n"
+  },
+  {
+    "索引": 8,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_008_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "217-218",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -217,7 +218,7 @@ struct ATTRIB *ni_find_attr(struct ntfs_inode *ni, struct ATTRIB *attr,\n \t\treturn NULL;\n \n \t/* Look for required attribute. */\n-\tattr = mi_find_attr(m, NULL, type, name, name_len, &le->id);\n+\tattr = mi_find_attr(ni, m, NULL, type, name, name_len, &le->id);\n \n \tif (!attr)\n \t\tgoto out;\n"
+  },
+  {
+    "索引": 9,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_009_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "259-260",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -259,7 +260,7 @@ struct ATTRIB *ni_enum_attr_ex(struct ntfs_inode *ni, struct ATTRIB *attr,\n \t\tif (mi)\n \t\t\t*mi = &ni->mi;\n \t\t/* Enum attributes in primary record. */\n-\t\treturn mi_enum_attr(&ni->mi, attr);\n+\t\treturn mi_enum_attr(ni, &ni->mi, attr);\n \t}\n \n \t/* Get next list entry. */\n"
+  },
+  {
+    "索引": 10,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_010_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "275-276",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -275,7 +276,7 @@ struct ATTRIB *ni_enum_attr_ex(struct ntfs_inode *ni, struct ATTRIB *attr,\n \t\t*mi = mi2;\n \n \t/* Find attribute in loaded record. */\n-\treturn rec_find_attr_le(mi2, le2);\n+\treturn rec_find_attr_le(ni, mi2, le2);\n }\n \n /*\n"
+  },
+  {
+    "索引": 11,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_011_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "293-294",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -293,7 +294,8 @@ struct ATTRIB *ni_load_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,\n \tif (!ni->attr_list.size) {\n \t\tif (pmi)\n \t\t\t*pmi = &ni->mi;\n-\t\treturn mi_find_attr(&ni->mi, NULL, type, name, name_len, NULL);\n+\t\treturn mi_find_attr(ni, &ni->mi, NULL, type, name, name_len,\n+\t\t\t\t    NULL);\n \t}\n \n \tle = al_find_ex(ni, NULL, type, name, name_len, NULL);\n"
+  },
+  {
+    "索引": 12,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_012_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "319-321",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -319,7 +321,7 @@ struct ATTRIB *ni_load_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,\n \tif (pmi)\n \t\t*pmi = mi;\n \n-\tattr = mi_find_attr(mi, NULL, type, name, name_len, &le->id);\n+\tattr = mi_find_attr(ni, mi, NULL, type, name, name_len, &le->id);\n \tif (!attr)\n \t\treturn NULL;\n \n"
+  },
+  {
+    "索引": 13,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_013_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "398-400",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -398,7 +400,8 @@ int ni_remove_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,\n \tint diff;\n \n \tif (base_only || type == ATTR_LIST || !ni->attr_list.size) {\n-\t\tattr = mi_find_attr(&ni->mi, NULL, type, name, name_len, id);\n+\t\tattr = mi_find_attr(ni, &ni->mi, NULL, type, name, name_len,\n+\t\t\t\t    id);\n \t\tif (!attr)\n \t\t\treturn -ENOENT;\n \n"
+  },
+  {
+    "索引": 14,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_014_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "437-440",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -437,7 +440,7 @@ int ni_remove_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,\n \n \t\tal_remove_le(ni, le);\n \n-\t\tattr = mi_find_attr(mi, NULL, type, name, name_len, id);\n+\t\tattr = mi_find_attr(ni, mi, NULL, type, name, name_len, id);\n \t\tif (!attr)\n \t\t\treturn -ENOENT;\n \n"
+  },
+  {
+    "索引": 15,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_015_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "485-488",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -485,7 +488,7 @@ ni_ins_new_attr(struct ntfs_inode *ni, struct mft_inode *mi,\n \t\tname = le->name;\n \t}\n \n-\tattr = mi_insert_attr(mi, type, name, name_len, asize, name_off);\n+\tattr = mi_insert_attr(ni, mi, type, name, name_len, asize, name_off);\n \tif (!attr) {\n \t\tif (le_added)\n \t\t\tal_remove_le(ni, le);\n"
+  },
+  {
+    "索引": 16,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_016_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "673-676",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -673,7 +676,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)\n \tif (err)\n \t\treturn err;\n \n-\tattr_list = mi_find_attr(&ni->mi, NULL, ATTR_LIST, NULL, 0, NULL);\n+\tattr_list = mi_find_attr(ni, &ni->mi, NULL, ATTR_LIST, NULL, 0, NULL);\n \tif (!attr_list)\n \t\treturn 0;\n \n"
+  },
+  {
+    "索引": 17,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_017_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "695-698",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -695,7 +698,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)\n \t\tif (!mi)\n \t\t\treturn 0;\n \n-\t\tattr = mi_find_attr(mi, NULL, le->type, le_name(le),\n+\t\tattr = mi_find_attr(ni, mi, NULL, le->type, le_name(le),\n \t\t\t\t    le->name_len, &le->id);\n \t\tif (!attr)\n \t\t\treturn 0;\n"
+  },
+  {
+    "索引": 18,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_018_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "731-734",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -731,7 +734,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)\n \t\t\tgoto out;\n \t\t}\n \n-\t\tattr = mi_find_attr(mi, NULL, le->type, le_name(le),\n+\t\tattr = mi_find_attr(ni, mi, NULL, le->type, le_name(le),\n \t\t\t\t    le->name_len, &le->id);\n \t\tif (!attr) {\n \t\t\t/* Should never happened, 'cause already checked. */\n"
+  },
+  {
+    "索引": 19,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_019_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "740-743",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -740,7 +743,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)\n \t\tasize = le32_to_cpu(attr->size);\n \n \t\t/* Insert into primary record. */\n-\t\tattr_ins = mi_insert_attr(&ni->mi, le->type, le_name(le),\n+\t\tattr_ins = mi_insert_attr(ni, &ni->mi, le->type, le_name(le),\n \t\t\t\t\t  le->name_len, asize,\n \t\t\t\t\t  le16_to_cpu(attr->name_off));\n \t\tif (!attr_ins) {\n"
+  },
+  {
+    "索引": 20,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_020_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "768-771",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -768,7 +771,7 @@ static int ni_try_remove_attr_list(struct ntfs_inode *ni)\n \t\tif (!mi)\n \t\t\tcontinue;\n \n-\t\tattr = mi_find_attr(mi, NULL, le->type, le_name(le),\n+\t\tattr = mi_find_attr(ni, mi, NULL, le->type, le_name(le),\n \t\t\t\t    le->name_len, &le->id);\n \t\tif (!attr)\n \t\t\tcontinue;\n"
+  },
+  {
+    "索引": 21,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_021_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "831-834",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -831,7 +834,7 @@ int ni_create_attr_list(struct ntfs_inode *ni)\n \tfree_b = 0;\n \tattr = NULL;\n \n-\tfor (; (attr = mi_enum_attr(&ni->mi, attr)); le = Add2Ptr(le, sz)) {\n+\tfor (; (attr = mi_enum_attr(ni, &ni->mi, attr)); le = Add2Ptr(le, sz)) {\n \t\tsz = le_size(attr->name_len);\n \t\tle->type = attr->type;\n \t\tle->size = cpu_to_le16(sz);\n"
+  },
+  {
+    "索引": 22,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_022_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "886-889",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -886,7 +889,7 @@ int ni_create_attr_list(struct ntfs_inode *ni)\n \t\tu32 asize = le32_to_cpu(b->size);\n \t\tu16 name_off = le16_to_cpu(b->name_off);\n \n-\t\tattr = mi_insert_attr(mi, b->type, Add2Ptr(b, name_off),\n+\t\tattr = mi_insert_attr(ni, mi, b->type, Add2Ptr(b, name_off),\n \t\t\t\t      b->name_len, asize, name_off);\n \t\tif (!attr)\n \t\t\tgoto out;\n"
+  },
+  {
+    "索引": 23,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_023_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "909-912",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -909,7 +912,7 @@ int ni_create_attr_list(struct ntfs_inode *ni)\n \t\t\tgoto out;\n \t}\n \n-\tattr = mi_insert_attr(&ni->mi, ATTR_LIST, NULL, 0,\n+\tattr = mi_insert_attr(ni, &ni->mi, ATTR_LIST, NULL, 0,\n \t\t\t      lsize + SIZEOF_RESIDENT, SIZEOF_RESIDENT);\n \tif (!attr)\n \t\tgoto out;\n"
+  },
+  {
+    "索引": 24,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_024_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "993-996",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -993,13 +996,13 @@ static int ni_ins_attr_ext(struct ntfs_inode *ni, struct ATTR_LIST_ENTRY *le,\n \t\tmi = rb_entry(node, struct mft_inode, node);\n \n \t\tif (is_mft_data &&\n-\t\t    (mi_enum_attr(mi, NULL) ||\n+\t\t    (mi_enum_attr(ni, mi, NULL) ||\n \t\t     vbo <= ((u64)mi->rno << sbi->record_bits))) {\n \t\t\t/* We can't accept this record 'cause MFT's bootstrapping. */\n \t\t\tcontinue;\n \t\t}\n \t\tif (is_mft &&\n-\t\t    mi_find_attr(mi, NULL, ATTR_DATA, NULL, 0, NULL)) {\n+\t\t    mi_find_attr(ni, mi, NULL, ATTR_DATA, NULL, 0, NULL)) {\n \t\t\t/*\n \t\t\t * This child record already has a ATTR_DATA.\n \t\t\t * So it can't accept any other records.\n"
+  },
+  {
+    "索引": 25,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_025_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "1008-1011",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -1008,7 +1011,7 @@ static int ni_ins_attr_ext(struct ntfs_inode *ni, struct ATTR_LIST_ENTRY *le,\n \t\t}\n \n \t\tif ((type != ATTR_NAME || name_len) &&\n-\t\t    mi_find_attr(mi, NULL, type, name, name_len, NULL)) {\n+\t\t    mi_find_attr(ni, mi, NULL, type, name, name_len, NULL)) {\n \t\t\t/* Only indexed attributes can share same record. */\n \t\t\tcontinue;\n \t\t}\n"
+  },
+  {
+    "索引": 26,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_026_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "1157-1160",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -1157,7 +1160,7 @@ static int ni_insert_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,\n \t/* Estimate the result of moving all possible attributes away. */\n \tattr = NULL;\n \n-\twhile ((attr = mi_enum_attr(&ni->mi, attr))) {\n+\twhile ((attr = mi_enum_attr(ni, &ni->mi, attr))) {\n \t\tif (attr->type == ATTR_STD)\n \t\t\tcontinue;\n \t\tif (attr->type == ATTR_LIST)\n"
+  },
+  {
+    "索引": 27,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_027_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "1175-1178",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -1175,7 +1178,7 @@ static int ni_insert_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,\n \tattr = NULL;\n \n \tfor (;;) {\n-\t\tattr = mi_enum_attr(&ni->mi, attr);\n+\t\tattr = mi_enum_attr(ni, &ni->mi, attr);\n \t\tif (!attr) {\n \t\t\t/* We should never be here 'cause we have already check this case. */\n \t\t\terr = -EINVAL;\n"
+  },
+  {
+    "索引": 28,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_028_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "1259-1262",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -1259,7 +1262,7 @@ static int ni_expand_mft_list(struct ntfs_inode *ni)\n \tfor (node = rb_first(&ni->mi_tree); node; node = rb_next(node)) {\n \t\tmi = rb_entry(node, struct mft_inode, node);\n \n-\t\tattr = mi_enum_attr(mi, NULL);\n+\t\tattr = mi_enum_attr(ni, mi, NULL);\n \n \t\tif (!attr) {\n \t\t\tmft_min = mi->rno;\n"
+  },
+  {
+    "索引": 29,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_029_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "1280-1283",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -1280,7 +1283,7 @@ static int ni_expand_mft_list(struct ntfs_inode *ni)\n \t\tni_remove_mi(ni, mi_new);\n \t}\n \n-\tattr = mi_find_attr(&ni->mi, NULL, ATTR_DATA, NULL, 0, NULL);\n+\tattr = mi_find_attr(ni, &ni->mi, NULL, ATTR_DATA, NULL, 0, NULL);\n \tif (!attr) {\n \t\terr = -EINVAL;\n \t\tgoto out;\n"
+  },
+  {
+    "索引": 30,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_030_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "1397-1400",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -1397,7 +1400,7 @@ int ni_expand_list(struct ntfs_inode *ni)\n \t\t\tcontinue;\n \n \t\t/* Find attribute in primary record. */\n-\t\tattr = rec_find_attr_le(&ni->mi, le);\n+\t\tattr = rec_find_attr_le(ni, &ni->mi, le);\n \t\tif (!attr) {\n \t\t\terr = -EINVAL;\n \t\t\tgoto out;\n"
+  },
+  {
+    "索引": 31,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_031_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/frecord.c",
+    "修改位置": "3344-3347",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c\nindex c57f0686b14b..b6be7dfafcbd 100644\n--- a/fs/ntfs3/frecord.c\n+++ b/fs/ntfs3/frecord.c\n@@ -3344,7 +3347,7 @@ int ni_write_inode(struct inode *inode, int sync, const char *hint)\n \t\tif (!mi->dirty)\n \t\t\tcontinue;\n \n-\t\tis_empty = !mi_enum_attr(mi, NULL);\n+\t\tis_empty = !mi_enum_attr(ni, mi, NULL);\n \n \t\tif (is_empty)\n \t\t\tclear_rec_inuse(mi->mrec);\n"
+  },
+  {
+    "索引": 32,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_032_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/ntfs_fs.h",
+    "修改位置": "745-745",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/ntfs_fs.h b/fs/ntfs3/ntfs_fs.h\nindex cd8e8374bb5a..382820464dee 100644\n--- a/fs/ntfs3/ntfs_fs.h\n+++ b/fs/ntfs3/ntfs_fs.h\n@@ -745,23 +745,24 @@ int mi_get(struct ntfs_sb_info *sbi, CLST rno, struct mft_inode **mi);\n void mi_put(struct mft_inode *mi);\n int mi_init(struct mft_inode *mi, struct ntfs_sb_info *sbi, CLST rno);\n int mi_read(struct mft_inode *mi, bool is_mft);\n-struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr);\n-// TODO: id?\n-struct ATTRIB *mi_find_attr(struct mft_inode *mi, struct ATTRIB *attr,\n-\t\t\t    enum ATTR_TYPE type, const __le16 *name,\n-\t\t\t    u8 name_len, const __le16 *id);\n-static inline struct ATTRIB *rec_find_attr_le(struct mft_inode *rec,\n+struct ATTRIB *mi_enum_attr(struct ntfs_inode *ni, struct mft_inode *mi,\n+\t\t\t    struct ATTRIB *attr);\n+struct ATTRIB *mi_find_attr(struct ntfs_inode *ni, struct mft_inode *mi,\n+\t\t\t    struct ATTRIB *attr, enum ATTR_TYPE type,\n+\t\t\t    const __le16 *name, u8 name_len, const __le16 *id);\n+static inline struct ATTRIB *rec_find_attr_le(struct ntfs_inode *ni,\n+\t\t\t\t\t      struct mft_inode *rec,\n \t\t\t\t\t      struct ATTR_LIST_ENTRY *le)\n {\n-\treturn mi_find_attr(rec, NULL, le->type, le_name(le), le->name_len,\n+\treturn mi_find_attr(ni, rec, NULL, le->type, le_name(le), le->name_len,\n \t\t\t    &le->id);\n }\n int mi_write(struct mft_inode *mi, int wait);\n int mi_format_new(struct mft_inode *mi, struct ntfs_sb_info *sbi, CLST rno,\n \t\t  __le16 flags, bool is_mft);\n-struct ATTRIB *mi_insert_attr(struct mft_inode *mi, enum ATTR_TYPE type,\n-\t\t\t      const __le16 *name, u8 name_len, u32 asize,\n-\t\t\t      u16 name_off);\n+struct ATTRIB *mi_insert_attr(struct ntfs_inode *ni, struct mft_inode *mi,\n+\t\t\t      enum ATTR_TYPE type, const __le16 *name,\n+\t\t\t      u8 name_len, u32 asize, u16 name_off);\n \n bool mi_remove_attr(struct ntfs_inode *ni, struct mft_inode *mi,\n \t\t    struct ATTRIB *attr);\n"
+  },
+  {
+    "索引": 33,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_033_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/record.c",
+    "修改位置": "31-31",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c\nindex 61d53d39f3b9..714c7ecedca8 100644\n--- a/fs/ntfs3/record.c\n+++ b/fs/ntfs3/record.c\n@@ -31,7 +31,7 @@ static inline int compare_attr(const struct ATTRIB *left, enum ATTR_TYPE type,\n  *\n  * Return: Unused attribute id that is less than mrec->next_attr_id.\n  */\n-static __le16 mi_new_attt_id(struct mft_inode *mi)\n+static __le16 mi_new_attt_id(struct ntfs_inode *ni, struct mft_inode *mi)\n {\n \tu16 free_id, max_id, t16;\n \tstruct MFT_REC *rec = mi->mrec;\n"
+  },
+  {
+    "索引": 34,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_034_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/record.c",
+    "修改位置": "52-52",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c\nindex 61d53d39f3b9..714c7ecedca8 100644\n--- a/fs/ntfs3/record.c\n+++ b/fs/ntfs3/record.c\n@@ -52,7 +52,7 @@ static __le16 mi_new_attt_id(struct mft_inode *mi)\n \tattr = NULL;\n \n \tfor (;;) {\n-\t\tattr = mi_enum_attr(mi, attr);\n+\t\tattr = mi_enum_attr(ni, mi, attr);\n \t\tif (!attr) {\n \t\t\trec->next_attr_id = cpu_to_le16(max_id + 1);\n \t\t\tmi->dirty = true;\n"
+  },
+  {
+    "索引": 35,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_035_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/record.c",
+    "修改位置": "195-195",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c\nindex 61d53d39f3b9..714c7ecedca8 100644\n--- a/fs/ntfs3/record.c\n+++ b/fs/ntfs3/record.c\n@@ -195,7 +195,8 @@ int mi_read(struct mft_inode *mi, bool is_mft)\n  * NOTE: mi->mrec - memory of size sbi->record_size\n  * here we sure that mi->mrec->total == sbi->record_size (see mi_read)\n  */\n-struct ATTRIB *mi_enum_attr(struct mft_inode *mi, struct ATTRIB *attr)\n+struct ATTRIB *mi_enum_attr(struct ntfs_inode *ni, struct mft_inode *mi,\n+\t\t\t    struct ATTRIB *attr)\n {\n \tconst struct MFT_REC *rec = mi->mrec;\n \tu32 used = le32_to_cpu(rec->used);\n"
+  },
+  {
+    "索引": 36,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_039_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/record.c",
+    "修改位置": "467-472",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c\nindex 61d53d39f3b9..714c7ecedca8 100644\n--- a/fs/ntfs3/record.c\n+++ b/fs/ntfs3/record.c\n@@ -467,9 +472,9 @@ int mi_format_new(struct mft_inode *mi, struct ntfs_sb_info *sbi, CLST rno,\n  *\n  * Return: Not full constructed attribute or NULL if not possible to create.\n  */\n-struct ATTRIB *mi_insert_attr(struct mft_inode *mi, enum ATTR_TYPE type,\n-\t\t\t      const __le16 *name, u8 name_len, u32 asize,\n-\t\t\t      u16 name_off)\n+struct ATTRIB *mi_insert_attr(struct ntfs_inode *ni, struct mft_inode *mi,\n+\t\t\t      enum ATTR_TYPE type, const __le16 *name,\n+\t\t\t      u8 name_len, u32 asize, u16 name_off)\n {\n \tsize_t tail;\n \tstruct ATTRIB *attr;\n"
+  },
+  {
+    "索引": 37,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_040_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/record.c",
+    "修改位置": "488-493",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c\nindex 61d53d39f3b9..714c7ecedca8 100644\n--- a/fs/ntfs3/record.c\n+++ b/fs/ntfs3/record.c\n@@ -488,7 +493,7 @@ struct ATTRIB *mi_insert_attr(struct mft_inode *mi, enum ATTR_TYPE type,\n \t * at which we should insert it.\n \t */\n \tattr = NULL;\n-\twhile ((attr = mi_enum_attr(mi, attr))) {\n+\twhile ((attr = mi_enum_attr(ni, mi, attr))) {\n \t\tint diff = compare_attr(attr, type, name, name_len, upcase);\n \n \t\tif (diff < 0)\n"
+  },
+  {
+    "索引": 38,
+    "补丁路径": "/home/elpsy/workspace/sow/patch-backport/workspace/linux/kernel-torvalds/2afd4d/chunk_patches/chunk_041_20250612_155913.patch",
+    "实际补丁": null,
+    "修改文件": "fs/ntfs3/record.c",
+    "修改位置": "508-513",
+    "内容": "From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001\nFrom: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\nDate: Mon, 30 Dec 2024 10:33:34 +0300\nSubject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in\n mi_enum_attr()\n\nExtended the `mi_enum_attr()` function interface with an additional\nparameter, `struct ntfs_inode *ni`, to allow marking the inode\nas bad as soon as an error is detected.\n\nReported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com\nSigned-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>\n\ndiff --git a/fs/ntfs3/record.c b/fs/ntfs3/record.c\nindex 61d53d39f3b9..714c7ecedca8 100644\n--- a/fs/ntfs3/record.c\n+++ b/fs/ntfs3/record.c\n@@ -508,7 +513,7 @@ struct ATTRIB *mi_insert_attr(struct mft_inode *mi, enum ATTR_TYPE type,\n \t\ttail = used - PtrOffset(rec, attr);\n \t}\n \n-\tid = mi_new_attt_id(mi);\n+\tid = mi_new_attt_id(ni, mi);\n \n \tmemmove(Add2Ptr(attr, asize), attr, tail);\n \tmemset(attr, 0, asize);\n-- \n2.25.1\n\n"
+  }
+]

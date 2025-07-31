@@ -1,0 +1,30 @@
+From 482e7cab56a56b431ef88c86416a08b7273a5242 Mon Sep 17 00:00:00 2001
+From: elpsy <hewenkuan_work@foxmail.com>
+Date: Thu, 12 Jun 2025 17:46:06 +0800
+Subject: [PATCH] Applied adapted patch for v6.12-rc7
+
+---
+ fs/smb/client/fs_context.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/smb/client/fs_context.c b/fs/smb/client/fs_context.c
+index 5c5a52019efa..2e98e3432fb7 100644
+--- a/fs/smb/client/fs_context.c
++++ b/fs/smb/client/fs_context.c
+@@ -1190,11 +1190,11 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
+ 		}
+ 		break;
+ 	case Opt_acdirmax:
+-		ctx->acdirmax = HZ * result.uint_32;
+-		if (ctx->acdirmax > CIFS_MAX_ACTIMEO) {
++		if (result.uint_32 > CIFS_MAX_ACTIMEO / HZ) {
+ 			cifs_errorf(fc, "acdirmax too large\n");
+ 			goto cifs_parse_mount_err;
+ 		}
++		ctx->acdirmax = HZ * result.uint_32;
+ 		break;
+ 	case Opt_actimeo:
+ 		if (HZ * result.uint_32 > CIFS_MAX_ACTIMEO) {
+-- 
+2.25.1
+

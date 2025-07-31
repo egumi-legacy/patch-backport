@@ -1,0 +1,26 @@
+From 2afd4d267e6dbaec8d3ccd4f5396cb84bc67aa2e Mon Sep 17 00:00:00 2001
+From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Date: Mon, 30 Dec 2024 10:33:34 +0300
+Subject: [PATCH] fs/ntfs3: Mark inode as bad as soon as error detected in
+ mi_enum_attr()
+
+Extended the `mi_enum_attr()` function interface with an additional
+parameter, `struct ntfs_inode *ni`, to allow marking the inode
+as bad as soon as an error is detected.
+
+Reported-by: syzbot+73d8fc29ec7cba8286fa@syzkaller.appspotmail.com
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index c57f0686b14b..b6be7dfafcbd 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -1280,7 +1283,7 @@ static int ni_expand_mft_list(struct ntfs_inode *ni)
+ 		ni_remove_mi(ni, mi_new);
+ 	}
+ 
+-	attr = mi_find_attr(&ni->mi, NULL, ATTR_DATA, NULL, 0, NULL);
++	attr = mi_find_attr(ni, &ni->mi, NULL, ATTR_DATA, NULL, 0, NULL);
+ 	if (!attr) {
+ 		err = -EINVAL;
+ 		goto out;

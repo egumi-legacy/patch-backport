@@ -1,0 +1,27 @@
+From e88f7376fe68dbf4ebaf11fad1513ce700b45860 Mon Sep 17 00:00:00 2001
+From: Sarah Boyce <42296566+sarahboyce@users.noreply.github.com>
+Date: Tue, 25 Feb 2025 09:40:54 +0100
+Subject: [PATCH] [4.2.x] Fixed CVE-2025-26699 -- Mitigated potential DoS in
+ wordwrap template filter.
+
+Thanks sw0rd1ight for the report.
+
+Backport of 55d89e25f4115c5674cdd9b9bcba2bb2bb6d820b from main.
+---
+ django/utils/text.py                          | 28 +++++++------------
+ docs/releases/4.2.20.txt                      |  6 ++++
+ .../filter_tests/test_wordwrap.py             | 11 ++++++++
+ 3 files changed, 27 insertions(+), 18 deletions(-)
+
+diff --git a/django/utils/text.py b/django/utils/text.py
+index e1b835e0e219..81ae88dc76d4 100644
+--- a/django/utils/text.py
++++ b/django/utils/text.py
+@@ -1,6 +1,7 @@
+ import gzip
+ import re
+ import secrets
++import textwrap
+ import unicodedata
+ from gzip import GzipFile
+ from gzip import compress as gzip_compress

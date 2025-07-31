@@ -1,0 +1,23 @@
+A. Commit message:
+fbdev: hyperv_fb: Simplify hvfb_putmem
+
+B. Change summary:
+The 'hdev' parameter in the 'hvfb_putmem' function is removed as it is redundant. The device object required for 'hvfb_release_phymem' can be obtained from the 'info' pointer.
+
+C. Compatibility Risk:
+Low
+
+D. Fixed Code:
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index ce23d0ef5702..9798a34ac571 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1089,7 +1089,7 @@ static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)
+ 		iounmap(par->mmio_vp);
+ 		vmbus_free_mmio(par->mem->start, screen_fb_size);
+ 	} else {
+-		hvfb_release_phymem(hdev, info->fix.smem_start,
++		hvfb_release_phymem(info->device, info->fix.smem_start,
+ 				    screen_fb_size);
+ 	}
+ }
